@@ -351,7 +351,6 @@ class AdditionalInfoPage extends HookConsumerWidget {
               // PageView
               Expanded(
                 child: PageView(
-                  key: ValueKey(pages.length), // rebuild when length changes
                   controller: pageController,
                   onPageChanged: (index) {
                     currentPage.value = index;
