@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class DietSelectionPage extends HookConsumerWidget {
+  final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final Function(String) onSelectionChanged;
   final VoidCallback onNext;
 
   const DietSelectionPage({
     super.key,
+    required this.formKey,
     this.initialValue,
     required this.onSelectionChanged,
     required this.onNext,
@@ -112,6 +115,8 @@ class DietSelectionPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    useAutomaticKeepAlive();
+    // Hook widgets do not support AutomaticKeepAliveClientMixin directly
     final selectedDiet = useState<String?>(initialValue);
 
     final dietOptions = [
@@ -232,10 +237,19 @@ class DietSelectionPage extends HookConsumerWidget {
                       onTap: () {
                         selectedDiet.value = diet['key'] as String;
                         onSelectionChanged(diet['key'] as String);
+                        final field = formKey.currentState?.fields['diet'];
+                        field?.didChange(diet['key'] as String);
                       },
                     );
                   }).toList(),
                 ),
+              ),
+
+              // Hidden field to persist selection in parent form
+              FormBuilderField<String>(
+                name: 'diet',
+                initialValue: selectedDiet.value,
+                builder: (field) => const SizedBox.shrink(),
               ),
 
               const SizedBox(height: 20),

@@ -53,6 +53,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
 
     final pages = [
       GenderSelectionPage(
+        formKey: formKey,
         initialValue: additionalInfo.gender,
         onGenderSelected: (gender) {
           additionalInfoNotifier.updateGender(gender);
@@ -82,6 +83,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
         },
       ),
       WorkoutFrequencyPage(
+        formKey: formKey,
         initialValue: additionalInfo.workoutFrequency,
         onSelectionChanged: (frequency) {
           additionalInfoNotifier.updateWorkoutFrequency(frequency);
@@ -114,6 +116,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
       ),
       // Goal Selection Page (new page before long term results)
       GoalSelectionPage(
+        formKey: formKey,
         initialValue: additionalInfo.weightGoal,
         onSelectionChanged: (weightGoal) {
           additionalInfoNotifier.updateWeightGoal(weightGoal);
@@ -168,6 +171,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
       if (additionalInfo.weightGoal == 'lose_weight' ||
           additionalInfo.weightGoal == 'gain_weight')
         WeightLossSpeedPage(
+          formKey: formKey,
           initialValue: additionalInfo.weightLossSpeed,
           goal: additionalInfo.weightGoal,
           onSelectionChanged: (weightLossSpeed) {
@@ -184,6 +188,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
         ),
       // New barriers selection page
       BarriersSelectionPage(
+        formKey: formKey,
         onSelectionChanged: (_) {},
         onNext: () {
           pageController.nextPage(
@@ -194,6 +199,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
       ),
       // Diet selection page
       DietSelectionPage(
+        formKey: formKey,
         initialValue: additionalInfo.diet,
         onSelectionChanged: (diet) {
           additionalInfoNotifier.updateDiet(diet);
@@ -276,14 +282,13 @@ class AdditionalInfoPage extends HookConsumerWidget {
 
               // PageView
               Expanded(
-                child: PageView.builder(
+                child: PageView(
                   controller: pageController,
                   onPageChanged: (index) {
                     currentPage.value = index;
                   },
-                  itemCount: pages.length,
-                  itemBuilder: (context, index) =>
-                      SizedBox.expand(child: pages[index]),
+                  children:
+                      pages.map((p) => SizedBox.expand(child: p)).toList(),
                 ),
               ),
             ],

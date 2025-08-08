@@ -168,32 +168,32 @@ class _CustomWeightRulerState extends State<CustomWeightRuler> {
             ),
 
             // Center highlight track
-            Positioned(
-              left: 20,
-              right: 20,
-              top: constraints.maxHeight / 2 - 19,
-              child: Container(
-                height: 38,
-                decoration: BoxDecoration(
-                  color: widget.goalColor.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: widget.goalColor.withOpacity(0.25),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   left: 20,
+            //   right: 20,
+            //   top: constraints.maxHeight / 2 - 19,
+            //   child: Container(
+            //     height: 38,
+            //     decoration: BoxDecoration(
+            //       color: widget.goalColor.withOpacity(0.08),
+            //       borderRadius: BorderRadius.circular(12),
+            //       border: Border.all(
+            //         color: widget.goalColor.withOpacity(0.25),
+            //         width: 1,
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // Center indicator triangle
-            Positioned(
-              top: (constraints.maxHeight / 2) - 40,
-              left: constraints.maxWidth / 2 - 10,
-              child: CustomPaint(
-                size: const Size(20, 20),
-                painter: TrianglePainter(color: widget.goalColor),
-              ),
-            ),
+            // Positioned(
+            //   top: (constraints.maxHeight / 2) - 40,
+            //   left: constraints.maxWidth / 2 - 10,
+            //   child: CustomPaint(
+            //     size: const Size(20, 20),
+            //     painter: TrianglePainter(color: widget.goalColor),
+            //   ),
+            // ),
           ],
         );
       },

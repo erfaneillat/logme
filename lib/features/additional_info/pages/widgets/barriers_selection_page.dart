@@ -1,13 +1,16 @@
 import 'package:cal_ai/extensions/context.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class BarriersSelectionPage extends StatefulWidget {
+  final GlobalKey<FormBuilderState>? formKey;
   final VoidCallback? onNext;
   final Function(List<String>)? onSelectionChanged;
 
   const BarriersSelectionPage({
     super.key,
+    this.formKey,
     this.onNext,
     this.onSelectionChanged,
   });
@@ -28,6 +31,8 @@ class _BarriersSelectionPageState extends State<BarriersSelectionPage> {
       }
     });
     widget.onSelectionChanged?.call(_selected.toList());
+    final field = widget.formKey?.currentState?.fields['barriers'];
+    field?.didChange(_selected.toList());
   }
 
   Widget _item({
@@ -258,6 +263,13 @@ class _BarriersSelectionPageState extends State<BarriersSelectionPage> {
                     ),
                   ],
                 ),
+              ),
+
+              // Hidden field to persist selected barriers
+              FormBuilderField<List<String>>(
+                name: 'barriers',
+                initialValue: _selected.toList(),
+                builder: (field) => const SizedBox.shrink(),
               ),
 
               const SizedBox(height: 20),

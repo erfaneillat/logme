@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class WorkoutFrequencyPage extends StatefulWidget {
+  final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final VoidCallback? onNext;
   final Function(String)? onSelectionChanged;
 
   const WorkoutFrequencyPage({
     super.key,
+    required this.formKey,
     required this.initialValue,
     this.onNext,
     this.onSelectionChanged,
@@ -18,7 +21,7 @@ class WorkoutFrequencyPage extends StatefulWidget {
 }
 
 class _WorkoutFrequencyPageState extends State<WorkoutFrequencyPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   String? selectedFrequency;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -61,6 +64,7 @@ class _WorkoutFrequencyPageState extends State<WorkoutFrequencyPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final workoutOptions = [
       {
         'key': '0-2',
@@ -115,6 +119,13 @@ class _WorkoutFrequencyPageState extends State<WorkoutFrequencyPage>
 
               const SizedBox(height: 40),
 
+              // Hidden field to bind to parent form
+              FormBuilderField<String>(
+                name: 'workoutFrequency',
+                initialValue: selectedFrequency,
+                builder: (field) => const SizedBox.shrink(),
+              ),
+
               // Workout frequency options
               Expanded(
                 child: Column(
@@ -140,6 +151,9 @@ class _WorkoutFrequencyPageState extends State<WorkoutFrequencyPage>
                               selectedFrequency = option['key'] as String);
                           widget.onSelectionChanged
                               ?.call(option['key'] as String);
+                          final field = widget
+                              .formKey.currentState?.fields['workoutFrequency'];
+                          field?.didChange(option['key'] as String);
                         },
                       ),
                     );
@@ -286,6 +300,9 @@ class _WorkoutFrequencyPageState extends State<WorkoutFrequencyPage>
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class _WorkoutFrequencyCard extends StatefulWidget {

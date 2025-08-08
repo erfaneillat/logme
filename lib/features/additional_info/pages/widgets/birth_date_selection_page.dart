@@ -51,7 +51,7 @@ class _BirthDateSelectionContent extends StatefulWidget {
 }
 
 class _BirthDateSelectionContentState extends State<_BirthDateSelectionContent>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late FixedExtentScrollController _monthController;
   late FixedExtentScrollController _dayController;
   late FixedExtentScrollController _yearController;
@@ -288,6 +288,7 @@ class _BirthDateSelectionContentState extends State<_BirthDateSelectionContent>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final daysInMonth = _getDaysInMonth(_selectedMonth, _selectedYear);
     final years = List.generate(101, (index) => 1300 + index); // 1300 to 1400
 
@@ -682,4 +683,7 @@ class _BirthDateSelectionContentState extends State<_BirthDateSelectionContent>
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -1,14 +1,17 @@
 import 'package:cal_ai/extensions/context.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class GoalSelectionPage extends StatefulWidget {
+  final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final VoidCallback? onNext;
   final Function(String)? onSelectionChanged;
 
   const GoalSelectionPage({
     super.key,
+    required this.formKey,
     required this.initialValue,
     this.onNext,
     this.onSelectionChanged,
@@ -18,7 +21,8 @@ class GoalSelectionPage extends StatefulWidget {
   State<GoalSelectionPage> createState() => _GoalSelectionPageState();
 }
 
-class _GoalSelectionPageState extends State<GoalSelectionPage> {
+class _GoalSelectionPageState extends State<GoalSelectionPage>
+    with AutomaticKeepAliveClientMixin {
   String? selectedGoal;
 
   @override
@@ -32,6 +36,8 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
       selectedGoal = goal;
     });
     widget.onSelectionChanged?.call(goal);
+    final field = widget.formKey.currentState?.fields['weightGoal'];
+    field?.didChange(goal);
   }
 
   Widget _buildGoalCard({
@@ -147,6 +153,7 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -221,6 +228,13 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
               ),
 
               const SizedBox(height: 40),
+
+              // Hidden field to persist goal in parent form
+              FormBuilderField<String>(
+                name: 'weightGoal',
+                initialValue: selectedGoal,
+                builder: (field) => const SizedBox.shrink(),
+              ),
 
               // Goal Selection Cards
               Expanded(
@@ -325,4 +339,7 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

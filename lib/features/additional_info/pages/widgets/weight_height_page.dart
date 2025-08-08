@@ -21,7 +21,8 @@ class WeightHeightPage extends StatefulWidget {
   State<WeightHeightPage> createState() => _WeightHeightPageState();
 }
 
-class _WeightHeightPageState extends State<WeightHeightPage> {
+class _WeightHeightPageState extends State<WeightHeightPage>
+    with AutomaticKeepAliveClientMixin {
   late final List<int> heightValues;
   late final List<int> weightValues;
 
@@ -76,8 +77,9 @@ class _WeightHeightPageState extends State<WeightHeightPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       decoration: BoxDecoration(
@@ -377,4 +379,7 @@ class _WeightHeightPageState extends State<WeightHeightPage> {
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

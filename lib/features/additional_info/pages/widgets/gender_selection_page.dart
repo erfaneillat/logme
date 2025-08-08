@@ -1,14 +1,17 @@
 import 'package:cal_ai/extensions/context.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class GenderSelectionPage extends StatefulWidget {
+  final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final Function(String) onGenderSelected;
   final VoidCallback? onNext;
 
   const GenderSelectionPage({
     super.key,
+    required this.formKey,
     required this.initialValue,
     required this.onGenderSelected,
     this.onNext,
@@ -19,7 +22,7 @@ class GenderSelectionPage extends StatefulWidget {
 }
 
 class _GenderSelectionPageState extends State<GenderSelectionPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   String? selectedGender;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -65,10 +68,13 @@ class _GenderSelectionPageState extends State<GenderSelectionPage>
       selectedGender = gender;
     });
     widget.onGenderSelected(gender);
+    final field = widget.formKey.currentState?.fields['gender'];
+    field?.didChange(gender);
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final genderOptions = [
       {
         'key': 'male',
@@ -119,6 +125,13 @@ class _GenderSelectionPageState extends State<GenderSelectionPage>
               _buildHeader(),
 
               const SizedBox(height: 40),
+
+              // Hidden form field for gender to persist value in the parent form
+              FormBuilderField<String>(
+                name: 'gender',
+                initialValue: widget.initialValue,
+                builder: (field) => const SizedBox.shrink(),
+              ),
 
               // Gender selection cards
               Expanded(
@@ -284,6 +297,9 @@ class _GenderSelectionPageState extends State<GenderSelectionPage>
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class _GenderCard extends StatefulWidget {
