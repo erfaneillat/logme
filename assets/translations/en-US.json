@@ -232,6 +232,11 @@
         "trust_subtitle": "Now let's personalize logme for you...",
         "privacy_title": "Your privacy and security matter to us.",
         "privacy_subtitle": "We promise to always keep your personal information private and secure.",
+        "referral_title": "Enter referral code",
+        "referral_subtitle": "(optional)",
+        "referral_instruction": "You can skip this step",
+        "referral_hint": "Referral Code",
+        "referral_submit": "Submit",
         "continue": "Continue"
     }
 }

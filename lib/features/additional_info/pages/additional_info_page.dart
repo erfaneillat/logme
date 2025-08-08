@@ -16,6 +16,7 @@ import 'widgets/barriers_selection_page.dart';
 import 'widgets/diet_selection_page.dart';
 import 'widgets/accomplishment_selection_page.dart';
 import 'widgets/goal_transition_chart_page.dart';
+import 'widgets/referral_code_page.dart';
 import 'widgets/trust_intro_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
@@ -52,6 +53,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
         'weightLossSpeed': additionalInfo.weightLossSpeed,
         'diet': additionalInfo.diet,
         'accomplishment': additionalInfo.accomplishment,
+        'referralCode': additionalInfo.referralCode,
       };
     }, [additionalInfo]);
 
@@ -247,10 +249,38 @@ class AdditionalInfoPage extends HookConsumerWidget {
           );
         },
       ),
+      // Referral code page
+      ReferralCodePage(
+        formKey: formKey,
+        initialValue: additionalInfo.referralCode,
+        onReferralCodeChanged: (referralCode) {
+          additionalInfoNotifier.updateReferralCode(referralCode);
+        },
+        onNext: () {
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+      ),
       TrustIntroPage(
         onNext: () {},
       ),
     ];
+
+    // Keep PageView index valid when pages length changes (e.g., conditional pages)
+    final int pagesLength = pages.length;
+    useEffect(() {
+      if (currentPage.value >= pagesLength) {
+        currentPage.value = pagesLength - 1;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (pageController.hasClients && pagesLength > 0) {
+            pageController.jumpToPage(currentPage.value);
+          }
+        });
+      }
+      return null;
+    }, [pagesLength]);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -303,7 +333,8 @@ class AdditionalInfoPage extends HookConsumerWidget {
                         ),
                         child: FractionallySizedBox(
                           alignment: Alignment.centerLeft,
-                          widthFactor: (currentPage.value + 1) / pages.length,
+                          widthFactor: ((currentPage.value + 1) / pages.length)
+                              .clamp(0.0, 1.0),
                           child: Container(
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary,
@@ -320,6 +351,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
               // PageView
               Expanded(
                 child: PageView(
+                  key: ValueKey(pages.length), // rebuild when length changes
                   controller: pageController,
                   onPageChanged: (index) {
                     currentPage.value = index;

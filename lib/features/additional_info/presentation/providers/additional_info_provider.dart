@@ -86,6 +86,10 @@ class AdditionalInfoNotifier extends StateNotifier<AdditionalInfo> {
     state = state.copyWith(accomplishment: accomplishment);
   }
 
+  void updateReferralCode(String? referralCode) {
+    state = state.copyWith(referralCode: referralCode);
+  }
+
   Future<void> saveAdditionalInfo() async {
     await saveUseCase.execute(state);
   }

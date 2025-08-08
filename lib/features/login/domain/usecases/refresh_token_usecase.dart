@@ -5,7 +5,12 @@ class RefreshTokenUseCase {
 
   RefreshTokenUseCase(this.repository);
 
-  Future<String> call() async {
+  Future<String> execute() async {
     return await repository.refreshToken();
+  }
+
+  // Backward-compatible alias
+  Future<String> call() async {
+    return await execute();
   }
 }

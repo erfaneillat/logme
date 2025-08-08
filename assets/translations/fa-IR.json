@@ -232,6 +232,11 @@
         "trust_subtitle": "بیایید لقمه را مخصوص شما شخصی‌سازی کنیم...",
         "privacy_title": "حریم خصوصی و امنیت شما برای ما مهم است.",
         "privacy_subtitle": "قول می‌دهیم اطلاعات شخصی شما همواره محرمانه و امن بماند.",
+        "referral_title": "کد معرفی را وارد کنید",
+        "referral_subtitle": "(اختیاری)",
+        "referral_instruction": "می‌توانید این مرحله را رد کنید",
+        "referral_hint": "کد معرفی",
+        "referral_submit": "ثبت",
         "continue": "ادامه"
     }
 }
