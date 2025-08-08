@@ -12,6 +12,7 @@ import 'widgets/goal_selection_page.dart';
 import 'widgets/long_term_results_page.dart';
 import 'widgets/motivational_page.dart';
 import 'widgets/weight_loss_speed_page.dart';
+import 'widgets/barriers_selection_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
@@ -179,6 +180,16 @@ class AdditionalInfoPage extends HookConsumerWidget {
             }
           },
         ),
+      // New barriers selection page
+      BarriersSelectionPage(
+        onSelectionChanged: (_) {},
+        onNext: () {
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+      ),
     ];
 
     return Scaffold(

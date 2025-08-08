@@ -183,7 +183,7 @@
         "motivational_losing_prefix": "کاهش ",
         "motivational_gaining_prefix": "افزایش ",
         "motivational_suffix": " کیلوگرم یک هدف واقع‌بینانه است.\nاصلاً سخت نیست!",
-        "motivational_maintain_title": "حفظ وزن فعلی شما\nانتخاب عالی‌ای است!\nشما در مسیر درست هستید!",
+        "motivational_maintain_title": "حفظ وزن فعلی شما\nانتخاب عالی‌ است!\nشما در مسیر درست هستید!",
         "motivational_testimonial": "۹۰٪ از کاربران می‌گویند که تغییر پس از استفاده از لقمه واضح است و بازگشت آسان نیست.",
         "continue": "ادامه",
         "weight_loss_speed_title": "چقدر سریع می‌خواهید به هدف خود برسید؟",
@@ -191,6 +191,15 @@
         "weight_gain_speed_per_week": "سرعت افزایش وزن در هفته",
         "slow_and_steady": "آرام و پیوسته",
         "moderate_pace": "سرعت متوسط",
-        "fast_track": "مسیر سریع"
+        "fast_track": "مسیر سریع",
+        "barriers_title": "چه چیزهایی مانع رسیدن شما به اهدافتان می‌شود؟",
+        "barriers_subtitle": "همه موارد مربوطه را انتخاب کنید تا به ما کمک کنید تجربه شما را شخصی‌سازی کنیم",
+        "barriers_options": {
+            "consistency": "کمبود استمرار",
+            "unhealthy_eating": "عادات غذایی ناسالم",
+            "lack_of_supports": "کمبود حمایت",
+            "busy_schedule": "برنامه شلوغ",
+            "lack_of_inspiration": "کمبود ایده برای وعده‌ها"
+        }
     }
 }

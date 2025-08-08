@@ -191,6 +191,15 @@
         "weight_gain_speed_per_week": "Gain weight speed per week",
         "slow_and_steady": "Slow and Steady",
         "moderate_pace": "Moderate Pace",
-        "fast_track": "Fast Track"
+        "fast_track": "Fast Track",
+        "barriers_title": "What's stopping you from reaching your goals?",
+        "barriers_subtitle": "Select all that apply to help us personalize your experience",
+        "barriers_options": {
+            "consistency": "Lack of consistency",
+            "unhealthy_eating": "Unhealthy eating habits",
+            "lack_of_supports": "Lack of supports",
+            "busy_schedule": "Busy schedule",
+            "lack_of_inspiration": "Lack of meal inspiration"
+        }
     }
 }
