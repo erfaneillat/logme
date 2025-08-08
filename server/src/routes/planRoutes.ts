@@ -1,0 +1,12 @@
+import express from 'express';
+import { authenticateToken } from '../middleware/authMiddleware';
+import { PlanController } from '../controllers/planController';
+
+const router = express.Router();
+const controller = new PlanController();
+
+router.post('/generate', authenticateToken, controller.generatePlan);
+
+export default router;
+
+

@@ -130,7 +130,8 @@ export class AuthController {
             name: user.name,
             email: user.email,
             isPhoneVerified: user.isPhoneVerified,
-            hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo
+            hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
+            hasGeneratedPlan: user.hasGeneratedPlan
           }
         }
       });

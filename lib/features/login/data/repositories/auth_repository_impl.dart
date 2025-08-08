@@ -46,25 +46,24 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<User?> getCurrentUser() async {
     final token = await secureStorage.getToken();
     if (token == null) return null;
-
-    // Try to get user from local storage first
-    final userData = await secureStorage.getUserData();
-    if (userData != null) {
-      try {
-        return User.fromJson({
-          ...json.decode(userData),
-          'token': token,
-        });
-      } catch (e) {
-        // If local data is corrupted, fetch from server
-      }
-    }
-
+    // Always try to refresh from server first to avoid stale flags
     try {
       final user = await remoteDataSource.getCurrentUser();
       await secureStorage.storeUserData(json.encode(user.toJson()));
       return user;
-    } catch (e) {
+    } catch (_) {
+      // Fallback to local cached user if network fails
+      final userData = await secureStorage.getUserData();
+      if (userData != null) {
+        try {
+          return User.fromJson({
+            ...json.decode(userData),
+            'token': token,
+          });
+        } catch (_) {
+          // If cache is also corrupted, logout
+        }
+      }
       await logout();
       return null;
     }

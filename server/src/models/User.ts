@@ -8,6 +8,7 @@ export interface IUser extends Document {
   password?: string;
   isPhoneVerified: boolean;
   hasCompletedAdditionalInfo: boolean;
+  hasGeneratedPlan: boolean;
   verificationCode?: string;
   verificationCodeExpires?: Date;
   createdAt: Date;
@@ -50,6 +51,10 @@ const userSchema = new Schema<IUser>(
       default: false,
     },
     hasCompletedAdditionalInfo: {
+      type: Boolean,
+      default: false,
+    },
+    hasGeneratedPlan: {
       type: Boolean,
       default: false,
     },

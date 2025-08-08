@@ -11,7 +11,12 @@
     "test": "jest",
     "seed": "ts-node src/scripts/seed.ts"
   },
-  "keywords": ["nodejs", "mongodb", "typescript", "express"],
+  "keywords": [
+    "nodejs",
+    "mongodb",
+    "typescript",
+    "express"
+  ],
   "author": "Cal AI Team",
   "license": "MIT",
   "dependencies": {
@@ -25,7 +30,8 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "express-validator": "^7.0.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "openai": "^4.55.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.4",

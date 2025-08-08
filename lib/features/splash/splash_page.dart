@@ -33,10 +33,16 @@ class _SplashPageState extends ConsumerState<SplashPage> {
           final getCurrentUserUseCase = ref.read(getCurrentUserUseCaseProvider);
           final user = await getCurrentUserUseCase.execute();
 
-          if (user != null && user.hasCompletedAdditionalInfo) {
-            context.go('/home');
+          if (user != null) {
+            if (!user.hasCompletedAdditionalInfo) {
+              context.go('/additional-info');
+            } else if (!user.hasGeneratedPlan) {
+              context.go('/plan-loading');
+            } else {
+              context.go('/home');
+            }
           } else {
-            context.go('/additional-info');
+            context.go('/onboarding');
           }
         } else {
           context.go('/onboarding');

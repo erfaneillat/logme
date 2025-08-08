@@ -11,6 +11,21 @@
         "carbs": "کربوهیدرات",
         "fat": "چربی"
     },
+    "plan_generation": {
+        "heading": "در حال آماده‌سازی\nهمه‌چیز برای شما هستیم",
+        "step_applying_bmr": "در حال اعمال فرمول BMR...",
+        "step_calculating_tdee": "در حال محاسبه انرژی روزانه...",
+        "step_setting_macros": "در حال تنظیم مقادیر ماکرو...",
+        "step_personalizing": "در حال شخصی‌سازی توصیه‌ها...",
+        "daily_recommendation_for": "توصیه روزانه برای",
+        "metric": {
+            "calories": "کالری",
+            "carbs": "کربوهیدرات",
+            "protein": "پروتئین",
+            "fats": "چربی",
+            "health_score": "امتیاز سلامت"
+        }
+    },
     "next": "بعدی",
     "finish": "پایان",
     "app_title": "لقمه",

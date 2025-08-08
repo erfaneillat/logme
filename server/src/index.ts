@@ -10,6 +10,7 @@ import DatabaseConnection from './config/database';
 import healthRoutes from './routes/healthRoutes';
 import authRoutes from './routes/authRoutes';
 import additionalInfoRoutes from './routes/additionalInfoRoutes';
+import planRoutes from './routes/planRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 
@@ -52,6 +53,7 @@ app.use(sanitizeInput);
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', additionalInfoRoutes);
+app.use('/api/plan', planRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

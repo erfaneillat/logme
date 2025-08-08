@@ -36,11 +36,12 @@ class ApiConfig {
   static const String additionalInfo = '/api/user/additional-info';
   static const String markAdditionalInfoCompleted =
       '/api/user/mark-additional-info-completed';
+  static const String planGenerate = '/api/plan/generate';
 
   // Timeouts
-  static const Duration connectTimeout = Duration(seconds: 30);
-  static const Duration receiveTimeout = Duration(seconds: 30);
-  static const Duration sendTimeout = Duration(seconds: 30);
+  static const Duration connectTimeout = Duration(seconds: 60);
+  static const Duration receiveTimeout = Duration(seconds: 60);
+  static const Duration sendTimeout = Duration(seconds: 60);
 
   // Logging
   static const bool enablePrettyLogging = true;

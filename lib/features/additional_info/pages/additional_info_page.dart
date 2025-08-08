@@ -282,8 +282,9 @@ class AdditionalInfoPage extends HookConsumerWidget {
             await additionalInfoNotifier.saveAdditionalInfo();
             await additionalInfoNotifier.markCompleted();
             if (context.mounted) {
+              // Go to plan generation loading page
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/home', (route) => false);
+                  .pushNamedAndRemoveUntil('/plan-loading', (route) => false);
             }
           } catch (_) {}
         },

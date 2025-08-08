@@ -6,6 +6,7 @@ class User {
   final bool isPhoneVerified;
   final String? token;
   final bool hasCompletedAdditionalInfo;
+  final bool hasGeneratedPlan;
 
   const User({
     required this.id,
@@ -15,6 +16,7 @@ class User {
     this.isPhoneVerified = false,
     this.token,
     this.hasCompletedAdditionalInfo = false,
+    this.hasGeneratedPlan = false,
   });
 
   User copyWith({
@@ -25,6 +27,7 @@ class User {
     bool? isPhoneVerified,
     String? token,
     bool? hasCompletedAdditionalInfo,
+    bool? hasGeneratedPlan,
   }) {
     return User(
       id: id ?? this.id,
@@ -35,6 +38,7 @@ class User {
       token: token ?? this.token,
       hasCompletedAdditionalInfo:
           hasCompletedAdditionalInfo ?? this.hasCompletedAdditionalInfo,
+      hasGeneratedPlan: hasGeneratedPlan ?? this.hasGeneratedPlan,
     );
   }
 
@@ -46,6 +50,7 @@ class User {
         'isPhoneVerified': isPhoneVerified,
         'token': token,
         'hasCompletedAdditionalInfo': hasCompletedAdditionalInfo,
+        'hasGeneratedPlan': hasGeneratedPlan,
       };
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -56,11 +61,12 @@ class User {
         isPhoneVerified: json['isPhoneVerified'] ?? false,
         token: json['token'],
         hasCompletedAdditionalInfo: json['hasCompletedAdditionalInfo'] ?? false,
+        hasGeneratedPlan: json['hasGeneratedPlan'] ?? false,
       );
 
   @override
   String toString() =>
-      'User(id: $id, phone: $phone, email: $email, name: $name, isPhoneVerified: $isPhoneVerified, hasCompletedAdditionalInfo: $hasCompletedAdditionalInfo)';
+      'User(id: $id, phone: $phone, email: $email, name: $name, isPhoneVerified: $isPhoneVerified, hasCompletedAdditionalInfo: $hasCompletedAdditionalInfo, hasGeneratedPlan: $hasGeneratedPlan)';
 
   @override
   bool operator ==(Object other) {
@@ -71,7 +77,8 @@ class User {
         other.email == email &&
         other.name == name &&
         other.isPhoneVerified == isPhoneVerified &&
-        other.hasCompletedAdditionalInfo == hasCompletedAdditionalInfo;
+        other.hasCompletedAdditionalInfo == hasCompletedAdditionalInfo &&
+        other.hasGeneratedPlan == hasGeneratedPlan;
   }
 
   @override
@@ -81,5 +88,6 @@ class User {
       email.hashCode ^
       name.hashCode ^
       isPhoneVerified.hashCode ^
-      hasCompletedAdditionalInfo.hashCode;
+      hasCompletedAdditionalInfo.hashCode ^
+      hasGeneratedPlan.hashCode;
 }

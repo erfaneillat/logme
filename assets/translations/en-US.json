@@ -11,6 +11,21 @@
         "carbs": "Carbs",
         "fat": "Fat"
     },
+    "plan_generation": {
+        "heading": "We're setting\neverything up for you",
+        "step_applying_bmr": "Applying BMR formula...",
+        "step_calculating_tdee": "Calculating daily energy...",
+        "step_setting_macros": "Setting macro targets...",
+        "step_personalizing": "Personalizing recommendations...",
+        "daily_recommendation_for": "Daily recommendation for",
+        "metric": {
+            "calories": "Calories",
+            "carbs": "Carbs",
+            "protein": "Protein",
+            "fats": "Fats",
+            "health_score": "Health score"
+        }
+    },
     "next": "Next",
     "finish": "Finish",
     "app_title": "Laghmeh",
