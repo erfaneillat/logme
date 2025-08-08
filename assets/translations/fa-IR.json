@@ -185,6 +185,12 @@
         "motivational_suffix": " کیلوگرم یک هدف واقع‌بینانه است.\nاصلاً سخت نیست!",
         "motivational_maintain_title": "حفظ وزن فعلی شما\nانتخاب عالی‌ای است!\nشما در مسیر درست هستید!",
         "motivational_testimonial": "۹۰٪ از کاربران می‌گویند که تغییر پس از استفاده از لقمه واضح است و بازگشت آسان نیست.",
-        "continue": "ادامه"
+        "continue": "ادامه",
+        "weight_loss_speed_title": "چقدر سریع می‌خواهید به هدف خود برسید؟",
+        "weight_loss_speed_per_week": "سرعت کاهش وزن در هفته",
+        "weight_gain_speed_per_week": "سرعت افزایش وزن در هفته",
+        "slow_and_steady": "آرام و پیوسته",
+        "moderate_pace": "سرعت متوسط",
+        "fast_track": "مسیر سریع"
     }
 }

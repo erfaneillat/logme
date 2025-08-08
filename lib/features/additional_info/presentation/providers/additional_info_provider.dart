@@ -74,6 +74,10 @@ class AdditionalInfoNotifier extends StateNotifier<AdditionalInfo> {
     state = state.copyWith(targetWeight: targetWeight);
   }
 
+  void updateWeightLossSpeed(double weightLossSpeed) {
+    state = state.copyWith(weightLossSpeed: weightLossSpeed);
+  }
+
   Future<void> saveAdditionalInfo() async {
     await saveUseCase.execute(state);
   }

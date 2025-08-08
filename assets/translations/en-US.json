@@ -185,6 +185,12 @@
         "motivational_suffix": " kg is a realistic target.\nIt's not hard at all!",
         "motivational_maintain_title": "Maintaining your current weight\nis a great choice!\nYou're already on the right track!",
         "motivational_testimonial": "90% of users say that the change is obvious after using Laghmeh and it is not easy to rebound.",
-        "continue": "Continue"
+        "continue": "Continue",
+        "weight_loss_speed_title": "How fast do you want to reach your goal?",
+        "weight_loss_speed_per_week": "Lose weight speed per week",
+        "weight_gain_speed_per_week": "Gain weight speed per week",
+        "slow_and_steady": "Slow and Steady",
+        "moderate_pace": "Moderate Pace",
+        "fast_track": "Fast Track"
     }
 }

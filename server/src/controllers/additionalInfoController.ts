@@ -21,7 +21,7 @@ export class AdditionalInfoController {
                 return;
             }
 
-            const { gender, age, weight, height, activityLevel, weightGoal, workoutFrequency } = req.body;
+            const { gender, age, weight, height, activityLevel, weightGoal, workoutFrequency, weightLossSpeed } = req.body;
             const userId = req.user.userId;
 
             // Check if user exists
@@ -46,6 +46,7 @@ export class AdditionalInfoController {
                 additionalInfo.activityLevel = activityLevel;
                 additionalInfo.weightGoal = weightGoal;
                 additionalInfo.workoutFrequency = workoutFrequency;
+                additionalInfo.weightLossSpeed = weightLossSpeed;
                 await additionalInfo.save();
             } else {
                 // Create new additional info
@@ -57,7 +58,8 @@ export class AdditionalInfoController {
                     height,
                     activityLevel,
                     weightGoal,
-                    workoutFrequency
+                    workoutFrequency,
+                    weightLossSpeed
                 });
                 await additionalInfo.save();
             }
@@ -132,9 +134,14 @@ export class AdditionalInfoController {
             }
 
             // Check if all required fields are filled
-            if (!additionalInfo.gender || !additionalInfo.age || !additionalInfo.weight ||
-                !additionalInfo.height || !additionalInfo.activityLevel || !additionalInfo.weightGoal ||
-                !additionalInfo.workoutFrequency) {
+            const baseComplete = !!(additionalInfo.gender && additionalInfo.age && additionalInfo.weight &&
+                additionalInfo.height && additionalInfo.activityLevel && additionalInfo.weightGoal &&
+                additionalInfo.workoutFrequency);
+
+            const requiresSpeed = additionalInfo.weightGoal === 'lose_weight' || additionalInfo.weightGoal === 'gain_weight';
+            const hasSpeed = !!additionalInfo.weightLossSpeed;
+
+            if (!baseComplete || (requiresSpeed && !hasSpeed)) {
                 res.status(400).json({
                     success: false,
                     message: 'Additional information is incomplete'

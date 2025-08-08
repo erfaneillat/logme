@@ -18,6 +18,8 @@ const saveAdditionalInfoValidation = [
         .withMessage('Weight goal must be one of: lose_weight, maintain_weight, gain_weight'),
     body('workoutFrequency').optional().isIn(['0-2', '3-5', '6+'])
         .withMessage('Workout frequency must be one of: 0-2, 3-5, 6+'),
+    body('weightLossSpeed').optional().isFloat({ min: 0.1, max: 2.0 })
+        .withMessage('Weight loss speed must be between 0.1 and 2.0 kg per week'),
 ];
 
 // Routes

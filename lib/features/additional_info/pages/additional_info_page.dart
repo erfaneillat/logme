@@ -11,6 +11,7 @@ import 'widgets/weight_goal_page.dart';
 import 'widgets/goal_selection_page.dart';
 import 'widgets/long_term_results_page.dart';
 import 'widgets/motivational_page.dart';
+import 'widgets/weight_loss_speed_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
@@ -43,6 +44,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
         'weightGoal': additionalInfo.weightGoal,
         'workoutFrequency': additionalInfo.workoutFrequency,
         'targetWeight': additionalInfo.targetWeight,
+        'weightLossSpeed': additionalInfo.weightLossSpeed,
       };
     }, [additionalInfo]);
 
@@ -160,6 +162,23 @@ class AdditionalInfoPage extends HookConsumerWidget {
           );
         },
       ),
+      if (additionalInfo.weightGoal == 'lose_weight' ||
+          additionalInfo.weightGoal == 'gain_weight')
+        WeightLossSpeedPage(
+          initialValue: additionalInfo.weightLossSpeed,
+          goal: additionalInfo.weightGoal,
+          onSelectionChanged: (weightLossSpeed) {
+            additionalInfoNotifier.updateWeightLossSpeed(weightLossSpeed);
+          },
+          onNext: () {
+            if (additionalInfo.weightLossSpeed != null) {
+              pageController.nextPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
+          },
+        ),
     ];
 
     return Scaffold(
