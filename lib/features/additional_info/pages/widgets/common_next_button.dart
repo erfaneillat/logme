@@ -19,8 +19,7 @@ class CommonNextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+    return Container(
       width: width ?? double.infinity,
       height: height,
       decoration: BoxDecoration(

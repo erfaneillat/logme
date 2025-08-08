@@ -227,6 +227,11 @@
         "days_30": "30 Days",
         "weight_transition_desc_lose": "Based on Laghmeh's historical data, weight loss is usually delayed at first, but after 7 days, you can burn fat like crazy!",
         "weight_transition_desc_gain": "Based on Laghmeh's historical data, healthy weight gain accelerates after the first week with consistent nutrition and training.",
-        "weight_transition_desc_maintain": "Based on Laghmeh's historical data, maintaining weight shows stable trends with small fluctuations."
+        "weight_transition_desc_maintain": "Based on Laghmeh's historical data, maintaining weight shows stable trends with small fluctuations.",
+        "trust_title": "Thank you for trusting us!",
+        "trust_subtitle": "Now let's personalize logme for you...",
+        "privacy_title": "Your privacy and security matter to us.",
+        "privacy_subtitle": "We promise to always keep your personal information private and secure.",
+        "continue": "Continue"
     }
 }

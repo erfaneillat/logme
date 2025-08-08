@@ -16,6 +16,7 @@ import 'widgets/barriers_selection_page.dart';
 import 'widgets/diet_selection_page.dart';
 import 'widgets/accomplishment_selection_page.dart';
 import 'widgets/goal_transition_chart_page.dart';
+import 'widgets/trust_intro_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
@@ -55,6 +56,8 @@ class AdditionalInfoPage extends HookConsumerWidget {
     }, [additionalInfo]);
 
     final pages = [
+      // Intro trust page
+
       GenderSelectionPage(
         formKey: formKey,
         initialValue: additionalInfo.gender,
@@ -238,9 +241,14 @@ class AdditionalInfoPage extends HookConsumerWidget {
       GoalTransitionChartPage(
         goal: additionalInfo.weightGoal,
         onNext: () {
-          additionalInfoNotifier.saveAdditionalInfo();
-          additionalInfoNotifier.markCompleted();
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
         },
+      ),
+      TrustIntroPage(
+        onNext: () {},
       ),
     ];
 
