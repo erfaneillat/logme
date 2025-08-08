@@ -8,10 +8,12 @@ class WeightGoalPage extends StatefulWidget {
   final String? initialValue;
   final VoidCallback? onNext;
   final Function(String)? onSelectionChanged;
+  final double? currentWeight;
 
   const WeightGoalPage({
     super.key,
     required this.initialValue,
+    required this.currentWeight,
     this.onNext,
     this.onSelectionChanged,
   });
@@ -43,7 +45,7 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
       weightValues = List<int>.generate(86, (index) => 45 + index);
     }
 
-    final defaultWeight = 70;
+    final defaultWeight = (widget.currentWeight?.round() ?? 70);
     selectedWeightIndex = _indexForValue(
       values: weightValues,
       value: defaultWeight,
@@ -102,7 +104,6 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
   }
 
   Color _getGoalColor() {
-    print(selectedGoal);
     switch (selectedGoal) {
       case 'lose_weight':
         return const Color(0xFFE57373);
@@ -160,6 +161,7 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
                         BoxShadow(
                           color: goalColor.withOpacity(0.3),
                           blurRadius: 20,
+                          spreadRadius: 10,
                           offset: const Offset(0, 8),
                         ),
                       ],
@@ -202,8 +204,6 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
 
               const SizedBox(height: 40),
 
-              const SizedBox(height: 24),
-
               // Current Weight Display
               Container(
                 padding:
@@ -218,6 +218,16 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
                 ),
                 child: Column(
                   children: [
+                    Text(
+                      'additional_info.target_weight'.tr(),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 14,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       '${selectedWeight.round()}',
                       style:
@@ -242,6 +252,51 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
                 ),
               ),
 
+              const SizedBox(height: 16),
+
+              // Current Weight Display
+              if (widget.currentWeight != null)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceVariant.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: colorScheme.outline.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'additional_info.current_weight'.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 14,
+                            ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${widget.currentWeight!.round()} kg',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                              fontSize: 14,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+
               const SizedBox(height: 32),
 
               // Custom Weight Selector
@@ -262,15 +317,65 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
                   child: FormBuilderField<double>(
                     name: 'targetWeight',
                     initialValue: selectedWeight,
+                    validator: (value) {
+                      if (value == null) {
+                        return 'additional_info.target_weight_required'.tr();
+                      }
+                      final double? current = widget.currentWeight;
+                      if (current == null) return null;
+                      switch (selectedGoal) {
+                        case 'lose_weight':
+                          if (value >= current) {
+                            return 'additional_info.target_weight_must_be_less_than_current'
+                                .tr();
+                          }
+                          break;
+                        case 'gain_weight':
+                          if (value <= current) {
+                            return 'additional_info.target_weight_must_be_greater_than_current'
+                                .tr();
+                          }
+                          break;
+                        case 'maintain_weight':
+                          if (value.round() != current.round()) {
+                            return 'additional_info.target_weight_must_equal_current'
+                                .tr();
+                          }
+                          break;
+                        default:
+                          return null;
+                      }
+                      return null;
+                    },
                     builder: (field) {
-                      return CustomWeightRuler(
-                        weightValues: weightValues,
-                        selectedWeight: selectedWeight,
-                        goalColor: goalColor,
-                        onWeightChanged: (weight) {
-                          _onWeightChanged(weight);
-                          field.didChange(weight);
-                        },
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: CustomWeightRuler(
+                              weightValues: weightValues,
+                              selectedWeight: selectedWeight,
+                              goalColor: goalColor,
+                              onWeightChanged: (weight) {
+                                _onWeightChanged(weight);
+                                field.didChange(weight);
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (field.errorText != null)
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                field.errorText!,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                        ],
                       );
                     },
                   ),

@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import '../presentation/providers/additional_info_provider.dart';
 import 'widgets/gender_selection_page.dart';
 import 'widgets/birth_date_selection_page.dart';
 import 'widgets/weight_height_page.dart';
-import 'widgets/activity_level_page.dart';
 import 'widgets/workout_frequency_page.dart';
 import 'widgets/weight_goal_page.dart';
 import 'widgets/goal_selection_page.dart';
 import 'widgets/long_term_results_page.dart';
+import 'widgets/motivational_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
+
+  // Calculate target weight loss based on current and target weight
+  double _calculateTargetWeightLoss(
+      double? currentWeight, double? targetWeight) {
+    if (currentWeight == null || targetWeight == null) {
+      return 4.1; // Default value
+    }
+    return (currentWeight - targetWeight).abs();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -126,6 +133,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
       ),
       WeightGoalPage(
         initialValue: additionalInfo.weightGoal,
+        currentWeight: additionalInfo.weight,
         onSelectionChanged: (weightGoal) {
           additionalInfoNotifier.updateWeightGoal(weightGoal);
         },
@@ -141,37 +149,15 @@ class AdditionalInfoPage extends HookConsumerWidget {
           }
         },
       ),
-
-      ActivityLevelPage(
-        formKey: formKey,
-        initialValue: additionalInfo.activityLevel,
-        onNext: () async {
-          final formState = formKey.currentState;
-          if (formState?.saveAndValidate() ?? false) {
-            final formData = formState!.value;
-            additionalInfoNotifier
-                .updateActivityLevel(formData['activityLevel']);
-
-            // Save all additional info and mark as completed
-            try {
-              await additionalInfoNotifier.saveAdditionalInfo();
-              await additionalInfoNotifier.markCompleted();
-
-              // Navigate to home page
-              if (context.mounted) {
-                context.go('/home');
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('additional_info.save_error'.tr()),
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                  ),
-                );
-              }
-            }
-          }
+      MotivationalPage(
+        targetWeightLoss: _calculateTargetWeightLoss(
+            additionalInfo.weight, additionalInfo.targetWeight),
+        goal: additionalInfo.weightGoal,
+        onNext: () {
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
         },
       ),
     ];
@@ -249,7 +235,8 @@ class AdditionalInfoPage extends HookConsumerWidget {
                     currentPage.value = index;
                   },
                   itemCount: pages.length,
-                  itemBuilder: (context, index) => pages[index],
+                  itemBuilder: (context, index) =>
+                      SizedBox.expand(child: pages[index]),
                 ),
               ),
             ],

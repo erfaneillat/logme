@@ -172,6 +172,19 @@
         "choose_weight_subtitle": "وزن هدف خود را انتخاب کنید تا به ما کمک کند برنامه شخصی‌سازی شده شما را ایجاد کنیم",
         "lose_weight_subtitle": "وزن هدف خود را برای کاهش وزن انتخاب کنید",
         "gain_weight_subtitle": "وزن هدف خود را برای افزایش وزن انتخاب کنید",
-        "maintain_weight_subtitle": "وزن هدف خود را برای حفظ انتخاب کنید"
+        "maintain_weight_subtitle": "وزن هدف خود را برای حفظ انتخاب کنید",
+        "target_weight_required": "لطفاً وزن هدف خود را انتخاب کنید",
+        "target_weight_must_be_less_than_current": "وزن هدف باید کمتر از وزن فعلی شما باشد",
+        "target_weight_must_be_greater_than_current": "وزن هدف باید بیشتر از وزن فعلی شما باشد",
+        "target_weight_must_equal_current": "وزن هدف باید برابر با وزن فعلی شما باشد",
+        "target_weight": "وزن هدف",
+        "current_weight": "وزن فعلی",
+        "motivational_title": "کاهش {weight} کیلوگرم یک هدف واقع‌بینانه است. اصلاً سخت نیست!",
+        "motivational_losing_prefix": "کاهش ",
+        "motivational_gaining_prefix": "افزایش ",
+        "motivational_suffix": " کیلوگرم یک هدف واقع‌بینانه است.\nاصلاً سخت نیست!",
+        "motivational_maintain_title": "حفظ وزن فعلی شما\nانتخاب عالی‌ای است!\nشما در مسیر درست هستید!",
+        "motivational_testimonial": "۹۰٪ از کاربران می‌گویند که تغییر پس از استفاده از لقمه واضح است و بازگشت آسان نیست.",
+        "continue": "ادامه"
     }
 }

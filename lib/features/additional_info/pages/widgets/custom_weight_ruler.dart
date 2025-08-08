@@ -22,6 +22,7 @@ class _CustomWeightRulerState extends State<CustomWeightRuler> {
   late final ScrollController _scrollController;
   late int _selectedIndex;
   bool _initializedScroll = false;
+  bool _isSnapping = false;
 
   // Visual tuning
   static const double _itemWidth = 14.0; // width per kg
@@ -42,12 +43,18 @@ class _CustomWeightRulerState extends State<CustomWeightRuler> {
       final idx = widget.weightValues.indexOf(widget.selectedWeight.round());
       if (idx >= 0 && idx != _selectedIndex) {
         _selectedIndex = idx;
-        if (_initializedScroll) {
-          _scrollController.animateTo(
-            _targetOffsetForIndex(_selectedIndex),
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
+        if (_initializedScroll && _scrollController.hasClients) {
+          final double target = _targetOffsetForIndex(_selectedIndex);
+          if ((_scrollController.offset - target).abs() >= 0.5) {
+            _isSnapping = true;
+            _scrollController
+                .animateTo(
+                  target,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                )
+                .whenComplete(() => _isSnapping = false);
+          }
         }
       }
     }
@@ -56,6 +63,7 @@ class _CustomWeightRulerState extends State<CustomWeightRuler> {
   double _targetOffsetForIndex(int index) => index * _itemWidth;
 
   void _handleScrollUpdate(double pixels) {
+    if (_isSnapping) return;
     final int newIndex =
         (pixels / _itemWidth).round().clamp(0, widget.weightValues.length - 1);
     if (newIndex != _selectedIndex) {
@@ -65,17 +73,21 @@ class _CustomWeightRulerState extends State<CustomWeightRuler> {
   }
 
   void _handleScrollEnd() {
+    if (_isSnapping || !_scrollController.hasClients) return;
     final double target = _targetOffsetForIndex(_selectedIndex);
-    _scrollController.animateTo(
-      target,
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
-    );
+    if ((_scrollController.offset - target).abs() < 0.5) return;
+    _isSnapping = true;
+    _scrollController
+        .animateTo(
+          target,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+        )
+        .whenComplete(() => _isSnapping = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final double sidePadding =

@@ -172,6 +172,19 @@
         "choose_weight_subtitle": "Select your target weight to help us create your personalized plan",
         "lose_weight_subtitle": "Choose your target weight for weight loss",
         "gain_weight_subtitle": "Choose your target weight for weight gain",
-        "maintain_weight_subtitle": "Choose your target weight to maintain"
+        "maintain_weight_subtitle": "Choose your target weight to maintain",
+        "target_weight_required": "Please select your target weight",
+        "target_weight_must_be_less_than_current": "Target weight must be less than your current weight",
+        "target_weight_must_be_greater_than_current": "Target weight must be greater than your current weight",
+        "target_weight_must_equal_current": "Target weight must be equal to your current weight",
+        "target_weight": "Target Weight",
+        "current_weight": "Current Weight",
+        "motivational_title": "Losing {weight} kg is a realistic target. It's not hard at all!",
+        "motivational_losing_prefix": "Losing ",
+        "motivational_gaining_prefix": "Gaining ",
+        "motivational_suffix": " kg is a realistic target.\nIt's not hard at all!",
+        "motivational_maintain_title": "Maintaining your current weight\nis a great choice!\nYou're already on the right track!",
+        "motivational_testimonial": "90% of users say that the change is obvious after using Laghmeh and it is not easy to rebound.",
+        "continue": "Continue"
     }
 }
