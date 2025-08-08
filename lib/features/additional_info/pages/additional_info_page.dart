@@ -1,0 +1,261 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import '../presentation/providers/additional_info_provider.dart';
+import 'widgets/gender_selection_page.dart';
+import 'widgets/birth_date_selection_page.dart';
+import 'widgets/weight_height_page.dart';
+import 'widgets/activity_level_page.dart';
+import 'widgets/workout_frequency_page.dart';
+import 'widgets/weight_goal_page.dart';
+import 'widgets/goal_selection_page.dart';
+import 'widgets/long_term_results_page.dart';
+
+class AdditionalInfoPage extends HookConsumerWidget {
+  const AdditionalInfoPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pageController = usePageController();
+    final currentPage = useState(0);
+    final formKey = useMemoized(() => GlobalKey<FormBuilderState>());
+    final additionalInfoNotifier = ref.watch(additionalInfoProvider.notifier);
+    final additionalInfo = ref.watch(additionalInfoProvider);
+
+    // Initialize form data from existing additional info
+    final initialFormData = useMemoized(() {
+      return {
+        'gender': additionalInfo.gender,
+        'birthDate': additionalInfo.birthDate,
+        'weight': additionalInfo.weight,
+        'height': additionalInfo.height,
+        'activityLevel': additionalInfo.activityLevel,
+        'weightGoal': additionalInfo.weightGoal,
+        'workoutFrequency': additionalInfo.workoutFrequency,
+        'targetWeight': additionalInfo.targetWeight,
+      };
+    }, [additionalInfo]);
+
+    final pages = [
+      GenderSelectionPage(
+        initialValue: additionalInfo.gender,
+        onGenderSelected: (gender) {
+          additionalInfoNotifier.updateGender(gender);
+        },
+        onNext: () {
+          if (additionalInfo.gender != null) {
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+      BirthDateSelectionPage(
+        formKey: formKey,
+        initialValue: additionalInfo.birthDate,
+        onNext: () {
+          final formState = formKey.currentState;
+          if (formState?.saveAndValidate() ?? false) {
+            final formData = formState!.value;
+            additionalInfoNotifier.updateBirthDate(formData['birthDate']);
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+      WorkoutFrequencyPage(
+        initialValue: additionalInfo.workoutFrequency,
+        onSelectionChanged: (frequency) {
+          additionalInfoNotifier.updateWorkoutFrequency(frequency);
+        },
+        onNext: () {
+          // The button will only be enabled if a value is selected
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+      ),
+      // Move Weight & Height to be the 4th page
+      WeightHeightPage(
+        formKey: formKey,
+        initialWeight: additionalInfo.weight,
+        initialHeight: additionalInfo.height,
+        onNext: () {
+          final formState = formKey.currentState;
+          if (formState?.saveAndValidate() ?? false) {
+            final formData = formState!.value;
+            additionalInfoNotifier.updateWeight(formData['weight']);
+            additionalInfoNotifier.updateHeight(formData['height']);
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+      // Goal Selection Page (new page before long term results)
+      GoalSelectionPage(
+        initialValue: additionalInfo.weightGoal,
+        onSelectionChanged: (weightGoal) {
+          additionalInfoNotifier.updateWeightGoal(weightGoal);
+        },
+        onNext: () {
+          if (additionalInfo.weightGoal != null) {
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+      LongTermResultsPage(
+        weightGoal: additionalInfo.weightGoal,
+        onNext: () {
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+      ),
+      WeightGoalPage(
+        initialValue: additionalInfo.weightGoal,
+        onSelectionChanged: (weightGoal) {
+          additionalInfoNotifier.updateWeightGoal(weightGoal);
+        },
+        onNext: () {
+          final formState = formKey.currentState;
+          if (formState?.saveAndValidate() ?? false) {
+            final formData = formState!.value;
+            additionalInfoNotifier.updateTargetWeight(formData['targetWeight']);
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+
+      ActivityLevelPage(
+        formKey: formKey,
+        initialValue: additionalInfo.activityLevel,
+        onNext: () async {
+          final formState = formKey.currentState;
+          if (formState?.saveAndValidate() ?? false) {
+            final formData = formState!.value;
+            additionalInfoNotifier
+                .updateActivityLevel(formData['activityLevel']);
+
+            // Save all additional info and mark as completed
+            try {
+              await additionalInfoNotifier.saveAdditionalInfo();
+              await additionalInfoNotifier.markCompleted();
+
+              // Navigate to home page
+              if (context.mounted) {
+                context.go('/home');
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('additional_info.save_error'.tr()),
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                  ),
+                );
+              }
+            }
+          }
+        },
+      ),
+    ];
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SafeArea(
+        child: FormBuilder(
+          key: formKey,
+          initialValue: initialFormData,
+          child: Column(
+            children: [
+              // Progress indicator
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
+                child: Row(
+                  children: [
+                    // Back button
+                    if (currentPage.value > 0)
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: Colors.grey[700],
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            pageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          padding: EdgeInsets.zero,
+                        ),
+                      ),
+
+                    const SizedBox(width: 16),
+
+                    // Progress bar
+                    Expanded(
+                      child: Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: FractionallySizedBox(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: (currentPage.value + 1) / pages.length,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // PageView
+              Expanded(
+                child: PageView.builder(
+                  controller: pageController,
+                  onPageChanged: (index) {
+                    currentPage.value = index;
+                  },
+                  itemCount: pages.length,
+                  itemBuilder: (context, index) => pages[index],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

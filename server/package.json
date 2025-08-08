@@ -1,0 +1,51 @@
+{
+  "name": "cal-ai-backend",
+  "version": "1.0.0",
+  "description": "Node.js backend with MongoDB and TypeScript for Cal AI",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest",
+    "seed": "ts-node src/scripts/seed.ts"
+  },
+  "keywords": ["nodejs", "mongodb", "typescript", "express"],
+  "author": "Cal AI Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-validator": "^7.0.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/morgan": "^1.9.9",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8",
+    "ts-jest": "^29.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
