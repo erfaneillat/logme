@@ -7,6 +7,7 @@ import '../features/login/pages/login_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/additional_info/pages/additional_info_page.dart';
 import '../features/plan/pages/plan_generation_page.dart';
+import '../features/plan/pages/plan_summary_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -41,6 +42,11 @@ class AppRouter {
         path: '/plan-loading',
         name: 'plan-loading',
         builder: (context, state) => const PlanGenerationPage(),
+      ),
+      GoRoute(
+        path: '/plan-summary',
+        name: 'plan-summary',
+        builder: (context, state) => const PlanSummaryPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

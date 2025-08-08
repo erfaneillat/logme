@@ -18,7 +18,7 @@ class PlanGenerationPage extends ConsumerWidget {
       }
       if (previous?.progressPercent != 100 && next.progressPercent >= 100) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (context.mounted) context.go('/home');
+          if (context.mounted) context.go('/plan-summary');
         });
       }
     });

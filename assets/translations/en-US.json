@@ -11,6 +11,20 @@
         "carbs": "Carbs",
         "fat": "Fat"
     },
+    "plan_summary": {
+        "congrats_title": "Congratulations",
+        "congrats_subtitle": "your custom plan is ready!",
+        "you_should": "You should",
+        "lose_by": "{} lbs by {}",
+        "gain_by": "+{} lbs by {}",
+        "daily_recommendation_title": "Daily recommendation",
+        "edit_anytime": "You can edit this any time",
+        "how_to_reach_title": "How to reach your goals:",
+        "weekly_score_tip": "Get your weekly life score and improve your routine.",
+        "track_food_tip": "Track your food",
+        "follow_calorie_tip": "Follow your daily calorie recommendation",
+        "balance_macros_tip": "Balance your carbs, protein, fat"
+    },
     "plan_generation": {
         "heading": "We're setting\neverything up for you",
         "step_applying_bmr": "Applying BMR formula...",
@@ -254,5 +268,6 @@
         "referral_submit": "Submit",
         "continue": "Continue",
         "submit": "Submit"
-    }
+    },
+    "submit": "Submit"
 }

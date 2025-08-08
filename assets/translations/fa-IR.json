@@ -11,6 +11,20 @@
         "carbs": "کربوهیدرات",
         "fat": "چربی"
     },
+    "plan_summary": {
+        "congrats_title": "تبریک",
+        "congrats_subtitle": "برنامه سفارشی شما آماده است!",
+        "you_should": "شما باید",
+        "lose_by": "{} پوند تا {}",
+        "gain_by": "+{} پوند تا {}",
+        "daily_recommendation_title": "توصیه روزانه",
+        "edit_anytime": "هر زمان می‌توانید آن را ویرایش کنید",
+        "how_to_reach_title": "چطور به اهدافتان برسید:",
+        "weekly_score_tip": "امتیاز هفتگی زندگی‌تان را بگیرید و روال خود را بهبود دهید.",
+        "track_food_tip": "غذاهای خود را ثبت کنید",
+        "follow_calorie_tip": "توصیه کالری روزانه خود را دنبال کنید",
+        "balance_macros_tip": "کربوهیدرات، پروتئین و چربی خود را متعادل کنید"
+    },
     "plan_generation": {
         "heading": "در حال آماده‌سازی\nهمه‌چیز برای شما هستیم",
         "step_applying_bmr": "در حال اعمال فرمول BMR...",
@@ -254,5 +268,6 @@
         "referral_submit": "ثبت",
         "continue": "ادامه",
         "submit": "ثبت"
-    }
+    },
+    "submit": "ثبت"
 }

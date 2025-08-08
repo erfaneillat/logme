@@ -37,6 +37,7 @@ class ApiConfig {
   static const String markAdditionalInfoCompleted =
       '/api/user/mark-additional-info-completed';
   static const String planGenerate = '/api/plan/generate';
+  static const String planLatest = '/api/plan/latest';
 
   // Timeouts
   static const Duration connectTimeout = Duration(seconds: 60);

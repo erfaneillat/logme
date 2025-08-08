@@ -157,6 +157,27 @@ export class PlanController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
+    async getLatestPlan(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const plan = await Plan.findOne({ userId }).sort({ updatedAt: -1 });
+            if (!plan) {
+                res.status(404).json({ success: false, message: 'Plan not found' });
+                return;
+            }
+
+            res.json({ success: true, data: { plan } });
+        } catch (error) {
+            console.error('Get latest plan error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
 }
 
 

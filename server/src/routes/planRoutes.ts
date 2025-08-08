@@ -6,6 +6,7 @@ const router = express.Router();
 const controller = new PlanController();
 
 router.post('/generate', authenticateToken, controller.generatePlan);
+router.get('/latest', authenticateToken, controller.getLatestPlan);
 
 export default router;
 
