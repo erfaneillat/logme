@@ -11,6 +11,7 @@ export interface IAdditionalInfo extends Document {
     workoutFrequency?: string;
     weightLossSpeed?: number; // in kg per week
     diet?: string;
+    accomplishment?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -70,6 +71,11 @@ const additionalInfoSchema = new Schema<IAdditionalInfo>(
         diet: {
             type: String,
             enum: ['classic', 'pescatarian', 'vegetarian', 'vegan'],
+            required: false,
+        },
+        accomplishment: {
+            type: String,
+            enum: ['eat_healthier', 'boost_energy', 'stay_motivated', 'feel_better'],
             required: false,
         },
     },

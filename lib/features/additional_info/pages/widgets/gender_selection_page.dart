@@ -2,6 +2,7 @@ import 'package:cal_ai/extensions/context.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'common_next_button.dart';
 
 class GenderSelectionPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
@@ -233,68 +234,9 @@ class _GenderSelectionPageState extends State<GenderSelectionPage>
   }
 
   Widget _buildNextButton() {
-    final isEnabled = selectedGender != null;
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: isEnabled
-            ? LinearGradient(
-                colors: [
-                  context.colorScheme.primary,
-                  context.colorScheme.primary.withOpacity(0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        color: isEnabled ? null : Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: isEnabled
-            ? [
-                BoxShadow(
-                  color: context.colorScheme.primary.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: isEnabled ? widget.onNext : null,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'next'.tr(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: isEnabled ? Colors.white : Colors.grey,
-                      ),
-                ),
-                if (isEnabled) ...[
-                  const SizedBox(width: 8),
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
+    return CommonNextButton(
+      onPressed: selectedGender != null ? widget.onNext : null,
+      isEnabled: selectedGender != null,
     );
   }
 

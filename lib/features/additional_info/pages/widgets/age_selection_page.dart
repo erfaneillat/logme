@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'common_next_button.dart';
 
 class AgeSelectionPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
@@ -337,37 +338,19 @@ class _AgeSelectionPageState extends State<AgeSelectionPage> {
           ),
 
           // Next button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                try {
-                  // Ensure form value is updated before validation
-                  _updateFormValue();
-                  if (widget.onNext != null) {
-                    widget.onNext!();
-                  }
-                } catch (e) {
-                  // Handle any errors gracefully
-                  debugPrint('Error in Next button: $e');
+          CommonNextButton(
+            onPressed: () {
+              try {
+                // Ensure form value is updated before validation
+                _updateFormValue();
+                if (widget.onNext != null) {
+                  widget.onNext!();
                 }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                'next'.tr(),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-              ),
-            ),
+              } catch (e) {
+                // Handle any errors gracefully
+                debugPrint('Error in Next button: $e');
+              }
+            },
           ),
           const SizedBox(height: 12),
         ],

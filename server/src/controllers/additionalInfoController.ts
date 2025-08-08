@@ -21,7 +21,7 @@ export class AdditionalInfoController {
                 return;
             }
 
-            const { gender, age, weight, height, activityLevel, weightGoal, workoutFrequency, weightLossSpeed } = req.body;
+            const { gender, age, weight, height, activityLevel, weightGoal, workoutFrequency, weightLossSpeed, diet, accomplishment } = req.body;
             const userId = req.user.userId;
 
             // Check if user exists
@@ -47,6 +47,8 @@ export class AdditionalInfoController {
                 additionalInfo.weightGoal = weightGoal;
                 additionalInfo.workoutFrequency = workoutFrequency;
                 additionalInfo.weightLossSpeed = weightLossSpeed;
+                additionalInfo.diet = diet;
+                additionalInfo.accomplishment = accomplishment;
                 await additionalInfo.save();
             } else {
                 // Create new additional info
@@ -59,7 +61,9 @@ export class AdditionalInfoController {
                     activityLevel,
                     weightGoal,
                     workoutFrequency,
-                    weightLossSpeed
+                    weightLossSpeed,
+                    diet,
+                    accomplishment
                 });
                 await additionalInfo.save();
             }
@@ -136,7 +140,7 @@ export class AdditionalInfoController {
             // Check if all required fields are filled
             const baseComplete = !!(additionalInfo.gender && additionalInfo.age && additionalInfo.weight &&
                 additionalInfo.height && additionalInfo.activityLevel && additionalInfo.weightGoal &&
-                additionalInfo.workoutFrequency);
+                additionalInfo.workoutFrequency && additionalInfo.diet && additionalInfo.accomplishment);
 
             const requiresSpeed = additionalInfo.weightGoal === 'lose_weight' || additionalInfo.weightGoal === 'gain_weight';
             const hasSpeed = !!additionalInfo.weightLossSpeed;

@@ -2,6 +2,7 @@ import 'package:cal_ai/extensions/context.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'common_next_button.dart';
 import 'custom_weight_ruler.dart';
 
 class WeightGoalPage extends StatefulWidget {
@@ -385,57 +386,12 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
               const SizedBox(height: 32),
 
               // Next button
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: [
-                      goalColor,
-                      goalColor.withOpacity(0.8),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: goalColor.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Update the weight goal with the selected weight
-                    widget.onSelectionChanged?.call(selectedGoal ?? '');
-                    widget.onNext?.call();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colorScheme.primary,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'next'.tr(),
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
+              CommonNextButton(
+                onPressed: () {
+                  // Update the weight goal with the selected weight
+                  widget.onSelectionChanged?.call(selectedGoal ?? '');
+                  widget.onNext?.call();
+                },
               ),
               const SizedBox(height: 24),
             ],

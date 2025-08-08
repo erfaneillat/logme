@@ -2,6 +2,7 @@ import 'package:cal_ai/extensions/context.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'common_next_button.dart';
 
 class BarriersSelectionPage extends StatefulWidget {
   final GlobalKey<FormBuilderState>? formKey;
@@ -275,64 +276,10 @@ class _BarriersSelectionPageState extends State<BarriersSelectionPage> {
               const SizedBox(height: 20),
 
               // Continue button with gradient
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: _selected.isNotEmpty
-                        ? [
-                            context.colorScheme.primary,
-                            context.colorScheme.primary.withOpacity(0.8),
-                          ]
-                        : [
-                            Colors.grey.withOpacity(0.3),
-                            Colors.grey.withOpacity(0.3),
-                          ],
-                  ),
-                  boxShadow: _selected.isNotEmpty
-                      ? [
-                          BoxShadow(
-                            color: context.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: ElevatedButton(
-                  onPressed: _selected.isNotEmpty ? widget.onNext : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'additional_info.continue'.tr(),
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: _selected.isNotEmpty
-                                      ? Colors.white
-                                      : Colors.grey.withOpacity(0.7),
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_forward_rounded,
-                        color: _selected.isNotEmpty
-                            ? Colors.white
-                            : Colors.grey.withOpacity(0.7),
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
+              CommonNextButton(
+                onPressed: _selected.isNotEmpty ? widget.onNext : null,
+                isEnabled: _selected.isNotEmpty,
+                text: 'additional_info.continue',
               ),
               const SizedBox(height: 20),
             ],

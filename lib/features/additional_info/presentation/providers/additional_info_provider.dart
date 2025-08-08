@@ -82,6 +82,10 @@ class AdditionalInfoNotifier extends StateNotifier<AdditionalInfo> {
     state = state.copyWith(diet: diet);
   }
 
+  void updateAccomplishment(String accomplishment) {
+    state = state.copyWith(accomplishment: accomplishment);
+  }
+
   Future<void> saveAdditionalInfo() async {
     await saveUseCase.execute(state);
   }

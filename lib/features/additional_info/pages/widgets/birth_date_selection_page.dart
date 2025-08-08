@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import '../../presentation/providers/additional_info_provider.dart';
+import 'common_next_button.dart';
 
 class BirthDateSelectionPage extends HookConsumerWidget {
   final GlobalKey<FormBuilderState> formKey;
@@ -559,70 +560,19 @@ class _BirthDateSelectionContentState extends State<_BirthDateSelectionContent>
   }
 
   Widget _buildNextButton() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withOpacity(0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            try {
-              // Ensure form value is updated before validation
-              _updateFormValue();
-              if (widget.onNext != null) {
-                widget.onNext!();
-              }
-            } catch (e) {
-              // Handle any errors gracefully
-              debugPrint('Error in Next button: $e');
-            }
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'next'.tr(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return CommonNextButton(
+      onPressed: () {
+        try {
+          // Ensure form value is updated before validation
+          _updateFormValue();
+          if (widget.onNext != null) {
+            widget.onNext!();
+          }
+        } catch (e) {
+          // Handle any errors gracefully
+          debugPrint('Error in Next button: $e');
+        }
+      },
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:cal_ai/extensions/context.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'common_next_button.dart';
 
 class MotivationalPage extends StatelessWidget {
   final VoidCallback? onNext;
@@ -94,27 +95,10 @@ class MotivationalPage extends StatelessWidget {
             ),
           ),
           Container(
-            width: double.infinity,
-            height: 56,
             margin: const EdgeInsets.only(bottom: 16),
-            child: ElevatedButton(
+            child: CommonNextButton(
               onPressed: onNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.colorScheme.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                'additional_info.continue'.tr(),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-              ),
+              text: 'additional_info.continue',
             ),
           ),
         ],

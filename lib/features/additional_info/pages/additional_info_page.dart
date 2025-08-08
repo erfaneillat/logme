@@ -14,6 +14,8 @@ import 'widgets/motivational_page.dart';
 import 'widgets/weight_loss_speed_page.dart';
 import 'widgets/barriers_selection_page.dart';
 import 'widgets/diet_selection_page.dart';
+import 'widgets/accomplishment_selection_page.dart';
+import 'widgets/goal_transition_chart_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
@@ -48,6 +50,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
         'targetWeight': additionalInfo.targetWeight,
         'weightLossSpeed': additionalInfo.weightLossSpeed,
         'diet': additionalInfo.diet,
+        'accomplishment': additionalInfo.accomplishment,
       };
     }, [additionalInfo]);
 
@@ -67,6 +70,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
           }
         },
       ),
+
       BirthDateSelectionPage(
         formKey: formKey,
         initialValue: additionalInfo.birthDate,
@@ -211,6 +215,31 @@ class AdditionalInfoPage extends HookConsumerWidget {
               curve: Curves.easeInOut,
             );
           }
+        },
+      ),
+      // Accomplishment Selection Page
+      AccomplishmentSelectionPage(
+        formKey: formKey,
+        initialValue: additionalInfo.accomplishment,
+        onSelectionChanged: (accomplishment) {
+          additionalInfoNotifier.updateAccomplishment(accomplishment);
+        },
+        onNext: () {
+          if (additionalInfo.accomplishment != null) {
+            // Move to final chart/summary page
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+      // Final goal transition chart page (shows image-like chart based on goal)
+      GoalTransitionChartPage(
+        goal: additionalInfo.weightGoal,
+        onNext: () {
+          additionalInfoNotifier.saveAdditionalInfo();
+          additionalInfoNotifier.markCompleted();
         },
       ),
     ];

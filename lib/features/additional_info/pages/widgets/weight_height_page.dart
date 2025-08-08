@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'common_next_button.dart';
 
 class WeightHeightPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
@@ -217,35 +218,8 @@ class _WeightHeightPageState extends State<WeightHeightPage>
                     ),
                   ],
                 ),
-                child: ElevatedButton(
+                child: CommonNextButton(
                   onPressed: widget.onNext,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'next'.tr(),
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ],
-                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -300,7 +274,7 @@ class _WeightHeightPageState extends State<WeightHeightPage>
             return Column(
               children: [
                 Container(
-                  height: 200,
+                  height: 250,
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceVariant.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(16),
@@ -329,7 +303,7 @@ class _WeightHeightPageState extends State<WeightHeightPage>
                       // Picker
                       CupertinoPicker(
                         scrollController: controller,
-                        itemExtent: 44,
+                        itemExtent: 55,
                         diameterRatio: 1.5,
                         useMagnifier: true,
                         magnification: 1.1,

@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'common_next_button.dart';
 
 class DietSelectionPage extends HookConsumerWidget {
   final GlobalKey<FormBuilderState> formKey;
@@ -54,7 +55,35 @@ class DietSelectionPage extends HookConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 16,
+                  ),
+                ),
                 // Radio button
+
+                const SizedBox(width: 12),
+
+                // Content
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                  ),
+                ),
+
+                const SizedBox(width: 12),
                 Container(
                   width: 20,
                   height: 20,
@@ -76,35 +105,7 @@ class DietSelectionPage extends HookConsumerWidget {
                       : null,
                 ),
 
-                const SizedBox(width: 12),
-
-                // Content
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                // Icon
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: 16,
-                  ),
-                ),
+                // Icon (moved to right)
               ],
             ),
           ),
@@ -255,64 +256,9 @@ class DietSelectionPage extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               // Next button
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: selectedDiet.value != null
-                        ? [
-                            context.colorScheme.primary,
-                            context.colorScheme.primary.withOpacity(0.8),
-                          ]
-                        : [
-                            Colors.grey.withOpacity(0.3),
-                            Colors.grey.withOpacity(0.3),
-                          ],
-                  ),
-                  boxShadow: selectedDiet.value != null
-                      ? [
-                          BoxShadow(
-                            color: context.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: ElevatedButton(
-                  onPressed: selectedDiet.value != null ? onNext : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'next'.tr(),
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: selectedDiet.value != null
-                                      ? Colors.white
-                                      : Colors.grey.withOpacity(0.7),
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_forward_rounded,
-                        color: selectedDiet.value != null
-                            ? Colors.white
-                            : Colors.grey.withOpacity(0.7),
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
+              CommonNextButton(
+                onPressed: selectedDiet.value != null ? onNext : null,
+                isEnabled: selectedDiet.value != null,
               ),
               const SizedBox(height: 16),
             ],

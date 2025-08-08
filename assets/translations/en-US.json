@@ -211,6 +211,22 @@
             "pescatarian": "Pescatarian",
             "vegetarian": "Vegetarian",
             "vegan": "Vegan"
-        }
+        },
+        "accomplishment_title": "What would you like to accomplish?",
+        "accomplishment_subtitle": "Choose your primary motivation to help us personalize your experience",
+        "accomplishment_options": {
+            "eat_healthier": "Eat and live healthier",
+            "boost_energy": "Boost my energy and mood",
+            "stay_motivated": "Stay motivated and consistent",
+            "feel_better": "Feel better about my body"
+        },
+        "goal_crush_title": "You have great\npotential to crush\nyour goal",
+        "weight_transition_title": "Your weight transition",
+        "days_3": "3 Days",
+        "days_7": "7 Days",
+        "days_30": "30 Days",
+        "weight_transition_desc_lose": "Based on Laghmeh's historical data, weight loss is usually delayed at first, but after 7 days, you can burn fat like crazy!",
+        "weight_transition_desc_gain": "Based on Laghmeh's historical data, healthy weight gain accelerates after the first week with consistent nutrition and training.",
+        "weight_transition_desc_maintain": "Based on Laghmeh's historical data, maintaining weight shows stable trends with small fluctuations."
     }
 }

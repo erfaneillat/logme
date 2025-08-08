@@ -4,13 +4,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'common_next_button.dart';
 
-class GoalSelectionPage extends StatefulWidget {
+class AccomplishmentSelectionPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final VoidCallback? onNext;
   final Function(String)? onSelectionChanged;
 
-  const GoalSelectionPage({
+  const AccomplishmentSelectionPage({
     super.key,
     required this.formKey,
     required this.initialValue,
@@ -19,36 +19,37 @@ class GoalSelectionPage extends StatefulWidget {
   });
 
   @override
-  State<GoalSelectionPage> createState() => _GoalSelectionPageState();
+  State<AccomplishmentSelectionPage> createState() =>
+      _AccomplishmentSelectionPageState();
 }
 
-class _GoalSelectionPageState extends State<GoalSelectionPage>
+class _AccomplishmentSelectionPageState
+    extends State<AccomplishmentSelectionPage>
     with AutomaticKeepAliveClientMixin {
-  String? selectedGoal;
+  String? selectedAccomplishment;
 
   @override
   void initState() {
     super.initState();
-    selectedGoal = widget.initialValue;
+    selectedAccomplishment = widget.initialValue;
   }
 
-  void _onGoalSelected(String goal) {
+  void _onAccomplishmentSelected(String accomplishment) {
     setState(() {
-      selectedGoal = goal;
+      selectedAccomplishment = accomplishment;
     });
-    widget.onSelectionChanged?.call(goal);
-    final field = widget.formKey.currentState?.fields['weightGoal'];
-    field?.didChange(goal);
+    widget.onSelectionChanged?.call(accomplishment);
+    final field = widget.formKey.currentState?.fields['accomplishment'];
+    field?.didChange(accomplishment);
   }
 
-  Widget _buildGoalCard({
-    required String goalKey,
+  Widget _buildAccomplishmentCard({
+    required String accomplishmentKey,
     required String title,
-    required String description,
     required IconData icon,
     required Color color,
   }) {
-    final isSelected = selectedGoal == goalKey;
+    final isSelected = selectedAccomplishment == accomplishmentKey;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -70,12 +71,42 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _onGoalSelected(goalKey),
+          onTap: () => _onAccomplishmentSelected(accomplishmentKey),
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
+                // Icon
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 20,
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                // Title
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
                 // Radio button
                 Container(
                   width: 24,
@@ -96,53 +127,6 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
                           ),
                         )
                       : null,
-                ),
-
-                const SizedBox(width: 16),
-
-                // Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        description,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Icon
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: 20,
-                  ),
                 ),
               ],
             ),
@@ -172,15 +156,15 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Header Section
               Column(
                 children: [
                   // Icon with gradient background container
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 65,
+                    height: 65,
                     decoration: BoxDecoration(
                       color: context.colorScheme.primary,
                       borderRadius: BorderRadius.circular(20),
@@ -193,17 +177,17 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
                       ],
                     ),
                     child: Icon(
-                      Icons.fitness_center,
+                      Icons.psychology,
                       size: 40,
                       color: Colors.white,
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 18),
 
                   // Title
                   Text(
-                    'additional_info.what_is_your_goal'.tr(),
+                    'additional_info.accomplishment_title'.tr(),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 28,
@@ -217,7 +201,7 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
 
                   // Subtitle
                   Text(
-                    'additional_info.goal_selection_subtitle'.tr(),
+                    'additional_info.accomplishment_subtitle'.tr(),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 16,
@@ -228,55 +212,64 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
                 ],
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
 
-              // Hidden field to persist goal in parent form
+              // Hidden field to persist accomplishment in parent form
               FormBuilderField<String>(
-                name: 'weightGoal',
-                initialValue: selectedGoal,
+                name: 'accomplishment',
+                initialValue: selectedAccomplishment,
                 builder: (field) => const SizedBox.shrink(),
               ),
 
-              // Goal Selection Cards
+              // Accomplishment Selection Cards
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _buildGoalCard(
-                        goalKey: 'lose_weight',
-                        title: 'additional_info.lose_weight'.tr(),
-                        description:
-                            'additional_info.lose_weight_description'.tr(),
-                        icon: Icons.trending_down,
-                        color: const Color(0xFFE57373),
+                      _buildAccomplishmentCard(
+                        accomplishmentKey: 'eat_healthier',
+                        title:
+                            'additional_info.accomplishment_options.eat_healthier'
+                                .tr(),
+                        icon: Icons.apple,
+                        color: const Color(0xFF4CAF50),
                       ),
-                      _buildGoalCard(
-                        goalKey: 'maintain_weight',
-                        title: 'additional_info.maintain_weight'.tr(),
-                        description:
-                            'additional_info.maintain_weight_description'.tr(),
-                        icon: Icons.trending_flat,
-                        color: const Color(0xFF81C784),
+                      _buildAccomplishmentCard(
+                        accomplishmentKey: 'boost_energy',
+                        title:
+                            'additional_info.accomplishment_options.boost_energy'
+                                .tr(),
+                        icon: Icons.wb_sunny,
+                        color: const Color(0xFFFF9800),
                       ),
-                      _buildGoalCard(
-                        goalKey: 'gain_weight',
-                        title: 'additional_info.gain_weight'.tr(),
-                        description:
-                            'additional_info.gain_weight_description'.tr(),
-                        icon: Icons.trending_up,
-                        color: const Color(0xFF64B5F6),
+                      _buildAccomplishmentCard(
+                        accomplishmentKey: 'stay_motivated',
+                        title:
+                            'additional_info.accomplishment_options.stay_motivated'
+                                .tr(),
+                        icon: Icons.fitness_center,
+                        color: const Color(0xFF2196F3),
+                      ),
+                      _buildAccomplishmentCard(
+                        accomplishmentKey: 'feel_better',
+                        title:
+                            'additional_info.accomplishment_options.feel_better'
+                                .tr(),
+                        icon: Icons.self_improvement,
+                        color: const Color(0xFF9C27B0),
                       ),
                     ],
                   ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
-              // Next button
+              // Continue button
               CommonNextButton(
-                onPressed: selectedGoal != null ? widget.onNext : null,
-                isEnabled: selectedGoal != null,
+                onPressed:
+                    selectedAccomplishment != null ? widget.onNext : null,
+                isEnabled: selectedAccomplishment != null,
               ),
               const SizedBox(height: 24),
             ],

@@ -20,6 +20,10 @@ const saveAdditionalInfoValidation = [
         .withMessage('Workout frequency must be one of: 0-2, 3-5, 6+'),
     body('weightLossSpeed').optional().isFloat({ min: 0.1, max: 2.0 })
         .withMessage('Weight loss speed must be between 0.1 and 2.0 kg per week'),
+    body('diet').optional().isIn(['classic', 'pescatarian', 'vegetarian', 'vegan'])
+        .withMessage('Diet must be one of: classic, pescatarian, vegetarian, vegan'),
+    body('accomplishment').optional().isIn(['eat_healthier', 'boost_energy', 'stay_motivated', 'feel_better'])
+        .withMessage('Accomplishment must be one of: eat_healthier, boost_energy, stay_motivated, feel_better'),
 ];
 
 // Routes
