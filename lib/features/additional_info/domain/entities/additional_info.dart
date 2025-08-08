@@ -11,6 +11,7 @@ class AdditionalInfo {
   final String? workoutFrequency;
   final double? targetWeight; // in kg
   final double? weightLossSpeed; // in kg per week
+  final String? diet;
 
   const AdditionalInfo({
     this.gender,
@@ -23,6 +24,7 @@ class AdditionalInfo {
     this.workoutFrequency,
     this.targetWeight,
     this.weightLossSpeed,
+    this.diet,
   });
 
   AdditionalInfo copyWith({
@@ -36,6 +38,7 @@ class AdditionalInfo {
     String? workoutFrequency,
     double? targetWeight,
     double? weightLossSpeed,
+    String? diet,
   }) {
     return AdditionalInfo(
       gender: gender ?? this.gender,
@@ -48,6 +51,7 @@ class AdditionalInfo {
       workoutFrequency: workoutFrequency ?? this.workoutFrequency,
       targetWeight: targetWeight ?? this.targetWeight,
       weightLossSpeed: weightLossSpeed ?? this.weightLossSpeed,
+      diet: diet ?? this.diet,
     );
   }
 
@@ -62,6 +66,7 @@ class AdditionalInfo {
         'workoutFrequency': workoutFrequency,
         'targetWeight': targetWeight,
         'weightLossSpeed': weightLossSpeed,
+        'diet': diet,
       };
 
   factory AdditionalInfo.fromJson(Map<String, dynamic> json) => AdditionalInfo(
@@ -77,6 +82,7 @@ class AdditionalInfo {
         workoutFrequency: json['workoutFrequency'],
         targetWeight: json['targetWeight']?.toDouble(),
         weightLossSpeed: json['weightLossSpeed']?.toDouble(),
+        diet: json['diet'],
       );
 
   bool get isComplete {
@@ -87,7 +93,8 @@ class AdditionalInfo {
         activityLevel != null &&
         weightGoal != null &&
         workoutFrequency != null &&
-        targetWeight != null;
+        targetWeight != null &&
+        diet != null;
 
     // Require speed for both lose and gain goals
     if (weightGoal == 'lose_weight' || weightGoal == 'gain_weight') {
@@ -98,7 +105,7 @@ class AdditionalInfo {
 
   @override
   String toString() =>
-      'AdditionalInfo(gender: $gender, birthDate: $birthDate, age: $age, weight: $weight, height: $height, activityLevel: $activityLevel, weightGoal: $weightGoal, workoutFrequency: $workoutFrequency, targetWeight: $targetWeight, weightLossSpeed: $weightLossSpeed)';
+      'AdditionalInfo(gender: $gender, birthDate: $birthDate, age: $age, weight: $weight, height: $height, activityLevel: $activityLevel, weightGoal: $weightGoal, workoutFrequency: $workoutFrequency, targetWeight: $targetWeight, weightLossSpeed: $weightLossSpeed, diet: $diet)';
 
   @override
   bool operator ==(Object other) {
@@ -113,7 +120,8 @@ class AdditionalInfo {
         other.weightGoal == weightGoal &&
         other.workoutFrequency == workoutFrequency &&
         other.targetWeight == targetWeight &&
-        other.weightLossSpeed == weightLossSpeed;
+        other.weightLossSpeed == weightLossSpeed &&
+        other.diet == diet;
   }
 
   @override
@@ -127,5 +135,6 @@ class AdditionalInfo {
       weightGoal.hashCode ^
       workoutFrequency.hashCode ^
       targetWeight.hashCode ^
-      weightLossSpeed.hashCode;
+      weightLossSpeed.hashCode ^
+      diet.hashCode;
 }

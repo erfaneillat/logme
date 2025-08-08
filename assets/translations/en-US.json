@@ -200,6 +200,14 @@
             "lack_of_supports": "Lack of supports",
             "busy_schedule": "Busy schedule",
             "lack_of_inspiration": "Lack of meal inspiration"
+        },
+        "diet_title": "Do you follow a specific diet?",
+        "diet_subtitle": "This helps us personalize your meal recommendations",
+        "diet_options": {
+            "classic": "Classic",
+            "pescatarian": "Pescatarian",
+            "vegetarian": "Vegetarian",
+            "vegan": "Vegan"
         }
     }
 }

@@ -13,6 +13,7 @@ import 'widgets/long_term_results_page.dart';
 import 'widgets/motivational_page.dart';
 import 'widgets/weight_loss_speed_page.dart';
 import 'widgets/barriers_selection_page.dart';
+import 'widgets/diet_selection_page.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
@@ -46,6 +47,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
         'workoutFrequency': additionalInfo.workoutFrequency,
         'targetWeight': additionalInfo.targetWeight,
         'weightLossSpeed': additionalInfo.weightLossSpeed,
+        'diet': additionalInfo.diet,
       };
     }, [additionalInfo]);
 
@@ -188,6 +190,21 @@ class AdditionalInfoPage extends HookConsumerWidget {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
+        },
+      ),
+      // Diet selection page
+      DietSelectionPage(
+        initialValue: additionalInfo.diet,
+        onSelectionChanged: (diet) {
+          additionalInfoNotifier.updateDiet(diet);
+        },
+        onNext: () {
+          if (additionalInfo.diet != null) {
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
         },
       ),
     ];

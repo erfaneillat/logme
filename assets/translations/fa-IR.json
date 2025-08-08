@@ -200,6 +200,14 @@
             "lack_of_supports": "کمبود حمایت",
             "busy_schedule": "برنامه شلوغ",
             "lack_of_inspiration": "کمبود ایده برای وعده‌ها"
+        },
+        "diet_title": "آیا رژیم غذایی خاصی دنبال می‌کنید؟",
+        "diet_subtitle": "این به ما کمک می‌کند تا توصیه‌های غذایی شما را شخصی‌سازی کنیم",
+        "diet_options": {
+            "classic": "کلاسیک",
+            "pescatarian": "ماهی‌خوار",
+            "vegetarian": "گیاه‌خوار",
+            "vegan": "وگان"
         }
     }
 }

@@ -10,6 +10,7 @@ export interface IAdditionalInfo extends Document {
     weightGoal?: string;
     workoutFrequency?: string;
     weightLossSpeed?: number; // in kg per week
+    diet?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -64,6 +65,11 @@ const additionalInfoSchema = new Schema<IAdditionalInfo>(
             type: Number,
             min: [0.1, 'Weight loss speed must be at least 0.1 kg per week'],
             max: [2.0, 'Weight loss speed cannot exceed 2.0 kg per week'],
+            required: false,
+        },
+        diet: {
+            type: String,
+            enum: ['classic', 'pescatarian', 'vegetarian', 'vegan'],
             required: false,
         },
     },
