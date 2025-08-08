@@ -63,21 +63,26 @@ class AdditionalInfo {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'gender': gender,
-        'birthDate': birthDate?.toIso8601String(),
-        'age': age,
-        'weight': weight,
-        'height': height,
-        'activityLevel': activityLevel,
-        'weightGoal': weightGoal,
-        'workoutFrequency': workoutFrequency,
-        'targetWeight': targetWeight,
-        'weightLossSpeed': weightLossSpeed,
-        'diet': diet,
-        'accomplishment': accomplishment,
-        'referralCode': referralCode,
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'gender': gender,
+      'birthDate': birthDate?.toIso8601String(),
+      'age': age,
+      'weight': weight,
+      'height': height,
+      'activityLevel': activityLevel,
+      'weightGoal': weightGoal,
+      'workoutFrequency': workoutFrequency,
+      'targetWeight': targetWeight,
+      'weightLossSpeed': weightLossSpeed,
+      'diet': diet,
+      'accomplishment': accomplishment,
+      'referralCode': referralCode,
+    };
+    // Remove null values to avoid sending keys with null which may fail validation on backend
+    data.removeWhere((key, value) => value == null);
+    return data;
+  }
 
   factory AdditionalInfo.fromJson(Map<String, dynamic> json) => AdditionalInfo(
         gender: json['gender'],

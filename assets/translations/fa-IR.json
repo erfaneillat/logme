@@ -237,6 +237,7 @@
         "referral_instruction": "می‌توانید این مرحله را رد کنید",
         "referral_hint": "کد معرفی",
         "referral_submit": "ثبت",
-        "continue": "ادامه"
+        "continue": "ادامه",
+        "submit": "ثبت"
     }
 }

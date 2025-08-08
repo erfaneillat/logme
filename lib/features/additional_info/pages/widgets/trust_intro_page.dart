@@ -95,7 +95,7 @@ class _TrustIntroPageState extends State<TrustIntroPage>
             // Improved next button
             CommonNextButton(
               onPressed: widget.onNext,
-              text: 'additional_info.continue',
+              text: 'additional_info.submit',
             ),
 
             const SizedBox(height: 24),

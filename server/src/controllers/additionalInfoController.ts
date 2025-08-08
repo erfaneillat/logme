@@ -21,7 +21,7 @@ export class AdditionalInfoController {
                 return;
             }
 
-            const { gender, age, weight, height, activityLevel, weightGoal, workoutFrequency, weightLossSpeed, diet, accomplishment } = req.body;
+            const { gender, birthDate, age, weight, height, activityLevel, weightGoal, workoutFrequency, targetWeight, weightLossSpeed, diet, accomplishment, referralCode } = req.body;
             const userId = req.user.userId;
 
             // Check if user exists
@@ -39,31 +39,39 @@ export class AdditionalInfoController {
 
             if (additionalInfo) {
                 // Update existing additional info
-                additionalInfo.gender = gender;
-                additionalInfo.age = age;
-                additionalInfo.weight = weight;
-                additionalInfo.height = height;
-                additionalInfo.activityLevel = activityLevel;
-                additionalInfo.weightGoal = weightGoal;
-                additionalInfo.workoutFrequency = workoutFrequency;
-                additionalInfo.weightLossSpeed = weightLossSpeed;
-                additionalInfo.diet = diet;
-                additionalInfo.accomplishment = accomplishment;
+                additionalInfo.gender = gender ?? additionalInfo.gender;
+                if (birthDate) {
+                    additionalInfo.birthDate = new Date(birthDate);
+                }
+                additionalInfo.age = age ?? additionalInfo.age;
+                additionalInfo.weight = weight ?? additionalInfo.weight;
+                additionalInfo.height = height ?? additionalInfo.height;
+                additionalInfo.activityLevel = activityLevel ?? additionalInfo.activityLevel;
+                additionalInfo.weightGoal = weightGoal ?? additionalInfo.weightGoal;
+                additionalInfo.workoutFrequency = workoutFrequency ?? additionalInfo.workoutFrequency;
+                additionalInfo.targetWeight = targetWeight ?? additionalInfo.targetWeight;
+                additionalInfo.weightLossSpeed = weightLossSpeed ?? additionalInfo.weightLossSpeed;
+                additionalInfo.diet = diet ?? additionalInfo.diet;
+                additionalInfo.accomplishment = accomplishment ?? additionalInfo.accomplishment;
+                additionalInfo.referralCode = referralCode ?? additionalInfo.referralCode;
                 await additionalInfo.save();
             } else {
                 // Create new additional info
                 additionalInfo = new AdditionalInfo({
                     userId,
                     gender,
+                    birthDate: birthDate ? new Date(birthDate) : undefined,
                     age,
                     weight,
                     height,
                     activityLevel,
                     weightGoal,
                     workoutFrequency,
+                    targetWeight,
                     weightLossSpeed,
                     diet,
-                    accomplishment
+                    accomplishment,
+                    referralCode,
                 });
                 await additionalInfo.save();
             }
@@ -138,9 +146,9 @@ export class AdditionalInfoController {
             }
 
             // Check if all required fields are filled
-            const baseComplete = !!(additionalInfo.gender && additionalInfo.age && additionalInfo.weight &&
+            const baseComplete = !!(additionalInfo.gender && additionalInfo.birthDate && additionalInfo.weight &&
                 additionalInfo.height && additionalInfo.activityLevel && additionalInfo.weightGoal &&
-                additionalInfo.workoutFrequency && additionalInfo.diet && additionalInfo.accomplishment);
+                additionalInfo.workoutFrequency && additionalInfo.targetWeight && additionalInfo.diet && additionalInfo.accomplishment);
 
             const requiresSpeed = additionalInfo.weightGoal === 'lose_weight' || additionalInfo.weightGoal === 'gain_weight';
             const hasSpeed = !!additionalInfo.weightLossSpeed;

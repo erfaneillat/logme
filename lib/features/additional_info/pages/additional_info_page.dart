@@ -83,7 +83,17 @@ class AdditionalInfoPage extends HookConsumerWidget {
           final formState = formKey.currentState;
           if (formState?.saveAndValidate() ?? false) {
             final formData = formState!.value;
-            additionalInfoNotifier.updateBirthDate(formData['birthDate']);
+            final DateTime birthDate = formData['birthDate'];
+            additionalInfoNotifier.updateBirthDate(birthDate);
+            // Also compute and store age immediately so it's not null later
+            final now = DateTime.now();
+            int age = now.year - birthDate.year;
+            final hasHadBirthdayThisYear = (now.month > birthDate.month) ||
+                (now.month == birthDate.month && now.day >= birthDate.day);
+            if (!hasHadBirthdayThisYear) {
+              age -= 1;
+            }
+            additionalInfoNotifier.updateAge(age);
             pageController.nextPage(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
@@ -264,7 +274,19 @@ class AdditionalInfoPage extends HookConsumerWidget {
         },
       ),
       TrustIntroPage(
-        onNext: () {},
+        onNext: () async {
+          final formState = formKey.currentState;
+          // Ensure latest values are captured from form
+          formState?.save();
+          try {
+            await additionalInfoNotifier.saveAdditionalInfo();
+            await additionalInfoNotifier.markCompleted();
+            if (context.mounted) {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/home', (route) => false);
+            }
+          } catch (_) {}
+        },
       ),
     ];
 

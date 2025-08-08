@@ -237,6 +237,7 @@
         "referral_instruction": "You can skip this step",
         "referral_hint": "Referral Code",
         "referral_submit": "Submit",
-        "continue": "Continue"
+        "continue": "Continue",
+        "submit": "Submit"
     }
 }

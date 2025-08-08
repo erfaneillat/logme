@@ -67,7 +67,25 @@ class AdditionalInfoNotifier extends StateNotifier<AdditionalInfo> {
   }
 
   void updateWorkoutFrequency(String workoutFrequency) {
-    state = state.copyWith(workoutFrequency: workoutFrequency);
+    // Derive activity level from workout frequency if possible
+    String? derivedActivityLevel;
+    switch (workoutFrequency) {
+      case '0-2':
+        derivedActivityLevel = 'lightly_active';
+        break;
+      case '3-5':
+        derivedActivityLevel = 'moderately_active';
+        break;
+      case '6+':
+        derivedActivityLevel = 'very_active';
+        break;
+      default:
+        derivedActivityLevel = state.activityLevel;
+    }
+    state = state.copyWith(
+      workoutFrequency: workoutFrequency,
+      activityLevel: derivedActivityLevel,
+    );
   }
 
   void updateTargetWeight(double targetWeight) {
@@ -91,7 +109,44 @@ class AdditionalInfoNotifier extends StateNotifier<AdditionalInfo> {
   }
 
   Future<void> saveAdditionalInfo() async {
-    await saveUseCase.execute(state);
+    // Ensure derived fields are populated
+    AdditionalInfo infoToSave = state;
+
+    // Derive age if missing and birthDate is provided
+    if (infoToSave.age == null && infoToSave.birthDate != null) {
+      final now = DateTime.now();
+      int age = now.year - infoToSave.birthDate!.year;
+      final hasHadBirthdayThisYear =
+          (now.month > infoToSave.birthDate!.month) ||
+              (now.month == infoToSave.birthDate!.month &&
+                  now.day >= infoToSave.birthDate!.day);
+      if (!hasHadBirthdayThisYear) {
+        age -= 1;
+      }
+      infoToSave = infoToSave.copyWith(age: age);
+    }
+
+    // Derive activityLevel from workoutFrequency if still missing
+    if (infoToSave.activityLevel == null &&
+        infoToSave.workoutFrequency != null) {
+      String? derivedActivityLevel;
+      switch (infoToSave.workoutFrequency) {
+        case '0-2':
+          derivedActivityLevel = 'lightly_active';
+          break;
+        case '3-5':
+          derivedActivityLevel = 'moderately_active';
+          break;
+        case '6+':
+          derivedActivityLevel = 'very_active';
+          break;
+      }
+      if (derivedActivityLevel != null) {
+        infoToSave = infoToSave.copyWith(activityLevel: derivedActivityLevel);
+      }
+    }
+
+    await saveUseCase.execute(infoToSave);
   }
 
   Future<void> markCompleted() async {

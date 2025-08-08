@@ -9,6 +9,7 @@ const additionalInfoController = new AdditionalInfoController();
 // Validation rules
 const saveAdditionalInfoValidation = [
     body('gender').optional().isIn(['male', 'female', 'other']).withMessage('Gender must be male, female, or other'),
+    body('birthDate').optional().isISO8601().withMessage('Birth date must be a valid ISO date'),
     body('age').optional().isInt({ min: 1, max: 120 }).withMessage('Age must be between 1 and 120'),
     body('weight').optional().isFloat({ min: 20, max: 300 }).withMessage('Weight must be between 20 and 300 kg'),
     body('height').optional().isFloat({ min: 100, max: 250 }).withMessage('Height must be between 100 and 250 cm'),
@@ -18,12 +19,15 @@ const saveAdditionalInfoValidation = [
         .withMessage('Weight goal must be one of: lose_weight, maintain_weight, gain_weight'),
     body('workoutFrequency').optional().isIn(['0-2', '3-5', '6+'])
         .withMessage('Workout frequency must be one of: 0-2, 3-5, 6+'),
+    body('targetWeight').optional().isFloat({ min: 20, max: 300 })
+        .withMessage('Target weight must be between 20 and 300 kg'),
     body('weightLossSpeed').optional().isFloat({ min: 0.1, max: 2.0 })
         .withMessage('Weight loss speed must be between 0.1 and 2.0 kg per week'),
     body('diet').optional().isIn(['classic', 'pescatarian', 'vegetarian', 'vegan'])
         .withMessage('Diet must be one of: classic, pescatarian, vegetarian, vegan'),
     body('accomplishment').optional().isIn(['eat_healthier', 'boost_energy', 'stay_motivated', 'feel_better'])
         .withMessage('Accomplishment must be one of: eat_healthier, boost_energy, stay_motivated, feel_better'),
+    body('referralCode').optional().isString().isLength({ max: 64 }).withMessage('Referral code is too long'),
 ];
 
 // Routes

@@ -1,6 +1,6 @@
 class ApiConfig {
   // Development
-  static const String devBaseUrl = 'http://10.0.2.2:8000';
+  static const String devBaseUrl = 'http://localhost:8000';
 
   // Production
   static const String prodBaseUrl = 'http://10.0.2.2:8000';

@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IAdditionalInfo extends Document {
     userId: mongoose.Types.ObjectId;
     gender?: string;
+    birthDate?: Date;
     age?: number;
     weight?: number; // in kg
     height?: number; // in cm
@@ -12,6 +13,8 @@ export interface IAdditionalInfo extends Document {
     weightLossSpeed?: number; // in kg per week
     diet?: string;
     accomplishment?: string;
+    targetWeight?: number; // in kg
+    referralCode?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -27,6 +30,10 @@ const additionalInfoSchema = new Schema<IAdditionalInfo>(
         gender: {
             type: String,
             enum: ['male', 'female', 'other'],
+            required: false,
+        },
+        birthDate: {
+            type: Date,
             required: false,
         },
         age: {
@@ -68,6 +75,12 @@ const additionalInfoSchema = new Schema<IAdditionalInfo>(
             max: [2.0, 'Weight loss speed cannot exceed 2.0 kg per week'],
             required: false,
         },
+        targetWeight: {
+            type: Number,
+            min: [20, 'Target weight must be at least 20 kg'],
+            max: [300, 'Target weight cannot exceed 300 kg'],
+            required: false,
+        },
         diet: {
             type: String,
             enum: ['classic', 'pescatarian', 'vegetarian', 'vegan'],
@@ -77,6 +90,12 @@ const additionalInfoSchema = new Schema<IAdditionalInfo>(
             type: String,
             enum: ['eat_healthier', 'boost_energy', 'stay_motivated', 'feel_better'],
             required: false,
+        },
+        referralCode: {
+            type: String,
+            required: false,
+            trim: true,
+            maxlength: 64,
         },
     },
     {

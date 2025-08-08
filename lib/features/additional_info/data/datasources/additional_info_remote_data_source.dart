@@ -33,10 +33,12 @@ class AdditionalInfoRemoteDataSourceImpl
         ApiConfig.additionalInfo,
       );
 
+      // Server returns { success, data: { additionalInfo: { ... } } }
       final data = response['data'];
       if (data == null) return null;
-
-      return AdditionalInfo.fromJson(data);
+      final info = data['additionalInfo'];
+      if (info == null) return null;
+      return AdditionalInfo.fromJson(info as Map<String, dynamic>);
     } catch (e) {
       throw Exception('Failed to get additional info: ${e.toString()}');
     }
