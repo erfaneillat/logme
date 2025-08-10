@@ -46,6 +46,7 @@
     "page_not_found": "Page Not Found",
     "page_not_found_message": "The page you are looking for does not exist.",
     "go_home": "Go Home",
+    "language": "Language",
     "common": {
         "loading": "Loading...",
         "processing": "Processing...",
@@ -91,7 +92,15 @@
         "quick_actions": "Quick Actions",
         "profile": "Profile",
         "settings": "Settings",
-        "error_loading_user": "Error loading user information"
+        "analytics": "Analytics",
+        "error_loading_user": "Error loading user information",
+        "calories_left": "Calories left",
+        "protein_left": "Protein left",
+        "carbs_left": "Carbs left",
+        "fats_left": "Fats left",
+        "recently_eaten": "Recently eaten",
+        "no_food_title": "You haven’t uploaded any food",
+        "no_food_desc": "Start tracking today's meals by taking a quick picture"
     },
     "additional_info": {
         "title": "Complete Your Profile",

@@ -46,6 +46,7 @@
     "page_not_found": "صفحه یافت نشد",
     "page_not_found_message": "صفحهای که به دنبال آن هستید وجود ندارد.",
     "go_home": "برو به خانه",
+    "language": "زبان",
     "common": {
         "loading": "در حال بارگذاری...",
         "processing": "در حال پردازش...",
@@ -91,7 +92,15 @@
         "quick_actions": "عملیات سریع",
         "profile": "پروفایل",
         "settings": "تنظیمات",
-        "error_loading_user": "خطا در بارگذاری اطلاعات کاربر"
+        "analytics": "آنالیز",
+        "error_loading_user": "خطا در بارگذاری اطلاعات کاربر",
+        "calories_left": "کالری باقی‌مانده",
+        "protein_left": "پروتئین باقی‌مانده",
+        "carbs_left": "کربوهیدرات باقی‌مانده",
+        "fats_left": "چربی باقی‌مانده",
+        "recently_eaten": "اخیراً خورده شده‌ها",
+        "no_food_title": "هنوز غذایی بارگذاری نکرده‌اید",
+        "no_food_desc": "با گرفتن یک عکس سریع از وعده‌های امروز شروع به ثبت کنید"
     },
     "additional_info": {
         "title": "پروفایل خود را تکمیل کنید",

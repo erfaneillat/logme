@@ -5,6 +5,7 @@ import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/splash/splash_page.dart';
 import '../features/login/pages/login_page.dart';
 import '../features/home/pages/home_page.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../features/additional_info/pages/additional_info_page.dart';
 import '../features/plan/pages/plan_generation_page.dart';
 import '../features/plan/pages/plan_summary_page.dart';
@@ -28,10 +29,39 @@ class AppRouter {
         name: 'login',
         builder: (context, state) => const LoginPage(),
       ),
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomePage(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AppShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                name: 'home',
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/analytics',
+                name: 'analytics',
+                builder: (context, state) => const AnalyticsPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsPage(),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: '/additional-info',
@@ -80,4 +110,64 @@ class AppRouter {
       ),
     ),
   );
+}
+
+class AppShell extends HookConsumerWidget {
+  const AppShell({super.key, required this.navigationShell});
+
+  final StatefulNavigationShell navigationShell;
+
+  void _goBranch(int index, BuildContext context) {
+    navigationShell.goBranch(index,
+        initialLocation: index == navigationShell.currentIndex);
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      body: navigationShell,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: (i) => _goBranch(i, context),
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_outlined),
+            label: 'home.title'.tr(),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.bar_chart_outlined),
+            label: 'home.analytics'.tr(),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings_outlined),
+            label: 'home.settings'.tr(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AnalyticsPage extends StatelessWidget {
+  const AnalyticsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('home.analytics'.tr())),
+      body: const Center(child: Text('Analytics')),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('home.settings'.tr())),
+      body: const Center(child: Text('Settings')),
+    );
+  }
 }
