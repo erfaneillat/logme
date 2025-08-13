@@ -103,8 +103,6 @@ class CustomLoadingWidget extends HookWidget {
   }
 }
 
-
-
 class CenteredCustomLoadingWidget extends StatelessWidget {
   final Color? color;
   final LoadingSize size;
@@ -177,7 +175,7 @@ extension LoadingWidgetExtension on Widget {
   }
 }
 
-class ShimmerLoadingWidget extends StatelessWidget {
+class ShimmerLoadingWidget extends HookWidget {
   final double width;
   final double height;
   final BorderRadius? borderRadius;
@@ -198,17 +196,65 @@ class ShimmerLoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(4);
+    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(8);
 
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-        borderRadius: effectiveBorderRadius,
-      ),
-      child: const Center(
-        child: CustomLoadingWidget.small(),
+    final baseColor = Colors.grey.shade300;
+    final highlightColor = Colors.grey.shade100;
+
+    final controller = useAnimationController(
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+
+    return ClipRRect(
+      borderRadius: effectiveBorderRadius,
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return AnimatedBuilder(
+              animation: controller,
+              builder: (context, _) {
+                final double w = constraints.maxWidth;
+                final double h = constraints.maxHeight;
+                final double shimmerWidth = w * 0.4;
+                final double travel = w + shimmerWidth;
+                final double dx = (controller.value * travel) - shimmerWidth;
+
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: baseColor,
+                        borderRadius: effectiveBorderRadius,
+                      ),
+                    ),
+                    Transform.translate(
+                      offset: Offset(dx, 0),
+                      child: Container(
+                        width: shimmerWidth,
+                        height: h,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              baseColor.withOpacity(0.0),
+                              highlightColor,
+                              baseColor.withOpacity(0.0),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

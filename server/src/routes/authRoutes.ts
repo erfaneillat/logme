@@ -1,7 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { AuthController } from '../controllers/authController';
-import { authenticateToken } from '../middleware/authMiddleware';
+import { authenticateToken, authenticateTokenAllowExpired } from '../middleware/authMiddleware';
 
 const router = express.Router();
 const authController = new AuthController();
@@ -26,6 +26,6 @@ router.post('/send-code', phoneValidation, authController.sendVerificationCode);
 router.post('/verify-phone', verificationCodeValidation, authController.verifyPhone);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, authController.updateProfile);
-router.post('/refresh-token', authenticateToken, authController.refreshToken);
+router.post('/refresh-token', authenticateTokenAllowExpired, authController.refreshToken);
 
 export default router;

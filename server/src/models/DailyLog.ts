@@ -1,0 +1,54 @@
+import mongoose, { Document, Schema } from 'mongoose';
+
+export interface ILogItem {
+    title: string;
+    calories: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatsGrams: number;
+    timeIso: string; // ISO timestamp of when item was added
+    imageUrl?: string; // optional image URL or data URI
+}
+
+export interface IDailyLog extends Document {
+    userId: Schema.Types.ObjectId;
+    date: string; // YYYY-MM-DD (local date)
+    caloriesConsumed: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatsGrams: number;
+    items: ILogItem[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const logItemSchema = new Schema<ILogItem>({
+    title: { type: String, required: true },
+    calories: { type: Number, required: true },
+    carbsGrams: { type: Number, required: true },
+    proteinGrams: { type: Number, required: true },
+    fatsGrams: { type: Number, required: true },
+    timeIso: { type: String, required: true },
+    imageUrl: { type: String },
+}, { _id: false });
+
+const dailyLogSchema = new Schema<IDailyLog>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: 'User', index: true, required: true },
+        date: { type: String, required: true },
+        caloriesConsumed: { type: Number, required: true, default: 0 },
+        carbsGrams: { type: Number, required: true, default: 0 },
+        proteinGrams: { type: Number, required: true, default: 0 },
+        fatsGrams: { type: Number, required: true, default: 0 },
+        items: { type: [logItemSchema], default: [] },
+    },
+    { timestamps: true }
+);
+
+dailyLogSchema.index({ userId: 1, date: 1 }, { unique: true });
+
+const DailyLog = mongoose.model<IDailyLog>('DailyLog', dailyLogSchema);
+
+export default DailyLog;
+
+

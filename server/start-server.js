@@ -32,6 +32,7 @@ function startServer() {
     process.env.NODE_ENV = 'development';
     process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
     process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/cal_ai';
+    process.env.OPENAI_API_KEY = 'your-openai-api-key-here'; // Add your actual OpenAI API key
 
     const serverProcess = spawn('node', ['dist/index.js'], {
         stdio: 'inherit',
@@ -48,6 +49,7 @@ function startServer() {
             console.log('   - Linux: sudo systemctl start mongod');
             console.log('2. Check if MongoDB is accessible at: mongodb://127.0.0.1:27017');
             console.log('3. Make sure port 3000 is available');
+            console.log('4. Set OPENAI_API_KEY environment variable with your actual API key');
         }
     });
 

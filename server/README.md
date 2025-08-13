@@ -1,146 +1,159 @@
 # Cal AI Backend
 
-A Node.js backend API built with TypeScript, Express, and MongoDB for the Cal AI application.
+A Node.js backend with MongoDB and TypeScript for Cal AI nutrition tracking application.
 
 ## Features
 
-- **TypeScript**: Full TypeScript support with strict type checking
-- **MongoDB**: MongoDB integration with Mongoose ODM
-- **Security**: Helmet, CORS, Rate limiting, and input sanitization
-- **Validation**: Request validation using express-validator
-- **Error Handling**: Comprehensive error handling with custom error classes
-- **Logging**: HTTP request logging with Morgan
-- **Testing**: Ready for Jest testing framework
-- **Clean Architecture**: Organized folder structure following clean architecture principles
+- User authentication with phone verification
+- Nutrition plan generation using OpenAI
+- Food image analysis with AI
+- Daily nutrition logging
+- RESTful API with proper error handling
 
-## Project Structure
+## Prerequisites
 
-```
-server/
-├── src/
-│   ├── config/          # Configuration files (database, environment)
-│   ├── controllers/     # Route controllers
-│   ├── middleware/      # Express middleware
-│   ├── models/          # Mongoose models
-│   ├── repositories/    # Data access layer
-│   ├── routes/          # Express routes
-│   ├── services/        # Business logic layer
-│   ├── types/           # TypeScript type definitions
-│   ├── utils/           # Utility functions
-│   └── index.ts         # Application entry point
-├── dist/                # Compiled JavaScript output
-├── .env.example         # Environment variables template
-├── package.json         # Dependencies and scripts
-├── tsconfig.json        # TypeScript configuration
-└── nodemon.json         # Nodemon configuration for development
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (>= 18.0.0)
-- MongoDB (>= 4.4)
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone [repository-url]
-   cd cal_ai/server
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` file with your configuration:
-   ```
-   NODE_ENV=development
-   PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/cal_ai
-   JWT_SECRET=your-super-secret-key
-   ```
-
-4. **Start MongoDB**
-   Make sure MongoDB is running on your system.
-
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Access the API**
-   - Health check: http://localhost:3000/api/health
-   - Detailed health: http://localhost:3000/api/health/detailed
-
-## Available Scripts
-
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build the project for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm test` - Run tests
-- `npm run seed` - Seed the database with sample data
-
-## API Endpoints
-
-### Health Check
-- `GET /` - API information
-- `GET /api/health` - Basic health check
-- `GET /api/health/detailed` - Detailed health check with system info
+- Node.js >= 18.0.0
+- MongoDB running locally or remotely
+- OpenAI API key for food analysis and plan generation
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| NODE_ENV | Environment (development/production) | development |
-| PORT | Server port | 3000 |
-| HOST | Server host | localhost |
-| MONGODB_URI | MongoDB connection string | mongodb://localhost:27017/cal_ai |
-| JWT_SECRET | JWT secret key | random string |
-| CORS_ORIGIN | CORS allowed origin | http://localhost:3001 |
+Create a `.env` file in the server root directory with the following variables:
 
-## Security Features
+```bash
+# Server Configuration
+NODE_ENV=development
+PORT=3000
+HOST=localhost
+CORS_ORIGIN=http://localhost:3001
 
-- **Helmet**: Sets various HTTP headers for security
-- **CORS**: Cross-Origin Resource Sharing configuration
-- **Rate Limiting**: Prevents brute force attacks
-- **Input Validation**: Request validation and sanitization
-- **Password Hashing**: bcrypt for password security
-- **JWT Authentication**: Secure token-based authentication
+# Security
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# Database
+MONGODB_URI=mongodb://127.0.0.1:27017/cal_ai
+
+# OpenAI API (required for food analysis)
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+```
+
+## Installation
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Set up environment variables (see above)
+
+3. Start MongoDB:
+```bash
+# macOS
+brew services start mongodb-community
+
+# Windows
+# Start MongoDB service
+
+# Linux
+sudo systemctl start mongod
+```
 
 ## Development
 
-### Adding New Features
+Start the development server with hot reload:
+```bash
+npm run dev
+```
 
-1. **Models**: Define new Mongoose models in `src/models/`
-2. **Controllers**: Create controllers in `src/controllers/`
-3. **Routes**: Add routes in `src/routes/`
-4. **Middleware**: Create custom middleware in `src/middleware/`
-5. **Types**: Add TypeScript types in `src/types/`
+## Production
 
-### Testing
+Build and start the production server:
+```bash
+npm run build
+npm start
+```
 
-The project is set up for Jest testing. Add test files alongside your source files with `.test.ts` or `.spec.ts` extensions.
+## API Endpoints
 
-### Database
+### Authentication
+- `POST /api/auth/send-code` - Send verification code
+- `POST /api/auth/verify-phone` - Verify phone number
+- `POST /api/auth/profile` - Update user profile
+- `POST /api/auth/refresh-token` - Refresh access token
 
-MongoDB connection is managed through `DatabaseConnection` class in `src/config/database.ts`. The connection is automatically established when the server starts and gracefully closed on shutdown.
+### User Information
+- `POST /api/user/additional-info` - Save additional user info
+- `POST /api/user/mark-additional-info-completed` - Mark setup complete
 
-## Contributing
+### Plans
+- `POST /api/plan/generate` - Generate nutrition plan
+- `GET /api/plan/latest` - Get latest plan
 
-1. Create a new branch for your feature
-2. Write tests for new functionality
-3. Ensure all tests pass
-4. Submit a pull request
+### Food Analysis
+- `POST /api/food/analyze` - Analyze food image and return nutrition data
 
-## License
+### Logs
+- `POST /api/logs` - Upsert daily log
+- `GET /api/logs` - Get daily log by date
 
-MIT License - see LICENSE file for details.
+### Health
+- `GET /api/health` - Basic health check
+- `GET /api/health/detailed` - Detailed health check
+
+## Food Analysis API
+
+The food analysis endpoint accepts a multipart form with an `image` field and returns:
+
+```json
+{
+  "success": true,
+  "data": {
+    "title": "لوبیا سبزیجات روی برنج بخارپز",
+    "calories": 520,
+    "portions": 1,
+    "proteinGrams": 16,
+    "fatGrams": 10,
+    "carbsGrams": 92,
+    "healthScore": 7,
+    "ingredients": [
+      {
+        "name": "برنج باسماتی",
+        "calories": 260,
+        "proteinGrams": 5,
+        "fatGrams": 1,
+        "carbsGrams": 56
+      }
+    ]
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
+```
+
+## Architecture
+
+The application follows clean architecture principles:
+
+- **Domain Layer**: Entities, repositories interfaces, use cases
+- **Data Layer**: Repository implementations, data sources
+- **Presentation Layer**: Controllers, routes, middleware
+- **Infrastructure**: Database connection, external services
+
+## Error Handling
+
+The application includes comprehensive error handling with:
+- Custom error classes
+- Global error middleware
+- Proper HTTP status codes
+- Detailed error messages in development
+
+## Security
+
+- JWT-based authentication
+- Input validation and sanitization
+- Rate limiting
+- CORS configuration
+- Helmet security headers

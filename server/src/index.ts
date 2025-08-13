@@ -11,6 +11,8 @@ import healthRoutes from './routes/healthRoutes';
 import authRoutes from './routes/authRoutes';
 import additionalInfoRoutes from './routes/additionalInfoRoutes';
 import planRoutes from './routes/planRoutes';
+import logRoutes from './routes/logRoutes';
+import foodRoutes from './routes/foodRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 
@@ -18,7 +20,7 @@ import { sanitizeInput } from './middleware/validation';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 const HOST = process.env.HOST || 'localhost';
 
 // Security middleware
@@ -54,6 +56,8 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', additionalInfoRoutes);
 app.use('/api/plan', planRoutes);
+app.use('/api/logs', logRoutes);
+app.use('/api/food', foodRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

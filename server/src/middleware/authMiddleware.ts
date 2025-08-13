@@ -69,3 +69,44 @@ export const optionalAuth = async (
     next();
   }
 };
+
+// Allows decoding token even if it's expired, used only for refresh endpoint
+export const authenticateTokenAllowExpired = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      res.status(401).json({
+        success: false,
+        message: 'Access token is missing'
+      });
+      return;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', { ignoreExpiration: true }) as any;
+
+    // Check if user still exists
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      res.status(401).json({
+        success: false,
+        message: 'User not found'
+      });
+      return;
+    }
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error('Auth middleware (allow expired) error:', error);
+    res.status(403).json({
+      success: false,
+      message: 'Invalid token'
+    });
+  }
+};

@@ -103,3 +103,6 @@ pids
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Uploaded images
+uploads/

@@ -1,5 +1,8 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+// Plan repo provider for fetching latest plan
+import '../../../plan/data/repositories/plan_repository_impl.dart';
+import '../../../logs/data/datasources/logs_remote_data_source.dart';
 
 /// Provides today's Jalali date
 final todayJalaliProvider = Provider<Jalali>((ref) {
@@ -31,4 +34,60 @@ final jalaliDateRangeProvider = Provider<List<Jalali>>((ref) {
   final start = today.addDays(-daysPast);
   final total = daysPast + daysFuture + 1;
   return List.generate(total, (i) => start.addDays(i));
+});
+
+// Use shared logs data source in logs feature
+
+/// Combines plan with daily log to compute remaining per day
+class DailyRemaining {
+  final int caloriesRemaining;
+  final int carbsRemaining;
+  final int proteinRemaining;
+  final int fatsRemaining;
+  final int totalCalories;
+  final int totalCarbs;
+  final int totalProtein;
+  final int totalFats;
+
+  const DailyRemaining({
+    required this.caloriesRemaining,
+    required this.carbsRemaining,
+    required this.proteinRemaining,
+    required this.fatsRemaining,
+    required this.totalCalories,
+    required this.totalCarbs,
+    required this.totalProtein,
+    required this.totalFats,
+  });
+}
+
+String _toIsoDateFromJalali(Jalali d) {
+  final g = d.toGregorian();
+  final mm = g.month.toString().padLeft(2, '0');
+  final dd = g.day.toString().padLeft(2, '0');
+  return '${g.year}-$mm-$dd';
+}
+
+/// Fetches plan and log for selected day, computes remaining
+final dailyRemainingProvider = FutureProvider<DailyRemaining>((ref) async {
+  final selected = ref.watch(selectedJalaliDateProvider);
+  final planRepo = ref.read(planRepositoryProvider);
+  final logsRemote = ref.read(logsRemoteDataSourceProvider);
+
+  final plan = await planRepo.fetchLatestPlan();
+  final dateIso = _toIsoDateFromJalali(selected);
+  final log = await logsRemote.getDailyLog(dateIso);
+
+  int clampNonNegative(int value) => value < 0 ? 0 : value;
+
+  return DailyRemaining(
+    caloriesRemaining: clampNonNegative(plan.calories - log.caloriesConsumed),
+    carbsRemaining: clampNonNegative(plan.carbsGrams - log.carbsGrams),
+    proteinRemaining: clampNonNegative(plan.proteinGrams - log.proteinGrams),
+    fatsRemaining: clampNonNegative(plan.fatsGrams - log.fatsGrams),
+    totalCalories: plan.calories,
+    totalCarbs: plan.carbsGrams,
+    totalProtein: plan.proteinGrams,
+    totalFats: plan.fatsGrams,
+  );
 });

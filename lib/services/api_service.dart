@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:flutter/foundation.dart';
@@ -8,10 +8,15 @@ class ApiService {
   late final Dio _dio;
   final String baseUrl;
   final Future<String?> Function()? getToken;
+  final Future<String> Function()? refreshToken;
+  final Future<void> Function()? onLogout;
+  Completer<String?>? _refreshCompleter;
 
   ApiService({
     required this.baseUrl,
     this.getToken,
+    this.refreshToken,
+    this.onLogout,
   }) {
     _dio = Dio(
       BaseOptions(
@@ -60,15 +65,60 @@ class ApiService {
       ),
     );
 
-    // Error interceptor for global error handling
+    // Error interceptor for global error handling and token refresh
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onError: (error, handler) {
+        onError: (error, handler) async {
+          final statusCode = error.response?.statusCode;
+          final isAuthError = statusCode == 401 || statusCode == 403;
+          final isRefreshCall =
+              error.requestOptions.path == ApiConfig.authRefreshToken;
+          final alreadyRetried = error.requestOptions.extra['__ret'] == true;
+
+          if (isAuthError &&
+              !isRefreshCall &&
+              !alreadyRetried &&
+              refreshToken != null) {
+            try {
+              final newToken = await _performTokenRefresh();
+              if (newToken != null) {
+                final RequestOptions req = error.requestOptions;
+                req.headers['Authorization'] = 'Bearer $newToken';
+                req.extra['__ret'] = true;
+                final response = await _dio.fetch(req);
+                return handler.resolve(response);
+              }
+            } catch (_) {
+              // Fall through to logout and original error handling
+              if (onLogout != null) {
+                await onLogout!();
+              }
+            }
+          }
+
           final errorResponse = _handleError(error);
           handler.reject(errorResponse);
         },
       ),
     );
+  }
+
+  Future<String?> _performTokenRefresh() async {
+    if (_refreshCompleter != null) {
+      return _refreshCompleter!.future;
+    }
+    if (refreshToken == null) return null;
+    _refreshCompleter = Completer<String?>();
+    try {
+      final freshToken = await refreshToken!();
+      _refreshCompleter!.complete(freshToken);
+      return freshToken;
+    } catch (e) {
+      _refreshCompleter!.completeError(e);
+      rethrow;
+    } finally {
+      _refreshCompleter = null;
+    }
   }
 
   DioException _handleError(DioException error) {
@@ -146,7 +196,6 @@ class ApiService {
         );
 
       case DioExceptionType.unknown:
-      default:
         return DioException(
           requestOptions: error.requestOptions,
           error: 'An unexpected error occurred',
@@ -266,6 +315,7 @@ class ApiService {
   // Upload file
   Future<T> uploadFile<T>(
     String path, {
+    required String fileField,
     required String filePath,
     String? fileName,
     Map<String, dynamic>? formData,
@@ -275,7 +325,7 @@ class ApiService {
   }) async {
     try {
       final formDataObj = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+        fileField: await MultipartFile.fromFile(filePath, filename: fileName),
         ...?formData,
       });
 

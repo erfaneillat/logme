@@ -38,6 +38,11 @@ class ApiConfig {
       '/api/user/mark-additional-info-completed';
   static const String planGenerate = '/api/plan/generate';
   static const String planLatest = '/api/plan/latest';
+  // Logs Endpoints
+  static const String logsDaily = '/api/logs';
+
+  // Food analysis
+  static const String foodAnalyze = '/api/food/analyze';
 
   // Timeouts
   static const Duration connectTimeout = Duration(seconds: 60);
