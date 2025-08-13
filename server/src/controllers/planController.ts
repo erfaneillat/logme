@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import OpenAI from 'openai';
+import { calculateOpenAICostUSD, formatUSD } from '../utils/cost';
 import User from '../models/User';
 import AdditionalInfo from '../models/AdditionalInfo';
 import Plan from '../models/Plan';
@@ -112,7 +113,7 @@ export class PlanController {
 
             // Use chat.completions with JSON mode
             const chat = await client.chat.completions.create({
-                model: 'gpt-5-mini',
+                model: 'gpt-4o-mini',
                 response_format: { type: 'json_object' } as any,
                 messages: [
                     { role: 'system', content: 'You are an assistant that outputs only JSON.' },
@@ -120,7 +121,41 @@ export class PlanController {
                 ],
 
             });
-            console.log(chat);
+            // Log token usage and estimated cost
+            try {
+                const model = (chat as any)?.model;
+                const usage = (chat as any)?.usage;
+                if (usage) {
+                    console.log('PlanGeneration token usage:', {
+                        model,
+                        promptTokens: usage.prompt_tokens,
+                        completionTokens: usage.completion_tokens,
+                        totalTokens: usage.total_tokens,
+                    });
+                    const cost = calculateOpenAICostUSD(
+                        model,
+                        usage.prompt_tokens ?? 0,
+                        usage.completion_tokens ?? 0
+                    );
+                    if (cost != null) {
+                        // Round to 6 decimals for storage/logging consistency
+                        const roundedCost = Math.round(cost * 1e6) / 1e6;
+                        console.log('PlanGeneration estimated cost (USD):', formatUSD(roundedCost));
+                        // Persist cumulative cost to user
+                        try {
+                            await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: roundedCost } }).exec();
+                        } catch (persistErr) {
+                            console.error('Failed to increment user AI cost:', persistErr);
+                        }
+                    } else {
+                        console.log('PlanGeneration estimated cost: pricing not configured for model', model);
+                    }
+                } else {
+                    console.log('PlanGeneration token usage: not available on response');
+                }
+            } catch (_) {
+                // ignore logging errors
+            }
             const content = chat.choices?.[0]?.message?.content ?? '';
             let parsed: any;
             try {

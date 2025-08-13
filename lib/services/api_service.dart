@@ -18,6 +18,12 @@ class ApiService {
     this.refreshToken,
     this.onLogout,
   }) {
+    // Debug logging for connection troubleshooting
+    if (kDebugMode) {
+      print('🔗 ApiService initialized with baseUrl: $baseUrl');
+      ApiConfig.debugConfig();
+    }
+
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -32,6 +38,32 @@ class ApiService {
     );
 
     _setupInterceptors();
+  }
+
+  // Test connection method for debugging
+  Future<bool> testConnection() async {
+    try {
+      if (kDebugMode) {
+        print('🧪 Testing connection to: $baseUrl');
+      }
+
+      final response = await _dio.get('/');
+      if (kDebugMode) {
+        print('✅ Connection successful: ${response.statusCode}');
+        print('📡 Response: ${response.data}');
+      }
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Connection failed: $e');
+        if (e is DioException) {
+          print('🔍 Dio Error Type: ${e.type}');
+          print('🔍 Dio Error Message: ${e.message}');
+          print('🔍 Dio Error Response: ${e.response?.statusCode}');
+        }
+      }
+      return false;
+    }
   }
 
   void _setupInterceptors() {

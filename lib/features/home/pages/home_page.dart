@@ -8,10 +8,14 @@ import 'package:image_picker/image_picker.dart';
 // import 'package:cal_ai/config/api_config.dart';
 // import 'package:dio/dio.dart';
 import 'package:cal_ai/features/home/presentation/providers/home_date_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cal_ai/features/food_recognition/pages/food_detail_page.dart';
 
 import 'package:cal_ai/services/image_picker_service.dart';
 import 'package:cal_ai/features/food_recognition/domain/usecases/analyze_food_image_usecase.dart';
 import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
+import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -154,9 +158,20 @@ class HomePage extends HookConsumerWidget {
     ref.read(dailyLogControllerProvider.notifier).addPendingPlaceholder();
 
     try {
-      await ref
-          .read(analyzeFoodImageUseCaseProvider)
-          .call(filePath: file.path, fileName: file.name);
+      // Convert selected Jalali date to ISO YYYY-MM-DD for backend
+      String toIsoFromJalali(Jalali d) {
+        final g = d.toGregorian();
+        final mm = g.month.toString().padLeft(2, '0');
+        final dd = g.day.toString().padLeft(2, '0');
+        return '${g.year}-$mm-$dd';
+      }
+
+      final selectedJalali = ref.read(selectedJalaliDateProvider);
+      final targetDateIso = toIsoFromJalali(selectedJalali);
+      await ref.read(analyzeFoodImageUseCaseProvider).call(
+          filePath: file.path,
+          fileName: file.name,
+          targetDateIso: targetDateIso);
       // Refresh daily remaining and daily log, clear pending placeholders
       await ref.read(dailyLogControllerProvider.notifier).refresh();
       if (context.mounted) {
@@ -447,6 +462,11 @@ class HomePage extends HookConsumerWidget {
 
   Widget _buildMacrosRow(BuildContext context, WidgetRef ref) {
     final remainingAsync = ref.watch(dailyRemainingProvider);
+    final String gramsUnit =
+        (context.locale.languageCode.toLowerCase() == 'fa' ||
+                context.locale.toString().toLowerCase().startsWith('fa'))
+            ? 'گرم'
+            : 'g';
     Widget box(String value, String label, IconData icon, double progress,
         Color ringColor) {
       return Expanded(
@@ -533,21 +553,21 @@ class HomePage extends HookConsumerWidget {
         return Row(
           children: [
             box(
-                '${r.proteinRemaining}g',
+                '${r.proteinRemaining} $gramsUnit',
                 'home.protein_left'.tr(),
                 Icons.bolt_outlined,
                 pct(proteinConsumed, r.totalProtein),
                 Colors.orange),
             const SizedBox(width: 12),
             box(
-                '${r.carbsRemaining}g',
+                '${r.carbsRemaining} $gramsUnit',
                 'home.carbs_left'.tr(),
                 Icons.spa_outlined,
                 pct(carbsConsumed, r.totalCarbs),
                 Colors.yellow.shade700),
             const SizedBox(width: 12),
             box(
-                '${r.fatsRemaining}g',
+                '${r.fatsRemaining} $gramsUnit',
                 'home.fats_left'.tr(),
                 Icons.water_drop_outlined,
                 pct(fatsConsumed, r.totalFats),
@@ -568,6 +588,47 @@ class HomePage extends HookConsumerWidget {
     return Consumer(builder: (context, ref, _) {
       final theme = Theme.of(context);
       final state = ref.watch(dailyLogControllerProvider);
+      final String gramsUnit =
+          (context.locale.languageCode.toLowerCase() == 'fa' ||
+                  context.locale.toString().toLowerCase().startsWith('fa'))
+              ? 'گرم'
+              : 'g';
+      final String kcalUnit =
+          (context.locale.languageCode.toLowerCase() == 'fa' ||
+                  context.locale.toString().toLowerCase().startsWith('fa'))
+              ? 'کالری'
+              : 'kcal';
+      void openDetail({
+        required String title,
+        required int calories,
+        required int protein,
+        required int carbs,
+        required int fats,
+        String? imageUrl,
+        List<IngredientEntity> ingredients = const [],
+      }) {
+        context.pushNamed(
+          'food-detail',
+          extra: FoodDetailArgs(
+            title: title,
+            calories: calories,
+            proteinGrams: protein,
+            fatGrams: fats,
+            carbsGrams: carbs,
+            imageUrl: imageUrl,
+            portions: 1,
+            ingredients: ingredients
+                .map((ing) => IngredientItem(
+                      name: ing.name,
+                      calories: ing.calories,
+                      proteinGrams: ing.proteinGrams,
+                      fatGrams: ing.fatGrams,
+                      carbsGrams: ing.carbsGrams,
+                    ))
+                .toList(),
+          ),
+        );
+      }
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -635,78 +696,96 @@ class HomePage extends HookConsumerWidget {
                     final mm = time != null
                         ? time.minute.toString().padLeft(2, '0')
                         : '--';
-                    return Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2)),
-                          ]),
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Container(
-                              width: 64,
-                              height: 64,
-                              color: Colors.grey.shade200,
-                              child: it.imageUrl != null
-                                  ? Image.network(
-                                      it.imageUrl!,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Icon(Icons.fastfood,
-                                      color: Colors.black54),
+                    return InkWell(
+                      onTap: () {
+                        openDetail(
+                          title: it.title,
+                          calories: it.calories,
+                          protein: it.proteinGrams,
+                          carbs: it.carbsGrams,
+                          fats: it.fatsGrams,
+                          imageUrl: it.imageUrl,
+                          ingredients: it.ingredients,
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.04),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2)),
+                            ]),
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                width: 64,
+                                height: 64,
+                                color: Colors.grey.shade200,
+                                child: it.imageUrl != null
+                                    ? Image.network(
+                                        it.imageUrl!,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : const Icon(Icons.fastfood,
+                                        color: Colors.black54),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Text(it.title,
-                                            style:
-                                                theme.textTheme.titleMedium)),
-                                    Text('$hh:$mm',
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(color: Colors.black54)),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                    '${it.calories} ${'home.calories_left'.tr().split(' ').first}',
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                        fontWeight: FontWeight.w800)),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    _macroChip(context, Icons.bolt_outlined,
-                                        Colors.orange, '${it.proteinGrams}g'),
-                                    const SizedBox(width: 8),
-                                    _macroChip(
-                                        context,
-                                        Icons.spa_outlined,
-                                        Colors.yellow.shade700,
-                                        '${it.carbsGrams}g'),
-                                    const SizedBox(width: 8),
-                                    _macroChip(
-                                        context,
-                                        Icons.water_drop_outlined,
-                                        Colors.blueAccent,
-                                        '${it.fatsGrams}g'),
-                                  ],
-                                )
-                              ],
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: Text(it.title,
+                                              style:
+                                                  theme.textTheme.titleMedium)),
+                                      Text('$hh:$mm',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                  color: Colors.black54)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text('${it.calories} $kcalUnit',
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w800)),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      _macroChip(
+                                          context,
+                                          Icons.bolt_outlined,
+                                          Colors.orange,
+                                          '${it.proteinGrams} $gramsUnit'),
+                                      const SizedBox(width: 8),
+                                      _macroChip(
+                                          context,
+                                          Icons.spa_outlined,
+                                          Colors.yellow.shade700,
+                                          '${it.carbsGrams} $gramsUnit'),
+                                      const SizedBox(width: 8),
+                                      _macroChip(
+                                          context,
+                                          Icons.water_drop_outlined,
+                                          Colors.blueAccent,
+                                          '${it.fatsGrams} $gramsUnit'),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },

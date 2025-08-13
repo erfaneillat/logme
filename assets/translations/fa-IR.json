@@ -284,5 +284,12 @@
         "continue": "ادامه",
         "submit": "ثبت"
     },
-    "submit": "ثبت"
+    "submit": "ثبت",
+    "food_detail": {
+        "portions": "تعداد وعده",
+        "ingredients": "مواد اولیه",
+        "no_ingredients": "مواد اولیه موجود نیست",
+        "fix_result": "اصلاح نتیجه",
+        "share": "اشتراک‌گذاری"
+    }
 }

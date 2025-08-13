@@ -11,6 +11,7 @@ class FoodRemoteDataSource {
   Future<FoodAnalysisEntity> analyzeImage({
     required String filePath,
     String fileName = 'image.jpg',
+    String? targetDateIso,
   }) async {
     final api = ref.read(apiServiceProvider);
     final Map<String, dynamic> response =
@@ -19,6 +20,9 @@ class FoodRemoteDataSource {
       fileField: 'image',
       filePath: filePath,
       fileName: fileName,
+      formData: {
+        if (targetDateIso != null) 'date': targetDateIso,
+      },
       options: Options(headers: {
         'Content-Type': 'multipart/form-data',
         'Accept': 'application/json',

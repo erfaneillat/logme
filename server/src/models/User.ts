@@ -9,6 +9,7 @@ export interface IUser extends Document {
   isPhoneVerified: boolean;
   hasCompletedAdditionalInfo: boolean;
   hasGeneratedPlan: boolean;
+  aiCostUsdTotal?: number;
   verificationCode?: string;
   verificationCodeExpires?: Date;
   createdAt: Date;
@@ -57,6 +58,11 @@ const userSchema = new Schema<IUser>(
     hasGeneratedPlan: {
       type: Boolean,
       default: false,
+    },
+    aiCostUsdTotal: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     verificationCode: {
       type: String,

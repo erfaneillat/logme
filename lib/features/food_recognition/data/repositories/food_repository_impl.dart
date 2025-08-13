@@ -11,8 +11,13 @@ class FoodRepositoryImpl implements FoodRepository {
   Future<FoodAnalysisEntity> analyzeImage({
     required String filePath,
     String fileName = 'image.jpg',
+    String? targetDateIso,
   }) {
-    return remote.analyzeImage(filePath: filePath, fileName: fileName);
+    return remote.analyzeImage(
+      filePath: filePath,
+      fileName: fileName,
+      targetDateIso: targetDateIso,
+    );
   }
 }
 

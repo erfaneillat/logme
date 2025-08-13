@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
 class ApiConfig {
   // Development
-  static const String devBaseUrl = 'http://localhost:8000';
+  static const String devBaseUrl = 'http://10.0.2.2:8000';
+  static const String devBaseUrlLocalhost = 'http://localhost:8000';
 
   // Production
   static const String prodBaseUrl = 'http://10.0.2.2:8000';
@@ -8,13 +12,24 @@ class ApiConfig {
   // Staging
   static const String stagingBaseUrl = 'http://10.0.2.2:8000';
 
-  // Get the appropriate base URL based on environment
+  // Get the appropriate base URL based on environment and platform
   static String get baseUrl {
     // You can use different approaches to determine the environment
     // For now, we'll use a simple const, but you can make this dynamic
     const environment =
         String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
 
+    // For Android emulator, always use 10.0.2.2
+    if (Platform.isAndroid) {
+      return devBaseUrl;
+    }
+
+    // For iOS simulator, use localhost
+    if (Platform.isIOS) {
+      return devBaseUrlLocalhost;
+    }
+
+    // For web and other platforms
     switch (environment) {
       case 'prod':
         return prodBaseUrl;
@@ -22,7 +37,17 @@ class ApiConfig {
         return stagingBaseUrl;
       case 'dev':
       default:
-        return devBaseUrl;
+        return devBaseUrlLocalhost;
+    }
+  }
+
+  // Debug method to check current configuration
+  static void debugConfig() {
+    if (kDebugMode) {
+      print('Platform: ${Platform.operatingSystem}');
+      print('Base URL: $baseUrl');
+      print(
+          'Environment: ${String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev')}');
     }
   }
 

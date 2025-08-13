@@ -21,12 +21,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-const HOST = process.env.HOST || 'localhost';
+const HOST = process.env.HOST || '0.0.0.0'; // Changed from 'localhost' to '0.0.0.0'
 
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+  origin: process.env.CORS_ORIGIN || '*', // Allow all origins for development
   credentials: true,
 }));
 

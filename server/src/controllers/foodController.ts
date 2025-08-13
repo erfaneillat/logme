@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler';
 import { FoodAnalysisService } from '../services/foodAnalysisService';
 import DailyLog from '../models/DailyLog';
+import User from '../models/User';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -36,12 +37,26 @@ export class FoodController {
         const fileBuffer = fs.readFileSync(file.path);
         const base64 = fileBuffer.toString('base64');
 
-        const result = await this.service.analyze(base64);
+        const analysis = await this.service.analyze(base64);
+        const result = analysis.data;
 
-        // Save to daily logs (upsert) using today's local date (YYYY-MM-DD)
+        // Save to daily logs (upsert) using provided date (YYYY-MM-DD),
+        // falling back to server local date if not provided
         const userId = req.user?.userId;
         if (userId) {
-            const todayIso = new Date().toISOString().slice(0, 10);
+            const bodyDate = (req.body as any)?.date as string | undefined;
+            let targetDate: string;
+            if (bodyDate && typeof bodyDate === 'string') {
+                targetDate = bodyDate.slice(0, 10);
+            } else {
+                // Local date in server timezone
+                const now = new Date();
+                const y = now.getFullYear();
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(now.getDate()).padStart(2, '0');
+                targetDate = `${y}-${m}-${d}`;
+            }
+            const todayIso = targetDate;
             const timeIso = new Date().toISOString();
 
             // Create image URL
@@ -79,13 +94,26 @@ export class FoodController {
                             fatsGrams: Math.round(result.fatGrams || 0),
                             timeIso,
                             imageUrl,
+                            ingredients: result.ingredients?.map(ing => ({
+                                name: ing.name,
+                                calories: Math.round(ing.calories || 0),
+                                proteinGrams: Math.round(ing.proteinGrams || 0),
+                                fatGrams: Math.round(ing.fatGrams || 0),
+                                carbsGrams: Math.round(ing.carbsGrams || 0),
+                            })) || [],
                         },
                     },
                 }
             );
+
+            // Increment user's cumulative AI cost if available
+            const cost = analysis.meta?.costUsd;
+            if (typeof cost === 'number' && isFinite(cost) && cost > 0) {
+                await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: cost } }).exec();
+            }
         }
 
-        res.status(200).json({ success: true, data: result, timestamp: new Date() });
+        res.status(200).json({ success: true, data: result, meta: analysis.meta, timestamp: new Date() });
     });
 }
 

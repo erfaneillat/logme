@@ -1,3 +1,5 @@
+import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.dart';
+
 class DailyLogEntity {
   final String date; // YYYY-MM-DD
   final int caloriesConsumed;
@@ -50,6 +52,7 @@ class DailyLogItemEntity {
   final int fatsGrams;
   final String timeIso; // ISO timestamp
   final String? imageUrl;
+  final List<IngredientEntity> ingredients;
 
   const DailyLogItemEntity({
     required this.title,
@@ -59,18 +62,28 @@ class DailyLogItemEntity {
     required this.fatsGrams,
     required this.timeIso,
     this.imageUrl,
+    this.ingredients = const [],
   });
 
   factory DailyLogItemEntity.fromJson(Map<String, dynamic> json) {
     int toInt(dynamic v) =>
         v is int ? v : (v is num ? v.toInt() : int.tryParse('${v ?? 0}') ?? 0);
+
+    final ingredientsJson = json['ingredients'] as List<dynamic>? ?? [];
+    final ingredients = ingredientsJson
+        .map((e) => IngredientEntity.fromJson(
+            e is Map<String, dynamic> ? e : <String, dynamic>{}))
+        .toList();
+
     return DailyLogItemEntity(
-        title: (json['title'] ?? '').toString(),
-        calories: toInt(json['calories']),
-        carbsGrams: toInt(json['carbsGrams']),
-        proteinGrams: toInt(json['proteinGrams']),
-        fatsGrams: toInt(json['fatsGrams']),
-        timeIso: (json['timeIso'] ?? '').toString(),
-        imageUrl: (json['imageUrl'] as String?));
+      title: (json['title'] ?? '').toString(),
+      calories: toInt(json['calories']),
+      carbsGrams: toInt(json['carbsGrams']),
+      proteinGrams: toInt(json['proteinGrams']),
+      fatsGrams: toInt(json['fatsGrams']),
+      timeIso: (json['timeIso'] ?? '').toString(),
+      imageUrl: (json['imageUrl'] as String?),
+      ingredients: ingredients,
+    );
   }
 }

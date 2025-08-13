@@ -10,8 +10,13 @@ class AnalyzeFoodImageUseCase {
   Future<FoodAnalysisEntity> call({
     required String filePath,
     String fileName = 'image.jpg',
+    String? targetDateIso,
   }) {
-    return repository.analyzeImage(filePath: filePath, fileName: fileName);
+    return repository.analyzeImage(
+      filePath: filePath,
+      fileName: fileName,
+      targetDateIso: targetDateIso,
+    );
   }
 }
 

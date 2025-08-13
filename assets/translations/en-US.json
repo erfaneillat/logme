@@ -284,5 +284,12 @@
         "continue": "Continue",
         "submit": "Submit"
     },
-    "submit": "Submit"
+    "submit": "Submit",
+    "food_detail": {
+        "portions": "Portions",
+        "ingredients": "Ingredients",
+        "no_ingredients": "No ingredients",
+        "fix_result": "Fix Result",
+        "share": "Share"
+    }
 }

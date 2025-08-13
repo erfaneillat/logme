@@ -1,5 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+export interface IIngredient {
+    name: string;
+    calories: number;
+    proteinGrams: number;
+    fatGrams: number;
+    carbsGrams: number;
+}
+
 export interface ILogItem {
     title: string;
     calories: number;
@@ -8,6 +16,7 @@ export interface ILogItem {
     fatsGrams: number;
     timeIso: string; // ISO timestamp of when item was added
     imageUrl?: string; // optional image URL or data URI
+    ingredients?: IIngredient[]; // detailed ingredients breakdown
 }
 
 export interface IDailyLog extends Document {
@@ -30,6 +39,13 @@ const logItemSchema = new Schema<ILogItem>({
     fatsGrams: { type: Number, required: true },
     timeIso: { type: String, required: true },
     imageUrl: { type: String },
+    ingredients: [{
+        name: { type: String, required: true },
+        calories: { type: Number, required: true },
+        proteinGrams: { type: Number, required: true },
+        fatGrams: { type: Number, required: true },
+        carbsGrams: { type: Number, required: true },
+    }],
 }, { _id: false });
 
 const dailyLogSchema = new Schema<IDailyLog>(

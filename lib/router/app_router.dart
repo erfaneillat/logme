@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../features/additional_info/pages/additional_info_page.dart';
 import '../features/plan/pages/plan_generation_page.dart';
 import '../features/plan/pages/plan_summary_page.dart';
+import '../features/food_recognition/pages/food_detail_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -77,6 +78,21 @@ class AppRouter {
         path: '/plan-summary',
         name: 'plan-summary',
         builder: (context, state) => const PlanSummaryPage(),
+      ),
+      GoRoute(
+        path: '/food-detail',
+        name: 'food-detail',
+        builder: (context, state) {
+          final args = state.extra as FoodDetailArgs? ??
+              const FoodDetailArgs(
+                title: '',
+                calories: 0,
+                proteinGrams: 0,
+                fatGrams: 0,
+                carbsGrams: 0,
+              );
+          return FoodDetailPage(args: args);
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
