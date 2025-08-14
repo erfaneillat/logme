@@ -76,6 +76,53 @@ class LogsRemoteDataSource {
     );
   }
 
+  Future<DailyLogItemEntity> updateItem({
+    required String dateIso,
+    required String itemId,
+    required String title,
+    required int calories,
+    required int carbsGrams,
+    required int proteinGrams,
+    required int fatsGrams,
+    int? portions,
+    int? healthScore,
+    String? imageUrl,
+    List<IngredientEntity>? ingredients,
+    bool? liked,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    final Map<String, dynamic> response = await api.patch<Map<String, dynamic>>(
+      '${ApiConfig.logsDaily}/item/$itemId',
+      data: {
+        'date': dateIso,
+        'title': title,
+        'calories': calories,
+        'carbsGrams': carbsGrams,
+        'proteinGrams': proteinGrams,
+        'fatsGrams': fatsGrams,
+        if (portions != null) 'portions': portions,
+        if (healthScore != null) 'healthScore': healthScore,
+        if (imageUrl != null) 'imageUrl': imageUrl,
+        if (ingredients != null)
+          'ingredients': ingredients
+              .map((ing) => {
+                    'name': ing.name,
+                    'calories': ing.calories,
+                    'proteinGrams': ing.proteinGrams,
+                    'fatGrams': ing.fatGrams,
+                    'carbsGrams': ing.carbsGrams,
+                  })
+              .toList(),
+        if (liked != null) 'liked': liked,
+      },
+    );
+    final Map<String, dynamic> data =
+        (response['data'] as Map<String, dynamic>? ?? response);
+    final Map<String, dynamic> itemJson =
+        data['item'] as Map<String, dynamic>? ?? data;
+    return DailyLogItemEntity.fromJson(itemJson);
+  }
+
   Future<List<DailyLogEntity>> getLogsRange({
     required String startIso,
     required String endIso,
@@ -104,6 +151,7 @@ class LogsRemoteDataSource {
     required int carbsGrams,
     required int proteinGrams,
     required int fatsGrams,
+    required int portions,
     int? healthScore,
     String? imageUrl,
     List<IngredientEntity> ingredients = const [],
@@ -119,6 +167,7 @@ class LogsRemoteDataSource {
         'carbsGrams': carbsGrams,
         'proteinGrams': proteinGrams,
         'fatsGrams': fatsGrams,
+        'portions': portions,
         if (healthScore != null) 'healthScore': healthScore,
         if (imageUrl != null) 'imageUrl': imageUrl,
         'ingredients': ingredients

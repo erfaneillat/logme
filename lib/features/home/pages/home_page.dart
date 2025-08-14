@@ -20,6 +20,13 @@ import 'package:shamsi_date/shamsi_date.dart';
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
+  String _toIsoFromJalali(Jalali d) {
+    final g = d.toGregorian();
+    final mm = g.month.toString().padLeft(2, '0');
+    final dd = g.day.toString().padLeft(2, '0');
+    return '${g.year}-$mm-$dd';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Horizontal date strip controller and initial scroll to today
@@ -160,15 +167,8 @@ class HomePage extends HookConsumerWidget {
 
     try {
       // Convert selected Jalali date to ISO YYYY-MM-DD for backend
-      String toIsoFromJalali(Jalali d) {
-        final g = d.toGregorian();
-        final mm = g.month.toString().padLeft(2, '0');
-        final dd = g.day.toString().padLeft(2, '0');
-        return '${g.year}-$mm-$dd';
-      }
-
       final selectedJalali = ref.read(selectedJalaliDateProvider);
-      final targetDateIso = toIsoFromJalali(selectedJalali);
+      final targetDateIso = _toIsoFromJalali(selectedJalali);
       await ref.read(analyzeFoodImageUseCaseProvider).call(
           filePath: file.path,
           fileName: file.name,
@@ -606,21 +606,30 @@ class HomePage extends HookConsumerWidget {
         required int protein,
         required int carbs,
         required int fats,
+        required int portions,
         String? imageUrl,
         List<IngredientEntity> ingredients = const [],
         bool initialLiked = false,
+        required String timeIso, // ISO timestamp when item was created
       }) {
+        // Log the currently selected date
+        final selectedJalali = ref.read(selectedJalaliDateProvider);
+
+        // Use currently selected day for the log date (not the item's timeIso)
+        final dateIso = _toIsoFromJalali(selectedJalali);
+
         context.pushNamed(
           'food-detail',
           extra: FoodDetailArgs(
             id: id,
+            dateIso: dateIso,
             title: title,
             calories: calories,
             proteinGrams: protein,
             fatGrams: fats,
             carbsGrams: carbs,
             imageUrl: imageUrl,
-            portions: 1,
+            portions: portions,
             ingredients: ingredients
                 .map((ing) => IngredientItem(
                       name: ing.name,
@@ -701,6 +710,9 @@ class HomePage extends HookConsumerWidget {
                     final mm = time != null
                         ? time.minute.toString().padLeft(2, '0')
                         : '--';
+
+                    // Debug logging for each item
+
                     return InkWell(
                       onTap: () {
                         openDetail(
@@ -710,9 +722,11 @@ class HomePage extends HookConsumerWidget {
                           protein: it.proteinGrams,
                           carbs: it.carbsGrams,
                           fats: it.fatsGrams,
+                          portions: it.portions,
                           imageUrl: it.imageUrl,
                           ingredients: it.ingredients,
                           initialLiked: it.liked,
+                          timeIso: it.timeIso,
                         );
                       },
                       child: Container(

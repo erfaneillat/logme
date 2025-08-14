@@ -4,10 +4,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/widgets/progress_ring.dart';
 import 'package:cal_ai/features/logs/data/datasources/logs_remote_data_source.dart';
+import 'package:cal_ai/features/logs/domain/usecases/update_log_item_usecase.dart';
+import 'package:cal_ai/features/logs/domain/usecases/add_log_item_usecase.dart';
 import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
+import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.dart';
 
 class FoodDetailArgs {
   final String? id;
+  final String dateIso; // YYYY-MM-DD for the log date
   final String title;
   final String? imageUrl;
   final int calories;
@@ -21,6 +25,7 @@ class FoodDetailArgs {
 
   const FoodDetailArgs({
     this.id,
+    required this.dateIso,
     required this.title,
     required this.calories,
     required this.proteinGrams,
@@ -59,6 +64,14 @@ class FoodDetailPage extends HookConsumerWidget {
     final theme = Theme.of(context);
     final portions = useState<int>(args.portions);
     final liked = useState<bool>(args.initialLiked);
+    final itemIdState = useState<String?>(args.id);
+    final caloriesState = useState<int>(args.calories);
+    final proteinGramsState = useState<int>(args.proteinGrams);
+    final fatGramsState = useState<int>(args.fatGrams);
+    final carbsGramsState = useState<int>(args.carbsGrams);
+    final healthScoreState = useState<int>(args.healthScore);
+    final ingredientsState =
+        useState<List<IngredientItem>>(List.of(args.ingredients));
     const double boxHeight = 96;
     final String gramsUnit =
         (context.locale.languageCode.toLowerCase().startsWith('fa'))
@@ -70,10 +83,12 @@ class FoodDetailPage extends HookConsumerWidget {
             : 'kcal';
 
     int computeHealthScoreFallback() {
-      final int calories = args.calories.clamp(0, 5000);
-      final int protein = args.proteinGrams.clamp(0, 500);
-      final int fats = args.fatGrams.clamp(0, 500);
-      final int carbs = args.carbsGrams.clamp(0, 1000);
+      final int calories =
+          (caloriesState.value * portions.value).clamp(0, 5000);
+      final int protein =
+          (proteinGramsState.value * portions.value).clamp(0, 500);
+      final int fats = (fatGramsState.value * portions.value).clamp(0, 500);
+      final int carbs = (carbsGramsState.value * portions.value).clamp(0, 1000);
 
       final int energyFromMacros = protein * 4 + carbs * 4 + fats * 9;
       final int totalEnergy =
@@ -100,24 +115,26 @@ class FoodDetailPage extends HookConsumerWidget {
           calories > 0 ? (protein / (calories / 100)) : 0;
       final double proteinBonus = ((proteinPer100 - 2) * 0.5).clamp(0.0, 1.5);
       final double varietyBonus =
-          (args.ingredients.length * 0.1).clamp(0.0, 0.5);
+          (ingredientsState.value.length * 0.1).clamp(0.0, 0.5);
       final double raw = macroScore + kcalScore + proteinBonus + varietyBonus;
       return raw.clamp(0.0, 10.0).round();
     }
 
-    final int derivedHealthScore =
-        args.healthScore > 0 ? args.healthScore : computeHealthScoreFallback();
+    final int derivedHealthScore = healthScoreState.value > 0
+        ? healthScoreState.value
+        : computeHealthScoreFallback();
 
     useEffect(() {
       // On open, fetch current like status from server if we have an item id
       Future.microtask(() async {
-        if (args.id != null && args.id!.isNotEmpty) {
+        if (itemIdState.value != null && itemIdState.value!.isNotEmpty) {
           try {
             final log = await ref
                 .read(logsRemoteDataSourceProvider)
-                .getDailyLog(_resolveDateIso());
+                .getDailyLog(args.dateIso);
             try {
-              final item = log.items.firstWhere((it) => it.id == args.id);
+              final item =
+                  log.items.firstWhere((it) => it.id == itemIdState.value);
               // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
               // set directly to avoid unwanted rebuilds if unchanged
               // but useState handles equality so simple assignment is fine
@@ -137,12 +154,200 @@ class FoodDetailPage extends HookConsumerWidget {
       return null;
     }, const []);
 
+    Future<void> _persist() async {
+      try {
+        final effectiveCalories = caloriesState.value * portions.value;
+        final effectiveProtein = proteinGramsState.value * portions.value;
+        final effectiveFats = fatGramsState.value * portions.value;
+        final effectiveCarbs = carbsGramsState.value * portions.value;
+
+        if (itemIdState.value != null && itemIdState.value!.isNotEmpty) {
+          await ref.read(updateLogItemUseCaseProvider).call(
+                UpdateLogItemParams(
+                  dateIso: args.dateIso,
+                  itemId: itemIdState.value!,
+                  title: args.title,
+                  calories: effectiveCalories,
+                  carbsGrams: effectiveCarbs,
+                  proteinGrams: effectiveProtein,
+                  fatsGrams: effectiveFats,
+                  healthScore: healthScoreState.value > 0
+                      ? healthScoreState.value
+                      : null,
+                  imageUrl: args.imageUrl,
+                  ingredients: ingredientsState.value
+                      .map((e) => IngredientEntity(
+                            name: e.name,
+                            calories: e.calories,
+                            proteinGrams: e.proteinGrams,
+                            fatGrams: e.fatGrams,
+                            carbsGrams: e.carbsGrams,
+                          ))
+                      .toList(),
+                  liked: liked.value,
+                  portions: portions.value,
+                ),
+              );
+        } else {
+          final created = await ref.read(addLogItemUseCaseProvider).call(
+                AddLogItemParams(
+                  dateIso: args.dateIso,
+                  title: args.title,
+                  calories: effectiveCalories,
+                  carbsGrams: effectiveCarbs,
+                  proteinGrams: effectiveProtein,
+                  fatsGrams: effectiveFats,
+                  healthScore: healthScoreState.value > 0
+                      ? healthScoreState.value
+                      : null,
+                  imageUrl: args.imageUrl,
+                  ingredients: ingredientsState.value
+                      .map((e) => IngredientEntity(
+                            name: e.name,
+                            calories: e.calories,
+                            proteinGrams: e.proteinGrams,
+                            fatGrams: e.fatGrams,
+                            carbsGrams: e.carbsGrams,
+                          ))
+                      .toList(),
+                  liked: liked.value,
+                  portions: portions.value,
+                ),
+              );
+          itemIdState.value = created.id;
+        }
+
+        await ref.read(dailyLogControllerProvider.notifier).refresh();
+      } catch (_) {}
+    }
+
+    Future<void> _editNumberDialog({
+      required String title,
+      required int current,
+      required void Function(int) onSave,
+    }) async {
+      final controller = TextEditingController(text: current.toString());
+      final result = await showDialog<int>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text('common.cancel'.tr()),
+            ),
+            TextButton(
+              onPressed: () {
+                final parsed = int.tryParse(controller.text.trim());
+                Navigator.of(ctx).pop((parsed ?? current).clamp(0, 100000));
+              },
+              child: Text('common.add'.tr()),
+            ),
+          ],
+        ),
+      );
+      if (result != null) {
+        onSave(result);
+        await _persist();
+      }
+    }
+
+    Future<void> _editIngredientDialog({
+      IngredientItem? initial,
+      required void Function(IngredientItem) onSave,
+    }) async {
+      final nameController = TextEditingController(text: initial?.name ?? '');
+      final caloriesController =
+          TextEditingController(text: (initial?.calories ?? 0).toString());
+      final proteinController =
+          TextEditingController(text: (initial?.proteinGrams ?? 0).toString());
+      final fatController =
+          TextEditingController(text: (initial?.fatGrams ?? 0).toString());
+      final carbsController =
+          TextEditingController(text: (initial?.carbsGrams ?? 0).toString());
+
+      final saved = await showDialog<IngredientItem>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(initial == null
+              ? 'food_detail.add_ingredient'.tr()
+              : 'food_detail.edit_ingredient'.tr()),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration:
+                      InputDecoration(labelText: 'food_detail.name'.tr()),
+                ),
+                TextField(
+                  controller: caloriesController,
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      InputDecoration(labelText: 'food_detail.calories'.tr()),
+                ),
+                TextField(
+                  controller: proteinController,
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      InputDecoration(labelText: 'onboarding.protein'.tr()),
+                ),
+                TextField(
+                  controller: fatController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'plan_generation.metric.fats'.tr()),
+                ),
+                TextField(
+                  controller: carbsController,
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      InputDecoration(labelText: 'onboarding.carbs'.tr()),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text('common.cancel'.tr()),
+            ),
+            TextButton(
+              onPressed: () {
+                IngredientItem item = IngredientItem(
+                  name: nameController.text.trim(),
+                  calories: int.tryParse(caloriesController.text.trim()) ?? 0,
+                  proteinGrams:
+                      int.tryParse(proteinController.text.trim()) ?? 0,
+                  fatGrams: int.tryParse(fatController.text.trim()) ?? 0,
+                  carbsGrams: int.tryParse(carbsController.text.trim()) ?? 0,
+                );
+                Navigator.of(ctx).pop(item);
+              },
+              child: Text('common.add'.tr()),
+            ),
+          ],
+        ),
+      );
+      if (saved != null) {
+        onSave(saved);
+        await _persist();
+      }
+    }
+
     Widget metricBox({
       required String label,
       required String value,
       IconData? icon,
       Color? chipColor,
       bool editable = true,
+      VoidCallback? onEdit,
     }) {
       return SizedBox(
         height: boxHeight,
@@ -188,7 +393,11 @@ class FoodDetailPage extends HookConsumerWidget {
                             ?.copyWith(fontWeight: FontWeight.w800)),
                   ),
                   if (editable)
-                    const Icon(Icons.edit, size: 18, color: Colors.black54),
+                    GestureDetector(
+                      onTap: onEdit,
+                      child: const Icon(Icons.edit,
+                          size: 18, color: Colors.black54),
+                    ),
                 ],
               ),
             ],
@@ -292,8 +501,10 @@ class FoodDetailPage extends HookConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    onPressed: () =>
-                        portions.value = (portions.value - 1).clamp(1, 9999),
+                    onPressed: () async {
+                      portions.value = (portions.value - 1).clamp(1, 9999);
+                      await _persist();
+                    },
                     icon: const Icon(Icons.remove),
                     padding: EdgeInsets.zero,
                     constraints:
@@ -304,7 +515,10 @@ class FoodDetailPage extends HookConsumerWidget {
                       style: theme.textTheme.titleMedium
                           ?.copyWith(fontWeight: FontWeight.w800)),
                   IconButton(
-                    onPressed: () => portions.value = portions.value + 1,
+                    onPressed: () async {
+                      portions.value = portions.value + 1;
+                      await _persist();
+                    },
                     icon: const Icon(Icons.add),
                     padding: EdgeInsets.zero,
                     constraints:
@@ -327,14 +541,14 @@ class FoodDetailPage extends HookConsumerWidget {
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),
-          if (args.ingredients.isEmpty)
+          if (ingredientsState.value.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text('food_detail.no_ingredients'.tr(),
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: Colors.black54)),
             ),
-          ...args.ingredients.map((ing) {
+          ...ingredientsState.value.map((ing) {
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -369,13 +583,75 @@ class FoodDetailPage extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  Text('${ing.calories} $kcalUnit',
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w700)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('${ing.calories} $kcalUnit',
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, size: 18),
+                            onPressed: () async {
+                              await _editIngredientDialog(
+                                initial: ing,
+                                onSave: (updated) {
+                                  final list = [...ingredientsState.value];
+                                  final idx = list.indexOf(ing);
+                                  if (idx >= 0) {
+                                    list[idx] = updated;
+                                    ingredientsState.value = list;
+                                  }
+                                },
+                              );
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline,
+                                size: 18, color: Colors.redAccent),
+                            onPressed: () async {
+                              final list = [...ingredientsState.value];
+                              list.remove(ing);
+                              ingredientsState.value = list;
+                              await _persist();
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      )
+                    ],
+                  )
                 ],
               ),
             );
           }).toList(),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                await _editIngredientDialog(onSave: (newIng) {
+                  ingredientsState.value = [...ingredientsState.value, newIng];
+                });
+              },
+              icon: const Icon(Icons.add),
+              label: Text('food_detail.add_ingredient'.tr()),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                side: BorderSide(color: Colors.grey.shade300),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
         ],
       );
     }
@@ -401,11 +677,11 @@ class FoodDetailPage extends HookConsumerWidget {
                   final newLiked = !liked.value;
                   liked.value = newLiked;
                   try {
-                    if (args.id != null) {
+                    if (itemIdState.value != null) {
                       await _toggleLikeOnServer(
                         ref,
-                        dateIso: _resolveDateIso(),
-                        itemId: args.id!,
+                        dateIso: args.dateIso,
+                        itemId: itemIdState.value!,
                         liked: newLiked,
                       );
                     }
@@ -418,7 +694,7 @@ class FoodDetailPage extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              if (args.id != null && args.id!.isNotEmpty)
+              if (itemIdState.value != null && itemIdState.value!.isNotEmpty)
                 PopupMenuButton<String>(
                   padding: EdgeInsets.zero,
                   itemBuilder: (ctx) => [
@@ -467,9 +743,10 @@ class FoodDetailPage extends HookConsumerWidget {
                         try {
                           await _deleteItemOnServer(
                             ref,
-                            dateIso: _resolveDateIso(),
-                            itemId: args.id!,
+                            dateIso: args.dateIso,
+                            itemId: itemIdState.value!,
                           );
+                          itemIdState.value = null;
                           // Refresh the list on Home/Logs
                           await ref
                               .read(dailyLogControllerProvider.notifier)
@@ -563,7 +840,15 @@ class FoodDetailPage extends HookConsumerWidget {
                         Expanded(
                           child: metricBox(
                             label: 'plan_generation.metric.calories'.tr(),
-                            value: '${args.calories} $kcalUnit',
+                            value:
+                                '${caloriesState.value * portions.value} $kcalUnit',
+                            onEdit: () async {
+                              await _editNumberDialog(
+                                title: 'plan_generation.metric.calories'.tr(),
+                                current: caloriesState.value,
+                                onSave: (v) => caloriesState.value = v,
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -576,18 +861,34 @@ class FoodDetailPage extends HookConsumerWidget {
                         Expanded(
                           child: metricBox(
                             label: 'onboarding.protein'.tr(),
-                            value: '${args.proteinGrams} $gramsUnit',
+                            value:
+                                '${proteinGramsState.value * portions.value} $gramsUnit',
                             icon: Icons.bolt_outlined,
                             chipColor: Colors.orange,
+                            onEdit: () async {
+                              await _editNumberDialog(
+                                title: 'onboarding.protein'.tr(),
+                                current: proteinGramsState.value,
+                                onSave: (v) => proteinGramsState.value = v,
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: metricBox(
                             label: 'plan_generation.metric.fats'.tr(),
-                            value: '${args.fatGrams} $gramsUnit',
+                            value:
+                                '${fatGramsState.value * portions.value} $gramsUnit',
                             icon: Icons.water_drop_outlined,
                             chipColor: Colors.blueAccent,
+                            onEdit: () async {
+                              await _editNumberDialog(
+                                title: 'plan_generation.metric.fats'.tr(),
+                                current: fatGramsState.value,
+                                onSave: (v) => fatGramsState.value = v,
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -598,9 +899,17 @@ class FoodDetailPage extends HookConsumerWidget {
                         Expanded(
                           child: metricBox(
                             label: 'onboarding.carbs'.tr(),
-                            value: '${args.carbsGrams} $gramsUnit',
+                            value:
+                                '${carbsGramsState.value * portions.value} $gramsUnit',
                             icon: Icons.spa_outlined,
                             chipColor: Colors.yellow.shade700,
+                            onEdit: () async {
+                              await _editNumberDialog(
+                                title: 'onboarding.carbs'.tr(),
+                                current: carbsGramsState.value,
+                                onSave: (v) => carbsGramsState.value = v,
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -613,9 +922,95 @@ class FoodDetailPage extends HookConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () {},
+                        onPressed: () async {
+                          try {
+                            final effectiveCalories =
+                                caloriesState.value * portions.value;
+                            final effectiveProtein =
+                                proteinGramsState.value * portions.value;
+                            final effectiveFats =
+                                fatGramsState.value * portions.value;
+                            final effectiveCarbs =
+                                carbsGramsState.value * portions.value;
+
+                            if (args.id != null && args.id!.isNotEmpty) {
+                              await ref
+                                  .read(updateLogItemUseCaseProvider)
+                                  .call(UpdateLogItemParams(
+                                    dateIso: args.dateIso,
+                                    itemId: args.id!,
+                                    title: args.title,
+                                    calories: effectiveCalories,
+                                    carbsGrams: effectiveCarbs,
+                                    proteinGrams: effectiveProtein,
+                                    fatsGrams: effectiveFats,
+                                    healthScore: healthScoreState.value > 0
+                                        ? healthScoreState.value
+                                        : null,
+                                    imageUrl: args.imageUrl,
+                                    ingredients: ingredientsState.value
+                                        .map((e) => IngredientEntity(
+                                              name: e.name,
+                                              calories: e.calories,
+                                              proteinGrams: e.proteinGrams,
+                                              fatGrams: e.fatGrams,
+                                              carbsGrams: e.carbsGrams,
+                                            ))
+                                        .toList(),
+                                    liked: liked.value,
+                                    portions: portions.value,
+                                  ));
+                            } else {
+                              await ref
+                                  .read(logsRemoteDataSourceProvider)
+                                  .addItem(
+                                    dateIso: args.dateIso,
+                                    title: args.title,
+                                    calories: effectiveCalories,
+                                    carbsGrams: effectiveCarbs,
+                                    proteinGrams: effectiveProtein,
+                                    fatsGrams: effectiveFats,
+                                    healthScore: healthScoreState.value > 0
+                                        ? healthScoreState.value
+                                        : null,
+                                    imageUrl: args.imageUrl,
+                                    ingredients: ingredientsState.value
+                                        .map((e) => IngredientEntity(
+                                              name: e.name,
+                                              calories: e.calories,
+                                              proteinGrams: e.proteinGrams,
+                                              fatGrams: e.fatGrams,
+                                              carbsGrams: e.carbsGrams,
+                                            ))
+                                        .toList(),
+                                    liked: liked.value,
+                                    portions: portions.value,
+                                  );
+                            }
+
+                            await ref
+                                .read(dailyLogControllerProvider.notifier)
+                                .refresh();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      args.id != null && args.id!.isNotEmpty
+                                          ? 'food_detail.updated'.tr()
+                                          : 'home.added_to_log'.tr()),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                            }
+                          }
+                        },
                         icon: const Icon(Icons.auto_fix_high_outlined),
-                        label: Text('food_detail.fix_result'.tr()),
+                        label: Text('food_detail.update_item'.tr()),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           side: BorderSide(color: Colors.grey.shade300),
@@ -683,13 +1078,7 @@ class FoodDetailPage extends HookConsumerWidget {
   }
 }
 
-String _resolveDateIso() {
-  final now = DateTime.now();
-  final yyyy = now.year.toString().padLeft(4, '0');
-  final mm = now.month.toString().padLeft(2, '0');
-  final dd = now.day.toString().padLeft(2, '0');
-  return '$yyyy-$mm-$dd';
-}
+// Removed helper _resolveDateIso; FoodDetailPage now requires explicit dateIso.
 
 Future<void> _toggleLikeOnServer(
   WidgetRef ref, {

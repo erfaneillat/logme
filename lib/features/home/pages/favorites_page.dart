@@ -112,6 +112,7 @@ class FavoritesPage extends ConsumerWidget {
                           imageUrl: it.imageUrl,
                           ingredients: it.ingredients,
                           liked: false,
+                          portions: it.portions,
                         );
                     // Refresh Home aggregates and list
                     await ref
@@ -235,6 +236,7 @@ class FavoritesPage extends ConsumerWidget {
                                       imageUrl: it.imageUrl,
                                       ingredients: it.ingredients,
                                       liked: false,
+                                      portions: it.portions,
                                     );
                                 await ref
                                     .read(dailyLogControllerProvider.notifier)

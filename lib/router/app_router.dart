@@ -91,6 +91,7 @@ class AppRouter {
         builder: (context, state) {
           final args = state.extra as FoodDetailArgs? ??
               const FoodDetailArgs(
+                dateIso: '1970-01-01',
                 title: '',
                 calories: 0,
                 proteinGrams: 0,

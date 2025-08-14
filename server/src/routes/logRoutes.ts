@@ -23,6 +23,9 @@ router.delete('/item/:itemId/favorite', authenticateToken, controller.removeItem
 // Add a manual item to a daily log
 router.post('/item', authenticateToken, controller.addItem);
 
+// Update a specific item (macros, title, ingredients, liked, image, healthScore)
+router.patch('/item/:itemId', authenticateToken, controller.updateItem);
+
 // Delete an item from a specific day's log and update totals
 router.delete('/item/:itemId', authenticateToken, controller.deleteItem);
 

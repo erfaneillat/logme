@@ -301,9 +301,15 @@
         "ingredients": "Ingredients",
         "no_ingredients": "No ingredients",
         "fix_result": "Fix Result",
+        "update_item": "Save Changes",
+        "add_ingredient": "Add ingredient",
+        "edit_ingredient": "Edit ingredient",
+        "name": "Name",
+        "calories": "Calories",
         "share": "Share",
         "delete": "Delete",
         "deleted": "Deleted",
+        "updated": "Updated",
         "delete_confirm_title": "Delete item?",
         "delete_confirm_desc": "This will remove the item from your daily log."
     }

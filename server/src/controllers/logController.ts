@@ -190,6 +190,7 @@ export class LogController {
                 imageUrl,
                 ingredients,
                 liked,
+                portions,
             } = (req.body || {}) as any;
 
             if (!date || typeof date !== 'string') {
@@ -208,6 +209,7 @@ export class LogController {
             const fats = Math.max(0, Math.round(Number(fatsGrams ?? 0)));
             const hsRaw = Number(healthScore ?? 0);
             const hs = isFinite(hsRaw) ? Math.max(0, Math.min(10, Math.round(hsRaw))) : 0;
+            const portionsSanitized = Math.max(1, Math.round(Number(portions ?? 1)));
             const timeIso = new Date().toISOString();
 
             // Upsert totals
@@ -248,6 +250,7 @@ export class LogController {
                             carbsGrams: carbs,
                             proteinGrams: protein,
                             fatsGrams: fats,
+                            portions: portionsSanitized,
                             healthScore: hs,
                             timeIso,
                             imageUrl: imageUrl ? String(imageUrl) : undefined,
@@ -320,6 +323,128 @@ export class LogController {
             res.json({ success: true, data: { itemId } });
         } catch (error) {
             console.error('Delete log item error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    async updateItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const itemId = req.params.itemId as string | undefined;
+            const {
+                date,
+                title,
+                calories,
+                carbsGrams,
+                proteinGrams,
+                fatsGrams,
+                healthScore,
+                imageUrl,
+                ingredients,
+                liked,
+                portions,
+            } = (req.body || {}) as any;
+
+            if (!itemId) {
+                res.status(400).json({ success: false, message: 'itemId param is required' });
+                return;
+            }
+            if (!date || typeof date !== 'string') {
+                res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) is required' });
+                return;
+            }
+
+            const sanitizedDate = (date as string).slice(0, 10);
+
+            // Debug logging
+
+            // Fetch the existing item and current totals
+            const log: any = await DailyLog.findOne(
+                { userId, date: sanitizedDate, 'items._id': itemId },
+                {
+                    caloriesConsumed: 1,
+                    carbsGrams: 1,
+                    proteinGrams: 1,
+                    fatsGrams: 1,
+                    items: { $elemMatch: { _id: itemId } },
+                }
+            ).lean();
+
+
+            const matchedItem = log?.items?.[0];
+            if (!matchedItem) {
+                // Try to find the item across all dates for this user
+                const allLogs = await DailyLog.find({ userId, 'items._id': itemId }, { date: 1, 'items._id': 1 }).lean();
+
+                // Also check what dates exist for this user
+                const userLogs = await DailyLog.find({ userId }, { date: 1, 'items._id': 1 }).lean();
+
+                res.status(404).json({ success: false, message: 'Log item not found' });
+                return;
+            }
+
+            // Sanitize incoming values
+            const cals = Math.max(0, Math.round(Number(calories ?? matchedItem.calories ?? 0)));
+            const carbs = Math.max(0, Math.round(Number(carbsGrams ?? matchedItem.carbsGrams ?? 0)));
+            const protein = Math.max(0, Math.round(Number(proteinGrams ?? matchedItem.proteinGrams ?? 0)));
+            const fats = Math.max(0, Math.round(Number(fatsGrams ?? matchedItem.fatsGrams ?? 0)));
+            const hsRaw = healthScore ?? matchedItem.healthScore;
+            const hs = hsRaw == null ? undefined : Math.max(0, Math.min(10, Math.round(Number(hsRaw))));
+            const portionsSanitized = portions == null
+                ? undefined
+                : Math.max(1, Math.round(Number(portions)));
+
+            const safeIngredients = Array.isArray(ingredients)
+                ? (ingredients as any[]).map((ing) => ({
+                    name: String(ing?.name ?? ''),
+                    calories: Math.max(0, Math.round(Number(ing?.calories ?? 0))),
+                    proteinGrams: Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0))),
+                    fatGrams: Math.max(0, Math.round(Number(ing?.fatGrams ?? 0))),
+                    carbsGrams: Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0))),
+                }))
+                : undefined; // undefined means keep existing
+
+            // Compute new totals by removing old and adding new
+            const newTotals = {
+                caloriesConsumed: Math.max(0, Number(log?.caloriesConsumed ?? 0) - Number(matchedItem.calories ?? 0) + cals),
+                carbsGrams: Math.max(0, Number(log?.carbsGrams ?? 0) - Number(matchedItem.carbsGrams ?? 0) + carbs),
+                proteinGrams: Math.max(0, Number(log?.proteinGrams ?? 0) - Number(matchedItem.proteinGrams ?? 0) + protein),
+                fatsGrams: Math.max(0, Number(log?.fatsGrams ?? 0) - Number(matchedItem.fatsGrams ?? 0) + fats),
+            };
+
+            const setPayload: any = {
+                ...newTotals,
+                'items.$.title': title != null ? String(title) : matchedItem.title,
+                'items.$.calories': cals,
+                'items.$.carbsGrams': carbs,
+                'items.$.proteinGrams': protein,
+                'items.$.fatsGrams': fats,
+                'items.$.imageUrl': imageUrl != null ? String(imageUrl) : matchedItem.imageUrl,
+                'items.$.liked': liked != null ? Boolean(liked) : matchedItem.liked,
+            };
+            if (hs !== undefined) setPayload['items.$.healthScore'] = hs;
+            if (safeIngredients !== undefined) setPayload['items.$.ingredients'] = safeIngredients;
+            if (portionsSanitized !== undefined) setPayload['items.$.portions'] = portionsSanitized;
+
+            await DailyLog.updateOne(
+                { userId, date: sanitizedDate, 'items._id': itemId },
+                { $set: setPayload }
+            ).exec();
+
+            // Return updated item
+            const updated: any = await DailyLog.findOne(
+                { userId, date: sanitizedDate, 'items._id': itemId },
+                { items: { $elemMatch: { _id: itemId } } }
+            ).lean();
+            const updatedItem = updated?.items?.[0] ?? null;
+            res.json({ success: true, data: { item: updatedItem } });
+        } catch (error) {
+            console.error('Update log item error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

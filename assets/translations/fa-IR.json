@@ -301,9 +301,15 @@
         "ingredients": "مواد اولیه",
         "no_ingredients": "مواد اولیه موجود نیست",
         "fix_result": "اصلاح نتیجه",
+        "update_item": "ذخیره تغییرات",
+        "add_ingredient": "افزودن ماده اولیه",
+        "edit_ingredient": "ویرایش ماده اولیه",
+        "name": "نام",
+        "calories": "کالری",
         "share": "اشتراک‌گذاری",
         "delete": "حذف",
         "deleted": "حذف شد",
+        "updated": "بروزرسانی شد",
         "delete_confirm_title": "حذف مورد؟",
         "delete_confirm_desc": "این مورد از ثبت روزانه شما حذف می‌شود."
     }
