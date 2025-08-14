@@ -63,6 +63,19 @@ class LogsRemoteDataSource {
     );
   }
 
+  Future<void> deleteItem({
+    required String dateIso,
+    required String itemId,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    await api.delete<Map<String, dynamic>>(
+      '${ApiConfig.logsDaily}/item/$itemId',
+      queryParameters: {
+        'date': dateIso,
+      },
+    );
+  }
+
   Future<List<DailyLogEntity>> getLogsRange({
     required String startIso,
     required String endIso,

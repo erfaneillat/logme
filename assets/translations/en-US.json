@@ -301,6 +301,10 @@
         "ingredients": "Ingredients",
         "no_ingredients": "No ingredients",
         "fix_result": "Fix Result",
-        "share": "Share"
+        "share": "Share",
+        "delete": "Delete",
+        "deleted": "Deleted",
+        "delete_confirm_title": "Delete item?",
+        "delete_confirm_desc": "This will remove the item from your daily log."
     }
 }

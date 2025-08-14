@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/widgets/progress_ring.dart';
 import 'package:cal_ai/features/logs/data/datasources/logs_remote_data_source.dart';
+import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
 
 class FoodDetailArgs {
   final String? id;
@@ -417,7 +418,83 @@ class FoodDetailPage extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const _CircleIcon(icon: Icons.more_horiz),
+              if (args.id != null && args.id!.isNotEmpty)
+                PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (ctx) => [
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delete_outline,
+                              color: Colors.redAccent),
+                          const SizedBox(width: 8),
+                          Text(
+                            'food_detail.delete'.tr(),
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onSelected: (value) async {
+                    if (value == 'delete') {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (dctx) {
+                          return AlertDialog(
+                            title:
+                                Text('food_detail.delete_confirm_title'.tr()),
+                            content:
+                                Text('food_detail.delete_confirm_desc'.tr()),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(dctx).pop(false),
+                                child: Text('common.cancel'.tr()),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(dctx).pop(true),
+                                child: Text('food_detail.delete'.tr()),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (confirm == true) {
+                        try {
+                          await _deleteItemOnServer(
+                            ref,
+                            dateIso: _resolveDateIso(),
+                            itemId: args.id!,
+                          );
+                          // Refresh the list on Home/Logs
+                          await ref
+                              .read(dailyLogControllerProvider.notifier)
+                              .refresh();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('food_detail.deleted'.tr())),
+                            );
+                            Navigator.of(context).maybePop();
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                        }
+                      }
+                    }
+                  },
+                  child: const _CircleIcon(icon: Icons.more_horiz),
+                )
+              else
+                const _CircleIcon(icon: Icons.more_horiz),
               const SizedBox(width: 8),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -627,6 +704,17 @@ Future<void> _toggleLikeOnServer(
     liked: liked,
   );
 }
+
+Future<void> _deleteItemOnServer(
+  WidgetRef ref, {
+  required String dateIso,
+  required String itemId,
+}) async {
+  final logsRemote = ref.read(logsRemoteDataSourceProvider);
+  await logsRemote.deleteItem(dateIso: dateIso, itemId: itemId);
+}
+
+// Bottom sheet menu removed in favor of popup menu
 
 class _CircleIcon extends StatelessWidget {
   final IconData icon;

@@ -301,6 +301,10 @@
         "ingredients": "مواد اولیه",
         "no_ingredients": "مواد اولیه موجود نیست",
         "fix_result": "اصلاح نتیجه",
-        "share": "اشتراک‌گذاری"
+        "share": "اشتراک‌گذاری",
+        "delete": "حذف",
+        "deleted": "حذف شد",
+        "delete_confirm_title": "حذف مورد؟",
+        "delete_confirm_desc": "این مورد از ثبت روزانه شما حذف می‌شود."
     }
 }

@@ -266,6 +266,63 @@ export class LogController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
+    async deleteItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const itemId = req.params.itemId as string | undefined;
+            const dateParam = (req.query.date as string) || (req.body?.date as string);
+            if (!itemId || !dateParam) {
+                res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) and itemId are required' });
+                return;
+            }
+
+            const sanitizedDate = dateParam.slice(0, 10);
+
+            // Fetch the log and the specific item to compute new totals
+            const log: any = await DailyLog.findOne(
+                { userId, date: sanitizedDate, 'items._id': itemId },
+                {
+                    caloriesConsumed: 1,
+                    carbsGrams: 1,
+                    proteinGrams: 1,
+                    fatsGrams: 1,
+                    items: { $elemMatch: { _id: itemId } },
+                }
+            ).lean();
+
+            const matchedItem = log?.items?.[0];
+            if (!matchedItem) {
+                res.status(404).json({ success: false, message: 'Log item not found' });
+                return;
+            }
+
+            const newTotals = {
+                caloriesConsumed: Math.max(0, Number(log?.caloriesConsumed ?? 0) - Number(matchedItem.calories ?? 0)),
+                carbsGrams: Math.max(0, Number(log?.carbsGrams ?? 0) - Number(matchedItem.carbsGrams ?? 0)),
+                proteinGrams: Math.max(0, Number(log?.proteinGrams ?? 0) - Number(matchedItem.proteinGrams ?? 0)),
+                fatsGrams: Math.max(0, Number(log?.fatsGrams ?? 0) - Number(matchedItem.fatsGrams ?? 0)),
+            };
+
+            await DailyLog.updateOne(
+                { userId, date: sanitizedDate },
+                {
+                    $pull: { items: { _id: itemId } },
+                    $set: newTotals,
+                }
+            ).exec();
+
+            res.json({ success: true, data: { itemId } });
+        } catch (error) {
+            console.error('Delete log item error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
 }
 
 
