@@ -106,6 +106,7 @@ class HomePage extends HookConsumerWidget {
                         title: Text('home.favorites'.tr()),
                         onTap: () {
                           Navigator.of(sheetContext).pop();
+                          context.pushNamed('favorites');
                         },
                       ),
                     ],

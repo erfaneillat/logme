@@ -138,6 +138,134 @@ export class LogController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
+    async removeItemFromFavorites(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const itemId = req.params.itemId as string | undefined;
+            if (!itemId) {
+                res.status(400).json({ success: false, message: 'itemId param is required' });
+                return;
+            }
+
+            const updateResult = await DailyLog.updateOne(
+                { userId, 'items._id': itemId },
+                { $set: { 'items.$.liked': false } }
+            ).exec();
+
+            const matched = (updateResult as any).matchedCount ?? (updateResult as any).nMatched ?? 0;
+            if (matched === 0) {
+                res.status(404).json({ success: false, message: 'Log item not found' });
+                return;
+            }
+
+            res.json({ success: true, data: { itemId, liked: false } });
+        } catch (error) {
+            console.error('Remove item from favorites error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    async addItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const {
+                date,
+                title,
+                calories,
+                carbsGrams,
+                proteinGrams,
+                fatsGrams,
+                healthScore,
+                imageUrl,
+                ingredients,
+                liked,
+            } = (req.body || {}) as any;
+
+            if (!date || typeof date !== 'string') {
+                res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) is required' });
+                return;
+            }
+            if (!title || typeof title !== 'string') {
+                res.status(400).json({ success: false, message: 'title is required' });
+                return;
+            }
+
+            const sanitizedDate = (date as string).slice(0, 10);
+            const cals = Math.max(0, Math.round(Number(calories ?? 0)));
+            const carbs = Math.max(0, Math.round(Number(carbsGrams ?? 0)));
+            const protein = Math.max(0, Math.round(Number(proteinGrams ?? 0)));
+            const fats = Math.max(0, Math.round(Number(fatsGrams ?? 0)));
+            const hsRaw = Number(healthScore ?? 0);
+            const hs = isFinite(hsRaw) ? Math.max(0, Math.min(10, Math.round(hsRaw))) : 0;
+            const timeIso = new Date().toISOString();
+
+            // Upsert totals
+            await DailyLog.findOneAndUpdate(
+                { userId, date: sanitizedDate },
+                {
+                    userId,
+                    date: sanitizedDate,
+                    $inc: {
+                        caloriesConsumed: cals,
+                        carbsGrams: carbs,
+                        proteinGrams: protein,
+                        fatsGrams: fats,
+                    },
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            ).exec();
+
+            // Build ingredients array safely
+            const safeIngredients = Array.isArray(ingredients)
+                ? (ingredients as any[]).map((ing) => ({
+                    name: String(ing?.name ?? ''),
+                    calories: Math.max(0, Math.round(Number(ing?.calories ?? 0))),
+                    proteinGrams: Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0))),
+                    fatGrams: Math.max(0, Math.round(Number(ing?.fatGrams ?? 0))),
+                    carbsGrams: Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0))),
+                }))
+                : [];
+
+            // Push item and return updated log to extract the appended item
+            const updated = await DailyLog.findOneAndUpdate(
+                { userId, date: sanitizedDate },
+                {
+                    $push: {
+                        items: {
+                            title: String(title),
+                            calories: cals,
+                            carbsGrams: carbs,
+                            proteinGrams: protein,
+                            fatsGrams: fats,
+                            healthScore: hs,
+                            timeIso,
+                            imageUrl: imageUrl ? String(imageUrl) : undefined,
+                            ingredients: safeIngredients,
+                            liked: Boolean(liked ?? false),
+                        },
+                    },
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            ).exec();
+
+            const pushed = updated?.items?.find((it: any) => it.timeIso === timeIso);
+            res.json({ success: true, data: { item: pushed ?? null } });
+        } catch (error) {
+            console.error('Add log item error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
 }
 
 

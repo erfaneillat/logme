@@ -54,7 +54,9 @@
         "updating": "Updating...",
         "deleting": "Deleting...",
         "please_wait": "Please wait...",
-        "next": "Next"
+        "next": "Next",
+        "cancel": "Cancel",
+        "add": "Add"
     },
     "login": {
         "welcome_title": "Welcome to Logme",
@@ -106,7 +108,16 @@
         "fats_left": "Fats left",
         "recently_eaten": "Recently eaten",
         "no_food_title": "You haven’t uploaded any food",
-        "no_food_desc": "Start tracking today's meals by taking a quick picture"
+        "no_food_desc": "Start tracking today's meals by taking a quick picture",
+        "no_favorites": "You don't have any favorites yet",
+        "add_favorite_confirm_title": "Add to today's log?",
+        "add_favorite_confirm_desc": "Do you want to add \"{}\" to your selected day?",
+        "added_to_log": "Added to your log",
+        "remove_favorite": "Remove from favorites",
+        "remove_favorite_title": "Remove favorite?",
+        "remove_favorite_desc": "Do you want to remove \"{}\" from your favorites?",
+        "removed_from_favorites": "Removed from favorites",
+        "remove": "Remove"
     },
     "additional_info": {
         "title": "Complete Your Profile",

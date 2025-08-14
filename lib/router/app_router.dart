@@ -10,6 +10,7 @@ import '../features/additional_info/pages/additional_info_page.dart';
 import '../features/plan/pages/plan_generation_page.dart';
 import '../features/plan/pages/plan_summary_page.dart';
 import '../features/food_recognition/pages/food_detail_page.dart';
+import '../features/home/pages/favorites_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -63,6 +64,11 @@ class AppRouter {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/favorites',
+        name: 'favorites',
+        builder: (context, state) => const FavoritesPage(),
       ),
       GoRoute(
         path: '/additional-info',

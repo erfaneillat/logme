@@ -17,6 +17,12 @@ router.get('/range', authenticateToken, controller.getLogsRange);
 // Toggle like on a specific item inside a daily log
 router.patch('/item/like', authenticateToken, controller.toggleItemLike);
 
+// Remove an item from favorites (set liked=false)
+router.delete('/item/:itemId/favorite', authenticateToken, controller.removeItemFromFavorites);
+
+// Add a manual item to a daily log
+router.post('/item', authenticateToken, controller.addItem);
+
 export default router;
 
 
