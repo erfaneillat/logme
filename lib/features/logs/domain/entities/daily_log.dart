@@ -50,6 +50,7 @@ class DailyLogItemEntity {
   final int carbsGrams;
   final int proteinGrams;
   final int fatsGrams;
+  final int? healthScore; // optional, 0..10
   final String timeIso; // ISO timestamp
   final String? imageUrl;
   final List<IngredientEntity> ingredients;
@@ -60,6 +61,7 @@ class DailyLogItemEntity {
     required this.carbsGrams,
     required this.proteinGrams,
     required this.fatsGrams,
+    this.healthScore,
     required this.timeIso,
     this.imageUrl,
     this.ingredients = const [],
@@ -81,6 +83,9 @@ class DailyLogItemEntity {
       carbsGrams: toInt(json['carbsGrams']),
       proteinGrams: toInt(json['proteinGrams']),
       fatsGrams: toInt(json['fatsGrams']),
+      healthScore: json['healthScore'] == null
+          ? null
+          : toInt(json['healthScore']).clamp(0, 10),
       timeIso: (json['timeIso'] ?? '').toString(),
       imageUrl: (json['imageUrl'] as String?),
       ingredients: ingredients,

@@ -14,6 +14,7 @@ export interface ILogItem {
     carbsGrams: number;
     proteinGrams: number;
     fatsGrams: number;
+    healthScore?: number; // 0..10 (optional for backward compatibility)
     timeIso: string; // ISO timestamp of when item was added
     imageUrl?: string; // optional image URL or data URI
     ingredients?: IIngredient[]; // detailed ingredients breakdown
@@ -37,6 +38,7 @@ const logItemSchema = new Schema<ILogItem>({
     carbsGrams: { type: Number, required: true },
     proteinGrams: { type: Number, required: true },
     fatsGrams: { type: Number, required: true },
+    healthScore: { type: Number, required: false, min: 0, max: 10 },
     timeIso: { type: String, required: true },
     imageUrl: { type: String },
     ingredients: [{

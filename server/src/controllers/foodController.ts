@@ -92,6 +92,7 @@ export class FoodController {
                             carbsGrams: Math.round(result.carbsGrams || 0),
                             proteinGrams: Math.round(result.proteinGrams || 0),
                             fatsGrams: Math.round(result.fatGrams || 0),
+                            healthScore: Math.max(0, Math.min(10, Math.round(result.healthScore || 0))),
                             timeIso,
                             imageUrl,
                             ingredients: result.ingredients?.map(ing => ({
