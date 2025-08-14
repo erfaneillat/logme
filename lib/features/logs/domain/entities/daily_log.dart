@@ -45,26 +45,28 @@ class DailyLogEntity {
 }
 
 class DailyLogItemEntity {
+  final String id;
   final String title;
   final int calories;
   final int carbsGrams;
   final int proteinGrams;
   final int fatsGrams;
-  final int? healthScore; // optional, 0..10
   final String timeIso; // ISO timestamp
   final String? imageUrl;
   final List<IngredientEntity> ingredients;
+  final bool liked;
 
   const DailyLogItemEntity({
+    required this.id,
     required this.title,
     required this.calories,
     required this.carbsGrams,
     required this.proteinGrams,
     required this.fatsGrams,
-    this.healthScore,
     required this.timeIso,
     this.imageUrl,
     this.ingredients = const [],
+    this.liked = false,
   });
 
   factory DailyLogItemEntity.fromJson(Map<String, dynamic> json) {
@@ -78,17 +80,16 @@ class DailyLogItemEntity {
         .toList();
 
     return DailyLogItemEntity(
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
       calories: toInt(json['calories']),
       carbsGrams: toInt(json['carbsGrams']),
       proteinGrams: toInt(json['proteinGrams']),
       fatsGrams: toInt(json['fatsGrams']),
-      healthScore: json['healthScore'] == null
-          ? null
-          : toInt(json['healthScore']).clamp(0, 10),
       timeIso: (json['timeIso'] ?? '').toString(),
       imageUrl: (json['imageUrl'] as String?),
       ingredients: ingredients,
+      liked: (json['liked'] as bool?) ?? false,
     );
   }
 }

@@ -14,6 +14,9 @@ router.get('/', authenticateToken, controller.getDailyLog);
 // Get logs in a date range [start, end]
 router.get('/range', authenticateToken, controller.getLogsRange);
 
+// Toggle like on a specific item inside a daily log
+router.patch('/item/like', authenticateToken, controller.toggleItemLike);
+
 export default router;
 
 

@@ -14,10 +14,11 @@ export interface ILogItem {
     carbsGrams: number;
     proteinGrams: number;
     fatsGrams: number;
-    healthScore?: number; // 0..10 (optional for backward compatibility)
+    healthScore?: number;
     timeIso: string; // ISO timestamp of when item was added
     imageUrl?: string; // optional image URL or data URI
     ingredients?: IIngredient[]; // detailed ingredients breakdown
+    liked?: boolean; // whether user liked this item
 }
 
 export interface IDailyLog extends Document {
@@ -48,7 +49,8 @@ const logItemSchema = new Schema<ILogItem>({
         fatGrams: { type: Number, required: true },
         carbsGrams: { type: Number, required: true },
     }],
-}, { _id: false });
+    liked: { type: Boolean, default: false },
+});
 
 const dailyLogSchema = new Schema<IDailyLog>(
     {

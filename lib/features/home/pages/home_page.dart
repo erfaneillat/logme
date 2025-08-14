@@ -599,6 +599,7 @@ class HomePage extends HookConsumerWidget {
               ? 'کالری'
               : 'kcal';
       void openDetail({
+        required String id,
         required String title,
         required int calories,
         required int protein,
@@ -606,10 +607,12 @@ class HomePage extends HookConsumerWidget {
         required int fats,
         String? imageUrl,
         List<IngredientEntity> ingredients = const [],
+        bool initialLiked = false,
       }) {
         context.pushNamed(
           'food-detail',
           extra: FoodDetailArgs(
+            id: id,
             title: title,
             calories: calories,
             proteinGrams: protein,
@@ -626,6 +629,7 @@ class HomePage extends HookConsumerWidget {
                       carbsGrams: ing.carbsGrams,
                     ))
                 .toList(),
+            initialLiked: initialLiked,
           ),
         );
       }
@@ -699,6 +703,7 @@ class HomePage extends HookConsumerWidget {
                     return InkWell(
                       onTap: () {
                         openDetail(
+                          id: it.id,
                           title: it.title,
                           calories: it.calories,
                           protein: it.proteinGrams,
@@ -706,6 +711,7 @@ class HomePage extends HookConsumerWidget {
                           fats: it.fatsGrams,
                           imageUrl: it.imageUrl,
                           ingredients: it.ingredients,
+                          initialLiked: it.liked,
                         );
                       },
                       child: Container(

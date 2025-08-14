@@ -36,6 +36,22 @@ class LogsRemoteDataSource {
     final logJson = data['log'] as Map<String, dynamic>? ?? data;
     return DailyLogEntity.fromJson(logJson);
   }
+
+  Future<void> toggleItemLike({
+    required String dateIso,
+    required String itemId,
+    required bool liked,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    await api.patch<Map<String, dynamic>>(
+      '${ApiConfig.logsDaily}/item/like',
+      data: {
+        'date': dateIso,
+        'itemId': itemId,
+        'liked': liked,
+      },
+    );
+  }
 }
 
 final logsRemoteDataSourceProvider = Provider<LogsRemoteDataSource>((ref) {

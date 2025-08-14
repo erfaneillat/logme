@@ -19,7 +19,7 @@ export class LogController {
                 return;
             }
 
-            const { date, caloriesConsumed, carbsGrams, proteinGrams, fatsGrams, item } = req.body || {};
+            const { date, caloriesConsumed, carbsGrams, proteinGrams, fatsGrams } = req.body || {};
             if (!date || typeof date !== 'string') {
                 res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) is required' });
                 return;
@@ -39,33 +39,6 @@ export class LogController {
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
-
-            if (item) {
-                await DailyLog.updateOne(
-                    { userId, date: sanitizedDate },
-                    {
-                        $push: {
-                            items: {
-                                title: item.title,
-                                calories: Math.round(Number(item.calories ?? 0)),
-                                carbsGrams: Math.round(Number(item.carbsGrams ?? 0)),
-                                proteinGrams: Math.round(Number(item.proteinGrams ?? 0)),
-                                fatsGrams: Math.round(Number(item.fatsGrams ?? 0)),
-                                healthScore: Math.max(0, Math.min(10, Math.round(Number(item.healthScore ?? 0)))),
-                                timeIso: item.timeIso || new Date().toISOString(),
-                                imageUrl: item.imageUrl,
-                                ingredients: (item.ingredients || []).map((ing: any) => ({
-                                    name: ing.name,
-                                    calories: Math.round(Number(ing.calories ?? 0)),
-                                    proteinGrams: Math.round(Number(ing.proteinGrams ?? 0)),
-                                    fatGrams: Math.round(Number(ing.fatGrams ?? 0)),
-                                    carbsGrams: Math.round(Number(ing.carbsGrams ?? 0)),
-                                })),
-                            },
-                        },
-                    }
-                );
-            }
 
             res.json({ success: true, data: { log } });
         } catch (error) {
@@ -128,6 +101,40 @@ export class LogController {
             res.json({ success: true, data: { logs } });
         } catch (error) {
             console.error('Get logs range error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    async toggleItemLike(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const { date, itemId, liked } = (req.body || {}) as { date?: string; itemId?: string; liked?: boolean };
+            if (!date || typeof date !== 'string' || !itemId) {
+                res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) and itemId are required' });
+                return;
+            }
+
+            const sanitizedDate = date.slice(0, 10);
+            const updateResult = await DailyLog.updateOne(
+                { userId, date: sanitizedDate, 'items._id': itemId },
+                { $set: { 'items.$.liked': Boolean(liked) } }
+            ).exec();
+
+            // For Mongoose >=6 updateOne result
+            const matched = (updateResult as any).matchedCount ?? (updateResult as any).nMatched ?? 0;
+            if (matched === 0) {
+                res.status(404).json({ success: false, message: 'Log item not found' });
+                return;
+            }
+
+            res.json({ success: true, data: { itemId, liked: Boolean(liked) } });
+        } catch (error) {
+            console.error('Toggle item like error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

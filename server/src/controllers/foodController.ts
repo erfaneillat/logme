@@ -102,6 +102,7 @@ export class FoodController {
                                 fatGrams: Math.round(ing.fatGrams || 0),
                                 carbsGrams: Math.round(ing.carbsGrams || 0),
                             })) || [],
+                            liked: false,
                         },
                     },
                 }
