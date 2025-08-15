@@ -30,8 +30,8 @@ class FoodAnalyzingPlaceholder extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Container(
-              width: 56,
-              height: 56,
+              width: 64,
+              height: 64,
               color: Colors.grey.shade300,
               child: Center(
                 child: SizedBox(
