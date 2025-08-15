@@ -3,6 +3,7 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { FoodAnalysisService } from '../services/foodAnalysisService';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
+import { updateStreakIfEligible } from '../services/streakService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -143,6 +144,13 @@ export class FoodController {
                     },
                 }
             );
+
+            // Update streak if today's goal is met
+            try {
+                await updateStreakIfEligible(String(userId), todayIso);
+            } catch (e) {
+                console.error('Streak update (food) error:', e);
+            }
 
             // Increment user's cumulative AI cost if available
             const cost = analysis.meta?.costUsd;

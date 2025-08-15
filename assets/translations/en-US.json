@@ -119,7 +119,12 @@
         "removed_from_favorites": "Removed from favorites",
         "remove": "Remove",
         "analyzing": "Analyzing...",
-        "analysis_canceled": "Upload canceled"
+        "analysis_canceled": "Upload canceled",
+        "streak": "Streak",
+        "streak_days": "{}-day streak",
+        "streak_title": "Day streak",
+        "streak_message": "You're on fire! Every day matters for hitting your goal!",
+        "continue": "Continue"
     },
     "additional_info": {
         "title": "Complete Your Profile",
@@ -212,7 +217,6 @@
         "your_weight": "Your weight",
         "traditional_diet": "Traditional diet",
         "laghmeh": "Laghmeh",
-        "weight": "Weight",
         "month_1": "Month 1",
         "month_6": "Month 6",
         "success_rate": "80% of Laghmeh users maintain their weight loss even 6 months later",
@@ -294,7 +298,6 @@
         "referral_instruction": "You can skip this step",
         "referral_hint": "Referral Code",
         "referral_submit": "Submit",
-        "continue": "Continue",
         "submit": "Submit"
     },
     "submit": "Submit",

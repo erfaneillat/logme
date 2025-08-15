@@ -7,6 +7,8 @@ class User {
   final String? token;
   final bool hasCompletedAdditionalInfo;
   final bool hasGeneratedPlan;
+  final int streakCount;
+  final String? lastStreakDate; // YYYY-MM-DD
 
   const User({
     required this.id,
@@ -17,6 +19,8 @@ class User {
     this.token,
     this.hasCompletedAdditionalInfo = false,
     this.hasGeneratedPlan = false,
+    this.streakCount = 0,
+    this.lastStreakDate,
   });
 
   User copyWith({
@@ -28,6 +32,8 @@ class User {
     String? token,
     bool? hasCompletedAdditionalInfo,
     bool? hasGeneratedPlan,
+    int? streakCount,
+    String? lastStreakDate,
   }) {
     return User(
       id: id ?? this.id,
@@ -39,6 +45,8 @@ class User {
       hasCompletedAdditionalInfo:
           hasCompletedAdditionalInfo ?? this.hasCompletedAdditionalInfo,
       hasGeneratedPlan: hasGeneratedPlan ?? this.hasGeneratedPlan,
+      streakCount: streakCount ?? this.streakCount,
+      lastStreakDate: lastStreakDate ?? this.lastStreakDate,
     );
   }
 
@@ -51,6 +59,8 @@ class User {
         'token': token,
         'hasCompletedAdditionalInfo': hasCompletedAdditionalInfo,
         'hasGeneratedPlan': hasGeneratedPlan,
+        'streakCount': streakCount,
+        'lastStreakDate': lastStreakDate,
       };
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -62,11 +72,15 @@ class User {
         token: json['token'],
         hasCompletedAdditionalInfo: json['hasCompletedAdditionalInfo'] ?? false,
         hasGeneratedPlan: json['hasGeneratedPlan'] ?? false,
+        streakCount: (json['streakCount'] ?? 0) is int
+            ? (json['streakCount'] ?? 0) as int
+            : int.tryParse((json['streakCount'] ?? '0').toString()) ?? 0,
+        lastStreakDate: json['lastStreakDate'],
       );
 
   @override
   String toString() =>
-      'User(id: $id, phone: $phone, email: $email, name: $name, isPhoneVerified: $isPhoneVerified, hasCompletedAdditionalInfo: $hasCompletedAdditionalInfo, hasGeneratedPlan: $hasGeneratedPlan)';
+      'User(id: $id, phone: $phone, email: $email, name: $name, isPhoneVerified: $isPhoneVerified, hasCompletedAdditionalInfo: $hasCompletedAdditionalInfo, hasGeneratedPlan: $hasGeneratedPlan, streakCount: $streakCount, lastStreakDate: $lastStreakDate)';
 
   @override
   bool operator ==(Object other) {
@@ -78,7 +92,9 @@ class User {
         other.name == name &&
         other.isPhoneVerified == isPhoneVerified &&
         other.hasCompletedAdditionalInfo == hasCompletedAdditionalInfo &&
-        other.hasGeneratedPlan == hasGeneratedPlan;
+        other.hasGeneratedPlan == hasGeneratedPlan &&
+        other.streakCount == streakCount &&
+        other.lastStreakDate == lastStreakDate;
   }
 
   @override
@@ -89,5 +105,7 @@ class User {
       name.hashCode ^
       isPhoneVerified.hashCode ^
       hasCompletedAdditionalInfo.hashCode ^
-      hasGeneratedPlan.hashCode;
+      hasGeneratedPlan.hashCode ^
+      streakCount.hashCode ^
+      lastStreakDate.hashCode;
 }

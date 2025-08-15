@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import DailyLog from '../models/DailyLog';
+import { updateStreakIfEligible } from '../services/streakService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -39,6 +40,9 @@ export class LogController {
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
+
+            // Trigger streak update after totals change
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
 
             res.json({ success: true, data: { log } });
         } catch (error) {
@@ -274,6 +278,10 @@ export class LogController {
             ).exec();
 
             const pushed = updated?.items?.find((it: any) => it.timeIso === timeIso);
+
+            // Trigger streak update after totals change
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
+
             res.json({ success: true, data: { item: pushed ?? null } });
         } catch (error) {
             console.error('Add log item error:', error);
@@ -330,6 +338,9 @@ export class LogController {
                     $set: newTotals,
                 }
             ).exec();
+
+            // Trigger streak update after totals change
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
 
             res.json({ success: true, data: { itemId } });
         } catch (error) {
@@ -453,6 +464,10 @@ export class LogController {
                 { items: { $elemMatch: { _id: itemId } } }
             ).lean();
             const updatedItem = updated?.items?.[0] ?? null;
+
+            // Trigger streak update after totals change
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
+
             res.json({ success: true, data: { item: updatedItem } });
         } catch (error) {
             console.error('Update log item error:', error);
@@ -460,5 +475,3 @@ export class LogController {
         }
     }
 }
-
-

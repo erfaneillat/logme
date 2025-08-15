@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 // import 'package:cal_ai/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:cal_ai/features/home/presentation/providers/home_date_provider.dart';
+import 'package:cal_ai/features/login/presentation/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cal_ai/features/food_recognition/pages/food_detail_page.dart';
 
@@ -16,6 +17,8 @@ import 'package:cal_ai/features/food_recognition/domain/usecases/analyze_food_im
 import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
 import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import 'package:cal_ai/common/widgets/streak_dialog.dart';
+import 'package:cal_ai/features/streak/presentation/providers/streak_providers.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -136,7 +139,7 @@ class HomePage extends HookConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(context),
+                  _buildHeader(context, ref),
                   const SizedBox(height: 16),
                   _buildDateStrip(context, ref, dateScrollController),
                   const SizedBox(height: 16),
@@ -167,6 +170,12 @@ class HomePage extends HookConsumerWidget {
         ref.read(dailyLogControllerProvider.notifier).createPendingToken();
 
     try {
+      // Capture previous streak before upload
+      int prevStreak = 0;
+      try {
+        final user = await ref.read(currentUserProvider.future);
+        prevStreak = user?.streakCount ?? 0;
+      } catch (_) {}
       // Convert selected Jalali date to ISO YYYY-MM-DD for backend
       final selectedJalali = ref.read(selectedJalaliDateProvider);
       final targetDateIso = _toIsoFromJalali(selectedJalali);
@@ -190,6 +199,22 @@ class HomePage extends HookConsumerWidget {
       // Force refresh of dailyRemainingProvider
       // ignore: unused_result
       ref.refresh(dailyRemainingProvider);
+
+      // Refresh user profile to get updated streak
+      ref.invalidate(currentUserProvider);
+      final newUser = await ref.read(currentUserProvider.future);
+      final newStreak = newUser?.streakCount ?? prevStreak;
+
+      // If streak increased, show dialog with weekly completions
+      if (newStreak > prevStreak && context.mounted) {
+        final completions =
+            await ref.read(streakWeeklyCompletionsProvider.future);
+        await showStreakDialog(
+          context,
+          streakCount: newStreak,
+          completedDatesIso: completions,
+        );
+      }
     } catch (e) {
       // Remove token from controller storage on error/cancel
       ref.read(dailyLogControllerProvider.notifier).removeToken(token);
@@ -209,6 +234,7 @@ class HomePage extends HookConsumerWidget {
     }
   }
 
+
   Widget _buildTopGradientBackground(BuildContext context) {
     return Container(
       height: 240,
@@ -225,7 +251,12 @@ class HomePage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserProvider);
+    final currentStreak = userAsync.maybeWhen(
+      data: (u) => u?.streakCount ?? 0,
+      orElse: () => 0,
+    );
     return Row(
       children: [
         const Icon(Icons.apple, size: 28),
@@ -237,25 +268,45 @@ class HomePage extends HookConsumerWidget {
               ),
         ),
         const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: const [
-              Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
-              SizedBox(width: 4),
-              Text('0'),
-            ],
+        InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () async {
+            final completions =
+                await ref.read(streakWeeklyCompletionsProvider.future);
+            await showStreakDialog(
+              context,
+              streakCount: currentStreak,
+              completedDatesIso: completions,
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
+                const SizedBox(width: 6),
+                userAsync.when(
+                  loading: () => Text('home.streak'.tr(), style: Theme.of(context).textTheme.labelMedium),
+                  error: (e, st) => Text('0', style: Theme.of(context).textTheme.labelMedium),
+                  data: (user) {
+                    final count = user?.streakCount ?? 0;
+                    return Text('home.streak_days'.tr(args: ['${count}']),
+                        style: Theme.of(context).textTheme.labelMedium);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ],

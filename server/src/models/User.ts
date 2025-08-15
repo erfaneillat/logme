@@ -10,6 +10,9 @@ export interface IUser extends Document {
   hasCompletedAdditionalInfo: boolean;
   hasGeneratedPlan: boolean;
   aiCostUsdTotal?: number;
+  // Streak fields
+  streakCount?: number; // number of consecutive days completed
+  lastStreakDate?: string | null; // YYYY-MM-DD of last completed day
   verificationCode?: string;
   verificationCodeExpires?: Date;
   createdAt: Date;
@@ -63,6 +66,16 @@ const userSchema = new Schema<IUser>(
       type: Number,
       default: 0,
       min: 0,
+    },
+    streakCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    lastStreakDate: {
+      type: String,
+      required: false,
+      default: null,
     },
     verificationCode: {
       type: String,

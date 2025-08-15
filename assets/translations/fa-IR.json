@@ -119,7 +119,12 @@
         "removed_from_favorites": "از علاقه‌مندی‌ها حذف شد",
         "remove": "حذف",
         "analyzing": "در حال تحلیل...",
-        "analysis_canceled": "بارگذاری لغو شد"
+        "analysis_canceled": "بارگذاری لغو شد",
+        "streak": "زنجیره",
+        "streak_days": "{} روز متوالی",
+        "streak_title": "زنجیره روزانه",
+        "streak_message": "عالیه! هر روز برای رسیدن به هدفت مهمه!",
+        "continue": "ادامه"
     },
     "additional_info": {
         "title": "پروفایل خود را تکمیل کنید",
