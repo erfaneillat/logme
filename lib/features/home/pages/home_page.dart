@@ -606,7 +606,7 @@ class HomePage extends HookConsumerWidget {
         required int protein,
         required int carbs,
         required int fats,
-        required int portions,
+        required double portions,
         String? imageUrl,
         List<IngredientEntity> ingredients = const [],
         bool initialLiked = false,

@@ -11,7 +11,7 @@ class AddLogItemParams {
   final int carbsGrams;
   final int proteinGrams;
   final int fatsGrams;
-  final int portions;
+  final double portions;
   final int? healthScore;
   final String? imageUrl;
   final List<IngredientEntity> ingredients;

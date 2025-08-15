@@ -51,7 +51,7 @@ class DailyLogItemEntity {
   final int carbsGrams;
   final int proteinGrams;
   final int fatsGrams;
-  final int portions;
+  final double portions;
   final String timeIso; // ISO timestamp
   final String? imageUrl;
   final List<IngredientEntity> ingredients;
@@ -64,7 +64,7 @@ class DailyLogItemEntity {
     required this.carbsGrams,
     required this.proteinGrams,
     required this.fatsGrams,
-    this.portions = 1,
+    this.portions = 1.0,
     required this.timeIso,
     this.imageUrl,
     this.ingredients = const [],
@@ -74,6 +74,12 @@ class DailyLogItemEntity {
   factory DailyLogItemEntity.fromJson(Map<String, dynamic> json) {
     int toInt(dynamic v) =>
         v is int ? v : (v is num ? v.toInt() : int.tryParse('${v ?? 0}') ?? 0);
+    double toDouble(dynamic v) {
+      if (v is double) return v;
+      if (v is int) return v.toDouble();
+      if (v is num) return v.toDouble();
+      return double.tryParse('${v ?? 0}') ?? 0.0;
+    }
 
     final ingredientsJson = json['ingredients'] as List<dynamic>? ?? [];
     final ingredients = ingredientsJson
@@ -89,8 +95,9 @@ class DailyLogItemEntity {
       proteinGrams: toInt(json['proteinGrams']),
       fatsGrams: toInt(json['fatsGrams']),
       portions: (() {
-        final p = toInt(json['portions']);
-        return p <= 0 ? 1 : p;
+        final p = toDouble(json['portions']);
+        final val = p <= 0 ? 1.0 : p;
+        return double.parse(val.toStringAsFixed(2));
       })(),
       timeIso: (json['timeIso'] ?? '').toString(),
       imageUrl: (json['imageUrl'] as String?),

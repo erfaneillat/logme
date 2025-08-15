@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/widgets/progress_ring.dart';
@@ -19,7 +20,7 @@ class FoodDetailArgs {
   final int fatGrams;
   final int carbsGrams;
   final int healthScore; // 0..10
-  final int portions;
+  final double portions;
   final List<IngredientItem> ingredients;
   final bool initialLiked;
 
@@ -32,7 +33,7 @@ class FoodDetailArgs {
     required this.fatGrams,
     required this.carbsGrams,
     this.healthScore = 0,
-    this.portions = 1,
+    this.portions = 1.0,
     this.imageUrl,
     this.ingredients = const [],
     this.initialLiked = false,
@@ -59,10 +60,23 @@ class FoodDetailPage extends HookConsumerWidget {
   final FoodDetailArgs args;
   const FoodDetailPage({super.key, required this.args});
 
+  // Formats portion values: show whole numbers without decimals,
+  // otherwise show up to two decimal places with trailing zeros trimmed.
+  String _formatPortion(double v) {
+    // Normalize to 2 decimals to avoid floating point artifacts like 0.749999
+    final normalized = (v * 100).round() / 100.0;
+    if (normalized % 1 == 0) return normalized.toInt().toString();
+    final s = normalized.toStringAsFixed(2);
+    // Trim trailing ".00" or a single trailing zero (e.g., 1.50 -> 1.5)
+    return s
+        .replaceFirst(RegExp(r"\.00$"), '')
+        .replaceFirst(RegExp(r"0$"), '');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final portions = useState<int>(args.portions);
+    final portions = useState<double>(args.portions);
     final liked = useState<bool>(args.initialLiked);
     final itemIdState = useState<String?>(args.id);
     final caloriesState = useState<int>(args.calories);
@@ -84,11 +98,13 @@ class FoodDetailPage extends HookConsumerWidget {
 
     int computeHealthScoreFallback() {
       final int calories =
-          (caloriesState.value * portions.value).clamp(0, 5000);
+          (caloriesState.value * portions.value).round().clamp(0, 5000);
       final int protein =
-          (proteinGramsState.value * portions.value).clamp(0, 500);
-      final int fats = (fatGramsState.value * portions.value).clamp(0, 500);
-      final int carbs = (carbsGramsState.value * portions.value).clamp(0, 1000);
+          (proteinGramsState.value * portions.value).round().clamp(0, 500);
+      final int fats =
+          (fatGramsState.value * portions.value).round().clamp(0, 500);
+      final int carbs =
+          (carbsGramsState.value * portions.value).round().clamp(0, 1000);
 
       final int energyFromMacros = protein * 4 + carbs * 4 + fats * 9;
       final int totalEnergy =
@@ -156,10 +172,14 @@ class FoodDetailPage extends HookConsumerWidget {
 
     Future<void> _persist() async {
       try {
-        final effectiveCalories = caloriesState.value * portions.value;
-        final effectiveProtein = proteinGramsState.value * portions.value;
-        final effectiveFats = fatGramsState.value * portions.value;
-        final effectiveCarbs = carbsGramsState.value * portions.value;
+        final effectiveCalories =
+            (caloriesState.value * portions.value).round();
+        final effectiveProtein =
+            (proteinGramsState.value * portions.value).round();
+        final effectiveFats =
+            (fatGramsState.value * portions.value).round();
+        final effectiveCarbs =
+            (carbsGramsState.value * portions.value).round();
 
         if (itemIdState.value != null && itemIdState.value!.isNotEmpty) {
           await ref.read(updateLogItemUseCaseProvider).call(
@@ -227,29 +247,131 @@ class FoodDetailPage extends HookConsumerWidget {
       required void Function(int) onSave,
     }) async {
       final controller = TextEditingController(text: current.toString());
-      final result = await showDialog<int>(
+      final result = await showModalBottomSheet<int>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(title),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('common.cancel'.tr()),
-            ),
-            TextButton(
-              onPressed: () {
-                final parsed = int.tryParse(controller.text.trim());
-                Navigator.of(ctx).pop((parsed ?? current).clamp(0, 100000));
-              },
-              child: Text('common.add'.tr()),
-            ),
-          ],
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
+        builder: (ctx) {
+          int localValue = current;
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+              left: 16,
+              right: 16,
+              top: 12,
+            ),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(title,
+                              style: Theme.of(ctx)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w700)),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.of(ctx).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _RoundIconButton(
+                          icon: Icons.remove,
+                          onTap: () {
+                            setState(() {
+                              localValue =
+                                  (localValue - 1).clamp(0, 100000).toInt();
+                              controller.text = localValue.toString();
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey.shade100,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onChanged: (v) {
+                              final parsed =
+                                  int.tryParse(v.trim()) ?? localValue;
+                              setState(() {
+                                localValue = parsed.clamp(0, 100000).toInt();
+                              });
+                            },
+                            onSubmitted: (_) {
+                              Navigator.of(ctx).pop(localValue);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        _RoundIconButton(
+                          icon: Icons.add,
+                          onTap: () {
+                            setState(() {
+                              localValue =
+                                  (localValue + 1).clamp(0, 100000).toInt();
+                              controller.text = localValue.toString();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final delta in [-100, -10, 10, 100])
+                          ActionChip(
+                            label: Text(delta > 0 ? '+$delta' : '$delta'),
+                            onPressed: () {
+                              setState(() {
+                                localValue = (localValue + delta)
+                                    .clamp(0, 100000)
+                                    .toInt();
+                                controller.text = localValue.toString();
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(ctx).pop(localValue),
+                        child: Text('common.add'.tr()),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
       );
       if (result != null) {
         onSave(result);
@@ -271,69 +393,161 @@ class FoodDetailPage extends HookConsumerWidget {
       final carbsController =
           TextEditingController(text: (initial?.carbsGrams ?? 0).toString());
 
-      final saved = await showDialog<IngredientItem>(
+      final formKey = GlobalKey<FormState>();
+
+      final saved = await showModalBottomSheet<IngredientItem>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(initial == null
-              ? 'food_detail.add_ingredient'.tr()
-              : 'food_detail.edit_ingredient'.tr()),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration:
-                      InputDecoration(labelText: 'food_detail.name'.tr()),
-                ),
-                TextField(
-                  controller: caloriesController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(labelText: 'food_detail.calories'.tr()),
-                ),
-                TextField(
-                  controller: proteinController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(labelText: 'onboarding.protein'.tr()),
-                ),
-                TextField(
-                  controller: fatController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      labelText: 'plan_generation.metric.fats'.tr()),
-                ),
-                TextField(
-                  controller: carbsController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(labelText: 'onboarding.carbs'.tr()),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('common.cancel'.tr()),
-            ),
-            TextButton(
-              onPressed: () {
-                IngredientItem item = IngredientItem(
-                  name: nameController.text.trim(),
-                  calories: int.tryParse(caloriesController.text.trim()) ?? 0,
-                  proteinGrams:
-                      int.tryParse(proteinController.text.trim()) ?? 0,
-                  fatGrams: int.tryParse(fatController.text.trim()) ?? 0,
-                  carbsGrams: int.tryParse(carbsController.text.trim()) ?? 0,
-                );
-                Navigator.of(ctx).pop(item);
-              },
-              child: Text('common.add'.tr()),
-            ),
-          ],
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
+        builder: (ctx) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+              left: 16,
+              right: 16,
+              top: 12,
+            ),
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            initial == null
+                                ? 'food_detail.add_ingredient'.tr()
+                                : 'food_detail.edit_ingredient'.tr(),
+                            style: Theme.of(ctx)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.of(ctx).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: nameController,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: 'food_detail.name'.tr(),
+                        prefixIcon: const Icon(Icons.restaurant),
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? ' '
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: caloriesController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'food_detail.calories'.tr(),
+                              suffixText: kcalUnit,
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: proteinController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'onboarding.protein'.tr(),
+                              suffixText: gramsUnit,
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: fatController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'plan_generation.metric.fats'.tr(),
+                              suffixText: gramsUnit,
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: carbsController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'onboarding.carbs'.tr(),
+                              suffixText: gramsUnit,
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          if (formKey.currentState?.validate() != true) return;
+                          final item = IngredientItem(
+                            name: nameController.text.trim(),
+                            calories:
+                                int.tryParse(caloriesController.text.trim()) ??
+                                    0,
+                            proteinGrams:
+                                int.tryParse(proteinController.text.trim()) ??
+                                    0,
+                            fatGrams:
+                                int.tryParse(fatController.text.trim()) ?? 0,
+                            carbsGrams:
+                                int.tryParse(carbsController.text.trim()) ?? 0,
+                          );
+                          Navigator.of(ctx).pop(item);
+                        },
+                        icon: const Icon(Icons.check),
+                        label: Text('common.add'.tr()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       );
       if (saved != null) {
         onSave(saved);
@@ -502,7 +716,8 @@ class FoodDetailPage extends HookConsumerWidget {
                 children: [
                   IconButton(
                     onPressed: () async {
-                      portions.value = (portions.value - 1).clamp(1, 9999);
+                      portions.value =
+                          (portions.value - 0.25).clamp(0.25, 9999.0);
                       await _persist();
                     },
                     icon: const Icon(Icons.remove),
@@ -511,12 +726,12 @@ class FoodDetailPage extends HookConsumerWidget {
                         const BoxConstraints(minWidth: 36, minHeight: 36),
                     visualDensity: VisualDensity.compact,
                   ),
-                  Text('${portions.value}',
+                  Text(_formatPortion(portions.value),
                       style: theme.textTheme.titleMedium
                           ?.copyWith(fontWeight: FontWeight.w800)),
                   IconButton(
                     onPressed: () async {
-                      portions.value = portions.value + 1;
+                      portions.value = portions.value + 0.25;
                       await _persist();
                     },
                     icon: const Icon(Icons.add),
@@ -841,7 +1056,7 @@ class FoodDetailPage extends HookConsumerWidget {
                           child: metricBox(
                             label: 'plan_generation.metric.calories'.tr(),
                             value:
-                                '${caloriesState.value * portions.value} $kcalUnit',
+                                '${(caloriesState.value * portions.value).round()} $kcalUnit',
                             onEdit: () async {
                               await _editNumberDialog(
                                 title: 'plan_generation.metric.calories'.tr(),
@@ -862,7 +1077,7 @@ class FoodDetailPage extends HookConsumerWidget {
                           child: metricBox(
                             label: 'onboarding.protein'.tr(),
                             value:
-                                '${proteinGramsState.value * portions.value} $gramsUnit',
+                                '${(proteinGramsState.value * portions.value).round()} $gramsUnit',
                             icon: Icons.bolt_outlined,
                             chipColor: Colors.orange,
                             onEdit: () async {
@@ -879,7 +1094,7 @@ class FoodDetailPage extends HookConsumerWidget {
                           child: metricBox(
                             label: 'plan_generation.metric.fats'.tr(),
                             value:
-                                '${fatGramsState.value * portions.value} $gramsUnit',
+                                '${(fatGramsState.value * portions.value).round()} $gramsUnit',
                             icon: Icons.water_drop_outlined,
                             chipColor: Colors.blueAccent,
                             onEdit: () async {
@@ -900,7 +1115,7 @@ class FoodDetailPage extends HookConsumerWidget {
                           child: metricBox(
                             label: 'onboarding.carbs'.tr(),
                             value:
-                                '${carbsGramsState.value * portions.value} $gramsUnit',
+                                '${(carbsGramsState.value * portions.value).round()} $gramsUnit',
                             icon: Icons.spa_outlined,
                             chipColor: Colors.yellow.shade700,
                             onEdit: () async {
@@ -925,13 +1140,15 @@ class FoodDetailPage extends HookConsumerWidget {
                         onPressed: () async {
                           try {
                             final effectiveCalories =
-                                caloriesState.value * portions.value;
+                                (caloriesState.value * portions.value).round();
                             final effectiveProtein =
-                                proteinGramsState.value * portions.value;
+                                (proteinGramsState.value * portions.value)
+                                    .round();
                             final effectiveFats =
-                                fatGramsState.value * portions.value;
+                                (fatGramsState.value * portions.value).round();
                             final effectiveCarbs =
-                                carbsGramsState.value * portions.value;
+                                (carbsGramsState.value * portions.value)
+                                    .round();
 
                             if (args.id != null && args.id!.isNotEmpty) {
                               await ref
@@ -1117,6 +1334,29 @@ class _CircleIcon extends StatelessWidget {
       decoration:
           const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
       child: Icon(icon, color: Colors.white),
+    );
+  }
+}
+
+class _RoundIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _RoundIconButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.grey.shade100,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(icon, size: 20),
+        ),
+      ),
     );
   }
 }
