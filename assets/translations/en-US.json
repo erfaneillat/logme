@@ -317,5 +317,13 @@
         "updated": "Updated",
         "delete_confirm_title": "Delete item?",
         "delete_confirm_desc": "This will remove the item from your daily log."
+    },
+    "fix_result": {
+        "title": "Fix Result",
+        "placeholder": "Tell us what's wrong!",
+        "description": "Include details like portion, size, or ingredients to help us make accurate changes!",
+        "fix_button": "Fix it",
+        "fixing": "Fixing...",
+        "fixed": "Result fixed successfully!"
     }
 }

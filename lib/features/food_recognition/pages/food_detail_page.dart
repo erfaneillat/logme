@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../common/widgets/progress_ring.dart';
 import 'package:cal_ai/features/logs/data/datasources/logs_remote_data_source.dart';
 import 'package:cal_ai/features/logs/domain/usecases/update_log_item_usecase.dart';
 import 'package:cal_ai/features/logs/domain/usecases/add_log_item_usecase.dart';
 import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
 import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.dart';
+import 'fix_result_page.dart';
 
 class FoodDetailArgs {
   final String? id;
@@ -54,6 +56,16 @@ class IngredientItem {
     required this.fatGrams,
     required this.carbsGrams,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'calories': calories,
+      'proteinGrams': proteinGrams,
+      'fatGrams': fatGrams,
+      'carbsGrams': carbsGrams,
+    };
+  }
 }
 
 class FoodDetailPage extends HookConsumerWidget {
@@ -68,9 +80,7 @@ class FoodDetailPage extends HookConsumerWidget {
     if (normalized % 1 == 0) return normalized.toInt().toString();
     final s = normalized.toStringAsFixed(2);
     // Trim trailing ".00" or a single trailing zero (e.g., 1.50 -> 1.5)
-    return s
-        .replaceFirst(RegExp(r"\.00$"), '')
-        .replaceFirst(RegExp(r"0$"), '');
+    return s.replaceFirst(RegExp(r"\.00$"), '').replaceFirst(RegExp(r"0$"), '');
   }
 
   @override
@@ -176,10 +186,8 @@ class FoodDetailPage extends HookConsumerWidget {
             (caloriesState.value * portions.value).round();
         final effectiveProtein =
             (proteinGramsState.value * portions.value).round();
-        final effectiveFats =
-            (fatGramsState.value * portions.value).round();
-        final effectiveCarbs =
-            (carbsGramsState.value * portions.value).round();
+        final effectiveFats = (fatGramsState.value * portions.value).round();
+        final effectiveCarbs = (carbsGramsState.value * portions.value).round();
 
         if (itemIdState.value != null && itemIdState.value!.isNotEmpty) {
           await ref.read(updateLogItemUseCaseProvider).call(
@@ -445,9 +453,8 @@ class FoodDetailPage extends HookConsumerWidget {
                         prefixIcon: const Icon(Icons.restaurant),
                         border: const OutlineInputBorder(),
                       ),
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? ' '
-                          : null,
+                      validator: (v) =>
+                          (v == null || v.trim().isEmpty) ? ' ' : null,
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -1134,115 +1141,175 @@ class FoodDetailPage extends HookConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () async {
-                          try {
-                            final effectiveCalories =
-                                (caloriesState.value * portions.value).round();
-                            final effectiveProtein =
-                                (proteinGramsState.value * portions.value)
-                                    .round();
-                            final effectiveFats =
-                                (fatGramsState.value * portions.value).round();
-                            final effectiveCarbs =
-                                (carbsGramsState.value * portions.value)
-                                    .round();
+                    // SizedBox(
+                    //   width: double.infinity,
+                    //   child: OutlinedButton.icon(
+                    //     onPressed: () async {
+                    //       try {
+                    //         final effectiveCalories =
+                    //             (caloriesState.value * portions.value).round();
+                    //         final effectiveProtein =
+                    //             (proteinGramsState.value * portions.value)
+                    //                 .round();
+                    //         final effectiveFats =
+                    //             (fatGramsState.value * portions.value).round();
+                    //         final effectiveCarbs =
+                    //             (carbsGramsState.value * portions.value)
+                    //                 .round();
 
-                            if (args.id != null && args.id!.isNotEmpty) {
-                              await ref
-                                  .read(updateLogItemUseCaseProvider)
-                                  .call(UpdateLogItemParams(
-                                    dateIso: args.dateIso,
-                                    itemId: args.id!,
-                                    title: args.title,
-                                    calories: effectiveCalories,
-                                    carbsGrams: effectiveCarbs,
-                                    proteinGrams: effectiveProtein,
-                                    fatsGrams: effectiveFats,
-                                    healthScore: healthScoreState.value > 0
-                                        ? healthScoreState.value
-                                        : null,
-                                    imageUrl: args.imageUrl,
-                                    ingredients: ingredientsState.value
-                                        .map((e) => IngredientEntity(
-                                              name: e.name,
-                                              calories: e.calories,
-                                              proteinGrams: e.proteinGrams,
-                                              fatGrams: e.fatGrams,
-                                              carbsGrams: e.carbsGrams,
-                                            ))
-                                        .toList(),
-                                    liked: liked.value,
-                                    portions: portions.value,
-                                  ));
-                            } else {
-                              await ref
-                                  .read(logsRemoteDataSourceProvider)
-                                  .addItem(
-                                    dateIso: args.dateIso,
-                                    title: args.title,
-                                    calories: effectiveCalories,
-                                    carbsGrams: effectiveCarbs,
-                                    proteinGrams: effectiveProtein,
-                                    fatsGrams: effectiveFats,
-                                    healthScore: healthScoreState.value > 0
-                                        ? healthScoreState.value
-                                        : null,
-                                    imageUrl: args.imageUrl,
-                                    ingredients: ingredientsState.value
-                                        .map((e) => IngredientEntity(
-                                              name: e.name,
-                                              calories: e.calories,
-                                              proteinGrams: e.proteinGrams,
-                                              fatGrams: e.fatGrams,
-                                              carbsGrams: e.carbsGrams,
-                                            ))
-                                        .toList(),
-                                    liked: liked.value,
-                                    portions: portions.value,
-                                  );
-                            }
+                    //         if (args.id != null && args.id!.isNotEmpty) {
+                    //           await ref
+                    //               .read(updateLogItemUseCaseProvider)
+                    //               .call(UpdateLogItemParams(
+                    //                 dateIso: args.dateIso,
+                    //                 itemId: args.id!,
+                    //                 title: args.title,
+                    //                 calories: effectiveCalories,
+                    //                 carbsGrams: effectiveCarbs,
+                    //                 proteinGrams: effectiveProtein,
+                    //                 fatsGrams: effectiveFats,
+                    //                 healthScore: healthScoreState.value > 0
+                    //                     ? healthScoreState.value
+                    //                     : null,
+                    //                 imageUrl: args.imageUrl,
+                    //                 ingredients: ingredientsState.value
+                    //                     .map((e) => IngredientEntity(
+                    //                           name: e.name,
+                    //                           calories: e.calories,
+                    //                           proteinGrams: e.proteinGrams,
+                    //                           fatGrams: e.fatGrams,
+                    //                           carbsGrams: e.carbsGrams,
+                    //                         ))
+                    //                     .toList(),
+                    //                 liked: liked.value,
+                    //                 portions: portions.value,
+                    //               ));
+                    //         } else {
+                    //           await ref
+                    //               .read(logsRemoteDataSourceProvider)
+                    //               .addItem(
+                    //                 dateIso: args.dateIso,
+                    //                 title: args.title,
+                    //                 calories: effectiveCalories,
+                    //                 carbsGrams: effectiveCarbs,
+                    //                 proteinGrams: effectiveProtein,
+                    //                 fatsGrams: effectiveFats,
+                    //                 healthScore: healthScoreState.value > 0
+                    //                     ? healthScoreState.value
+                    //                     : null,
+                    //                 imageUrl: args.imageUrl,
+                    //                 ingredients: ingredientsState.value
+                    //                     .map((e) => IngredientEntity(
+                    //                           name: e.name,
+                    //                           calories: e.calories,
+                    //                           proteinGrams: e.proteinGrams,
+                    //                           fatGrams: e.fatGrams,
+                    //                           carbsGrams: e.carbsGrams,
+                    //                         ))
+                    //                     .toList(),
+                    //                 liked: liked.value,
+                    //                 portions: portions.value,
+                    //               );
+                    //         }
 
-                            await ref
-                                .read(dailyLogControllerProvider.notifier)
-                                .refresh();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      args.id != null && args.id!.isNotEmpty
-                                          ? 'food_detail.updated'.tr()
-                                          : 'home.added_to_log'.tr()),
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.toString())),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.auto_fix_high_outlined),
-                        label: Text('food_detail.update_item'.tr()),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(color: Colors.grey.shade300),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    //         await ref
+                    //             .read(dailyLogControllerProvider.notifier)
+                    //             .refresh();
+                    //         if (context.mounted) {
+                    //           ScaffoldMessenger.of(context).showSnackBar(
+                    //             SnackBar(
+                    //               content: Text(
+                    //                   args.id != null && args.id!.isNotEmpty
+                    //                       ? 'food_detail.updated'.tr()
+                    //                       : 'home.added_to_log'.tr()),
+                    //             ),
+                    //           );
+                    //         }
+                    //       } catch (e) {
+                    //         if (context.mounted) {
+                    //           ScaffoldMessenger.of(context).showSnackBar(
+                    //             SnackBar(content: Text(e.toString())),
+                    //           );
+                    //         }
+                    //       }
+                    //     },
+                    //     icon: const Icon(Icons.auto_fix_high_outlined),
+                    //     label: Text('food_detail.update_item'.tr()),
+                    //     style: OutlinedButton.styleFrom(
+                    //       padding: const EdgeInsets.symmetric(vertical: 14),
+                    //       side: BorderSide(color: Colors.grey.shade300),
+                    //       shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(14)),
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.local_fire_department),
-                        label: Text('food_detail.share'.tr()),
+                        onPressed: () async {
+                          final fixResultArgs = FixResultArgs(
+                            id: args.id,
+                            dateIso: args.dateIso,
+                            title: args.title,
+                            calories: caloriesState.value,
+                            proteinGrams: proteinGramsState.value,
+                            fatGrams: fatGramsState.value,
+                            carbsGrams: carbsGramsState.value,
+                            healthScore: healthScoreState.value,
+                            portions: portions.value,
+                            imageUrl: args.imageUrl,
+                            ingredients: ingredientsState.value,
+                          );
+
+                          final result = await context.push('/fix-result',
+                              extra: fixResultArgs);
+
+                          if (result != null &&
+                              result is Map<String, dynamic>) {
+                            // Update the current state with fixed data
+                            final fixedData =
+                                result['data'] as Map<String, dynamic>?;
+                            if (fixedData != null) {
+                              caloriesState.value =
+                                  fixedData['calories'] ?? caloriesState.value;
+                              proteinGramsState.value =
+                                  fixedData['proteinGrams'] ??
+                                      proteinGramsState.value;
+                              fatGramsState.value =
+                                  fixedData['fatGrams'] ?? fatGramsState.value;
+                              carbsGramsState.value = fixedData['carbsGrams'] ??
+                                  carbsGramsState.value;
+                              healthScoreState.value =
+                                  fixedData['healthScore'] ??
+                                      healthScoreState.value;
+
+                              // Update ingredients if provided
+                              if (fixedData['ingredients'] != null) {
+                                final List<dynamic> ingredientsList =
+                                    fixedData['ingredients'];
+                                ingredientsState.value = ingredientsList
+                                    .map((ing) => IngredientItem(
+                                          name: ing['name'] ?? '',
+                                          calories: ing['calories'] ?? 0,
+                                          proteinGrams:
+                                              ing['proteinGrams'] ?? 0,
+                                          fatGrams: ing['fatGrams'] ?? 0,
+                                          carbsGrams: ing['carbsGrams'] ?? 0,
+                                        ))
+                                    .toList();
+                              }
+
+                              // Persist the changes
+                              await _persist();
+                            }
+                          }
+                        },
+                        icon: Icon(
+                          Icons.auto_fix_high,
+                          color: Colors.white,
+                        ),
+                        label: Text('food_detail.fix_result'.tr()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,

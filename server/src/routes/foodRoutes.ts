@@ -49,6 +49,9 @@ const upload = multer({
 // POST /api/food/analyze  multipart/form-data  field: image
 router.post('/analyze', authenticateToken, upload.single('image'), controller.analyzeImage);
 
+// POST /api/food/fix-result  application/json
+router.post('/fix-result', authenticateToken, controller.fixResult);
+
 // GET /api/food/images/:filename - serve uploaded images
 router.get('/images/:filename', (req, res): void => {
     const filename = req.params.filename;

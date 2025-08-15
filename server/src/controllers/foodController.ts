@@ -161,6 +161,36 @@ export class FoodController {
 
         res.status(200).json({ success: true, data: result, meta: analysis.meta, timestamp: new Date() });
     });
+
+    public fixResult = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+        const { originalData, userDescription } = req.body;
+
+        if (!originalData || !userDescription) {
+            res.status(400).json({ 
+                success: false, 
+                error: 'Original data and user description are required',
+                timestamp: new Date() 
+            });
+            return;
+        }
+
+        try {
+            const fixedData = await this.service.fixAnalysis(originalData, userDescription);
+            
+            res.status(200).json({ 
+                success: true, 
+                data: fixedData, 
+                timestamp: new Date() 
+            });
+        } catch (error: any) {
+            console.error('Fix result error:', error);
+            res.status(500).json({ 
+                success: false, 
+                error: error.message || 'Failed to fix result',
+                timestamp: new Date() 
+            });
+        }
+    });
 }
 
 

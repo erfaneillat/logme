@@ -194,6 +194,60 @@ Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integ
         const raw = macroScore + kcalScore + proteinBonus + varietyBonus; // 0..~12
         return Math.max(0, Math.min(10, Math.round(raw)));
     }
+
+    public async fixAnalysis(originalData: any, userDescription: string): Promise<FoodAnalysisResult> {
+        const prompt = `Fix the food analysis based on user feedback.
+
+Original analysis:
+${JSON.stringify(originalData, null, 2)}
+
+User feedback: "${userDescription}"
+
+Based on the user's description, correct the analysis and return ONLY JSON (no extra text) with the same structure: title, calories, portions, proteinGrams, fatGrams, carbsGrams, healthScore, ingredients (array of {name, calories, proteinGrams, fatGrams, carbsGrams}).
+
+Rules: 
+- Keep strings in Persian (fa-IR) 
+- Numbers must be numeric
+- healthScore 0..10 integer
+- Up to 6 ingredients
+- Macros should be roughly consistent (4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat) ±20%
+- Make reasonable adjustments based on user feedback about portion size, ingredients, or other details`;
+
+        const chat = await this.client.chat.completions.create({
+            model: 'gpt-4o-mini',
+            response_format: { type: 'json_object' } as any,
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
+            temperature: 0.3,
+        });
+
+        const content = chat.choices?.[0]?.message?.content ?? '';
+        let parsed: FoodAnalysisResult;
+        try {
+            parsed = JSON.parse(content);
+        } catch (err) {
+            throw new Error('AI response parsing failed');
+        }
+
+        // Basic shape enforcement/fallbacks
+        parsed.portions = parsed.portions || 1;
+        parsed.ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
+
+        // Compute health score with fallback
+        const computed = this.computeHealthScore(parsed);
+        const aiScore = Number(parsed.healthScore);
+        if (!Number.isFinite(aiScore) || aiScore <= 0) {
+            parsed.healthScore = computed;
+        } else {
+            parsed.healthScore = Math.round(Math.max(0, Math.min(10, (aiScore + computed) / 2)));
+        }
+
+        return parsed;
+    }
 }
 
 

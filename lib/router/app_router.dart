@@ -10,6 +10,7 @@ import '../features/additional_info/pages/additional_info_page.dart';
 import '../features/plan/pages/plan_generation_page.dart';
 import '../features/plan/pages/plan_summary_page.dart';
 import '../features/food_recognition/pages/food_detail_page.dart';
+import '../features/food_recognition/pages/fix_result_page.dart';
 import '../features/home/pages/favorites_page.dart';
 
 class AppRouter {
@@ -99,6 +100,22 @@ class AppRouter {
                 carbsGrams: 0,
               );
           return FoodDetailPage(args: args);
+        },
+      ),
+      GoRoute(
+        path: '/fix-result',
+        name: 'fix-result',
+        builder: (context, state) {
+          final args = state.extra as FixResultArgs? ??
+              const FixResultArgs(
+                dateIso: '1970-01-01',
+                title: '',
+                calories: 0,
+                proteinGrams: 0,
+                fatGrams: 0,
+                carbsGrams: 0,
+              );
+          return FixResultPage(args: args);
         },
       ),
     ],

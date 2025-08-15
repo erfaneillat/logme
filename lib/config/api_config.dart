@@ -68,6 +68,7 @@ class ApiConfig {
 
   // Food analysis
   static const String foodAnalyze = '/api/food/analyze';
+  static const String foodFixResult = '/api/food/fix-result';
 
   // Streak endpoints
   static const String streakCompletions = '/api/streak/completions';
