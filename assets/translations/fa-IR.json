@@ -117,7 +117,9 @@
         "remove_favorite_title": "حذف از علاقه‌مندی‌ها؟",
         "remove_favorite_desc": "آیا می‌خواهید \"{}\" را از علاقه‌مندی‌ها حذف کنید؟",
         "removed_from_favorites": "از علاقه‌مندی‌ها حذف شد",
-        "remove": "حذف"
+        "remove": "حذف",
+        "analyzing": "در حال تحلیل...",
+        "analysis_canceled": "بارگذاری لغو شد"
     },
     "additional_info": {
         "title": "پروفایل خود را تکمیل کنید",

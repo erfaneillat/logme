@@ -60,7 +60,7 @@ export class FoodAnalysisService {
         }
     }
 
-    public async analyze(base64Image: string): Promise<FoodAnalysisResponse> {
+    public async analyze(base64Image: string, options?: { signal?: AbortSignal }): Promise<FoodAnalysisResponse> {
         const prompt = `Analyze the meal photo.
 Return ONLY JSON (no extra text) with keys: title, calories, portions, proteinGrams, fatGrams, carbsGrams, healthScore, ingredients (array of {name, calories, proteinGrams, fatGrams, carbsGrams}).
 Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integer; up to 6 ingredients; macros roughly consistent (4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat) ±20%.`;
@@ -82,7 +82,7 @@ Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integ
             ],
             // temperature: 0.2,
             // max_tokens: 450,
-        });
+        }, { signal: options?.signal });
 
         // Log token usage and estimated cost if available
         let meta: FoodAnalysisMeta | null = null;

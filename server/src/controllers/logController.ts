@@ -68,6 +68,17 @@ export class LogController {
                 return;
             }
 
+            // Ensure items are ordered newest to oldest by timeIso
+            try {
+                if (Array.isArray((log as any).items)) {
+                    (log as any).items.sort((a: any, b: any) => {
+                        const ta = new Date(a?.timeIso ?? 0).getTime();
+                        const tb = new Date(b?.timeIso ?? 0).getTime();
+                        return tb - ta;
+                    });
+                }
+            } catch (_) {}
+
             res.json({ success: true, data: { log } });
         } catch (error) {
             console.error('Get daily log error:', error);
@@ -96,7 +107,7 @@ export class LogController {
             const logs = await DailyLog.find({
                 userId,
                 date: { $gte: startDate, $lte: endDate },
-            }).sort({ date: 1 });
+            }).sort({ date: -1 });
 
             res.json({ success: true, data: { logs } });
         } catch (error) {

@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../core/network/cancellation.dart';
 import '../../domain/entities/food_analysis.dart';
 import '../../domain/repositories/food_repository.dart';
 import '../datasources/food_remote_data_source.dart';
@@ -12,11 +13,13 @@ class FoodRepositoryImpl implements FoodRepository {
     required String filePath,
     String fileName = 'image.jpg',
     String? targetDateIso,
+    CancellationToken? cancellationToken,
   }) {
     return remote.analyzeImage(
       filePath: filePath,
       fileName: fileName,
       targetDateIso: targetDateIso,
+      cancelToken: cancellationToken?.dioToken,
     );
   }
 }

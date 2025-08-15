@@ -24,6 +24,16 @@ export class FoodController {
             return;
         }
 
+        // Setup abort handling: if client disconnects, abort downstream work
+        const ac = new AbortController();
+        let aborted = false;
+        const onAbort = () => {
+            if (!ac.signal.aborted) ac.abort();
+            aborted = true;
+        };
+        req.on('aborted', onAbort);
+        req.on('close', onAbort);
+
         // Debug: log what multer is giving us
         console.log('Multer file info:', {
             mimetype: file.mimetype,
@@ -35,9 +45,33 @@ export class FoodController {
         // Read file buffer for OpenAI analysis
         const fs = require('fs');
         const fileBuffer = fs.readFileSync(file.path);
+        if (aborted) {
+            // Client disconnected before analysis; cleanup and stop.
+            try { fs.unlinkSync(file.path); } catch {}
+            return;
+        }
         const base64 = fileBuffer.toString('base64');
 
-        const analysis = await this.service.analyze(base64);
+        let analysis: any;
+        try {
+            analysis = await this.service.analyze(base64, { signal: ac.signal });
+        } catch (err: any) {
+            // Abort triggered or other error before persistence
+            if (aborted || err?.name === 'AbortError') {
+                try { fs.unlinkSync(file.path); } catch {}
+                return; // Do not send a response; client is gone
+            }
+            throw err;
+        } finally {
+            // Remove listeners
+            req.off('aborted', onAbort);
+            req.off('close', onAbort);
+        }
+
+        if (aborted) {
+            try { fs.unlinkSync(file.path); } catch {}
+            return;
+        }
         const result = analysis.data;
 
         // Save to daily logs (upsert) using provided date (YYYY-MM-DD),
@@ -66,6 +100,7 @@ export class FoodController {
             console.log('Saving image URL:', imageUrl);
 
             // Step 1: upsert totals
+            if (aborted) { try { fs.unlinkSync(file.path); } catch {} ; return; }
             await DailyLog.findOneAndUpdate(
                 { userId, date: todayIso },
                 {
@@ -82,6 +117,7 @@ export class FoodController {
             );
 
             // Step 2: ensure items array receives the entry
+            if (aborted) { try { fs.unlinkSync(file.path); } catch {} ; return; }
             await DailyLog.updateOne(
                 { userId, date: todayIso },
                 {
@@ -95,7 +131,7 @@ export class FoodController {
                             healthScore: Math.max(0, Math.min(10, Math.round(result.healthScore || 0))),
                             timeIso,
                             imageUrl,
-                            ingredients: result.ingredients?.map(ing => ({
+                            ingredients: result.ingredients?.map((ing: any) => ({
                                 name: ing.name,
                                 calories: Math.round(ing.calories || 0),
                                 proteinGrams: Math.round(ing.proteinGrams || 0),

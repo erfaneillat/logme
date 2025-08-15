@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import '../../../../core/network/cancellation.dart';
 
 import '../../../home/presentation/providers/home_date_provider.dart';
 import '../../data/datasources/logs_remote_data_source.dart';
@@ -31,6 +32,7 @@ class DailyLogViewState {
 
 class DailyLogController extends StateNotifier<DailyLogViewState> {
   final Ref ref;
+  final List<CancellationToken> _pendingTokens = [];
   DailyLogController(this.ref) : super(const DailyLogViewState.initial()) {
     // Fetch initially for current selected date
     _fetchForSelectedDate();
@@ -45,6 +47,35 @@ class DailyLogController extends StateNotifier<DailyLogViewState> {
     state = state.copyWith(pendingCount: state.pendingCount + 1);
   }
 
+  // Preferred: create token and increment pending in one place
+  CancellationToken createPendingToken() {
+    final token = CancellationToken();
+    _pendingTokens.add(token);
+    state = state.copyWith(pendingCount: state.pendingCount + 1);
+    return token;
+  }
+
+  void removeOnePendingPlaceholder() {
+    if (state.pendingCount == 0) return;
+    state = state.copyWith(pendingCount: state.pendingCount - 1);
+  }
+
+  void cancelOnePending() {
+    if (state.pendingCount == 0) return;
+    // Cancel the latest pending request if available
+    if (_pendingTokens.isNotEmpty) {
+      final token = _pendingTokens.removeLast();
+      token.cancel('User canceled');
+    }
+    state = state.copyWith(pendingCount: state.pendingCount - 1);
+  }
+
+  /// Remove a specific token when its request completes (success or error)
+  /// without triggering cancellation or extra decrement.
+  void removeToken(CancellationToken token) {
+    _pendingTokens.remove(token);
+  }
+
   void clearPendingPlaceholders() {
     if (state.pendingCount == 0) return;
     state = state.copyWith(pendingCount: 0);
@@ -52,7 +83,6 @@ class DailyLogController extends StateNotifier<DailyLogViewState> {
 
   Future<void> refresh() async {
     await _fetchForSelectedDate();
-    clearPendingPlaceholders();
   }
 
   Future<void> _fetchForSelectedDate() async {

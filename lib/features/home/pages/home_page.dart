@@ -6,7 +6,7 @@ import 'package:cal_ai/common/widgets/index.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:cal_ai/services/api_service_provider.dart';
 // import 'package:cal_ai/config/api_config.dart';
-// import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:cal_ai/features/home/presentation/providers/home_date_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cal_ai/features/food_recognition/pages/food_detail_page.dart';
@@ -162,34 +162,49 @@ class HomePage extends HookConsumerWidget {
         await picker.pickImage(source: source, imageQuality: 90);
     if (file == null) return;
 
-    // Add a pending placeholder item to recent list
-    ref.read(dailyLogControllerProvider.notifier).addPendingPlaceholder();
+    // Create a pending token (increments pending count) for this request
+    final token =
+        ref.read(dailyLogControllerProvider.notifier).createPendingToken();
 
     try {
       // Convert selected Jalali date to ISO YYYY-MM-DD for backend
       final selectedJalali = ref.read(selectedJalaliDateProvider);
       final targetDateIso = _toIsoFromJalali(selectedJalali);
-      await ref.read(analyzeFoodImageUseCaseProvider).call(
-          filePath: file.path,
-          fileName: file.name,
-          targetDateIso: targetDateIso);
-      // Refresh daily remaining and daily log, clear pending placeholders
+      final usecase = ref.read(analyzeFoodImageUseCaseProvider);
+      await usecase(
+        filePath: file.path,
+        fileName: file.name,
+        targetDateIso: targetDateIso,
+        cancellationToken: token,
+      );
+
+      // Remove token from controller storage
+      ref.read(dailyLogControllerProvider.notifier).removeToken(token);
+
+      // After success, remove one pending placeholder
+      ref.read(dailyLogControllerProvider.notifier).removeOnePendingPlaceholder();
+
+      // Optionally, you may add the analyzed item to logs or navigate
+      // For now, refresh the log to include new item
       await ref.read(dailyLogControllerProvider.notifier).refresh();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('common.saving'.tr())),
-        );
-      }
       // Force refresh of dailyRemainingProvider
       // ignore: unused_result
       ref.refresh(dailyRemainingProvider);
     } catch (e) {
-      // On error, clear pending placeholders
-      ref.read(dailyLogControllerProvider.notifier).clearPendingPlaceholders();
+      // Remove token from controller storage on error/cancel
+      ref.read(dailyLogControllerProvider.notifier).removeToken(token);
+      // On error or cancellation, remove only one pending placeholder
+      ref.read(dailyLogControllerProvider.notifier).removeOnePendingPlaceholder();
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        if (e is DioException && e.type == DioExceptionType.cancel) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('home.analysis_canceled'.tr())),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
       }
     }
   }
@@ -655,17 +670,14 @@ class HomePage extends HookConsumerWidget {
             data: (log) {
               final List<Widget> children = [];
 
-              // Pending shimmer items
+              // Pending analyzing placeholders
               if (state.pendingCount > 0) {
                 children.add(ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: state.pendingCount,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (_, __) => const ShimmerLoadingWidget(
-                    width: double.infinity,
-                    height: 80,
-                  ),
+                  itemBuilder: (_, __) => const FoodAnalyzingPlaceholder(),
                 ));
                 children.add(const SizedBox(height: 8));
               }
@@ -696,13 +708,21 @@ class HomePage extends HookConsumerWidget {
                   ),
                 );
               } else {
+                // Client-side fallback sort: newest first by timeIso
+                final itemsSorted = [...log.items]
+                  ..sort((a, b) {
+                    final ta = DateTime.tryParse(a.timeIso)?.millisecondsSinceEpoch ?? 0;
+                    final tb = DateTime.tryParse(b.timeIso)?.millisecondsSinceEpoch ?? 0;
+                    return tb - ta;
+                  });
+
                 children.add(ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: log.items.length,
+                  itemCount: itemsSorted.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (_, i) {
-                    final it = log.items[i];
+                    final it = itemsSorted[i];
                     final time = DateTime.tryParse(it.timeIso)?.toLocal();
                     final hh = time != null
                         ? time.hour.toString().padLeft(2, '0')

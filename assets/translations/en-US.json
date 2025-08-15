@@ -117,7 +117,9 @@
         "remove_favorite_title": "Remove favorite?",
         "remove_favorite_desc": "Do you want to remove \"{}\" from your favorites?",
         "removed_from_favorites": "Removed from favorites",
-        "remove": "Remove"
+        "remove": "Remove",
+        "analyzing": "Analyzing...",
+        "analysis_canceled": "Upload canceled"
     },
     "additional_info": {
         "title": "Complete Your Profile",
