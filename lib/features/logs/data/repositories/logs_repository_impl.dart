@@ -16,6 +16,14 @@ class LogsRepositoryImpl implements LogsRepository {
   }
 
   @override
+  Future<List<DailyLogEntity>> getLogsRange({
+    required String startIso,
+    required String endIso,
+  }) {
+    return _remote.getLogsRange(startIso: startIso, endIso: endIso);
+  }
+
+  @override
   Future<DailyLogItemEntity> addItem({
     required String dateIso,
     required String title,

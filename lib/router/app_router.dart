@@ -12,6 +12,7 @@ import '../features/plan/pages/plan_summary_page.dart';
 import '../features/food_recognition/pages/food_detail_page.dart';
 import '../features/food_recognition/pages/fix_result_page.dart';
 import '../features/home/pages/favorites_page.dart';
+import '../features/analytics/pages/analytics_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -184,18 +185,6 @@ class AppShell extends HookConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class AnalyticsPage extends StatelessWidget {
-  const AnalyticsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('home.analytics'.tr())),
-      body: const Center(child: Text('Analytics')),
     );
   }
 }

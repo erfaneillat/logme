@@ -66,6 +66,11 @@ class ApiConfig {
   // Logs Endpoints
   static const String logsDaily = '/api/logs';
 
+  // Weight endpoints
+  static const String weightBase = '/api/weight';
+  static const String weightLatest = '/api/weight/latest';
+  static const String weightRange = '/api/weight/range';
+
   // Food analysis
   static const String foodAnalyze = '/api/food/analyze';
   static const String foodFixResult = '/api/food/fix-result';

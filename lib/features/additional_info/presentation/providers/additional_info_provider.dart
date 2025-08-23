@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../data/providers/data_providers.dart';
 import '../../domain/repositories/additional_info_repository.dart';
 import '../../domain/usecases/save_additional_info_usecase.dart';
+import '../../domain/usecases/get_additional_info_usecase.dart';
 import '../../domain/usecases/mark_additional_info_completed_usecase.dart';
 import '../../domain/entities/additional_info.dart';
 import '../../../login/presentation/providers/auth_provider.dart';
@@ -18,6 +19,12 @@ final saveAdditionalInfoUseCaseProvider =
     Provider<SaveAdditionalInfoUseCase>((ref) {
   final repository = ref.watch(additionalInfoRepositoryProvider);
   return SaveAdditionalInfoUseCase(repository);
+});
+
+final getAdditionalInfoUseCaseProvider =
+    Provider<GetAdditionalInfoUseCase>((ref) {
+  final repository = ref.watch(additionalInfoRepositoryProvider);
+  return GetAdditionalInfoUseCase(repository);
 });
 
 final markAdditionalInfoCompletedUseCaseProvider =
@@ -169,4 +176,12 @@ final additionalInfoProvider =
     markCompletedUseCase: markCompletedUseCase,
     updateCompletionUseCase: updateCompletionUseCase,
   );
+});
+
+// Remote fetch provider (does not mutate state directly; UI can choose to use
+// the fetched value or fallback to local state)
+final currentAdditionalInfoProvider =
+    FutureProvider<AdditionalInfo?>((ref) async {
+  final useCase = ref.watch(getAdditionalInfoUseCaseProvider);
+  return await useCase.execute();
 });

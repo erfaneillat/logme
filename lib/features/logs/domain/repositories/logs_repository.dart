@@ -3,6 +3,7 @@ import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.d
 
 abstract class LogsRepository {
   Future<DailyLogEntity> getDailyLog(String yyyyMmDd);
+  Future<List<DailyLogEntity>> getLogsRange({required String startIso, required String endIso});
 
   Future<DailyLogItemEntity> addItem({
     required String dateIso,
