@@ -19,6 +19,7 @@ import 'package:cal_ai/features/food_recognition/domain/entities/food_analysis.d
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:cal_ai/common/widgets/streak_dialog.dart';
 import 'package:cal_ai/features/streak/presentation/providers/streak_providers.dart';
+import 'package:cal_ai/extensions/string.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -301,7 +302,7 @@ class HomePage extends HookConsumerWidget {
                   error: (e, st) => Text('0', style: Theme.of(context).textTheme.labelMedium),
                   data: (user) {
                     final count = user?.streakCount ?? 0;
-                    return Text('home.streak_days'.tr(args: ['${count}']),
+                    return Text('home.streak_days'.tr(args: ['${count}']).toPersianNumbers(context),
                         style: Theme.of(context).textTheme.labelMedium);
                   },
                 ),
@@ -419,7 +420,7 @@ class HomePage extends HookConsumerWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                NumberFormat('00', context.locale.toString()).format(d.day),
+                NumberFormat('00', context.locale.toString()).format(d.day).toPersianNumbers(context),
                 style: Theme.of(context)
                     .textTheme
                     .labelMedium
@@ -490,7 +491,7 @@ class HomePage extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$left',
+                      '$left'.toPersianNumbers(context),
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
@@ -555,7 +556,7 @@ class HomePage extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                value,
+                value.toPersianNumbers(context),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -839,14 +840,14 @@ class HomePage extends HookConsumerWidget {
                                           child: Text(it.title,
                                               style:
                                                   theme.textTheme.titleMedium)),
-                                      Text('$hh:$mm',
+                                      Text('$hh:$mm'.toPersianNumbers(context),
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                                   color: Colors.black54)),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
-                                  Text('${it.calories} $kcalUnit',
+                                  Text('${it.calories} $kcalUnit'.toPersianNumbers(context),
                                       style: theme.textTheme.titleLarge
                                           ?.copyWith(
                                               fontSize: 20,
@@ -905,7 +906,7 @@ class HomePage extends HookConsumerWidget {
       child: Row(children: [
         Icon(icon, color: color, size: 14),
         const SizedBox(width: 4),
-        Text(text, style: Theme.of(context).textTheme.labelSmall)
+        Text(text.toPersianNumbers(context), style: Theme.of(context).textTheme.labelSmall)
       ]),
     );
   }

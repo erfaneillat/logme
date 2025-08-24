@@ -6,6 +6,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:cal_ai/features/additional_info/pages/widgets/custom_weight_ruler.dart';
 import '../presentation/providers/analytics_providers.dart';
 import '../../additional_info/presentation/providers/additional_info_provider.dart';
+import 'package:cal_ai/extensions/string.dart';
 
 class AnalyticsPage extends HookConsumerWidget {
   const AnalyticsPage({super.key});
@@ -56,9 +57,9 @@ class AnalyticsPage extends HookConsumerWidget {
                   _SectionHeader(
                     left: 'analytics.goal_progress'.tr(),
                     right: goalAchievedAsync.when(
-                      data: (v) => '${v.toStringAsFixed(1)}% ${'analytics.goal_achieved'.tr()}',
-                      loading: () => '... ${'analytics.goal_achieved'.tr()}',
-                      error: (_, __) => '--',
+                      data: (v) => '${v.toStringAsFixed(1)}% ${'analytics.goal_achieved'.tr()}'.toPersianNumbers(context),
+                      loading: () => '... ${'analytics.goal_achieved'.tr()}'.toPersianNumbers(context),
+                      error: (_, __) => '--'.toPersianNumbers(context),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -251,7 +252,7 @@ class _WeightSheet extends HookConsumerWidget {
             const Icon(Icons.scale_outlined, size: 36, color: Color(0xFFB0B7C3)),
             const SizedBox(height: 8),
             Text(
-              'kg ${selected.value.toStringAsFixed(0)}',
+              'kg ${selected.value.toStringAsFixed(0)}'.toPersianNumbers(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
@@ -267,7 +268,7 @@ class _WeightSheet extends HookConsumerWidget {
             const SizedBox(height: 12),
             // Big number + ruler
             Text(
-              '${selected.value.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}',
+              '${selected.value.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w900,
@@ -286,7 +287,7 @@ class _WeightSheet extends HookConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              '${(mode == _WeightSheetMode.logNew ? currentWeight : goalWeight).toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}',
+              '${(mode == _WeightSheetMode.logNew ? currentWeight : goalWeight).toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
             ),
@@ -309,7 +310,7 @@ class _WeightSheet extends HookConsumerWidget {
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
                         const SizedBox(height: 6),
                         Text(
-                          '${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}',
+                          '${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: diff == 0
                                     ? Colors.black87
@@ -329,7 +330,7 @@ class _WeightSheet extends HookConsumerWidget {
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
                         const SizedBox(height: 6),
                         Text(
-                          '${currentWeight.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}',
+                          '${currentWeight.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: Colors.black87,
                                 fontWeight: FontWeight.w700,
@@ -427,6 +428,15 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'analytics.weight_goal'.tr(),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                  color: Colors.black87,
+                ),
+          ),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -468,9 +478,10 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            targetWeight != null
-                ? '${targetWeight.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}'
-                : '--',
+            (targetWeight != null
+                    ? '${targetWeight.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context)
+                    : '--')
+                .toPersianNumbers(context),
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   fontSize: 32,
@@ -504,7 +515,7 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                   latestWeightAsync.when(
                     data: (w) {
                       if (w != null) {
-                        return '${w.weightKg.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}';
+                        return '${w.weightKg.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context);
                       }
                       final remote = additionalInfoRemoteAsync.maybeWhen(
                         data: (d) => d,
@@ -512,10 +523,10 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                       );
                       final fallback = remote?.weight ?? additionalInfo.weight;
                       return fallback != null
-                          ? '${fallback.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}'
+                          ? '${fallback.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context)
                           : '--';
                     },
-                    loading: () => '... ${'analytics.weight_unit'.tr()}',
+                    loading: () => '... ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
                     error: (_, __) => '--',
                   ),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -657,7 +668,7 @@ class _BmiSection extends HookConsumerWidget {
           const SizedBox(height: 12),
           Text(
             bmiAsync.when(
-              data: (v) => (v ?? 0).toStringAsFixed(2),
+              data: (v) => (v ?? 0).toStringAsFixed(2).toPersianNumbers(context),
               loading: () => '...'.toString(),
               error: (_, __) => '--',
             ),
@@ -747,7 +758,7 @@ class _SectionHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          left,
+          left.toPersianNumbers(context),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w800,
                 fontSize: 22,
@@ -762,7 +773,7 @@ class _SectionHeader extends StatelessWidget {
             border: Border.all(color: Colors.green.shade200),
           ),
           child: Text(
-            right,
+            right.toPersianNumbers(context),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.green.shade700,
@@ -819,7 +830,7 @@ class _SegmentControl extends StatelessWidget {
                           : null,
                     ),
                     child: Text(
-                      labels[i],
+                      labels[i].toPersianNumbers(context),
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             fontWeight:
                                 i == index ? FontWeight.w600 : FontWeight.w500,
@@ -879,7 +890,7 @@ class _ProgressLineChart extends HookConsumerWidget {
                 reservedSize: 40,
                 getTitlesWidget: (value, meta) {
                   return Text(
-                    value.toStringAsFixed(1),
+                    value.toStringAsFixed(1).toPersianNumbers(context),
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
@@ -1074,7 +1085,7 @@ class _NutritionBarChart extends HookConsumerWidget {
                 reservedSize: 50,
                 getTitlesWidget: (value, meta) {
                   return Text(
-                    value.toInt().toString(),
+                    value.toInt().toString().toPersianNumbers(context),
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
@@ -1151,7 +1162,7 @@ class _LegendDot extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          label,
+          label.toPersianNumbers(context),
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
@@ -1176,7 +1187,7 @@ class _Chip extends StatelessWidget {
         border: Border.all(color: Colors.blue.shade200),
       ),
       child: Text(
-        text,
+        text.toPersianNumbers(context),
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: Colors.blue.shade700,
@@ -1276,7 +1287,7 @@ class _StatTile extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            title,
+            title.toPersianNumbers(context),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   fontSize: 28,
@@ -1285,7 +1296,7 @@ class _StatTile extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            subtitle,
+            subtitle.toPersianNumbers(context),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
