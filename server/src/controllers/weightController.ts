@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import WeightEntry from '../models/WeightEntry';
+import DailyLog from '../models/DailyLog';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -26,6 +27,25 @@ export class WeightController {
         { userId, date: sanitizedDate, weightKg: weight },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
+
+      // Ensure a DailyLog exists for this date so logs/range reflects the day
+      try {
+        await DailyLog.findOneAndUpdate(
+          { userId, date: sanitizedDate },
+          {
+            $setOnInsert: {
+              userId,
+              date: sanitizedDate,
+              caloriesConsumed: 0,
+              carbsGrams: 0,
+              proteinGrams: 0,
+              fatsGrams: 0,
+              items: [],
+            },
+          },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        ).exec();
+      } catch (_) {}
 
       res.json({ success: true, data: { entry } });
     } catch (error) {

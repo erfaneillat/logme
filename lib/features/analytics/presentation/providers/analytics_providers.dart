@@ -9,6 +9,7 @@ import '../../../logs/data/repositories/logs_repository_impl.dart';
 import '../../../logs/domain/entities/daily_log.dart';
 import '../../../logs/domain/usecases/get_logs_range_usecase.dart';
 import '../../domain/usecases/get_weight_range_usecase.dart';
+import '../../domain/usecases/upsert_weight_usecase.dart';
 
 // Repository DI
 final weightRepositoryProvider = Provider<WeightRepository>((ref) {
@@ -25,6 +26,11 @@ final getLatestWeightUseCaseProvider = Provider<GetLatestWeightUseCase>((ref) {
 final getWeightRangeUseCaseProvider = Provider<GetWeightRangeUseCase>((ref) {
   final repo = ref.watch(weightRepositoryProvider);
   return GetWeightRangeUseCase(repo);
+});
+
+final upsertWeightUseCaseProvider = Provider<UpsertWeightUseCase>((ref) {
+  final repo = ref.watch(weightRepositoryProvider);
+  return UpsertWeightUseCase(repo);
 });
 
 // Data providers

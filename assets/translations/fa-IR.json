@@ -56,7 +56,8 @@
         "please_wait": "لطفاً صبر کنید...",
         "next": "بعدی",
         "cancel": "انصراف",
-        "add": "افزودن"
+        "add": "افزودن",
+        "error": "خطایی رخ داد"
     },
     "login": {
         "welcome_title": "به لقمه\nخوش آمدید",
@@ -180,7 +181,17 @@
         "chart_axis_weight": "وزن",
         "chart_axis_time": "زمان",
         "chart_axis_value": "مقدار",
-        "failed_to_load": "خطا در بارگذاری داده‌ها"
+        "failed_to_load": "خطا در بارگذاری داده‌ها",
+        "update_weight_title": "به‌روزرسانی وزن",
+        "update_goal_weight_title": "به‌روزرسانی وزن هدف",
+        "selected_weight_label": "وزن انتخاب‌شده",
+        "change": "تغییر",
+        "current_weight_short": "فعلی",
+        "submit_new_weight": "ثبت وزن جدید",
+        "update_goal_weight_cta": "به‌روزرسانی وزن هدف",
+        "update_goal": "به‌روزرسانی هدف",
+        "goal_updated": "هدف به‌روزرسانی شد",
+        "weight_saved": "وزن ثبت شد"
     },
     "additional_info": {
         "title": "پروفایل خود را تکمیل کنید",

@@ -56,7 +56,8 @@
         "please_wait": "Please wait...",
         "next": "Next",
         "cancel": "Cancel",
-        "add": "Add"
+        "add": "Add",
+        "error": "Something went wrong"
     },
     "login": {
         "welcome_title": "Welcome to Logme",
@@ -180,7 +181,17 @@
         "chart_axis_weight": "Weight",
         "chart_axis_time": "Time",
         "chart_axis_value": "Value",
-        "failed_to_load": "Failed to load data"
+        "failed_to_load": "Failed to load data",
+        "update_weight_title": "Update weight",
+        "update_goal_weight_title": "Update goal weight",
+        "selected_weight_label": "Selected weight",
+        "change": "Change",
+        "current_weight_short": "Current",
+        "submit_new_weight": "Submit new weight",
+        "update_goal_weight_cta": "Update goal weight",
+        "update_goal": "Update goal",
+        "goal_updated": "Goal updated",
+        "weight_saved": "Weight logged"
     },
     "additional_info": {
         "title": "Complete Your Profile",

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:cal_ai/features/additional_info/pages/widgets/custom_weight_ruler.dart';
 import '../presentation/providers/analytics_providers.dart';
 import '../../additional_info/presentation/providers/additional_info_provider.dart';
 
@@ -177,6 +178,197 @@ class AnalyticsPage extends HookConsumerWidget {
   }
 }
 
+// ===================== Weight Bottom Sheet =====================
+
+enum _WeightSheetMode { logNew, updateGoal }
+
+Future<double?> _showWeightSheet(BuildContext context, WidgetRef ref, {required _WeightSheetMode mode}) async {
+  return await showModalBottomSheet<double?>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (ctx) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+      child: _WeightSheet(mode: mode),
+    ),
+  );
+}
+
+class _WeightSheet extends HookConsumerWidget {
+  const _WeightSheet({required this.mode});
+  final _WeightSheetMode mode;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final additionalInfo = ref.watch(additionalInfoProvider);
+    final additionalInfoRemoteAsync = ref.watch(currentAdditionalInfoProvider);
+    final latestWeightAsync = ref.watch(latestWeightProvider);
+
+    final remote = additionalInfoRemoteAsync.maybeWhen(data: (d) => d, orElse: () => null);
+    final currentWeight = latestWeightAsync.maybeWhen(
+      data: (w) => w?.weightKg,
+      orElse: () => null,
+    ) ?? remote?.weight ?? additionalInfo.weight ?? 70.0;
+    final goalWeight = remote?.targetWeight ?? additionalInfo.targetWeight ?? currentWeight;
+
+    final initial = mode == _WeightSheetMode.logNew ? currentWeight : goalWeight;
+    final selected = useState<double>(initial);
+
+    final values = List<int>.generate(271, (i) => i + 30); // 30..300 kg
+    final diff = (selected.value - (mode == _WeightSheetMode.logNew ? currentWeight : goalWeight));
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                  onPressed: () => Navigator.of(context).maybePop(),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  mode == _WeightSheetMode.logNew
+                      ? 'analytics.update_weight_title'.tr()
+                      : 'analytics.update_goal_weight_title'.tr(),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black87,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            const Icon(Icons.scale_outlined, size: 36, color: Color(0xFFB0B7C3)),
+            const SizedBox(height: 8),
+            Text(
+              'kg ${selected.value.toStringAsFixed(0)}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'analytics.selected_weight_label'.tr(),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+            ),
+            const SizedBox(height: 12),
+            // Big number + ruler
+            Text(
+              '${selected.value.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 120,
+              child: CustomWeightRuler(
+                weightValues: values,
+                selectedWeight: selected.value,
+                goalColor: Colors.black,
+                onWeightChanged: (w) => selected.value = w,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${(mode == _WeightSheetMode.logNew ? currentWeight : goalWeight).toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+            ),
+            const SizedBox(height: 16),
+            // Change card
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF6F7F9),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('analytics.change'.tr(),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: diff == 0
+                                    ? Colors.black87
+                                    : (diff < 0 ? Colors.green : Colors.red),
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('analytics.current_weight_short'.tr(),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${currentWeight.toStringAsFixed(1)} ${'analytics.weight_unit'.tr()}',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(selected.value);
+                },
+                child: Text(
+                  mode == _WeightSheetMode.logNew
+                      ? 'analytics.submit_new_weight'.tr()
+                      : 'analytics.update_goal'.tr(),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ChartContainer extends StatelessWidget {
   const _ChartContainer({required this.child});
   final Widget child;
@@ -245,7 +437,33 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                       color: Colors.black87,
                     ),
               ),
-              _Chip(text: 'analytics.update'.tr()),
+              GestureDetector(
+                onTap: () async {
+                  final value = await _showWeightSheet(context, ref, mode: _WeightSheetMode.updateGoal);
+                  if (value != null) {
+                    try {
+                      // Update local state and persist target weight
+                      ref.read(additionalInfoProvider.notifier).updateTargetWeight(value);
+                      await ref.read(saveAdditionalInfoUseCaseProvider).execute(ref.read(additionalInfoProvider));
+                      // Refresh remote additional info
+                      ref.invalidate(currentAdditionalInfoProvider);
+                      // Feedback
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('analytics.goal_updated'.tr())),
+                        );
+                      }
+                    } catch (_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('common.error'.tr())),
+                        );
+                      }
+                    }
+                  }
+                },
+                child: _Chip(text: 'analytics.update'.tr()),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -328,7 +546,34 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                       elevation: 4,
                       shadowColor: Colors.black.withOpacity(0.3),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final value = await _showWeightSheet(context, ref, mode: _WeightSheetMode.logNew);
+                      if (value != null) {
+                        try {
+                          final now = DateTime.now();
+                          final dateIso = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+                          await ref.read(upsertWeightUseCaseProvider).execute(dateIso: dateIso, weightKg: value);
+                          // Refresh providers that show latest and progress (await to ensure fresh data)
+                          // Use the returned value to satisfy lints and ensure completion
+                          final _ = await ref.refresh(latestWeightProvider.future);
+                          await Future.wait([
+                            for (int i = 0; i < 4; i++) ref.refresh(weightProgressSeriesProvider(i).future),
+                          ]);
+                          // Feedback
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('analytics.weight_saved'.tr())),
+                            );
+                          }
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('common.error'.tr())),
+                            );
+                          }
+                        }
+                      }
+                    },
                     child: Text(
                       'analytics.log_weight'.tr(),
                       style: const TextStyle(
