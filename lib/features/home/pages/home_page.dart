@@ -135,22 +135,38 @@ class HomePage extends HookConsumerWidget {
         children: [
           _buildTopGradientBackground(context),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(context, ref),
-                  const SizedBox(height: 16),
-                  _buildDateStrip(context, ref, dateScrollController),
-                  const SizedBox(height: 16),
-                  _buildCaloriesCard(context, ref),
-                  const SizedBox(height: 12),
-                  _buildMacrosRow(context, ref),
-                  const SizedBox(height: 16),
-                  _buildRecentlyEatenPlaceholder(context),
-                  const SizedBox(height: 80),
-                ],
+            child: RefreshIndicator(
+              onRefresh: () async {
+                // Refresh daily logs
+                await ref.read(dailyLogControllerProvider.notifier).refresh();
+                // Refresh remaining calories, current user (streak), and streak completions
+                ref.invalidate(dailyRemainingProvider);
+                ref.invalidate(currentUserProvider);
+                ref.invalidate(streakWeeklyCompletionsProvider);
+                await Future.wait([
+                  ref.read(dailyRemainingProvider.future),
+                  ref.read(currentUserProvider.future),
+                  ref.read(streakWeeklyCompletionsProvider.future),
+                ]);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(context, ref),
+                    const SizedBox(height: 16),
+                    _buildDateStrip(context, ref, dateScrollController),
+                    const SizedBox(height: 16),
+                    _buildCaloriesCard(context, ref),
+                    const SizedBox(height: 12),
+                    _buildMacrosRow(context, ref),
+                    const SizedBox(height: 16),
+                    _buildRecentlyEatenPlaceholder(context),
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
             ),
           ),
