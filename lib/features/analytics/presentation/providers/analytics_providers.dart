@@ -142,10 +142,14 @@ final weeklyCarbsSeriesProvider =
     FutureProvider.family<List<int>, int>((ref, index) async {
   final logs = await ref.watch(weeklyLogsProvider(index).future);
   final series = List<int>.filled(7, 0);
+  final range = _weekRangeIso(index);
+  final start = DateTime.parse(range.startIso);
   for (final log in logs) {
     final dt = DateTime.parse(log.date);
-    final weekdayIndex = (dt.weekday) % 7; // Sun=0
-    series[weekdayIndex] = log.carbsGrams;
+    final offset = dt.difference(start).inDays;
+    if (offset >= 0 && offset < 7) {
+      series[offset] = log.carbsGrams;
+    }
   }
   return series;
 });
@@ -154,10 +158,14 @@ final weeklyProteinSeriesProvider =
     FutureProvider.family<List<int>, int>((ref, index) async {
   final logs = await ref.watch(weeklyLogsProvider(index).future);
   final series = List<int>.filled(7, 0);
+  final range = _weekRangeIso(index);
+  final start = DateTime.parse(range.startIso);
   for (final log in logs) {
     final dt = DateTime.parse(log.date);
-    final weekdayIndex = (dt.weekday) % 7;
-    series[weekdayIndex] = log.proteinGrams;
+    final offset = dt.difference(start).inDays;
+    if (offset >= 0 && offset < 7) {
+      series[offset] = log.proteinGrams;
+    }
   }
   return series;
 });
@@ -166,10 +174,14 @@ final weeklyFatsSeriesProvider =
     FutureProvider.family<List<int>, int>((ref, index) async {
   final logs = await ref.watch(weeklyLogsProvider(index).future);
   final series = List<int>.filled(7, 0);
+  final range = _weekRangeIso(index);
+  final start = DateTime.parse(range.startIso);
   for (final log in logs) {
     final dt = DateTime.parse(log.date);
-    final weekdayIndex = (dt.weekday) % 7;
-    series[weekdayIndex] = log.fatsGrams;
+    final offset = dt.difference(start).inDays;
+    if (offset >= 0 && offset < 7) {
+      series[offset] = log.fatsGrams;
+    }
   }
   return series;
 });

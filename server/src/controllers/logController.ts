@@ -111,7 +111,7 @@ export class LogController {
             const logs = await DailyLog.find({
                 userId,
                 date: { $gte: startDate, $lte: endDate },
-            }).sort({ date: -1 });
+            }).sort({ date: 1 });
 
             res.json({ success: true, data: { logs } });
         } catch (error) {
