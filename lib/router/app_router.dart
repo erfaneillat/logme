@@ -15,6 +15,7 @@ import '../features/home/pages/favorites_page.dart';
 import '../features/analytics/pages/analytics_page.dart';
 import '../features/settings/pages/settings_page.dart';
 import '../features/settings/pages/refer_friend_page.dart';
+import '../features/settings/pages/personal_details_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -75,6 +76,11 @@ class AppRouter {
         builder: (context, state) => const FavoritesPage(),
       ),
       GoRoute(
+        path: '/personal-details',
+        name: 'personal-details',
+        builder: (context, state) => const PersonalDetailsPage(),
+      ),
+      GoRoute(
         path: '/refer-friend',
         name: 'refer-friend',
         builder: (context, state) => const ReferFriendPage(),
@@ -82,7 +88,10 @@ class AppRouter {
       GoRoute(
         path: '/additional-info',
         name: 'additional-info',
-        builder: (context, state) => const AdditionalInfoPage(),
+        builder: (context, state) {
+          final extra = state.extra;
+          return AdditionalInfoPage(startAt: extra as AdditionalInfoStart?);
+        },
       ),
       GoRoute(
         path: '/plan-loading',

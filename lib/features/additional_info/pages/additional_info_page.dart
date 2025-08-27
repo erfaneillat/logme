@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -20,8 +21,12 @@ import 'widgets/referral_code_page.dart';
 import 'widgets/trust_intro_page.dart';
 import '../../settings/data/referral_repository.dart';
 
+enum AdditionalInfoStart { gender, birthDate, workoutFrequency, weightHeight, goalSelection, goalWeight }
+
 class AdditionalInfoPage extends HookConsumerWidget {
-  const AdditionalInfoPage({super.key});
+  const AdditionalInfoPage({super.key, this.startAt});
+
+  final AdditionalInfoStart? startAt;
 
   // Calculate target weight loss based on current and target weight
   double _calculateTargetWeightLoss(
@@ -58,6 +63,9 @@ class AdditionalInfoPage extends HookConsumerWidget {
       };
     }, [additionalInfo]);
 
+    // Edit mode is active when deep-linking to a specific step
+    final bool editingMode = startAt != null;
+
     final pages = [
       // Intro trust page
 
@@ -75,6 +83,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
             );
           }
         },
+        showNext: !editingMode,
       ),
 
       BirthDateSelectionPage(
@@ -101,6 +110,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
             );
           }
         },
+        showNext: !editingMode,
       ),
       WorkoutFrequencyPage(
         formKey: formKey,
@@ -115,6 +125,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
             curve: Curves.easeInOut,
           );
         },
+        showNext: !editingMode,
       ),
       // Move Weight & Height to be the 4th page
       WeightHeightPage(
@@ -133,6 +144,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
             );
           }
         },
+        showNext: !editingMode,
       ),
       // Goal Selection Page (new page before long term results)
       GoalSelectionPage(
@@ -149,6 +161,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
             );
           }
         },
+        showNext: !editingMode,
       ),
       LongTermResultsPage(
         weightGoal: additionalInfo.weightGoal,
@@ -162,6 +175,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
       WeightGoalPage(
         initialValue: additionalInfo.weightGoal,
         currentWeight: additionalInfo.weight,
+        initialTargetWeight: additionalInfo.targetWeight,
         onSelectionChanged: (weightGoal) {
           additionalInfoNotifier.updateWeightGoal(weightGoal);
         },
@@ -176,6 +190,7 @@ class AdditionalInfoPage extends HookConsumerWidget {
             );
           }
         },
+        showNext: !editingMode,
       ),
       MotivationalPage(
         targetWeightLoss: _calculateTargetWeightLoss(
@@ -303,6 +318,37 @@ class AdditionalInfoPage extends HookConsumerWidget {
       ),
     ];
 
+    // Optionally jump to a specific page based on startAt
+    int _indexFor(AdditionalInfoStart s) {
+      switch (s) {
+        case AdditionalInfoStart.gender:
+          return 0;
+        case AdditionalInfoStart.birthDate:
+          return 1;
+        case AdditionalInfoStart.workoutFrequency:
+          return 2;
+        case AdditionalInfoStart.weightHeight:
+          return 3;
+        case AdditionalInfoStart.goalSelection:
+          return 4;
+        case AdditionalInfoStart.goalWeight:
+          return 6;
+      }
+    }
+
+    useEffect(() {
+      if (startAt != null) {
+        final idx = _indexFor(startAt!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (pageController.hasClients) {
+            pageController.jumpToPage(idx);
+          }
+        });
+        currentPage.value = idx;
+      }
+      return null;
+    }, [startAt]);
+
     // Keep PageView index valid when pages length changes (e.g., conditional pages)
     final int pagesLength = pages.length;
     useEffect(() {
@@ -326,62 +372,64 @@ class AdditionalInfoPage extends HookConsumerWidget {
           child: Column(
             children: [
               // Progress indicator
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
-                child: Row(
-                  children: [
-                    // Back button
-                    if (currentPage.value > 0)
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: Colors.grey[700],
-                            size: 20,
+              if (!editingMode)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16.0),
+                  child: Row(
+                    children: [
+                      // Back button
+                      if (currentPage.value > 0)
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          onPressed: () {
-                            pageController.previousPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          padding: EdgeInsets.zero,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: Colors.grey[700],
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            padding: EdgeInsets.zero,
+                          ),
                         ),
-                      ),
 
-                    const SizedBox(width: 16),
+                      const SizedBox(width: 16),
 
-                    // Progress bar
-                    Expanded(
-                      child: Container(
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: ((currentPage.value + 1) / pages.length)
-                              .clamp(0.0, 1.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(2),
+                      // Progress bar
+                      Expanded(
+                        child: Container(
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: FractionallySizedBox(
+                            alignment: Alignment.centerLeft,
+                            widthFactor:
+                                ((currentPage.value + 1) / pages.length)
+                                    .clamp(0.0, 1.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
               // PageView
               Expanded(
@@ -394,6 +442,78 @@ class AdditionalInfoPage extends HookConsumerWidget {
                       pages.map((p) => SizedBox.expand(child: p)).toList(),
                 ),
               ),
+              if (editingMode)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final formState = formKey.currentState;
+                        formState?.save();
+
+                        // Apply changes depending on the current page
+                        try {
+                          switch (currentPage.value) {
+                            case 0: // Gender
+                              final gender = formState?.value['gender'];
+                              if (gender != null) {
+                                additionalInfoNotifier.updateGender(gender);
+                              }
+                              break;
+                            case 1: // Birth date
+                              if (formState?.saveAndValidate() ?? false) {
+                                final DateTime birthDate = formState!.value['birthDate'];
+                                additionalInfoNotifier.updateBirthDate(birthDate);
+                                final now = DateTime.now();
+                                int age = now.year - birthDate.year;
+                                final hasHadBirthdayThisYear = (now.month > birthDate.month) ||
+                                    (now.month == birthDate.month && now.day >= birthDate.day);
+                                if (!hasHadBirthdayThisYear) {
+                                  age -= 1;
+                                }
+                                additionalInfoNotifier.updateAge(age);
+                              }
+                              break;
+                            case 2: // Workout frequency
+                              final wf = formState?.value['workoutFrequency'];
+                              if (wf != null) {
+                                additionalInfoNotifier.updateWorkoutFrequency(wf);
+                              }
+                              break;
+                            case 3: // Weight & Height
+                              if (formState?.saveAndValidate() ?? false) {
+                                final v = formState!.value;
+                                additionalInfoNotifier.updateWeight(v['weight']);
+                                additionalInfoNotifier.updateHeight(v['height']);
+                              }
+                              break;
+                            case 4: // Goal selection
+                              final goal = formState?.value['weightGoal'];
+                              if (goal != null) {
+                                additionalInfoNotifier.updateWeightGoal(goal);
+                              }
+                              break;
+                            case 6: // Target weight
+                              if (formState?.saveAndValidate() ?? false) {
+                                final v = formState!.value;
+                                additionalInfoNotifier.updateTargetWeight(v['targetWeight']);
+                              }
+                              break;
+                            default:
+                              break;
+                          }
+
+                          await additionalInfoNotifier.saveAdditionalInfo();
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        } catch (_) {}
+                      },
+                      child: Text('common.save'.tr()),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

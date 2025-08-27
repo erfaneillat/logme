@@ -71,7 +71,8 @@ extension ExtensionOnContext on BuildContext {
   //   return tablet();
   // }
   // GoRouter navigation methods
-  void push(String location) => GoRouter.of(this).push(location);
+  void push(String location, {Object? extra}) =>
+      GoRouter.of(this).push(location, extra: extra);
   void go(String location) => GoRouter.of(this).go(location);
   void pop() => GoRouter.of(this).pop();
 }

@@ -9,6 +9,7 @@ class WeightHeightPage extends StatefulWidget {
   final double? initialWeight;
   final double? initialHeight;
   final VoidCallback? onNext;
+  final bool showNext;
 
   const WeightHeightPage({
     super.key,
@@ -16,6 +17,7 @@ class WeightHeightPage extends StatefulWidget {
     required this.initialWeight,
     required this.initialHeight,
     this.onNext,
+    this.showNext = true,
   });
 
   @override
@@ -201,27 +203,28 @@ class _WeightHeightPageState extends State<WeightHeightPage>
               const SizedBox(height: 32),
 
               // Next button
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.primary,
-                      colorScheme.primary.withOpacity(0.8),
+              if (widget.showNext)
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary,
+                        colorScheme.primary.withOpacity(0.8),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
                     ],
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  child: CommonNextButton(
+                    onPressed: widget.onNext,
+                  ),
                 ),
-                child: CommonNextButton(
-                  onPressed: widget.onNext,
-                ),
-              ),
               const SizedBox(height: 24),
             ],
           ),

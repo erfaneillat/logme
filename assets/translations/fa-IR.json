@@ -57,7 +57,9 @@
         "next": "بعدی",
         "cancel": "انصراف",
         "add": "افزودن",
-        "error": "خطایی رخ داد"
+        "error": "خطایی رخ داد",
+        "retry": "تلاش مجدد",
+        "save": "ذخیره"
     },
     "login": {
         "welcome_title": "به لقمه\nخوش آمدید",
@@ -148,6 +150,15 @@
         "delete_account": "حذف حساب کاربری؟",
         "logout": "خروج",
         "version": "نسخه {version}"
+    },
+    "personal_details": {
+        "title": "اطلاعات شخصی",
+        "goal_weight": "وزن هدف",
+        "change_goal": "تغییر هدف",
+        "current_weight": "وزن فعلی",
+        "height": "قد",
+        "dob": "تاریخ تولد",
+        "gender": "جنسیت"
     },
     "refer": {
         "title": "معرفی دوست",

@@ -9,12 +9,14 @@ class BirthDateSelectionPage extends HookConsumerWidget {
   final GlobalKey<FormBuilderState> formKey;
   final DateTime? initialValue;
   final VoidCallback? onNext;
+  final bool showNext;
 
   const BirthDateSelectionPage({
     super.key,
     required this.formKey,
     required this.initialValue,
     this.onNext,
+    this.showNext = true,
   });
 
   @override
@@ -31,6 +33,7 @@ class BirthDateSelectionPage extends HookConsumerWidget {
       formKey: formKey,
       initialValue: initialDate,
       onNext: onNext,
+      showNext: showNext,
     );
   }
 }
@@ -39,11 +42,13 @@ class _BirthDateSelectionContent extends StatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
   final DateTime initialValue;
   final VoidCallback? onNext;
+  final bool showNext;
 
   const _BirthDateSelectionContent({
     required this.formKey,
     required this.initialValue,
     required this.onNext,
+    this.showNext = true,
   });
 
   @override
@@ -331,7 +336,7 @@ class _BirthDateSelectionContentState extends State<_BirthDateSelectionContent>
               ),
 
               // Next button
-              _buildNextButton(),
+              if (widget.showNext) _buildNextButton(),
 
               const SizedBox(height: 16),
             ],

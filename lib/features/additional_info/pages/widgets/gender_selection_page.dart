@@ -9,6 +9,7 @@ class GenderSelectionPage extends StatefulWidget {
   final String? initialValue;
   final Function(String) onGenderSelected;
   final VoidCallback? onNext;
+  final bool showNext;
 
   const GenderSelectionPage({
     super.key,
@@ -16,6 +17,7 @@ class GenderSelectionPage extends StatefulWidget {
     required this.initialValue,
     required this.onGenderSelected,
     this.onNext,
+    this.showNext = true,
   });
 
   @override
@@ -162,7 +164,7 @@ class _GenderSelectionPageState extends State<GenderSelectionPage>
               const SizedBox(height: 24),
 
               // Next button
-              _buildNextButton(),
+              if (widget.showNext) _buildNextButton(),
 
               const SizedBox(height: 16),
             ],

@@ -57,7 +57,9 @@
         "next": "Next",
         "cancel": "Cancel",
         "add": "Add",
-        "error": "Something went wrong"
+        "error": "Something went wrong",
+        "retry": "Retry",
+        "save": "Save"
     },
     "login": {
         "welcome_title": "Welcome to Logme",
@@ -148,6 +150,15 @@
         "delete_account": "Delete Account?",
         "logout": "Logout",
         "version": "VERSION {version}"
+    },
+    "personal_details": {
+        "title": "Personal details",
+        "goal_weight": "Goal Weight",
+        "change_goal": "Change Goal",
+        "current_weight": "Current Weight",
+        "height": "Height",
+        "dob": "Date of birth",
+        "gender": "Gender"
     },
     "refer": {
         "title": "Refer your friend",

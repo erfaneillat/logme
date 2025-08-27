@@ -10,13 +10,17 @@ class WeightGoalPage extends StatefulWidget {
   final VoidCallback? onNext;
   final Function(String)? onSelectionChanged;
   final double? currentWeight;
+  final double? initialTargetWeight;
+  final bool showNext;
 
   const WeightGoalPage({
     super.key,
     required this.initialValue,
     required this.currentWeight,
+    this.initialTargetWeight,
     this.onNext,
     this.onSelectionChanged,
+    this.showNext = true,
   });
 
   @override
@@ -46,7 +50,9 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
       weightValues = List<int>.generate(86, (index) => 45 + index);
     }
 
-    final defaultWeight = (widget.currentWeight?.round() ?? 70);
+    // Prefer pre-filled target weight if available; otherwise fallback to current weight
+    final defaultWeight =
+        (widget.initialTargetWeight?.round() ?? widget.currentWeight?.round() ?? 70);
     selectedWeightIndex = _indexForValue(
       values: weightValues,
       value: defaultWeight,
@@ -386,13 +392,14 @@ class _WeightGoalPageState extends State<WeightGoalPage> {
               const SizedBox(height: 32),
 
               // Next button
-              CommonNextButton(
-                onPressed: () {
-                  // Update the weight goal with the selected weight
-                  widget.onSelectionChanged?.call(selectedGoal ?? '');
-                  widget.onNext?.call();
-                },
-              ),
+              if (widget.showNext)
+                CommonNextButton(
+                  onPressed: () {
+                    // Update the weight goal with the selected weight
+                    widget.onSelectionChanged?.call(selectedGoal ?? '');
+                    widget.onNext?.call();
+                  },
+                ),
               const SizedBox(height: 24),
             ],
           ),

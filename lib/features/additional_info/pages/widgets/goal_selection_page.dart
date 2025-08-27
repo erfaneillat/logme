@@ -9,6 +9,7 @@ class GoalSelectionPage extends StatefulWidget {
   final String? initialValue;
   final VoidCallback? onNext;
   final Function(String)? onSelectionChanged;
+  final bool showNext;
 
   const GoalSelectionPage({
     super.key,
@@ -16,6 +17,7 @@ class GoalSelectionPage extends StatefulWidget {
     required this.initialValue,
     this.onNext,
     this.onSelectionChanged,
+    this.showNext = true,
   });
 
   @override
@@ -274,10 +276,11 @@ class _GoalSelectionPageState extends State<GoalSelectionPage>
               const SizedBox(height: 32),
 
               // Next button
-              CommonNextButton(
-                onPressed: selectedGoal != null ? widget.onNext : null,
-                isEnabled: selectedGoal != null,
-              ),
+              if (widget.showNext)
+                CommonNextButton(
+                  onPressed: selectedGoal != null ? widget.onNext : null,
+                  isEnabled: selectedGoal != null,
+                ),
               const SizedBox(height: 24),
             ],
           ),

@@ -45,6 +45,11 @@ class AdditionalInfoNotifier extends StateNotifier<AdditionalInfo> {
     required this.updateCompletionUseCase,
   }) : super(const AdditionalInfo());
 
+  // Replace entire state (used to seed UI with latest data before editing)
+  void setAll(AdditionalInfo info) {
+    state = info;
+  }
+
   void updateGender(String gender) {
     state = state.copyWith(gender: gender);
   }

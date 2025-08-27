@@ -48,7 +48,7 @@ class SettingsPage extends HookConsumerWidget {
                     _SettingsTile(
                       icon: Icons.badge_outlined,
                       title: 'settings.personal_details'.tr(),
-                      onTap: () {},
+                      onTap: () => context.push('/personal-details'),
                     ),
                     _Divider(),
                     _SettingsTile(

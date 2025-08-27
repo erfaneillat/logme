@@ -7,6 +7,7 @@ class WorkoutFrequencyPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final VoidCallback? onNext;
+  final bool showNext;
   final Function(String)? onSelectionChanged;
 
   const WorkoutFrequencyPage({
@@ -14,6 +15,7 @@ class WorkoutFrequencyPage extends StatefulWidget {
     required this.formKey,
     required this.initialValue,
     this.onNext,
+    this.showNext = true,
     this.onSelectionChanged,
   });
 
@@ -165,7 +167,7 @@ class _WorkoutFrequencyPageState extends State<WorkoutFrequencyPage>
               const SizedBox(height: 24),
 
               // Next button
-              _buildNextButton(),
+              if (widget.showNext) _buildNextButton(),
 
               const SizedBox(height: 16),
             ],
