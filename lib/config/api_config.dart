@@ -78,6 +78,12 @@ class ApiConfig {
   // Streak endpoints
   static const String streakCompletions = '/api/streak/completions';
 
+  // Referral endpoints
+  static const String referralMyCode = '/api/referral/my-code';
+  static const String referralValidate = '/api/referral/validate'; // use "$referralValidate/<code>"
+  static const String referralSubmit = '/api/referral/submit';
+  static const String referralSummary = '/api/referral/summary';
+
   // Timeouts
   static const Duration connectTimeout = Duration(seconds: 60);
   static const Duration receiveTimeout = Duration(seconds: 60);

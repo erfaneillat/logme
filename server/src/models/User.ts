@@ -10,6 +10,10 @@ export interface IUser extends Document {
   hasCompletedAdditionalInfo: boolean;
   hasGeneratedPlan: boolean;
   aiCostUsdTotal?: number;
+  referralCode?: string;
+  referredBy?: string | null; // referral code of the referrer
+  referralSuccessCount?: number;
+  referralEarnings?: number;
   // Streak fields
   streakCount?: number; // number of consecutive days completed
   lastStreakDate?: string | null; // YYYY-MM-DD of last completed day
@@ -67,6 +71,31 @@ const userSchema = new Schema<IUser>(
       default: 0,
       min: 0,
     },
+    referralCode: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
+      uppercase: true,
+      trim: true,
+    },
+    referredBy: {
+      type: String,
+      required: false,
+      default: null,
+      uppercase: true,
+      trim: true,
+    },
+    referralSuccessCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    referralEarnings: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     streakCount: {
       type: Number,
       default: 0,
@@ -112,6 +141,8 @@ const userSchema = new Schema<IUser>(
 // Indexes for better query performance
 userSchema.index({ phone: 1 });
 userSchema.index({ email: 1 });
+userSchema.index({ referralCode: 1 });
+userSchema.index({ referredBy: 1 });
 
 // Hash password before saving (only if password exists)
 userSchema.pre('save', async function (next) {

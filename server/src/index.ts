@@ -11,6 +11,7 @@ import healthRoutes from './routes/healthRoutes';
 import authRoutes from './routes/authRoutes';
 import additionalInfoRoutes from './routes/additionalInfoRoutes';
 import planRoutes from './routes/planRoutes';
+import referralRoutes from './routes/referralRoutes';
 import logRoutes from './routes/logRoutes';
 import foodRoutes from './routes/foodRoutes';
 import streakRoutes from './routes/streakRoutes';
@@ -62,6 +63,7 @@ app.use('/api/logs', logRoutes);
 app.use('/api/food', foodRoutes);
 app.use('/api/streak', streakRoutes);
 app.use('/api/weight', weightRoutes);
+app.use('/api/referral', referralRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

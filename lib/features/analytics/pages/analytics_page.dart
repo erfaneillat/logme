@@ -22,6 +22,7 @@ class AnalyticsPage extends HookConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: Colors.black,
+        heroTag: 'analytics_fab',
         elevation: 8,
         tooltip: 'Add new item', // Accessibility tooltip
         child: const Icon(Icons.add, color: Colors.white, size: 24),

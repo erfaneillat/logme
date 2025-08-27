@@ -129,6 +129,7 @@ class HomePage extends HookConsumerWidget {
         },
         tooltip: 'home.add'.tr(),
         backgroundColor: Colors.black,
+        heroTag: 'home_fab',
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: Stack(

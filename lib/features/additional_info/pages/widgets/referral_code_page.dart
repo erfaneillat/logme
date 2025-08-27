@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../settings/data/referral_repository.dart';
 import 'common_next_button.dart';
 
-class ReferralCodePage extends StatefulWidget {
+class ReferralCodePage extends ConsumerStatefulWidget {
   final GlobalKey<FormBuilderState> formKey;
   final String? initialValue;
   final Function(String?)? onReferralCodeChanged;
@@ -18,12 +21,16 @@ class ReferralCodePage extends StatefulWidget {
   });
 
   @override
-  State<ReferralCodePage> createState() => _ReferralCodePageState();
+  ConsumerState<ReferralCodePage> createState() => _ReferralCodePageState();
 }
 
-class _ReferralCodePageState extends State<ReferralCodePage> {
+class _ReferralCodePageState extends ConsumerState<ReferralCodePage> {
   final TextEditingController _referralController = TextEditingController();
   bool _isValidCode = false;
+  bool _isValidating = false;
+  bool _isSubmitting = false;
+  String? _validationError; // localized message or null
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -39,33 +46,93 @@ class _ReferralCodePageState extends State<ReferralCodePage> {
             ? null
             : _referralController.text.trim(),
       );
+      // Kick off initial validation if there's a prefilled code
+      if (_referralController.text.trim().isNotEmpty) {
+        _validateCode(_referralController.text.trim());
+      }
     });
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _referralController.dispose();
     super.dispose();
   }
 
-  void _validateCode(String code) {
+  void _onChanged(String code) {
+    // optimistic local enable on non-empty
     setState(() {
       _isValidCode = code.trim().isNotEmpty;
+      _validationError = null;
     });
-    widget.onReferralCodeChanged
-        ?.call(code.trim().isEmpty ? null : code.trim());
+    widget.onReferralCodeChanged?.call(code.trim().isEmpty ? null : code.trim());
+
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () async {
+      await _validateCode(code);
+    });
   }
 
-  void _submitCode() {
-    if (_isValidCode) {
-      // Handle code submission logic here
-      // For now, just show a snackbar
+  Future<void> _validateCode(String code) async {
+    final repo = ref.read(referralRepositoryProvider);
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) {
+      setState(() {
+        _isValidCode = false;
+        _validationError = null;
+      });
+      return;
+    }
+    setState(() {
+      _isValidating = true;
+      _validationError = null;
+    });
+    try {
+      final valid = await repo.validateCode(trimmed);
+      setState(() {
+        _isValidCode = valid;
+        _validationError = valid ? null : 'additional_info.referral_invalid'.tr();
+      });
+    } catch (e) {
+      setState(() {
+        _isValidCode = false;
+        _validationError = 'additional_info.referral_validation_error'.tr();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isValidating = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _submitCode() async {
+    if (!_isValidCode || _isSubmitting) return;
+    final code = _referralController.text.trim();
+    if (code.isEmpty) return;
+    final repo = ref.read(referralRepositoryProvider);
+    setState(() {
+      _isSubmitting = true;
+    });
+    try {
+      await repo.submitCode(code);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Referral code submitted: ${_referralController.text}'),
-          duration: const Duration(seconds: 2),
-        ),
+        SnackBar(content: Text('additional_info.referral_submit_success'.tr())),
       );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('additional_info.referral_submit_failed'.tr())),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
@@ -154,12 +221,29 @@ class _ReferralCodePageState extends State<ReferralCodePage> {
                         ),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
+                        suffixIcon: _isValidating
+                            ? Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation(
+                                      Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : (_validationError == null && _referralController.text.trim().isNotEmpty)
+                                ? const Icon(Icons.check_circle, color: Colors.green)
+                                : null,
                       ),
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
-                      onChanged: _validateCode,
+                      onChanged: _onChanged,
                     ),
                   ),
                 ),
@@ -168,12 +252,12 @@ class _ReferralCodePageState extends State<ReferralCodePage> {
                 Container(
                   margin: const EdgeInsets.only(right: 8),
                   child: ElevatedButton(
-                    onPressed: _isValidCode ? _submitCode : null,
+                    onPressed: _isValidCode && !_isSubmitting ? _submitCode : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isValidCode
+                      backgroundColor: _isValidCode && !_isSubmitting
                           ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).colorScheme.surfaceVariant,
-                      foregroundColor: _isValidCode
+                      foregroundColor: _isValidCode && !_isSubmitting
                           ? Colors.white
                           : Theme.of(context).colorScheme.onSurfaceVariant,
                       elevation: 0,
@@ -183,18 +267,43 @@ class _ReferralCodePageState extends State<ReferralCodePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 12),
                     ),
-                    child: Text(
-                      'additional_info.referral_submit'.tr(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: _isSubmitting
+                        ? SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            'additional_info.referral_submit'.tr(),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
               ],
             ),
           ),
+
+          if (_validationError != null) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _validationError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
 
           const SizedBox(height: 40),
 

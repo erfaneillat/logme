@@ -13,6 +13,8 @@ import '../features/food_recognition/pages/food_detail_page.dart';
 import '../features/food_recognition/pages/fix_result_page.dart';
 import '../features/home/pages/favorites_page.dart';
 import '../features/analytics/pages/analytics_page.dart';
+import '../features/settings/pages/settings_page.dart';
+import '../features/settings/pages/refer_friend_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -71,6 +73,11 @@ class AppRouter {
         path: '/favorites',
         name: 'favorites',
         builder: (context, state) => const FavoritesPage(),
+      ),
+      GoRoute(
+        path: '/refer-friend',
+        name: 'refer-friend',
+        builder: (context, state) => const ReferFriendPage(),
       ),
       GoRoute(
         path: '/additional-info',
@@ -185,18 +192,6 @@ class AppShell extends HookConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('home.settings'.tr())),
-      body: const Center(child: Text('Settings')),
     );
   }
 }

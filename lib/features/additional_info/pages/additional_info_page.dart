@@ -18,6 +18,7 @@ import 'widgets/accomplishment_selection_page.dart';
 import 'widgets/goal_transition_chart_page.dart';
 import 'widgets/referral_code_page.dart';
 import 'widgets/trust_intro_page.dart';
+import '../../settings/data/referral_repository.dart';
 
 class AdditionalInfoPage extends HookConsumerWidget {
   const AdditionalInfoPage({super.key});
@@ -279,6 +280,17 @@ class AdditionalInfoPage extends HookConsumerWidget {
           // Ensure latest values are captured from form
           formState?.save();
           try {
+            // Attempt to submit referral code if present (optional step)
+            final code = ref.read(additionalInfoProvider).referralCode;
+            if (code != null && code.trim().isNotEmpty) {
+              final referralRepo = ref.read(referralRepositoryProvider);
+              try {
+                await referralRepo.submitCode(code.trim());
+              } catch (_) {
+                // Do not block the flow if referral submission fails
+              }
+            }
+
             await additionalInfoNotifier.saveAdditionalInfo();
             await additionalInfoNotifier.markCompleted();
             if (context.mounted) {
