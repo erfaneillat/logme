@@ -16,17 +16,10 @@ class AnalyticsPage extends HookConsumerWidget {
     final rangeIndex = useState<int>(0); // 0: 90d, 1: 6m, 2: 1y, 3: all
     final weekIndex = useState<int>(0); // 0: this, 1: last, 2: 2w, 3: 3w
 
-    final goalAchievedAsync = ref.watch(goalAchievedPercentProvider(rangeIndex.value));
+    final goalAchievedAsync =
+        ref.watch(goalAchievedPercentProvider(rangeIndex.value));
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.black,
-        heroTag: 'analytics_fab',
-        elevation: 8,
-        tooltip: 'Add new item', // Accessibility tooltip
-        child: const Icon(Icons.add, color: Colors.white, size: 24),
-      ),
       body: Stack(
         children: [
           _buildTopGradientBackground(context),
@@ -58,8 +51,11 @@ class AnalyticsPage extends HookConsumerWidget {
                   _SectionHeader(
                     left: 'analytics.goal_progress'.tr(),
                     right: goalAchievedAsync.when(
-                      data: (v) => '${v.toStringAsFixed(1)}% ${'analytics.goal_achieved'.tr()}'.toPersianNumbers(context),
-                      loading: () => '... ${'analytics.goal_achieved'.tr()}'.toPersianNumbers(context),
+                      data: (v) =>
+                          '${v.toStringAsFixed(1)}% ${'analytics.goal_achieved'.tr()}'
+                              .toPersianNumbers(context),
+                      loading: () => '... ${'analytics.goal_achieved'.tr()}'
+                          .toPersianNumbers(context),
                       error: (_, __) => '--'.toPersianNumbers(context),
                     ),
                   ),
@@ -184,7 +180,8 @@ class AnalyticsPage extends HookConsumerWidget {
 
 enum _WeightSheetMode { logNew, updateGoal }
 
-Future<double?> _showWeightSheet(BuildContext context, WidgetRef ref, {required _WeightSheetMode mode}) async {
+Future<double?> _showWeightSheet(BuildContext context, WidgetRef ref,
+    {required _WeightSheetMode mode}) async {
   return await showModalBottomSheet<double?>(
     context: context,
     isScrollControlled: true,
@@ -209,18 +206,25 @@ class _WeightSheet extends HookConsumerWidget {
     final additionalInfoRemoteAsync = ref.watch(currentAdditionalInfoProvider);
     final latestWeightAsync = ref.watch(latestWeightProvider);
 
-    final remote = additionalInfoRemoteAsync.maybeWhen(data: (d) => d, orElse: () => null);
+    final remote =
+        additionalInfoRemoteAsync.maybeWhen(data: (d) => d, orElse: () => null);
     final currentWeight = latestWeightAsync.maybeWhen(
-      data: (w) => w?.weightKg,
-      orElse: () => null,
-    ) ?? remote?.weight ?? additionalInfo.weight ?? 70.0;
-    final goalWeight = remote?.targetWeight ?? additionalInfo.targetWeight ?? currentWeight;
+          data: (w) => w?.weightKg,
+          orElse: () => null,
+        ) ??
+        remote?.weight ??
+        additionalInfo.weight ??
+        70.0;
+    final goalWeight =
+        remote?.targetWeight ?? additionalInfo.targetWeight ?? currentWeight;
 
-    final initial = mode == _WeightSheetMode.logNew ? currentWeight : goalWeight;
+    final initial =
+        mode == _WeightSheetMode.logNew ? currentWeight : goalWeight;
     final selected = useState<double>(initial);
 
     final values = List<int>.generate(271, (i) => i + 30); // 30..300 kg
-    final diff = (selected.value - (mode == _WeightSheetMode.logNew ? currentWeight : goalWeight));
+    final diff = (selected.value -
+        (mode == _WeightSheetMode.logNew ? currentWeight : goalWeight));
 
     return SafeArea(
       top: false,
@@ -250,10 +254,12 @@ class _WeightSheet extends HookConsumerWidget {
               ],
             ),
             const SizedBox(height: 4),
-            const Icon(Icons.scale_outlined, size: 36, color: Color(0xFFB0B7C3)),
+            const Icon(Icons.scale_outlined,
+                size: 36, color: Color(0xFFB0B7C3)),
             const SizedBox(height: 8),
             Text(
-              'kg ${selected.value.toStringAsFixed(0)}'.toPersianNumbers(context),
+              'kg ${selected.value.toStringAsFixed(0)}'
+                  .toPersianNumbers(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
@@ -264,12 +270,16 @@ class _WeightSheet extends HookConsumerWidget {
             Text(
               'analytics.selected_weight_label'.tr(),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Colors.black54),
             ),
             const SizedBox(height: 12),
             // Big number + ruler
             Text(
-              '${selected.value.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
+              '${selected.value.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                  .toPersianNumbers(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w900,
@@ -288,9 +298,13 @@ class _WeightSheet extends HookConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              '${(mode == _WeightSheetMode.logNew ? currentWeight : goalWeight).toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
+              '${(mode == _WeightSheetMode.logNew ? currentWeight : goalWeight).toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                  .toPersianNumbers(context),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Colors.black54),
             ),
             const SizedBox(height: 16),
             // Change card
@@ -308,11 +322,18 @@ class _WeightSheet extends HookConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('analytics.change'.tr(),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: Colors.black54)),
                         const SizedBox(height: 6),
                         Text(
-                          '${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          '${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                              .toPersianNumbers(context),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
                                 color: diff == 0
                                     ? Colors.black87
                                     : (diff < 0 ? Colors.green : Colors.red),
@@ -328,14 +349,19 @@ class _WeightSheet extends HookConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text('analytics.current_weight_short'.tr(),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: Colors.black54)),
                         const SizedBox(height: 6),
                         Text(
-                          '${currentWeight.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w700,
-                              ),
+                          '${currentWeight.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                              .toPersianNumbers(context),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
                       ],
                     ),
@@ -350,7 +376,8 @@ class _WeightSheet extends HookConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: () {
                   Navigator.of(context).pop(selected.value);
@@ -359,7 +386,8 @@ class _WeightSheet extends HookConsumerWidget {
                   mode == _WeightSheetMode.logNew
                       ? 'analytics.submit_new_weight'.tr()
                       : 'analytics.update_goal'.tr(),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -450,18 +478,24 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
               ),
               GestureDetector(
                 onTap: () async {
-                  final value = await _showWeightSheet(context, ref, mode: _WeightSheetMode.updateGoal);
+                  final value = await _showWeightSheet(context, ref,
+                      mode: _WeightSheetMode.updateGoal);
                   if (value != null) {
                     try {
                       // Update local state and persist target weight
-                      ref.read(additionalInfoProvider.notifier).updateTargetWeight(value);
-                      await ref.read(saveAdditionalInfoUseCaseProvider).execute(ref.read(additionalInfoProvider));
+                      ref
+                          .read(additionalInfoProvider.notifier)
+                          .updateTargetWeight(value);
+                      await ref
+                          .read(saveAdditionalInfoUseCaseProvider)
+                          .execute(ref.read(additionalInfoProvider));
                       // Refresh remote additional info
                       ref.invalidate(currentAdditionalInfoProvider);
                       // Feedback
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('analytics.goal_updated'.tr())),
+                          SnackBar(
+                              content: Text('analytics.goal_updated'.tr())),
                         );
                       }
                     } catch (_) {
@@ -480,7 +514,8 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
           const SizedBox(height: 8),
           Text(
             (targetWeight != null
-                    ? '${targetWeight.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context)
+                    ? '${targetWeight.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                        .toPersianNumbers(context)
                     : '--')
                 .toPersianNumbers(context),
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -516,7 +551,8 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                   latestWeightAsync.when(
                     data: (w) {
                       if (w != null) {
-                        return '${w.weightKg.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context);
+                        return '${w.weightKg.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                            .toPersianNumbers(context);
                       }
                       final remote = additionalInfoRemoteAsync.maybeWhen(
                         data: (d) => d,
@@ -524,10 +560,12 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                       );
                       final fallback = remote?.weight ?? additionalInfo.weight;
                       return fallback != null
-                          ? '${fallback.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context)
+                          ? '${fallback.toStringAsFixed(0)} ${'analytics.weight_unit'.tr()}'
+                              .toPersianNumbers(context)
                           : '--';
                     },
-                    loading: () => '... ${'analytics.weight_unit'.tr()}'.toPersianNumbers(context),
+                    loading: () => '... ${'analytics.weight_unit'.tr()}'
+                        .toPersianNumbers(context),
                     error: (_, __) => '--',
                   ),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -559,22 +597,30 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
                       shadowColor: Colors.black.withOpacity(0.3),
                     ),
                     onPressed: () async {
-                      final value = await _showWeightSheet(context, ref, mode: _WeightSheetMode.logNew);
+                      final value = await _showWeightSheet(context, ref,
+                          mode: _WeightSheetMode.logNew);
                       if (value != null) {
                         try {
                           final now = DateTime.now();
-                          final dateIso = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-                          await ref.read(upsertWeightUseCaseProvider).execute(dateIso: dateIso, weightKg: value);
+                          final dateIso =
+                              '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+                          await ref
+                              .read(upsertWeightUseCaseProvider)
+                              .execute(dateIso: dateIso, weightKg: value);
                           // Refresh providers that show latest and progress (await to ensure fresh data)
                           // Use the returned value to satisfy lints and ensure completion
-                          final _ = await ref.refresh(latestWeightProvider.future);
+                          final _ =
+                              await ref.refresh(latestWeightProvider.future);
                           await Future.wait([
-                            for (int i = 0; i < 4; i++) ref.refresh(weightProgressSeriesProvider(i).future),
+                            for (int i = 0; i < 4; i++)
+                              ref.refresh(
+                                  weightProgressSeriesProvider(i).future),
                           ]);
                           // Feedback
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('analytics.weight_saved'.tr())),
+                              SnackBar(
+                                  content: Text('analytics.weight_saved'.tr())),
                             );
                           }
                         } catch (_) {
@@ -669,7 +715,8 @@ class _BmiSection extends HookConsumerWidget {
           const SizedBox(height: 12),
           Text(
             bmiAsync.when(
-              data: (v) => (v ?? 0).toStringAsFixed(2).toPersianNumbers(context),
+              data: (v) =>
+                  (v ?? 0).toStringAsFixed(2).toPersianNumbers(context),
               loading: () => '...'.toString(),
               error: (_, __) => '--',
             ),
@@ -856,7 +903,8 @@ class _ProgressLineChart extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final seriesAsync = ref.watch(weightProgressSeriesProvider(index));
     if (seriesAsync.isLoading) {
-      return _ChartContainer(child: const Center(child: CircularProgressIndicator()));
+      return _ChartContainer(
+          child: const Center(child: CircularProgressIndicator()));
     }
     if (seriesAsync.hasError) {
       return _ChartContainer(
@@ -868,10 +916,14 @@ class _ProgressLineChart extends HookConsumerWidget {
         ),
       );
     }
-    final values = seriesAsync.maybeWhen(data: (v) => v, orElse: () => const <double>[]);
+    final values =
+        seriesAsync.maybeWhen(data: (v) => v, orElse: () => const <double>[]);
     final spots = values.isEmpty
         ? [const FlSpot(0, 0)]
-        : [for (int i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i].clamp(0.0, 1.0))];
+        : [
+            for (int i = 0; i < values.length; i++)
+              FlSpot(i.toDouble(), values[i].clamp(0.0, 1.0))
+          ];
     return _ChartContainer(
       child: LineChart(
         LineChartData(
@@ -958,7 +1010,8 @@ class _NutritionBarChart extends HookConsumerWidget {
     if (mode == 0) {
       final seriesAsync = ref.watch(weeklyCaloriesSeriesProvider(index));
       if (seriesAsync.isLoading) {
-        return _ChartContainer(child: const Center(child: CircularProgressIndicator()));
+        return _ChartContainer(
+            child: const Center(child: CircularProgressIndicator()));
       }
       if (seriesAsync.hasError) {
         return _ChartContainer(
@@ -970,10 +1023,14 @@ class _NutritionBarChart extends HookConsumerWidget {
           ),
         );
       }
-      final values = seriesAsync.maybeWhen(data: (v) => v, orElse: () => const <double>[]);
+      final values =
+          seriesAsync.maybeWhen(data: (v) => v, orElse: () => const <double>[]);
       final data = values.isEmpty ? List<double>.filled(7, 0) : values;
-      final computedMax = data.isEmpty ? 0.0 : data.reduce((a, b) => a > b ? a : b) * 1.2;
-      maxY = computedMax <= 0 ? 100 : computedMax; // ensure visible scale when all zeros
+      final computedMax =
+          data.isEmpty ? 0.0 : data.reduce((a, b) => a > b ? a : b) * 1.2;
+      maxY = computedMax <= 0
+          ? 100
+          : computedMax; // ensure visible scale when all zeros
       for (var i = 0; i < data.length; i++) {
         barGroups.add(
           BarChartGroupData(
@@ -997,8 +1054,11 @@ class _NutritionBarChart extends HookConsumerWidget {
       final carbsAsync = ref.watch(weeklyCarbsSeriesProvider(index));
       final proteinAsync = ref.watch(weeklyProteinSeriesProvider(index));
       final fatsAsync = ref.watch(weeklyFatsSeriesProvider(index));
-      if (carbsAsync.isLoading || proteinAsync.isLoading || fatsAsync.isLoading) {
-        return _ChartContainer(child: const Center(child: CircularProgressIndicator()));
+      if (carbsAsync.isLoading ||
+          proteinAsync.isLoading ||
+          fatsAsync.isLoading) {
+        return _ChartContainer(
+            child: const Center(child: CircularProgressIndicator()));
       }
       if (carbsAsync.hasError || proteinAsync.hasError || fatsAsync.hasError) {
         return _ChartContainer(
@@ -1010,19 +1070,24 @@ class _NutritionBarChart extends HookConsumerWidget {
           ),
         );
       }
-      final carbs = carbsAsync.maybeWhen(data: (v) => v, orElse: () => List<int>.filled(7, 0));
-      final protein = proteinAsync.maybeWhen(data: (v) => v, orElse: () => List<int>.filled(7, 0));
-      final fats = fatsAsync.maybeWhen(data: (v) => v, orElse: () => List<int>.filled(7, 0));
+      final carbs = carbsAsync.maybeWhen(
+          data: (v) => v, orElse: () => List<int>.filled(7, 0));
+      final protein = proteinAsync.maybeWhen(
+          data: (v) => v, orElse: () => List<int>.filled(7, 0));
+      final fats = fatsAsync.maybeWhen(
+          data: (v) => v, orElse: () => List<int>.filled(7, 0));
 
       final maxVal = [
         ...carbs.map((e) => e.toDouble()),
         ...protein.map((e) => e.toDouble()),
         ...fats.map((e) => e.toDouble()),
       ];
-      final computedMax = maxVal.isEmpty ? 0.0 : (maxVal.reduce((a, b) => a > b ? a : b) * 1.2);
+      final computedMax =
+          maxVal.isEmpty ? 0.0 : (maxVal.reduce((a, b) => a > b ? a : b) * 1.2);
       maxY = computedMax <= 0 ? 50 : computedMax; // grams fallback
 
-      final maxLen = [carbs.length, protein.length, fats.length].reduce((a, b) => a > b ? a : b);
+      final maxLen = [carbs.length, protein.length, fats.length]
+          .reduce((a, b) => a > b ? a : b);
       for (var i = 0; i < maxLen; i++) {
         barGroups.add(
           BarChartGroupData(
@@ -1034,7 +1099,10 @@ class _NutritionBarChart extends HookConsumerWidget {
                 width: 8,
                 borderRadius: BorderRadius.circular(6),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF3498DB), Color(0xFF85C1E9)], // Carbs - blue
+                  colors: [
+                    Color(0xFF3498DB),
+                    Color(0xFF85C1E9)
+                  ], // Carbs - blue
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
@@ -1044,7 +1112,10 @@ class _NutritionBarChart extends HookConsumerWidget {
                 width: 8,
                 borderRadius: BorderRadius.circular(6),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF27AE60), Color(0xFF7DCEA0)], // Protein - green
+                  colors: [
+                    Color(0xFF27AE60),
+                    Color(0xFF7DCEA0)
+                  ], // Protein - green
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
@@ -1054,7 +1125,10 @@ class _NutritionBarChart extends HookConsumerWidget {
                 width: 8,
                 borderRadius: BorderRadius.circular(6),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFF39C12), Color(0xFFF8C471)], // Fats - orange
+                  colors: [
+                    Color(0xFFF39C12),
+                    Color(0xFFF8C471)
+                  ], // Fats - orange
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
