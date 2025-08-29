@@ -11,8 +11,8 @@ import '../../additional_info/pages/additional_info_page.dart';
 class PersonalDetailsPage extends HookConsumerWidget {
   const PersonalDetailsPage({super.key});
 
-  Future<void> _goToAdditionalInfo(
-      BuildContext context, WidgetRef ref, [AdditionalInfoStart? start]) async {
+  Future<void> _goToAdditionalInfo(BuildContext context, WidgetRef ref,
+      [AdditionalInfoStart? start]) async {
     // Seed the local additional info with the freshest available data
     final localInfo = ref.read(additionalInfoProvider);
     final remoteInfo = ref.read(currentAdditionalInfoProvider);
@@ -128,98 +128,155 @@ class PersonalDetailsPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-            // Goal weight card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+              // Goal weight card
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).primaryColor.withOpacity(0.1),
+                      Theme.of(context).primaryColor.withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('personal_details.goal_weight'.tr(),
-                            style: Theme.of(context).textTheme.bodySmall),
-                        const SizedBox(height: 6),
-                        Text(
-                          _formatWeight(info.targetWeight),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.flag_outlined,
+                        color: Theme.of(context).primaryColor,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'personal_details.goal_weight'.tr(),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _formatWeight(info.targetWeight),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _goToAdditionalInfo(
+                          context, ref, AdditionalInfoStart.goalWeight),
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        size: 16,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      label: Text('personal_details.change_goal'.tr()),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Theme.of(context).primaryColor,
+                        side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ],
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      ),
                     ),
-                  ),
-                  OutlinedButton(
-                    onPressed: () =>
-                        _goToAdditionalInfo(context, ref, AdditionalInfoStart.goalWeight),
-                    style: OutlinedButton.styleFrom(
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Text('personal_details.change_goal'.tr()),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Details list card
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+              // Details list card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        'Personal Information',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    _ItemRow(
+                      label: 'personal_details.current_weight'.tr(),
+                      value: _formatWeight(info.weight),
+                      icon: Icons.monitor_weight_outlined,
+                      onTap: () => _goToAdditionalInfo(
+                          context, ref, AdditionalInfoStart.weightHeight),
+                    ),
+                    const _Divider(),
+                    _ItemRow(
+                      label: 'personal_details.height'.tr(),
+                      value: _formatHeight(info.height),
+                      icon: Icons.height,
+                      onTap: () => _goToAdditionalInfo(
+                          context, ref, AdditionalInfoStart.weightHeight),
+                    ),
+                    const _Divider(),
+                    _ItemRow(
+                      label: 'personal_details.dob'.tr(),
+                      value: _formatBirth(info.birthDate),
+                      icon: Icons.calendar_today_outlined,
+                      onTap: () => _goToAdditionalInfo(
+                          context, ref, AdditionalInfoStart.birthDate),
+                    ),
+                    const _Divider(),
+                    _ItemRow(
+                      label: 'personal_details.gender'.tr(),
+                      value: _formatGender(info.gender),
+                      icon: Icons.person_outline,
+                      onTap: () => _goToAdditionalInfo(
+                          context, ref, AdditionalInfoStart.gender),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                children: [
-                  _ItemRow(
-                    label: 'personal_details.current_weight'.tr(),
-                    value: _formatWeight(info.weight),
-                    onTap: () => _goToAdditionalInfo(
-                        context, ref, AdditionalInfoStart.weightHeight),
-                  ),
-                  const _Divider(),
-                  _ItemRow(
-                    label: 'personal_details.height'.tr(),
-                    value: _formatHeight(info.height),
-                    onTap: () => _goToAdditionalInfo(
-                        context, ref, AdditionalInfoStart.weightHeight),
-                  ),
-                  const _Divider(),
-                  _ItemRow(
-                    label: 'personal_details.dob'.tr(),
-                    value: _formatBirth(info.birthDate),
-                    onTap: () =>
-                        _goToAdditionalInfo(context, ref, AdditionalInfoStart.birthDate),
-                  ),
-                  const _Divider(),
-                  _ItemRow(
-                    label: 'personal_details.gender'.tr(),
-                    value: _formatGender(info.gender),
-                    onTap: () =>
-                        _goToAdditionalInfo(context, ref, AdditionalInfoStart.gender),
-                  ),
-                ],
-              ),
-            ),
             ],
           ),
         ),
@@ -233,42 +290,79 @@ class _ItemRow extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onTap,
+    this.icon,
   });
 
   final String label;
   final String value;
   final VoidCallback onTap;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: Colors.black54)),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOut,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          splashColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          highlightColor: Theme.of(context).primaryColor.withOpacity(0.05),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ],
-              ),
+                  child: Icon(
+                    icon ?? Icons.person_outline,
+                    color: Theme.of(context).primaryColor,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        value,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
+              ],
             ),
-            const Icon(Icons.edit_outlined, color: Colors.black45),
-          ],
+          ),
         ),
       ),
     );
@@ -280,9 +374,9 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       height: 1,
-      color: Colors.grey.shade200,
+      color: Colors.grey.shade100,
     );
   }
 }

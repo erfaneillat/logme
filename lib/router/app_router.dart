@@ -16,6 +16,7 @@ import '../features/analytics/pages/analytics_page.dart';
 import '../features/settings/pages/settings_page.dart';
 import '../features/settings/pages/refer_friend_page.dart';
 import '../features/settings/pages/personal_details_page.dart';
+import '../features/settings/pages/adjust_macros_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -79,6 +80,11 @@ class AppRouter {
         path: '/personal-details',
         name: 'personal-details',
         builder: (context, state) => const PersonalDetailsPage(),
+      ),
+      GoRoute(
+        path: '/adjust-macros',
+        name: 'adjust-macros',
+        builder: (context, state) => const AdjustMacrosPage(),
       ),
       GoRoute(
         path: '/refer-friend',

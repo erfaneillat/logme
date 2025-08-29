@@ -213,6 +213,56 @@ export class PlanController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
+    async updatePlanManual(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const body = req.body ?? {};
+            const patch: any = {};
+            const keys = [
+                { in: 'calories', out: 'calories' },
+                { in: 'proteinGrams', out: 'proteinGrams' },
+                { in: 'carbsGrams', out: 'carbsGrams' },
+                { in: 'fatsGrams', out: 'fatsGrams' },
+            ];
+            for (const k of keys) {
+                if (body[k.in] !== undefined && body[k.in] !== null) {
+                    const v = Number(body[k.in]);
+                    if (!Number.isFinite(v)) {
+                        res.status(400).json({ success: false, message: `Invalid ${k.in}` });
+                        return;
+                    }
+                    patch[k.out] = Math.round(v);
+                }
+            }
+
+            if (Object.keys(patch).length === 0) {
+                res.status(400).json({ success: false, message: 'No valid fields to update' });
+                return;
+            }
+
+            const plan = await Plan.findOneAndUpdate(
+                { userId },
+                { $set: patch },
+                { new: true }
+            );
+
+            if (!plan) {
+                res.status(404).json({ success: false, message: 'Plan not found' });
+                return;
+            }
+
+            res.json({ success: true, data: { plan } });
+        } catch (error) {
+            console.error('Update plan manual error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
 }
 
 

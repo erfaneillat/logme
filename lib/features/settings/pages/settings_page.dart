@@ -54,7 +54,7 @@ class SettingsPage extends HookConsumerWidget {
                     _SettingsTile(
                       icon: Icons.bubble_chart_outlined,
                       title: 'settings.adjust_macros'.tr(),
-                      onTap: () {},
+                      onTap: () => context.push('/adjust-macros'),
                     ),
                     _Divider(),
                     _SettingsTile(

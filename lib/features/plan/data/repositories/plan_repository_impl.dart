@@ -11,6 +11,21 @@ class PlanRepositoryImpl implements PlanRepository {
   Future<PlanEntity> fetchLatestPlan() async {
     return remote.getLatestPlan();
   }
+
+  @override
+  Future<PlanEntity> updatePlanManual({
+    required int calories,
+    required int proteinGrams,
+    required int carbsGrams,
+    required int fatsGrams,
+  }) {
+    return remote.updatePlanManual(
+      calories: calories,
+      proteinGrams: proteinGrams,
+      carbsGrams: carbsGrams,
+      fatsGrams: fatsGrams,
+    );
+  }
 }
 
 final planRepositoryProvider = Provider<PlanRepository>((ref) {

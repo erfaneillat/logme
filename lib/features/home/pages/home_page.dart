@@ -152,7 +152,8 @@ class HomePage extends HookConsumerWidget {
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -209,7 +210,9 @@ class HomePage extends HookConsumerWidget {
       ref.read(dailyLogControllerProvider.notifier).removeToken(token);
 
       // After success, remove one pending placeholder
-      ref.read(dailyLogControllerProvider.notifier).removeOnePendingPlaceholder();
+      ref
+          .read(dailyLogControllerProvider.notifier)
+          .removeOnePendingPlaceholder();
 
       // Optionally, you may add the analyzed item to logs or navigate
       // For now, refresh the log to include new item
@@ -237,7 +240,9 @@ class HomePage extends HookConsumerWidget {
       // Remove token from controller storage on error/cancel
       ref.read(dailyLogControllerProvider.notifier).removeToken(token);
       // On error or cancellation, remove only one pending placeholder
-      ref.read(dailyLogControllerProvider.notifier).removeOnePendingPlaceholder();
+      ref
+          .read(dailyLogControllerProvider.notifier)
+          .removeOnePendingPlaceholder();
       if (context.mounted) {
         if (e is DioException && e.type == DioExceptionType.cancel) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -251,7 +256,6 @@ class HomePage extends HookConsumerWidget {
       }
     }
   }
-
 
   Widget _buildTopGradientBackground(BuildContext context) {
     return Container(
@@ -312,14 +316,19 @@ class HomePage extends HookConsumerWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
+                const Icon(Icons.local_fire_department,
+                    color: Colors.orange, size: 18),
                 const SizedBox(width: 6),
                 userAsync.when(
-                  loading: () => Text('home.streak'.tr(), style: Theme.of(context).textTheme.labelMedium),
-                  error: (e, st) => Text('0', style: Theme.of(context).textTheme.labelMedium),
+                  loading: () => Text('home.streak'.tr(),
+                      style: Theme.of(context).textTheme.labelMedium),
+                  error: (e, st) =>
+                      Text('0', style: Theme.of(context).textTheme.labelMedium),
                   data: (user) {
                     final count = user?.streakCount ?? 0;
-                    return Text('home.streak_days'.tr(args: ['${count}']).toPersianNumbers(context),
+                    return Text(
+                        'home.streak_days'
+                            .tr(args: ['${count}']).toPersianNumbers(context),
                         style: Theme.of(context).textTheme.labelMedium);
                   },
                 ),
@@ -437,7 +446,9 @@ class HomePage extends HookConsumerWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                NumberFormat('00', context.locale.toString()).format(d.day).toPersianNumbers(context),
+                NumberFormat('00', context.locale.toString())
+                    .format(d.day)
+                    .toPersianNumbers(context),
                 style: Theme.of(context)
                     .textTheme
                     .labelMedium
@@ -778,10 +789,13 @@ class HomePage extends HookConsumerWidget {
                 );
               } else {
                 // Client-side fallback sort: newest first by timeIso
-                final itemsSorted = [...log.items]
-                  ..sort((a, b) {
-                    final ta = DateTime.tryParse(a.timeIso)?.millisecondsSinceEpoch ?? 0;
-                    final tb = DateTime.tryParse(b.timeIso)?.millisecondsSinceEpoch ?? 0;
+                final itemsSorted = [...log.items]..sort((a, b) {
+                    final ta =
+                        DateTime.tryParse(a.timeIso)?.millisecondsSinceEpoch ??
+                            0;
+                    final tb =
+                        DateTime.tryParse(b.timeIso)?.millisecondsSinceEpoch ??
+                            0;
                     return tb - ta;
                   });
 
@@ -864,7 +878,9 @@ class HomePage extends HookConsumerWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 4),
-                                  Text('${it.calories} $kcalUnit'.toPersianNumbers(context),
+                                  Text(
+                                      '${it.calories} $kcalUnit'
+                                          .toPersianNumbers(context),
                                       style: theme.textTheme.titleLarge
                                           ?.copyWith(
                                               fontSize: 20,
@@ -923,7 +939,8 @@ class HomePage extends HookConsumerWidget {
       child: Row(children: [
         Icon(icon, color: color, size: 14),
         const SizedBox(width: 4),
-        Text(text.toPersianNumbers(context), style: Theme.of(context).textTheme.labelSmall)
+        Text(text.toPersianNumbers(context),
+            style: Theme.of(context).textTheme.labelSmall)
       ]),
     );
   }

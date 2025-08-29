@@ -9,7 +9,10 @@ class ReferralSummaryDto {
   final int earnings;
   final int rewardPerReferral;
 
-  ReferralSummaryDto({required this.count, required this.earnings, required this.rewardPerReferral});
+  ReferralSummaryDto(
+      {required this.count,
+      required this.earnings,
+      required this.rewardPerReferral});
 
   factory ReferralSummaryDto.fromJson(Map<String, dynamic> json) {
     return ReferralSummaryDto(
@@ -29,19 +32,25 @@ class ReferralRepository {
     if ((res['success'] ?? false) == true && res['code'] is String) {
       return res['code'] as String;
     }
-    throw DioException(requestOptions: RequestOptions(path: ApiConfig.referralMyCode), error: res['message'] ?? 'Failed to get referral code');
+    throw DioException(
+        requestOptions: RequestOptions(path: ApiConfig.referralMyCode),
+        error: res['message'] ?? 'Failed to get referral code');
   }
 
   Future<bool> validateCode(String code) async {
     if (code.trim().isEmpty) return false;
-    final res = await _api.get<Map<String, dynamic>>("${ApiConfig.referralValidate}/$code");
+    final res = await _api
+        .get<Map<String, dynamic>>("${ApiConfig.referralValidate}/$code");
     return (res['valid'] ?? false) as bool;
   }
 
   Future<void> submitCode(String code) async {
-    final res = await _api.post<Map<String, dynamic>>(ApiConfig.referralSubmit, data: { 'code': code });
+    final res = await _api.post<Map<String, dynamic>>(ApiConfig.referralSubmit,
+        data: {'code': code});
     if ((res['success'] ?? false) != true) {
-      throw DioException(requestOptions: RequestOptions(path: ApiConfig.referralSubmit), error: res['message'] ?? 'Failed to submit referral code');
+      throw DioException(
+          requestOptions: RequestOptions(path: ApiConfig.referralSubmit),
+          error: res['message'] ?? 'Failed to submit referral code');
     }
   }
 
@@ -50,7 +59,21 @@ class ReferralRepository {
     if ((res['success'] ?? false) == true) {
       return ReferralSummaryDto.fromJson(res);
     }
-    throw DioException(requestOptions: RequestOptions(path: ApiConfig.referralSummary), error: res['message'] ?? 'Failed to get referral summary');
+    throw DioException(
+        requestOptions: RequestOptions(path: ApiConfig.referralSummary),
+        error: res['message'] ?? 'Failed to get referral summary');
+  }
+
+  Future<String> updateCode(String newCode) async {
+    final res = await _api.put<Map<String, dynamic>>(
+        ApiConfig.referralUpdateCode,
+        data: {'code': newCode});
+    if ((res['success'] ?? false) == true && res['code'] is String) {
+      return res['code'] as String;
+    }
+    throw DioException(
+        requestOptions: RequestOptions(path: ApiConfig.referralUpdateCode),
+        error: res['message'] ?? 'Failed to update referral code');
   }
 }
 

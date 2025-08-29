@@ -151,6 +151,18 @@
         "logout": "خروج",
         "version": "نسخه {version}"
     },
+    "adjust_macros": {
+        "title": "تنظیم ماکروها",
+        "heading": "اهداف ماکرو خود را شخصی‌سازی کنید",
+        "calorie_goal": "کالری روزانه",
+        "protein_goal": "پروتئین",
+        "carb_goal": "کربوهیدرات",
+        "fat_goal": "چربی",
+        "value_hint": "مقدار را وارد کنید",
+        "auto_generate": "تولید خودکار",
+        "save": "ذخیره تغییرات",
+        "saved_success": "اهداف ماکرو با موفقیت ذخیره شد"
+    },
     "personal_details": {
         "title": "اطلاعات شخصی",
         "goal_weight": "وزن هدف",
@@ -425,7 +437,6 @@
         "referral_submit_success": "کد معرفی با موفقیت ثبت شد",
         "referral_submit_failed": "ثبت کد معرفی ناموفق بود"
     },
-    "submit": "ثبت",
     "food_detail": {
         "portions": "تعداد وعده",
         "ingredients": "مواد اولیه",

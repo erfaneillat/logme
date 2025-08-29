@@ -1,6 +1,63 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../data/referral_repository.dart';
 
+/// State for referral code update
+class ReferralCodeUpdateState {
+  final bool isLoading;
+  final String? error;
+  final String? successMessage;
+
+  const ReferralCodeUpdateState({
+    this.isLoading = false,
+    this.error,
+    this.successMessage,
+  });
+
+  ReferralCodeUpdateState copyWith({
+    bool? isLoading,
+    String? error,
+    String? successMessage,
+  }) {
+    return ReferralCodeUpdateState(
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
+      successMessage: successMessage,
+    );
+  }
+}
+
+/// StateNotifier for managing referral code updates
+class ReferralCodeUpdateNotifier
+    extends StateNotifier<ReferralCodeUpdateState> {
+  final ReferralRepository _repository;
+
+  ReferralCodeUpdateNotifier(this._repository)
+      : super(const ReferralCodeUpdateState());
+
+  Future<String?> updateCode(String newCode) async {
+    state = state.copyWith(isLoading: true, error: null, successMessage: null);
+
+    try {
+      final updatedCode = await _repository.updateCode(newCode);
+      state = state.copyWith(
+        isLoading: false,
+        successMessage: 'Referral code updated successfully!',
+      );
+      return updatedCode;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+      return null;
+    }
+  }
+
+  void clearMessages() {
+    state = state.copyWith(error: null, successMessage: null);
+  }
+}
+
 /// User's shareable referral code
 final referralCodeProvider = FutureProvider<String>((ref) async {
   final repo = ref.watch(referralRepositoryProvider);
@@ -32,4 +89,12 @@ final rewardPerReferralProvider = Provider<int>((ref) {
 final referralEarningsProvider = FutureProvider<int>((ref) async {
   final summary = await ref.watch(referralSummaryProvider.future);
   return summary.earnings;
+});
+
+/// Provider for managing referral code updates
+final referralCodeUpdateProvider =
+    StateNotifierProvider<ReferralCodeUpdateNotifier, ReferralCodeUpdateState>(
+        (ref) {
+  final repository = ref.watch(referralRepositoryProvider);
+  return ReferralCodeUpdateNotifier(repository);
 });

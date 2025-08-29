@@ -63,6 +63,7 @@ class ApiConfig {
       '/api/user/mark-additional-info-completed';
   static const String planGenerate = '/api/plan/generate';
   static const String planLatest = '/api/plan/latest';
+  static const String planUpdateManual = '/api/plan/manual';
   // Logs Endpoints
   static const String logsDaily = '/api/logs';
 
@@ -80,7 +81,9 @@ class ApiConfig {
 
   // Referral endpoints
   static const String referralMyCode = '/api/referral/my-code';
-  static const String referralValidate = '/api/referral/validate'; // use "$referralValidate/<code>"
+  static const String referralUpdateCode = '/api/referral/update-code';
+  static const String referralValidate =
+      '/api/referral/validate'; // use "$referralValidate/<code>"
   static const String referralSubmit = '/api/referral/submit';
   static const String referralSummary = '/api/referral/summary';
 

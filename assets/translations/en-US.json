@@ -151,6 +151,18 @@
         "logout": "Logout",
         "version": "VERSION {version}"
     },
+    "adjust_macros": {
+        "title": "Adjust Macronutrients",
+        "heading": "Customize your macro targets",
+        "calorie_goal": "Daily Calories",
+        "protein_goal": "Protein",
+        "carb_goal": "Carbs",
+        "fat_goal": "Fat",
+        "value_hint": "Enter value",
+        "auto_generate": "Auto Generate",
+        "save": "Save Changes",
+        "saved_success": "Macro targets saved successfully"
+    },
     "personal_details": {
         "title": "Personal details",
         "goal_weight": "Goal Weight",
@@ -418,15 +430,8 @@
         "referral_invalid": "This referral code is not valid",
         "referral_validation_error": "Failed to validate code. Please try again.",
         "referral_submit_success": "Referral code submitted successfully",
-        "referral_submit_failed": "Failed to submit referral code"
-    },
-    "diet_title": "Do you follow a specific diet?",
-    "diet_subtitle": "This helps us personalize your meal recommendations",
-    "diet_options": {
-        "classic": "Classic",
-        "pescatarian": "Pescatarian",
-        "vegetarian": "Vegetarian",
-        "vegan": "Vegan"
+        "referral_submit_failed": "Failed to submit referral code",
+        "referral_submit": "Submit"
     },
     "food_detail": {
         "no_ingredients": "No ingredients",

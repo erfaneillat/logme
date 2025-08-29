@@ -136,4 +136,58 @@ export class ReferralController {
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }
+
+  // PUT /api/referral/update-code { code }
+  async updateCode(req: any, res: Response): Promise<void> {
+    try {
+      const userId = req.user.userId;
+      const newCode = String(req.body.code || '').toUpperCase().trim();
+
+      // Validate code format
+      if (!newCode) {
+        res.status(400).json({ success: false, message: 'Referral code is required' });
+        return;
+      }
+
+      // Validate code length (4-8 characters)
+      if (newCode.length < 4 || newCode.length > 8) {
+        res.status(400).json({ success: false, message: 'Referral code must be 4-8 characters long' });
+        return;
+      }
+
+      // Validate code contains only alphanumeric characters
+      if (!/^[A-Z0-9]+$/.test(newCode)) {
+        res.status(400).json({ success: false, message: 'Referral code can only contain letters and numbers' });
+        return;
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+        return;
+      }
+
+      // Check if the new code is the same as current code
+      if (user.referralCode === newCode) {
+        res.status(400).json({ success: false, message: 'New code must be different from current code' });
+        return;
+      }
+
+      // Check if the new code is already taken by another user
+      const existingUser = await User.findOne({ referralCode: newCode });
+      if (existingUser && String(existingUser.id) !== String(userId)) {
+        res.status(409).json({ success: false, message: 'This referral code is already taken' });
+        return;
+      }
+
+      // Update the referral code
+      user.referralCode = newCode;
+      await user.save();
+
+      res.json({ success: true, code: newCode });
+    } catch (err) {
+      console.error('updateCode error', err);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  }
 }

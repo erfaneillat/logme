@@ -20,6 +20,27 @@ class PlanRemoteDataSource {
         (response['data'] as Map<String, dynamic>?) ?? response;
     return PlanEntity.fromJson(data);
   }
+
+  Future<PlanEntity> updatePlanManual({
+    required int calories,
+    required int proteinGrams,
+    required int carbsGrams,
+    required int fatsGrams,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    final Map<String, dynamic> response = await api.patch<Map<String, dynamic>>(
+      ApiConfig.planUpdateManual,
+      data: {
+        'calories': calories,
+        'proteinGrams': proteinGrams,
+        'carbsGrams': carbsGrams,
+        'fatsGrams': fatsGrams,
+      },
+    );
+    final Map<String, dynamic> data =
+        (response['data'] as Map<String, dynamic>?) ?? response;
+    return PlanEntity.fromJson(data);
+  }
 }
 
 final planRemoteDataSourceProvider = Provider<PlanRemoteDataSource>((ref) {
