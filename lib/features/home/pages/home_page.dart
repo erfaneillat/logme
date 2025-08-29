@@ -59,68 +59,136 @@ class HomePage extends HookConsumerWidget {
           final parentContext = context; // preserve a valid context
           showModalBottomSheet(
             context: parentContext,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-            ),
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
             builder: (sheetContext) {
-              return SafeArea(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
+              return Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFF8F9FA),
+                      Color(0xFFFFFFFF),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Drag handle
+                        Container(
                           width: 40,
                           height: 4,
-                          margin: const EdgeInsets.only(bottom: 8),
+                          margin: const EdgeInsets.only(bottom: 24),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            color: Colors.grey.shade400,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                      ),
-                      Text(
-                        'home.quick_add'.tr(),
-                        style: Theme.of(parentContext).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      ListTile(
-                        leading: const Icon(Icons.camera_alt_outlined),
-                        title: Text('home.camera'.tr()),
-                        onTap: () async {
-                          Navigator.of(sheetContext).pop();
-                          await _pickAndUpload(
-                              parentContext, ref, ImageSource.camera);
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.photo_library_outlined),
-                        title: Text('home.gallery'.tr()),
-                        onTap: () async {
-                          Navigator.of(sheetContext).pop();
-                          await _pickAndUpload(
-                              parentContext, ref, ImageSource.gallery);
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.edit_note_outlined),
-                        title: Text('home.describe_food'.tr()),
-                        onTap: () {
-                          Navigator.of(sheetContext).pop();
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.favorite_outline),
-                        title: Text('home.favorites'.tr()),
-                        onTap: () {
-                          Navigator.of(sheetContext).pop();
-                          context.pushNamed('favorites');
-                        },
-                      ),
-                    ],
+                        // Header section
+                        Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.restaurant_menu,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'home.quick_add_title'.tr(),
+                              style: Theme.of(parentContext).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'home.quick_add_subtitle'.tr(),
+                              style: Theme.of(parentContext).textTheme.bodyMedium?.copyWith(
+                                color: Colors.black54,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        // Action buttons grid
+                        GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: 1.1,
+                          children: [
+                            _buildActionCard(
+                              context: parentContext,
+                              icon: Icons.camera_alt,
+                              title: 'home.camera'.tr(),
+                              subtitle: 'home.camera_desc'.tr(),
+                              color: const Color(0xFF4CAF50),
+                              onTap: () async {
+                                Navigator.of(sheetContext).pop();
+                                await _pickAndUpload(
+                                    parentContext, ref, ImageSource.camera);
+                              },
+                            ),
+                            _buildActionCard(
+                              context: parentContext,
+                              icon: Icons.photo_library,
+                              title: 'home.gallery'.tr(),
+                              subtitle: 'home.gallery_desc'.tr(),
+                              color: const Color(0xFF2196F3),
+                              onTap: () async {
+                                Navigator.of(sheetContext).pop();
+                                await _pickAndUpload(
+                                    parentContext, ref, ImageSource.gallery);
+                              },
+                            ),
+                            _buildActionCard(
+                              context: parentContext,
+                              icon: Icons.edit_note,
+                              title: 'home.describe_food'.tr(),
+                              subtitle: 'home.describe_food_desc'.tr(),
+                              color: const Color(0xFFFF9800),
+                              onTap: () {
+                                Navigator.of(sheetContext).pop();
+                              },
+                            ),
+                            _buildActionCard(
+                              context: parentContext,
+                              icon: Icons.favorite,
+                              title: 'home.favorites'.tr(),
+                              subtitle: 'home.favorites_desc'.tr(),
+                              color: const Color(0xFFE91E63),
+                              onTap: () {
+                                Navigator.of(sheetContext).pop();
+                                context.pushNamed('favorites');
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -268,6 +336,76 @@ class HomePage extends HookConsumerWidget {
             Color(0xFFF7F7FA),
             Color(0xFFF9FAFB),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.black54,
+                  fontSize: 11,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
