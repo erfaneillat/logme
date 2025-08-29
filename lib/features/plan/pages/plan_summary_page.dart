@@ -28,7 +28,7 @@ class PlanSummaryPage extends ConsumerWidget {
             children: [
               Text(tr('common.please_wait')),
               const SizedBox(height: 8),
-              Text(state.error ?? 'Unknown error'),
+              Text(state.error ?? 'common.unknown_error'.tr()),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () =>

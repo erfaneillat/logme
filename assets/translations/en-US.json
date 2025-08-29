@@ -60,7 +60,9 @@
         "add": "Add",
         "error": "Something went wrong",
         "retry": "Retry",
-        "save": "Save"
+        "save": "Save",
+        "loading_ellipsis": "Loading...",
+        "unknown_error": "Unknown error"
     },
     "login": {
         "welcome_title": "Welcome to Logme",
@@ -150,7 +152,18 @@
         "support_email": "Support Email",
         "delete_account": "Delete Account?",
         "logout": "Logout",
-        "version": "VERSION {version}"
+        "version": "VERSION {version}",
+        "profile_subtitle": "Manage your account and preferences",
+        "quick_actions": "Quick Actions",
+        "support_legal": "Support & Legal",
+        "earn_rewards": "Earn rewards together",
+        "profile_details_subtitle": "Profile & details",
+        "nutrition_targets_subtitle": "Nutrition targets",
+        "track_progress_subtitle": "Track progress",
+        "view_trends_subtitle": "View trends",
+        "error_loading_profile": "Error loading profile",
+        "welcome_default": "Welcome",
+        "logout_button": "Logout"
     },
     "adjust_macros": {
         "title": "Adjust Macronutrients",
@@ -171,7 +184,14 @@
         "current_weight": "Current Weight",
         "height": "Height",
         "dob": "Date of birth",
-        "gender": "Gender"
+        "gender": "Gender",
+        "profile_header": "Your Health Profile",
+        "profile_subtitle": "Track and manage your personal health information",
+        "sync_data": "Syncing your data...",
+        "sync_failed": "Sync Failed",
+        "sync_failed_desc": "Unable to sync your data",
+        "retry": "Retry",
+        "personal_info": "Personal Information"
     },
     "refer": {
         "title": "Refer your friend",
@@ -190,7 +210,11 @@
         "earnings_count": "{count} friends",
         "how_title": "How to earn",
         "how_point1": "Share your promo code to your friends",
-        "how_point2": "Earn 25,000 toman when your friend buys a subscription"
+        "how_point2": "Earn 25,000 toman when your friend buys a subscription",
+        "unable_to_load": "Unable to load",
+        "save_tooltip": "Save",
+        "cancel_tooltip": "Cancel",
+        "edit_code_tooltip": "Edit code"
     },
     "analytics": {
         "overview": "Overview",

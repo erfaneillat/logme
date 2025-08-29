@@ -60,7 +60,9 @@
         "add": "افزودن",
         "error": "خطایی رخ داد",
         "retry": "تلاش مجدد",
-        "save": "ذخیره"
+        "save": "ذخیره",
+        "loading_ellipsis": "در حال بارگذاری...",
+        "unknown_error": "خطای نامشخص"
     },
     "login": {
         "welcome_title": "به لقمه\nخوش آمدید",
@@ -150,7 +152,18 @@
         "support_email": "ایمیل پشتیبانی",
         "delete_account": "حذف حساب کاربری؟",
         "logout": "خروج",
-        "version": "نسخه {version}"
+        "version": "نسخه {version}",
+        "profile_subtitle": "مدیریت حساب کاربری و ترجیحات شما",
+        "quick_actions": "اقدامات سریع",
+        "support_legal": "پشتیبانی و قانونی",
+        "earn_rewards": "با هم پاداش کسب کنید",
+        "profile_details_subtitle": "پروفایل و جزئیات",
+        "nutrition_targets_subtitle": "اهداف تغذیه‌ای",
+        "track_progress_subtitle": "ردیابی پیشرفت",
+        "view_trends_subtitle": "مشاهده روندها",
+        "error_loading_profile": "خطا در بارگذاری پروفایل",
+        "welcome_default": "خوش آمدید",
+        "logout_button": "خروج"
     },
     "adjust_macros": {
         "title": "تنظیم ماکروها",
@@ -171,7 +184,14 @@
         "current_weight": "وزن فعلی",
         "height": "قد",
         "dob": "تاریخ تولد",
-        "gender": "جنسیت"
+        "gender": "جنسیت",
+        "profile_header": "پروفایل سلامت شما",
+        "profile_subtitle": "اطلاعات سلامت شخصی خود را ردیابی و مدیریت کنید",
+        "sync_data": "در حال همگام‌سازی اطلاعات شما...",
+        "sync_failed": "همگام‌سازی ناموفق",
+        "sync_failed_desc": "امکان همگام‌سازی اطلاعات شما وجود ندارد",
+        "retry": "تلاش مجدد",
+        "personal_info": "اطلاعات شخصی"
     },
     "refer": {
         "title": "معرفی دوست",
@@ -190,7 +210,11 @@
         "earnings_count": "{count} نفر",
         "how_title": "چطور کسب درآمد کنم",
         "how_point1": "کد معرفی‌ات را برای دوستانت بفرست",
-        "how_point2": "وقتی دوستت اشتراک می‌خرد، ۲۵٬۰۰۰ تومان دریافت کن"
+        "how_point2": "وقتی دوستت اشتراک می‌خرد، ۲۵،۰۰۰ تومان دریافت کن",
+        "unable_to_load": "قابل بارگذاری نیست",
+        "save_tooltip": "ذخیره",
+        "cancel_tooltip": "انصراف",
+        "edit_code_tooltip": "ویرایش کد"
     },
     "analytics": {
         "overview": "نمای کلی",

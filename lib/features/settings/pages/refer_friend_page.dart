@@ -441,13 +441,13 @@ class _EarningsSection extends HookConsumerWidget {
         earningsAsync.when(
           loading: () => buildTile(
             title: 'refer.earnings_amount_label'.tr(),
-            value: 'Loading...',
+            value: 'common.loading_ellipsis'.tr(),
             icon: Icons.access_time,
             isLoading: true,
           ),
           error: (e, st) => buildTile(
             title: 'refer.earnings_amount_label'.tr(),
-            value: 'Unable to load',
+            value: 'refer.unable_to_load'.tr(),
             icon: Icons.error_outline,
             isError: true,
           ),
@@ -463,13 +463,13 @@ class _EarningsSection extends HookConsumerWidget {
         countAsync.when(
           loading: () => buildTile(
             title: 'refer.earnings_count_label'.tr(),
-            value: 'Loading...',
+            value: 'common.loading_ellipsis'.tr(),
             icon: Icons.access_time,
             isLoading: true,
           ),
           error: (e, st) => buildTile(
             title: 'refer.earnings_count_label'.tr(),
-            value: 'Unable to load',
+            value: 'refer.unable_to_load'.tr(),
             icon: Icons.error_outline,
             isError: true,
           ),
@@ -815,7 +815,7 @@ class _CodeBoxState extends State<_CodeBox> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.check, color: Color(0xFF10B981)),
-              tooltip: 'Save',
+              tooltip: 'refer.save_tooltip'.tr(),
               style: IconButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(
@@ -827,7 +827,7 @@ class _CodeBoxState extends State<_CodeBox> {
             IconButton(
               onPressed: _cancelEditing,
               icon: const Icon(Icons.close, color: Color(0xFFEF4444)),
-              tooltip: 'Cancel',
+              tooltip: 'refer.cancel_tooltip'.tr(),
               style: IconButton.styleFrom(
                 backgroundColor: const Color(0xFFEF4444).withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(
@@ -859,7 +859,7 @@ class _CodeBoxState extends State<_CodeBox> {
               IconButton(
                 onPressed: _startEditing,
                 icon: const Icon(Icons.edit, color: Color(0xFF6366F1)),
-                tooltip: 'Edit code',
+                tooltip: 'refer.edit_code_tooltip'.tr(),
                 style: IconButton.styleFrom(
                   backgroundColor:
                       const Color(0xFF6366F1).withValues(alpha: 0.1),
