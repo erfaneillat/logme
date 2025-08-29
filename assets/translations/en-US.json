@@ -168,6 +168,7 @@
     "adjust_macros": {
         "title": "Adjust Macronutrients",
         "heading": "Customize your macro targets",
+        "subtitle": "Set your daily nutritional goals to match your fitness objectives",
         "calorie_goal": "Daily Calories",
         "protein_goal": "Protein",
         "carb_goal": "Carbs",

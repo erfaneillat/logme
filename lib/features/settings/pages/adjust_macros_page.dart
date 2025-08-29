@@ -50,62 +50,86 @@ class AdjustMacrosPage extends HookConsumerWidget {
       required TextEditingController controller,
     }) {
       return Container(
-        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.grey.shade100,
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // circular progress ring style to match Home macros
-            SizedBox(
-              width: 56,
-              height: 56,
-              child: AnimatedProgressRing(
-                progress: 1.0,
-                color: color,
-                backgroundColor: Colors.grey.shade200,
-                strokeWidth: 8,
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey.shade100,
-                  radius: 20,
-                  child: Icon(icon, color: color, size: 22),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.bodyMedium),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: controller,
-                    keyboardType: TextInputType.number,
-                    onChanged: (_) => onChanged(),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: tr('adjust_macros.value_hint'),
-                      filled: true,
-                      fillColor: const Color(0xFFF6F7FB),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade800,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              onChanged: (_) => onChanged(),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey.shade900,
+                  ),
+              decoration: InputDecoration(
+                isDense: false,
+                hintText: tr('adjust_macros.value_hint'),
+                hintStyle: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontWeight: FontWeight.w500,
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: color.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
               ),
             ),
           ],
@@ -115,105 +139,181 @@ class AdjustMacrosPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('adjust_macros.title'.tr()),
+        title: Text(
+          'adjust_macros.title'.tr(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
       ),
+      backgroundColor: Colors.grey.shade50,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('adjust_macros.heading'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.w800)),
-              const SizedBox(height: 12),
+              // Header Section
+              Text(
+                'adjust_macros.heading'.tr(),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.grey.shade900,
+                      letterSpacing: -0.5,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'adjust_macros.subtitle'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey.shade600,
+                      height: 1.4,
+                    ),
+              ),
+              const SizedBox(height: 32),
 
+              // Macro Goals Grid
               goalTile(
-                icon: Icons.local_fire_department_outlined,
-                color: Colors.black,
+                icon: Icons.local_fire_department_rounded,
+                color: const Color(0xFF2563EB),
                 title: 'adjust_macros.calorie_goal'.tr(),
                 controller: calCtrl,
               ),
-              const SizedBox(height: 12),
               goalTile(
-                icon: Icons.bolt_outlined,
-                color: Colors.orange,
+                icon: Icons.fitness_center_rounded,
+                color: const Color(0xFFDC2626),
                 title: 'adjust_macros.protein_goal'.tr(),
                 controller: proteinCtrl,
               ),
-              const SizedBox(height: 12),
               goalTile(
-                icon: Icons.spa_outlined,
-                color: Colors.yellowAccent.shade700,
+                icon: Icons.grain_rounded,
+                color: const Color(0xFFEAB308),
                 title: 'adjust_macros.carb_goal'.tr(),
                 controller: carbsCtrl,
               ),
-              const SizedBox(height: 12),
               goalTile(
-                icon: Icons.water_drop_outlined,
-                color: Colors.blueAccent,
+                icon: Icons.water_drop_rounded,
+                color: const Color(0xFF059669),
                 title: 'adjust_macros.fat_goal'.tr(),
                 controller: fatCtrl,
               ),
 
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    context.pushNamed(
-                      'additional-info',
-                      extra: const AdditionalInfoArgs(
-                        restrictedForAutoGenerate: true,
-                      ),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+              const SizedBox(height: 24),
+
+              // Action Buttons
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.grey.shade100,
+                    width: 1,
                   ),
-                  child: Text('adjust_macros.auto_generate'.tr(),
-                      style: context.textTheme.titleMedium),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isSaving.value
-                      ? null
-                      : () async {
-                          isSaving.value = true;
-                          final ok = await ref.read(macrosProvider.notifier).saveToBackend();
-                          isSaving.value = false;
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                ok ? 'adjust_macros.saved_success'.tr() : 'common.error'.tr(),
-                              ),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          context.pushNamed(
+                            'additional-info',
+                            extra: const AdditionalInfoArgs(
+                              restrictedForAutoGenerate: true,
                             ),
                           );
                         },
-                  style: ElevatedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: isSaving.value
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onPrimary),
+                        icon: const Icon(Icons.auto_awesome_rounded, size: 20),
+                        label: Text(
+                          'adjust_macros.auto_generate'.tr(),
+                          style: context.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
-                        )
-                      : Text('adjust_macros.save'.tr(),
-                          style: context.textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade50,
+                          foregroundColor: Colors.grey.shade700,
+                          side: BorderSide(
+                            color: Colors.grey.shade200,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: isSaving.value
+                            ? null
+                            : () async {
+                                isSaving.value = true;
+                                final ok = await ref
+                                    .read(macrosProvider.notifier)
+                                    .saveToBackend();
+                                isSaving.value = false;
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      ok
+                                          ? 'adjust_macros.saved_success'.tr()
+                                          : 'common.error'.tr(),
+                                    ),
+                                    backgroundColor:
+                                        ok ? Colors.green : Colors.red,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              },
+                        icon: isSaving.value
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              )
+                            : const Icon(Icons.check_rounded, size: 20),
+                        label: Text(
+                          'adjust_macros.save'.tr(),
+                          style: context.textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
