@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:go_router/go_router.dart';
 import '../presentation/providers/additional_info_provider.dart';
 import 'widgets/gender_selection_page.dart';
 import 'widgets/birth_date_selection_page.dart';
@@ -23,10 +24,18 @@ import '../../settings/data/referral_repository.dart';
 
 enum AdditionalInfoStart { gender, birthDate, workoutFrequency, weightHeight, goalSelection, goalWeight }
 
+// Arguments to navigate to AdditionalInfoPage with optional restricted flow
+class AdditionalInfoArgs {
+  final AdditionalInfoStart? startAt;
+  final bool restrictedForAutoGenerate;
+  const AdditionalInfoArgs({this.startAt, this.restrictedForAutoGenerate = false});
+}
+
 class AdditionalInfoPage extends HookConsumerWidget {
-  const AdditionalInfoPage({super.key, this.startAt});
+  const AdditionalInfoPage({super.key, this.startAt, this.restrictedForAutoGenerate = false});
 
   final AdditionalInfoStart? startAt;
+  final bool restrictedForAutoGenerate;
 
   // Calculate target weight loss based on current and target weight
   double _calculateTargetWeightLoss(
@@ -66,7 +75,125 @@ class AdditionalInfoPage extends HookConsumerWidget {
     // Edit mode is active when deep-linking to a specific step
     final bool editingMode = startAt != null;
 
-    final pages = [
+    // Build pages depending on whether we are in restricted flow for auto-generate
+    final pages = restrictedForAutoGenerate
+        ? [
+            WorkoutFrequencyPage(
+              formKey: formKey,
+              initialValue: additionalInfo.workoutFrequency,
+              onSelectionChanged: (frequency) {
+                additionalInfoNotifier.updateWorkoutFrequency(frequency);
+              },
+              onNext: () {
+                pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              showNext: true,
+            ),
+            WeightHeightPage(
+              formKey: formKey,
+              initialWeight: additionalInfo.weight,
+              initialHeight: additionalInfo.height,
+              onNext: () {
+                final formState = formKey.currentState;
+                if (formState?.saveAndValidate() ?? false) {
+                  final formData = formState!.value;
+                  additionalInfoNotifier.updateWeight(formData['weight']);
+                  additionalInfoNotifier.updateHeight(formData['height']);
+                  pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              showNext: true,
+            ),
+            GoalSelectionPage(
+              formKey: formKey,
+              initialValue: additionalInfo.weightGoal,
+              onSelectionChanged: (weightGoal) {
+                additionalInfoNotifier.updateWeightGoal(weightGoal);
+              },
+              onNext: () {
+                if (additionalInfo.weightGoal != null) {
+                  pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              showNext: true,
+            ),
+            // Target weight selection (only capture target weight)
+            WeightGoalPage(
+              initialValue: additionalInfo.weightGoal,
+              currentWeight: additionalInfo.weight,
+              initialTargetWeight: additionalInfo.targetWeight,
+              onSelectionChanged: (goal) {
+                // Keep weight goal in sync if the widget emits it
+                additionalInfoNotifier.updateWeightGoal(goal);
+              },
+              onNext: () {
+                final formState = formKey.currentState;
+                if (formState?.saveAndValidate() ?? false) {
+                  final formData = formState!.value;
+                  additionalInfoNotifier.updateTargetWeight(formData['targetWeight']);
+                  pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              showNext: true,
+            ),
+            if (additionalInfo.weightGoal == 'lose_weight' ||
+                additionalInfo.weightGoal == 'gain_weight')
+              WeightLossSpeedPage(
+                formKey: formKey,
+                initialValue: additionalInfo.weightLossSpeed,
+                goal: additionalInfo.weightGoal,
+                onSelectionChanged: (weightLossSpeed) {
+                  additionalInfoNotifier.updateWeightLossSpeed(weightLossSpeed);
+                },
+                onNext: () {
+                  if (additionalInfo.weightLossSpeed != null) {
+                    pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                },
+              ),
+            TrustIntroPage(
+              onNext: () async {
+                final formState = formKey.currentState;
+                // Ensure latest values are captured from form
+                formState?.save();
+                try {
+                  // Attempt to submit referral code if present (optional step)
+                  final code = ref.read(additionalInfoProvider).referralCode;
+                  if (code != null && code.trim().isNotEmpty) {
+                    final referralRepo = ref.read(referralRepositoryProvider);
+                    try {
+                      await referralRepo.submitCode(code.trim());
+                    } catch (_) {
+                      // Do not block the flow if referral submission fails
+                    }
+                  }
+
+                  await additionalInfoNotifier.saveAdditionalInfo();
+                  await additionalInfoNotifier.markCompleted();
+                  if (context.mounted) {
+                    // Go to plan generation loading page
+                    context.goNamed('plan-loading');
+                  }
+                } catch (_) {}
+              },
+            ),
+          ]
+        : [
       // Intro trust page
 
       GenderSelectionPage(
@@ -310,13 +437,12 @@ class AdditionalInfoPage extends HookConsumerWidget {
             await additionalInfoNotifier.markCompleted();
             if (context.mounted) {
               // Go to plan generation loading page
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/plan-loading', (route) => false);
+              context.goNamed('plan-loading');
             }
           } catch (_) {}
         },
       ),
-    ];
+          ];
 
     // Optionally jump to a specific page based on startAt
     int _indexFor(AdditionalInfoStart s) {

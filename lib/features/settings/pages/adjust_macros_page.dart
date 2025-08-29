@@ -2,10 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:cal_ai/extensions/context.dart';
 import 'package:cal_ai/common/widgets/index.dart';
 import '../presentation/providers/settings_providers.dart';
+import 'package:cal_ai/features/additional_info/pages/additional_info_page.dart';
 
 class AdjustMacrosPage extends HookConsumerWidget {
   const AdjustMacrosPage({super.key});
@@ -160,7 +162,14 @@ class AdjustMacrosPage extends HookConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () => ref.read(macrosProvider.notifier).autoGenerate(),
+                  onPressed: () {
+                    context.pushNamed(
+                      'additional-info',
+                      extra: const AdditionalInfoArgs(
+                        restrictedForAutoGenerate: true,
+                      ),
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     shape: const StadiumBorder(),
                     padding: const EdgeInsets.symmetric(vertical: 14),

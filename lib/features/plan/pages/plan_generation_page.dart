@@ -4,6 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presentation/providers/plan_generation_provider.dart';
+import 'package:cal_ai/features/login/presentation/providers/auth_provider.dart';
+import 'package:cal_ai/features/settings/presentation/providers/settings_providers.dart';
+import 'package:cal_ai/features/home/presentation/providers/home_date_provider.dart';
 
 class PlanGenerationPage extends ConsumerWidget {
   const PlanGenerationPage({super.key});
@@ -17,6 +20,17 @@ class PlanGenerationPage extends ConsumerWidget {
         );
       }
       if (previous?.progressPercent != 100 && next.progressPercent >= 100) {
+        // Invalidate dependent providers so Home and Settings pick up fresh data
+        ref.invalidate(macrosProvider);
+        ref.invalidate(dailyRemainingProvider);
+        ref.invalidate(currentUserProvider);
+
+        // Optionally prefetch to warm caches
+        // ignore: unused_result
+        ref.read(dailyRemainingProvider.future);
+        // ignore: unused_result
+        ref.read(currentUserProvider.future);
+
         Future.delayed(const Duration(milliseconds: 300), () {
           if (context.mounted) context.go('/plan-summary');
         });

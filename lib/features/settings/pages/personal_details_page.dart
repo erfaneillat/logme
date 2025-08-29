@@ -174,10 +174,13 @@ class PersonalDetailsPage extends HookConsumerWidget {
                         children: [
                           Text(
                             'personal_details.goal_weight'.tr(),
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w500,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -204,11 +207,15 @@ class PersonalDetailsPage extends HookConsumerWidget {
                       label: Text('personal_details.change_goal'.tr()),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Theme.of(context).primaryColor,
-                        side: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+                        side: BorderSide(
+                            color: Theme.of(context)
+                                .primaryColor
+                                .withOpacity(0.3)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
                       ),
                     ),
                   ],
@@ -237,10 +244,11 @@ class PersonalDetailsPage extends HookConsumerWidget {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
                         'Personal Information',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
                       ),
                     ),
                     _ItemRow(
@@ -333,10 +341,7 @@ class _ItemRow extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.black87,
                               fontWeight: FontWeight.w500,
                             ),
@@ -344,13 +349,11 @@ class _ItemRow extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         value,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
                       ),
                     ],
                   ),

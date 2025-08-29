@@ -96,6 +96,12 @@ class AppRouter {
         name: 'additional-info',
         builder: (context, state) {
           final extra = state.extra;
+          if (extra is AdditionalInfoArgs) {
+            return AdditionalInfoPage(
+              startAt: extra.startAt,
+              restrictedForAutoGenerate: extra.restrictedForAutoGenerate,
+            );
+          }
           return AdditionalInfoPage(startAt: extra as AdditionalInfoStart?);
         },
       ),
