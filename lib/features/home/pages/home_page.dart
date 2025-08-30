@@ -183,6 +183,17 @@ class HomePage extends HookConsumerWidget {
                             ),
                             _buildActionCard(
                               context: parentContext,
+                              icon: Icons.fitness_center,
+                              title: 'home.add_exercise'.tr(),
+                              subtitle: 'home.add_exercise_desc'.tr(),
+                              color: const Color(0xFF9C27B0),
+                              onTap: () {
+                                Navigator.of(sheetContext).pop();
+                                parentContext.pushNamed('add-exercise');
+                              },
+                            ),
+                            _buildActionCard(
+                              context: parentContext,
                               icon: Icons.favorite,
                               title: 'home.favorites'.tr(),
                               subtitle: 'home.favorites_desc'.tr(),
@@ -644,6 +655,14 @@ class HomePage extends HookConsumerWidget {
         final consumed =
             (remaining.totalCalories - remaining.caloriesRemaining).toDouble();
         final progress = total <= 0 ? 0.0 : (consumed / total).clamp(0.0, 1.0);
+
+        // Get burned calories from the log
+        final logAsync = ref.watch(dailyLogControllerProvider);
+        final burnedCalories = logAsync.log.maybeWhen(
+          data: (log) => log.burnedCalories,
+          orElse: () => 0,
+        );
+
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -675,6 +694,29 @@ class HomePage extends HookConsumerWidget {
                         Text('home.calories_left'.tr()),
                       ],
                     ),
+                    if (burnedCalories > 0) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.local_fire_department,
+                            size: 16,
+                            color: Colors.orange,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${burnedCalories}'.toPersianNumbers(context) +
+                                ' ' +
+                                'home.burned_calories'.tr(),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.orange.shade700,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

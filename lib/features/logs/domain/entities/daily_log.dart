@@ -6,6 +6,7 @@ class DailyLogEntity {
   final int carbsGrams;
   final int proteinGrams;
   final int fatsGrams;
+  final int burnedCalories;
   final List<DailyLogItemEntity> items;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -16,6 +17,7 @@ class DailyLogEntity {
     required this.carbsGrams,
     required this.proteinGrams,
     required this.fatsGrams,
+    required this.burnedCalories,
     required this.items,
     this.createdAt,
     this.updatedAt,
@@ -37,6 +39,7 @@ class DailyLogEntity {
       carbsGrams: (json['carbsGrams'] as num? ?? 0).toInt(),
       proteinGrams: (json['proteinGrams'] as num? ?? 0).toInt(),
       fatsGrams: (json['fatsGrams'] as num? ?? 0).toInt(),
+      burnedCalories: (json['burnedCalories'] as num? ?? 0).toInt(),
       items: items,
       createdAt: parseDt(json['createdAt']),
       updatedAt: parseDt(json['updatedAt']),

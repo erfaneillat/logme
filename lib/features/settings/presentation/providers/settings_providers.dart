@@ -1,40 +1,87 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../plan/data/repositories/plan_repository_impl.dart';
 import '../../../home/presentation/providers/home_date_provider.dart';
+import '../../data/datasources/preferences_remote_data_source.dart';
 
 class PreferencesState {
   final bool addBurnedCalories;
   final bool rolloverCalories;
 
   const PreferencesState({
-    this.addBurnedCalories = false,
-    this.rolloverCalories = false,
+    this.addBurnedCalories = true,
+    this.rolloverCalories = true,
   });
 
   PreferencesState copyWith({
     bool? addBurnedCalories,
     bool? rolloverCalories,
-  }) => PreferencesState(
+  }) =>
+      PreferencesState(
         addBurnedCalories: addBurnedCalories ?? this.addBurnedCalories,
         rolloverCalories: rolloverCalories ?? this.rolloverCalories,
       );
 }
 
 class PreferencesNotifier extends StateNotifier<PreferencesState> {
-  PreferencesNotifier() : super(const PreferencesState());
+  final Ref ref;
 
-  void toggleAddBurnedCalories(bool value) {
-    state = state.copyWith(addBurnedCalories: value);
+  PreferencesNotifier(this.ref) : super(const PreferencesState()) {
+    // Load preferences from backend when initialized
+    _loadFromBackend();
   }
 
-  void toggleRolloverCalories(bool value) {
-    state = state.copyWith(rolloverCalories: value);
+  Future<void> _loadFromBackend() async {
+    try {
+      final dataSource = ref.read(preferencesRemoteDataSourceProvider);
+      final preferences = await dataSource.getUserPreferences();
+      state = state.copyWith(
+        addBurnedCalories: preferences['addBurnedCalories'],
+        rolloverCalories: preferences['rolloverCalories'],
+      );
+    } catch (e) {
+      // Keep default values on error
+      print('Error loading preferences: $e');
+    }
   }
+
+  Future<void> toggleAddBurnedCalories(bool value) async {
+    try {
+      final dataSource = ref.read(preferencesRemoteDataSourceProvider);
+      final updated = await dataSource.updateUserPreferences(
+        addBurnedCalories: value,
+      );
+      state = state.copyWith(
+        addBurnedCalories: updated['addBurnedCalories'],
+        rolloverCalories: updated['rolloverCalories'],
+      );
+    } catch (e) {
+      // Revert state on error
+      print('Error updating addBurnedCalories: $e');
+    }
+  }
+
+  Future<void> toggleRolloverCalories(bool value) async {
+    try {
+      final dataSource = ref.read(preferencesRemoteDataSourceProvider);
+      final updated = await dataSource.updateUserPreferences(
+        rolloverCalories: value,
+      );
+      state = state.copyWith(
+        addBurnedCalories: updated['addBurnedCalories'],
+        rolloverCalories: updated['rolloverCalories'],
+      );
+    } catch (e) {
+      // Revert state on error
+      print('Error updating rolloverCalories: $e');
+    }
+  }
+
+  Future<void> refreshFromBackend() => _loadFromBackend();
 }
 
 final preferencesProvider =
     StateNotifierProvider<PreferencesNotifier, PreferencesState>((ref) {
-  return PreferencesNotifier();
+  return PreferencesNotifier(ref);
 });
 
 // Macros state for Adjust Macros page

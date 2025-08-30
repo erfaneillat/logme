@@ -3,6 +3,7 @@ import 'package:shamsi_date/shamsi_date.dart';
 // Plan repo provider for fetching latest plan
 import '../../../plan/data/repositories/plan_repository_impl.dart';
 import '../../../logs/data/datasources/logs_remote_data_source.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
 
 /// Provides today's Jalali date
 final todayJalaliProvider = Provider<Jalali>((ref) {
@@ -73,6 +74,7 @@ final dailyRemainingProvider = FutureProvider<DailyRemaining>((ref) async {
   final selected = ref.watch(selectedJalaliDateProvider);
   final planRepo = ref.read(planRepositoryProvider);
   final logsRemote = ref.read(logsRemoteDataSourceProvider);
+  final prefs = ref.watch(preferencesProvider);
 
   final plan = await planRepo.fetchLatestPlan();
   final dateIso = _toIsoDateFromJalali(selected);
@@ -80,12 +82,19 @@ final dailyRemainingProvider = FutureProvider<DailyRemaining>((ref) async {
 
   int clampNonNegative(int value) => value < 0 ? 0 : value;
 
+  // Calculate total daily calories including burned calories if setting is enabled
+  int totalDailyCalories = plan.calories;
+  if (prefs.addBurnedCalories) {
+    totalDailyCalories += log.burnedCalories;
+  }
+
   return DailyRemaining(
-    caloriesRemaining: clampNonNegative(plan.calories - log.caloriesConsumed),
+    caloriesRemaining:
+        clampNonNegative(totalDailyCalories - log.caloriesConsumed),
     carbsRemaining: clampNonNegative(plan.carbsGrams - log.carbsGrams),
     proteinRemaining: clampNonNegative(plan.proteinGrams - log.proteinGrams),
     fatsRemaining: clampNonNegative(plan.fatsGrams - log.fatsGrams),
-    totalCalories: plan.calories,
+    totalCalories: totalDailyCalories,
     totalCarbs: plan.carbsGrams,
     totalProtein: plan.proteinGrams,
     totalFats: plan.fatsGrams,

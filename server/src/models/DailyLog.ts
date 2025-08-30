@@ -29,6 +29,7 @@ export interface IDailyLog extends Document {
     carbsGrams: number;
     proteinGrams: number;
     fatsGrams: number;
+    burnedCalories: number; // calories burned through exercise/activity
     items: ILogItem[];
     createdAt: Date;
     updatedAt: Date;
@@ -62,6 +63,7 @@ const dailyLogSchema = new Schema<IDailyLog>(
         carbsGrams: { type: Number, required: true, default: 0 },
         proteinGrams: { type: Number, required: true, default: 0 },
         fatsGrams: { type: Number, required: true, default: 0 },
+        burnedCalories: { type: Number, required: true, default: 0 },
         items: { type: [logItemSchema], default: [] },
     },
     { timestamps: true }

@@ -352,9 +352,11 @@ class _PreferencesSection extends StatelessWidget {
                 title: 'settings.add_burned'.tr(),
                 subtitle: 'settings.add_burned_desc'.tr(),
                 value: prefs.addBurnedCalories,
-                onChanged: (v) => ref
-                    .read(preferencesProvider.notifier)
-                    .toggleAddBurnedCalories(v),
+                onChanged: (v) async {
+                  await ref
+                      .read(preferencesProvider.notifier)
+                      .toggleAddBurnedCalories(v);
+                },
                 icon: Icons.local_fire_department_outlined,
                 color: const Color(0xFFFF6B35),
               ),
@@ -363,9 +365,11 @@ class _PreferencesSection extends StatelessWidget {
                 title: 'settings.rollover'.tr(),
                 subtitle: 'settings.rollover_desc'.tr(),
                 value: prefs.rolloverCalories,
-                onChanged: (v) => ref
-                    .read(preferencesProvider.notifier)
-                    .toggleRolloverCalories(v),
+                onChanged: (v) async {
+                  await ref
+                      .read(preferencesProvider.notifier)
+                      .toggleRolloverCalories(v);
+                },
                 icon: Icons.update,
                 color: const Color(0xFF10B981),
               ),
@@ -838,7 +842,7 @@ class _ModernSwitchTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final Future<void> Function(bool) onChanged;
   final IconData icon;
   final Color color;
 
@@ -886,7 +890,9 @@ class _ModernSwitchTile extends StatelessWidget {
             scale: 0.8,
             child: Switch(
               value: value,
-              onChanged: onChanged,
+              onChanged: (bool newValue) async {
+                await onChanged(newValue);
+              },
               activeColor: color,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),

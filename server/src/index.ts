@@ -16,6 +16,7 @@ import logRoutes from './routes/logRoutes';
 import foodRoutes from './routes/foodRoutes';
 import streakRoutes from './routes/streakRoutes';
 import weightRoutes from './routes/weightRoutes';
+import preferencesRoutes from './routes/preferencesRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 
@@ -63,6 +64,7 @@ app.use('/api/logs', logRoutes);
 app.use('/api/food', foodRoutes);
 app.use('/api/streak', streakRoutes);
 app.use('/api/weight', weightRoutes);
+app.use('/api/preferences', preferencesRoutes);
 app.use('/api/referral', referralRoutes);
 
 // Root endpoint

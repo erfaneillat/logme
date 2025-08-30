@@ -20,7 +20,7 @@ export class LogController {
                 return;
             }
 
-            const { date, caloriesConsumed, carbsGrams, proteinGrams, fatsGrams } = req.body || {};
+            const { date, caloriesConsumed, carbsGrams, proteinGrams, fatsGrams, burnedCalories } = req.body || {};
             if (!date || typeof date !== 'string') {
                 res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) is required' });
                 return;
@@ -37,12 +37,13 @@ export class LogController {
                     carbsGrams: Math.max(0, Math.round(Number(carbsGrams ?? 0))),
                     proteinGrams: Math.max(0, Math.round(Number(proteinGrams ?? 0))),
                     fatsGrams: Math.max(0, Math.round(Number(fatsGrams ?? 0))),
+                    burnedCalories: Math.max(0, Math.round(Number(burnedCalories ?? 0))),
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
 
             // Trigger streak update after totals change
-            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
             res.json({ success: true, data: { log } });
         } catch (error) {
@@ -68,7 +69,7 @@ export class LogController {
             const sanitizedDate = dateParam.slice(0, 10);
             const log = await DailyLog.findOne({ userId, date: sanitizedDate });
             if (!log) {
-                res.json({ success: true, data: { log: { userId, date: sanitizedDate, caloriesConsumed: 0, carbsGrams: 0, proteinGrams: 0, fatsGrams: 0, items: [] } } });
+                res.json({ success: true, data: { log: { userId, date: sanitizedDate, caloriesConsumed: 0, carbsGrams: 0, proteinGrams: 0, fatsGrams: 0, burnedCalories: 0, items: [] } } });
                 return;
             }
 
@@ -81,7 +82,7 @@ export class LogController {
                         return tb - ta;
                     });
                 }
-            } catch (_) {}
+            } catch (_) { }
 
             res.json({ success: true, data: { log } });
         } catch (error) {
@@ -280,7 +281,7 @@ export class LogController {
             const pushed = updated?.items?.find((it: any) => it.timeIso === timeIso);
 
             // Trigger streak update after totals change
-            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
             res.json({ success: true, data: { item: pushed ?? null } });
         } catch (error) {
@@ -340,7 +341,7 @@ export class LogController {
             ).exec();
 
             // Trigger streak update after totals change
-            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
             res.json({ success: true, data: { itemId } });
         } catch (error) {
@@ -466,11 +467,58 @@ export class LogController {
             const updatedItem = updated?.items?.[0] ?? null;
 
             // Trigger streak update after totals change
-            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) {}
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
             res.json({ success: true, data: { item: updatedItem } });
         } catch (error) {
             console.error('Update log item error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    async updateBurnedCalories(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const { date, burnedCalories } = req.body || {};
+            if (!date || typeof date !== 'string') {
+                res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) is required' });
+                return;
+            }
+
+            const sanitizedDate = date.slice(0, 10);
+            const burnedCals = Math.max(0, Math.round(Number(burnedCalories ?? 0)));
+
+            const log = await DailyLog.findOneAndUpdate(
+                { userId, date: sanitizedDate },
+                {
+                    $setOnInsert: {
+                        userId,
+                        date: sanitizedDate,
+                        caloriesConsumed: 0,
+                        carbsGrams: 0,
+                        proteinGrams: 0,
+                        fatsGrams: 0,
+                        burnedCalories: 0,
+                        items: [],
+                    },
+                    $inc: {
+                        burnedCalories: burnedCals,
+                    },
+                },
+                { upsert: true, new: true }
+            );
+
+            // Trigger streak update after totals change
+            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
+
+            res.json({ success: true, data: { log } });
+        } catch (error) {
+            console.error('Update burned calories error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

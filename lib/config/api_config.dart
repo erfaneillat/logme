@@ -88,6 +88,9 @@ class ApiConfig {
   static const String referralSubmit = '/api/referral/submit';
   static const String referralSummary = '/api/referral/summary';
 
+  // Preferences endpoints
+  static const String preferences = '/api/preferences';
+
   // Timeouts
   static const Duration connectTimeout = Duration(seconds: 60);
   static const Duration receiveTimeout = Duration(seconds: 60);

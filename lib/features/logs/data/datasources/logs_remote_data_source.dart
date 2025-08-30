@@ -30,6 +30,7 @@ class LogsRemoteDataSource {
         'carbsGrams': log.carbsGrams,
         'proteinGrams': log.proteinGrams,
         'fatsGrams': log.fatsGrams,
+        'burnedCalories': log.burnedCalories,
       },
     );
     final Map<String, dynamic> data =
@@ -187,6 +188,25 @@ class LogsRemoteDataSource {
     final Map<String, dynamic> itemJson =
         data['item'] as Map<String, dynamic>? ?? data;
     return DailyLogItemEntity.fromJson(itemJson);
+  }
+
+  Future<DailyLogEntity> updateBurnedCalories({
+    required String dateIso,
+    required int burnedCalories,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    final Map<String, dynamic> response = await api.patch<Map<String, dynamic>>(
+      '${ApiConfig.logsDaily}/burned-calories',
+      data: {
+        'date': dateIso,
+        'burnedCalories': burnedCalories,
+      },
+    );
+    final Map<String, dynamic> data =
+        (response['data'] as Map<String, dynamic>? ?? response);
+    final Map<String, dynamic> logJson =
+        data['log'] as Map<String, dynamic>? ?? data;
+    return DailyLogEntity.fromJson(logJson);
   }
 }
 

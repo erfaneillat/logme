@@ -19,6 +19,7 @@ import '../features/settings/pages/refer_friend_page.dart';
 import '../features/settings/pages/personal_details_page.dart';
 import '../features/settings/pages/adjust_macros_page.dart';
 import '../features/settings/pages/weight_history_page.dart';
+import '../features/home/pages/add_exercise_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -162,6 +163,11 @@ class AppRouter {
               state.extra as DescribeFoodArgs? ?? const DescribeFoodArgs();
           return DescribeFoodPage(args: args);
         },
+      ),
+      GoRoute(
+        path: '/add-exercise',
+        name: 'add-exercise',
+        builder: (context, state) => const AddExercisePage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

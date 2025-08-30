@@ -29,6 +29,9 @@ router.patch('/item/:itemId', authenticateToken, controller.updateItem);
 // Delete an item from a specific day's log and update totals
 router.delete('/item/:itemId', authenticateToken, controller.deleteItem);
 
+// Update burned calories for a specific date
+router.patch('/burned-calories', authenticateToken, controller.updateBurnedCalories);
+
 export default router;
 
 

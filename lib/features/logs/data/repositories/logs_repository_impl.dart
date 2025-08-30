@@ -97,6 +97,17 @@ class LogsRepositoryImpl implements LogsRepository {
     return _remote.toggleItemLike(
         dateIso: dateIso, itemId: itemId, liked: liked);
   }
+
+  @override
+  Future<DailyLogEntity> updateBurnedCalories({
+    required String dateIso,
+    required int burnedCalories,
+  }) {
+    return _remote.updateBurnedCalories(
+      dateIso: dateIso,
+      burnedCalories: burnedCalories,
+    );
+  }
 }
 
 final logsRepositoryProvider = Provider<LogsRepository>((ref) {
