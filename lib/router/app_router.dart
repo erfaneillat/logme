@@ -18,6 +18,7 @@ import '../features/settings/pages/settings_page.dart';
 import '../features/settings/pages/refer_friend_page.dart';
 import '../features/settings/pages/personal_details_page.dart';
 import '../features/settings/pages/adjust_macros_page.dart';
+import '../features/settings/pages/weight_history_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -86,6 +87,11 @@ class AppRouter {
         path: '/adjust-macros',
         name: 'adjust-macros',
         builder: (context, state) => const AdjustMacrosPage(),
+      ),
+      GoRoute(
+        path: '/weight-history',
+        name: 'weight-history',
+        builder: (context, state) => const WeightHistoryPage(),
       ),
       GoRoute(
         path: '/refer-friend',

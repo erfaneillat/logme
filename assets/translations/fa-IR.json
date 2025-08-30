@@ -289,6 +289,25 @@
         "goal_updated": "هدف به‌روزرسانی شد",
         "weight_saved": "وزن ثبت شد"
     },
+    "weight_history": {
+        "title": "تاریخچه وزن",
+        "total_entries": "مجموع {count} ورودی",
+        "current_weight": "وزن فعلی",
+        "error_loading": "خطا در بارگذاری تاریخچه وزن",
+        "error_loading_desc": "لطفاً اتصال خود را بررسی کرده و دوباره تلاش کنید",
+        "no_data_title": "هیچ داده وزنی یافت نشد",
+        "no_data_desc": "برای مشاهده پیشرفت خود، شروع به ثبت وزن کنید",
+        "today": "امروز",
+        "yesterday": "دیروز",
+        "days_ago": "{days} روز پیش",
+        "week_ago": "۱ هفته پیش",
+        "weeks_ago": "{weeks} هفته پیش",
+        "month_ago": "۱ ماه پیش",
+        "months_ago": "{months} ماه پیش",
+        "year_ago": "۱ سال پیش",
+        "years_ago": "{years} سال پیش",
+        "no_change": "بدون تغییر"
+    },
     "additional_info": {
         "title": "پروفایل خود را تکمیل کنید",
         "gender_title": "جنسیت خود را انتخاب کنید",

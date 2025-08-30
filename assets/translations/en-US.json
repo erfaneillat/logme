@@ -289,6 +289,25 @@
         "goal_updated": "Goal updated",
         "weight_saved": "Weight logged"
     },
+    "weight_history": {
+        "title": "Weight History",
+        "total_entries": "Total {count} entries",
+        "current_weight": "Current Weight",
+        "error_loading": "Failed to load weight history",
+        "error_loading_desc": "Please check your connection and try again",
+        "no_data_title": "No weight data found",
+        "no_data_desc": "Start logging your weight to see your progress here",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "days_ago": "{days} days ago",
+        "week_ago": "1 week ago",
+        "weeks_ago": "{weeks} weeks ago",
+        "month_ago": "1 month ago",
+        "months_ago": "{months} months ago",
+        "year_ago": "1 year ago",
+        "years_ago": "{years} years ago",
+        "no_change": "No change"
+    },
     "additional_info": {
         "title": "Complete Your Profile",
         "gender_title": "Choose your Gender",
