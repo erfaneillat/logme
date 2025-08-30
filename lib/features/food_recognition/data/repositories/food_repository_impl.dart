@@ -22,7 +22,7 @@ class FoodRepositoryImpl implements FoodRepository {
       cancelToken: cancellationToken?.dioToken,
     );
   }
-  
+
   @override
   Future<FoodAnalysisEntity> analyzeFoodDescription({
     required String description,

@@ -21,8 +21,7 @@ class AnalyzeFoodTextUseCase {
   }
 }
 
-final analyzeFoodTextUseCaseProvider =
-    Provider<AnalyzeFoodTextUseCase>((ref) {
+final analyzeFoodTextUseCaseProvider = Provider<AnalyzeFoodTextUseCase>((ref) {
   final repo = ref.read(foodRepositoryProvider);
   return AnalyzeFoodTextUseCase(repo);
 });

@@ -23,7 +23,7 @@ class DescribeFoodArgs {
 
 class DescribeFoodPage extends HookConsumerWidget {
   final DescribeFoodArgs args;
-  
+
   const DescribeFoodPage({super.key, required this.args});
 
   String _toIsoFromJalali(Jalali d) {
@@ -43,9 +43,10 @@ class DescribeFoodPage extends HookConsumerWidget {
       if (textController.text.trim().isEmpty) return;
 
       isLoading.value = true;
-      
+
       // Create a pending token (increments pending count) for this request
-      final token = ref.read(dailyLogControllerProvider.notifier).createPendingToken();
+      final token =
+          ref.read(dailyLogControllerProvider.notifier).createPendingToken();
 
       try {
         // Capture previous streak before analysis
@@ -57,7 +58,8 @@ class DescribeFoodPage extends HookConsumerWidget {
 
         // Convert selected Jalali date to ISO YYYY-MM-DD for backend
         final selectedJalali = ref.read(selectedJalaliDateProvider);
-        final targetDateIso = args.targetDateIso ?? _toIsoFromJalali(selectedJalali);
+        final targetDateIso =
+            args.targetDateIso ?? _toIsoFromJalali(selectedJalali);
 
         final usecase = ref.read(analyzeFoodTextUseCaseProvider);
         final result = await usecase(
@@ -70,7 +72,9 @@ class DescribeFoodPage extends HookConsumerWidget {
         ref.read(dailyLogControllerProvider.notifier).removeToken(token);
 
         // After success, remove one pending placeholder
-        ref.read(dailyLogControllerProvider.notifier).removeOnePendingPlaceholder();
+        ref
+            .read(dailyLogControllerProvider.notifier)
+            .removeOnePendingPlaceholder();
 
         // Refresh the log to include new item
         await ref.read(dailyLogControllerProvider.notifier).refresh();
@@ -85,7 +89,8 @@ class DescribeFoodPage extends HookConsumerWidget {
 
         // If streak increased, show dialog with weekly completions
         if (newStreak > prevStreak && context.mounted) {
-          final completions = await ref.read(streakWeeklyCompletionsProvider.future);
+          final completions =
+              await ref.read(streakWeeklyCompletionsProvider.future);
           await showStreakDialog(
             context,
             streakCount: newStreak,
@@ -97,7 +102,7 @@ class DescribeFoodPage extends HookConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('describe_food.success'.tr())),
           );
-          
+
           // Navigate back to home
           context.pop();
         }
@@ -105,7 +110,9 @@ class DescribeFoodPage extends HookConsumerWidget {
         // Remove token from controller storage on error/cancel
         ref.read(dailyLogControllerProvider.notifier).removeToken(token);
         // On error or cancellation, remove only one pending placeholder
-        ref.read(dailyLogControllerProvider.notifier).removeOnePendingPlaceholder();
+        ref
+            .read(dailyLogControllerProvider.notifier)
+            .removeOnePendingPlaceholder();
 
         if (context.mounted) {
           if (e is DioException && e.type == DioExceptionType.cancel) {
@@ -114,7 +121,9 @@ class DescribeFoodPage extends HookConsumerWidget {
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('describe_food.error'.tr(args: [e.toString()]))),
+              SnackBar(
+                  content:
+                      Text('describe_food.error'.tr(args: [e.toString()]))),
             );
           }
         }
@@ -147,7 +156,7 @@ class DescribeFoodPage extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            
+
             // Header section
             Container(
               padding: const EdgeInsets.all(20),
@@ -190,9 +199,9 @@ class DescribeFoodPage extends HookConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Input field
             Container(
               decoration: BoxDecoration(
@@ -218,9 +227,9 @@ class DescribeFoodPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Tips section
             Container(
               padding: const EdgeInsets.all(16),
@@ -261,9 +270,9 @@ class DescribeFoodPage extends HookConsumerWidget {
                 ],
               ),
             ),
-            
+
             const Spacer(),
-            
+
             // Analyze button
             SizedBox(
               width: double.infinity,
@@ -287,7 +296,8 @@ class DescribeFoodPage extends HookConsumerWidget {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -313,7 +323,7 @@ class DescribeFoodPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
           ],
         ),

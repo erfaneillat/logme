@@ -115,17 +115,23 @@ class HomePage extends HookConsumerWidget {
                             const SizedBox(height: 16),
                             Text(
                               'home.quick_add_title'.tr(),
-                              style: Theme.of(parentContext).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                              style: Theme.of(parentContext)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'home.quick_add_subtitle'.tr(),
-                              style: Theme.of(parentContext).textTheme.bodyMedium?.copyWith(
-                                color: Colors.black54,
-                              ),
+                              style: Theme.of(parentContext)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.black54,
+                                  ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -389,18 +395,18 @@ class HomePage extends HookConsumerWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.black54,
-                  fontSize: 11,
-                ),
+                      color: Colors.black54,
+                      fontSize: 11,
+                    ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

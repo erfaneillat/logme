@@ -48,7 +48,7 @@ export class FoodController {
         const fileBuffer = fs.readFileSync(file.path);
         if (aborted) {
             // Client disconnected before analysis; cleanup and stop.
-            try { fs.unlinkSync(file.path); } catch {}
+            try { fs.unlinkSync(file.path); } catch { }
             return;
         }
         const base64 = fileBuffer.toString('base64');
@@ -59,7 +59,7 @@ export class FoodController {
         } catch (err: any) {
             // Abort triggered or other error before persistence
             if (aborted || err?.name === 'AbortError') {
-                try { fs.unlinkSync(file.path); } catch {}
+                try { fs.unlinkSync(file.path); } catch { }
                 return; // Do not send a response; client is gone
             }
             throw err;
@@ -70,7 +70,7 @@ export class FoodController {
         }
 
         if (aborted) {
-            try { fs.unlinkSync(file.path); } catch {}
+            try { fs.unlinkSync(file.path); } catch { }
             return;
         }
         const result = analysis.data;
@@ -101,7 +101,7 @@ export class FoodController {
             console.log('Saving image URL:', imageUrl);
 
             // Step 1: upsert totals
-            if (aborted) { try { fs.unlinkSync(file.path); } catch {} ; return; }
+            if (aborted) { try { fs.unlinkSync(file.path); } catch { }; return; }
             await DailyLog.findOneAndUpdate(
                 { userId, date: todayIso },
                 {
@@ -118,7 +118,7 @@ export class FoodController {
             );
 
             // Step 2: ensure items array receives the entry
-            if (aborted) { try { fs.unlinkSync(file.path); } catch {} ; return; }
+            if (aborted) { try { fs.unlinkSync(file.path); } catch { }; return; }
             await DailyLog.updateOne(
                 { userId, date: todayIso },
                 {
@@ -166,47 +166,47 @@ export class FoodController {
         const { originalData, userDescription } = req.body;
 
         if (!originalData || !userDescription) {
-            res.status(400).json({ 
-                success: false, 
+            res.status(400).json({
+                success: false,
                 error: 'Original data and user description are required',
-                timestamp: new Date() 
+                timestamp: new Date()
             });
             return;
         }
 
         try {
             const fixedData = await this.service.fixAnalysis(originalData, userDescription);
-            
-            res.status(200).json({ 
-                success: true, 
-                data: fixedData, 
-                timestamp: new Date() 
+
+            res.status(200).json({
+                success: true,
+                data: fixedData,
+                timestamp: new Date()
             });
         } catch (error: any) {
             console.error('Fix result error:', error);
-            res.status(500).json({ 
-                success: false, 
+            res.status(500).json({
+                success: false,
                 error: error.message || 'Failed to fix result',
-                timestamp: new Date() 
+                timestamp: new Date()
             });
         }
     });
-    
+
     public analyzeDescription = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
         const { description } = req.body;
 
         if (!description || typeof description !== 'string' || description.trim().length === 0) {
-            res.status(400).json({ 
-                success: false, 
+            res.status(400).json({
+                success: false,
                 error: 'Food description is required',
-                timestamp: new Date() 
+                timestamp: new Date()
             });
             return;
         }
 
         try {
             const analysisData = await this.service.analyzeFromDescription(description.trim());
-            
+
             // Get the user ID from the authenticated request
             const userId = req.user?.userId;
             if (userId) {
@@ -275,18 +275,18 @@ export class FoodController {
                     console.error('Streak update (food description) error:', e);
                 }
             }
-            
-            res.status(200).json({ 
-                success: true, 
-                data: analysisData, 
-                timestamp: new Date() 
+
+            res.status(200).json({
+                success: true,
+                data: analysisData,
+                timestamp: new Date()
             });
         } catch (error: any) {
             console.error('Analyze description error:', error);
-            res.status(500).json({ 
-                success: false, 
+            res.status(500).json({
+                success: false,
                 error: error.message || 'Failed to analyze food description',
-                timestamp: new Date() 
+                timestamp: new Date()
             });
         }
     });

@@ -152,8 +152,8 @@ class AppRouter {
         path: '/describe-food',
         name: 'describe-food',
         builder: (context, state) {
-          final args = state.extra as DescribeFoodArgs? ??
-              const DescribeFoodArgs();
+          final args =
+              state.extra as DescribeFoodArgs? ?? const DescribeFoodArgs();
           return DescribeFoodPage(args: args);
         },
       ),

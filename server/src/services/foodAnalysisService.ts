@@ -248,7 +248,7 @@ Rules:
 
         return parsed;
     }
-    
+
     public async analyzeFromDescription(description: string): Promise<FoodAnalysisResult> {
         const prompt = `Analyze the food based on the user's description.
 
