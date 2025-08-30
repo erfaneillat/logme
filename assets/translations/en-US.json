@@ -487,5 +487,18 @@
         "fix_button": "Fix it",
         "fixing": "Fixing...",
         "fixed": "Result fixed successfully!"
+    },
+    "describe_food": {
+        "title": "Describe Food",
+        "subtitle": "Tell us about your meal",
+        "description": "Describe what you ate in detail and we'll analyze the nutrition for you",
+        "placeholder": "Example: I had a large bowl of chicken Caesar salad with croutons and parmesan cheese, plus a slice of garlic bread",
+        "tips_title": "Tips for better results",
+        "tips": "Be specific about portions, cooking methods, and ingredients. Mention brands if relevant. Include sides and drinks.",
+        "analyze_button": "Analyze Food",
+        "analyzing": "Analyzing...",
+        "success": "Food analyzed successfully!",
+        "canceled": "Analysis canceled",
+        "error": "Error: {}"
     }
 }

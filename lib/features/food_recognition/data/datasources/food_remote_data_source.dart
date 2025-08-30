@@ -32,6 +32,34 @@ class FoodRemoteDataSource {
     );
     return FoodAnalysisEntity.fromJson(response);
   }
+  
+  Future<FoodAnalysisEntity> analyzeFoodDescription({
+    required String description,
+    String? targetDateIso,
+    CancelToken? cancelToken,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    
+    // Use the dedicated analyze-description endpoint
+    final requestData = {
+      'description': description,
+      if (targetDateIso != null) 'date': targetDateIso,
+    };
+    
+    final Map<String, dynamic> response = await api.post<Map<String, dynamic>>(
+      ApiConfig.foodAnalyzeDescription,
+      data: requestData,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+      cancelToken: cancelToken,
+    );
+    
+    return FoodAnalysisEntity.fromJson(response);
+  }
 }
 
 final foodRemoteDataSourceProvider = Provider<FoodRemoteDataSource>((ref) {

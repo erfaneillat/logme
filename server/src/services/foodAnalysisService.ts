@@ -248,6 +248,57 @@ Rules:
 
         return parsed;
     }
+    
+    public async analyzeFromDescription(description: string): Promise<FoodAnalysisResult> {
+        const prompt = `Analyze the food based on the user's description.
+
+User description: "${description}"
+
+Analyze this food description and return ONLY JSON (no extra text) with keys: title, calories, portions, proteinGrams, fatGrams, carbsGrams, healthScore, ingredients (array of {name, calories, proteinGrams, fatGrams, carbsGrams}).
+
+Rules: 
+- Keep strings in Persian (fa-IR) 
+- Numbers must be numeric
+- healthScore 0..10 integer
+- Up to 6 ingredients
+- Macros should be roughly consistent (4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat) ±20%
+- Estimate reasonable portions and nutritional values based on the description`;
+
+        const chat = await this.client.chat.completions.create({
+            model: 'gpt-4o-mini',
+            response_format: { type: 'json_object' } as any,
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
+            temperature: 0.3,
+        });
+
+        const content = chat.choices?.[0]?.message?.content ?? '';
+        let parsed: FoodAnalysisResult;
+        try {
+            parsed = JSON.parse(content);
+        } catch (err) {
+            throw new Error('AI response parsing failed');
+        }
+
+        // Basic shape enforcement/fallbacks
+        parsed.portions = parsed.portions || 1;
+        parsed.ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
+
+        // Compute health score with fallback
+        const computed = this.computeHealthScore(parsed);
+        const aiScore = Number(parsed.healthScore);
+        if (!Number.isFinite(aiScore) || aiScore <= 0) {
+            parsed.healthScore = computed;
+        } else {
+            parsed.healthScore = Math.round(Math.max(0, Math.min(10, (aiScore + computed) / 2)));
+        }
+
+        return parsed;
+    }
 }
 
 

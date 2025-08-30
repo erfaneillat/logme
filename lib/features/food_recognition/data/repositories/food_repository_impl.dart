@@ -22,6 +22,19 @@ class FoodRepositoryImpl implements FoodRepository {
       cancelToken: cancellationToken?.dioToken,
     );
   }
+  
+  @override
+  Future<FoodAnalysisEntity> analyzeFoodDescription({
+    required String description,
+    String? targetDateIso,
+    CancellationToken? cancellationToken,
+  }) {
+    return remote.analyzeFoodDescription(
+      description: description,
+      targetDateIso: targetDateIso,
+      cancelToken: cancellationToken?.dioToken,
+    );
+  }
 }
 
 final foodRepositoryProvider = Provider<FoodRepository>((ref) {

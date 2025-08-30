@@ -172,6 +172,7 @@ class HomePage extends HookConsumerWidget {
                               color: const Color(0xFFFF9800),
                               onTap: () {
                                 Navigator.of(sheetContext).pop();
+                                parentContext.pushNamed('describe-food');
                               },
                             ),
                             _buildActionCard(

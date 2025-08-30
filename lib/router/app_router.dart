@@ -11,6 +11,7 @@ import '../features/plan/pages/plan_generation_page.dart';
 import '../features/plan/pages/plan_summary_page.dart';
 import '../features/food_recognition/pages/food_detail_page.dart';
 import '../features/food_recognition/pages/fix_result_page.dart';
+import '../features/food_recognition/pages/describe_food_page.dart';
 import '../features/home/pages/favorites_page.dart';
 import '../features/analytics/pages/analytics_page.dart';
 import '../features/settings/pages/settings_page.dart';
@@ -145,6 +146,15 @@ class AppRouter {
                 carbsGrams: 0,
               );
           return FixResultPage(args: args);
+        },
+      ),
+      GoRoute(
+        path: '/describe-food',
+        name: 'describe-food',
+        builder: (context, state) {
+          final args = state.extra as DescribeFoodArgs? ??
+              const DescribeFoodArgs();
+          return DescribeFoodPage(args: args);
         },
       ),
     ],

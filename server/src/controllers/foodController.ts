@@ -191,6 +191,105 @@ export class FoodController {
             });
         }
     });
+    
+    public analyzeDescription = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+        const { description } = req.body;
+
+        if (!description || typeof description !== 'string' || description.trim().length === 0) {
+            res.status(400).json({ 
+                success: false, 
+                error: 'Food description is required',
+                timestamp: new Date() 
+            });
+            return;
+        }
+
+        try {
+            const analysisData = await this.service.analyzeFromDescription(description.trim());
+            
+            // Get the user ID from the authenticated request
+            const userId = req.user?.userId;
+            if (userId) {
+                const bodyDate = (req.body as any)?.date as string | undefined;
+                let targetDate: string;
+                if (bodyDate && typeof bodyDate === 'string') {
+                    targetDate = bodyDate.slice(0, 10);
+                } else {
+                    // Local date in server timezone
+                    const now = new Date();
+                    const y = now.getFullYear();
+                    const m = String(now.getMonth() + 1).padStart(2, '0');
+                    const d = String(now.getDate()).padStart(2, '0');
+                    targetDate = `${y}-${m}-${d}`;
+                }
+                const todayIso = targetDate;
+                const timeIso = new Date().toISOString();
+
+                // Step 1: upsert totals (similar to image analysis)
+                await DailyLog.findOneAndUpdate(
+                    { userId, date: todayIso },
+                    {
+                        userId,
+                        date: todayIso,
+                        $inc: {
+                            caloriesConsumed: Math.round(analysisData.calories || 0),
+                            carbsGrams: Math.round(analysisData.carbsGrams || 0),
+                            proteinGrams: Math.round(analysisData.proteinGrams || 0),
+                            fatsGrams: Math.round(analysisData.fatGrams || 0),
+                        },
+                    },
+                    { upsert: true, new: true, setDefaultsOnInsert: true }
+                );
+
+                // Step 2: ensure items array receives the entry
+                await DailyLog.updateOne(
+                    { userId, date: todayIso },
+                    {
+                        $push: {
+                            items: {
+                                title: analysisData.title,
+                                calories: Math.round(analysisData.calories || 0),
+                                carbsGrams: Math.round(analysisData.carbsGrams || 0),
+                                proteinGrams: Math.round(analysisData.proteinGrams || 0),
+                                fatsGrams: Math.round(analysisData.fatGrams || 0),
+                                healthScore: Math.max(0, Math.min(10, Math.round(analysisData.healthScore || 0))),
+                                timeIso,
+                                imageUrl: null, // No image for text-based analysis
+                                ingredients: analysisData.ingredients?.map((ing: any) => ({
+                                    name: ing.name,
+                                    calories: Math.round(ing.calories || 0),
+                                    proteinGrams: Math.round(ing.proteinGrams || 0),
+                                    fatGrams: Math.round(ing.fatGrams || 0),
+                                    carbsGrams: Math.round(ing.carbsGrams || 0),
+                                })) || [],
+                                liked: false,
+                            },
+                        },
+                    }
+                );
+
+                // Update streak if today's goal is met
+                try {
+                    await updateStreakIfEligible(String(userId), todayIso);
+                } catch (e) {
+                    console.error('Streak update (food description) error:', e);
+                }
+            }
+            
+            res.status(200).json({ 
+                success: true, 
+                data: analysisData, 
+                timestamp: new Date() 
+            });
+        } catch (error: any) {
+            console.error('Analyze description error:', error);
+            res.status(500).json({ 
+                success: false, 
+                error: error.message || 'Failed to analyze food description',
+                timestamp: new Date() 
+            });
+        }
+    });
 }
 
 

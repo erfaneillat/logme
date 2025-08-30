@@ -8,4 +8,10 @@ abstract class FoodRepository {
     String? targetDateIso,
     CancellationToken? cancellationToken,
   });
+  
+  Future<FoodAnalysisEntity> analyzeFoodDescription({
+    required String description,
+    String? targetDateIso,
+    CancellationToken? cancellationToken,
+  });
 }
