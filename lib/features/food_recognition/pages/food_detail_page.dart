@@ -1,3 +1,4 @@
+import 'package:cal_ai/extensions/context.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -258,125 +259,249 @@ class FoodDetailPage extends HookConsumerWidget {
       final result = await showModalBottomSheet<int>(
         context: context,
         isScrollControlled: true,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+        backgroundColor: Colors.transparent,
         builder: (ctx) {
           int localValue = current;
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
-              left: 16,
-              right: 16,
-              top: 12,
+          return Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
             ),
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(title,
-                              style: Theme.of(ctx)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700)),
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Handle bar
+                      Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.of(ctx).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _RoundIconButton(
-                          icon: Icons.remove,
-                          onTap: () {
-                            setState(() {
-                              localValue =
-                                  (localValue - 1).clamp(0, 100000).toInt();
-                              controller.text = localValue.toString();
-                            });
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: controller,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            textAlign: TextAlign.center,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.grey.shade100,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Title
+                      Text(
+                        title,
+                        style: Theme.of(ctx).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
                             ),
-                            onChanged: (v) {
-                              final parsed =
-                                  int.tryParse(v.trim()) ?? localValue;
-                              setState(() {
-                                localValue = parsed.clamp(0, 100000).toInt();
-                              });
-                            },
-                            onSubmitted: (_) {
-                              Navigator.of(ctx).pop(localValue);
-                            },
-                          ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Current value display
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade200),
                         ),
-                        const SizedBox(width: 10),
-                        _RoundIconButton(
-                          icon: Icons.add,
-                          onTap: () {
-                            setState(() {
-                              localValue =
-                                  (localValue + 1).clamp(0, 100000).toInt();
-                              controller.text = localValue.toString();
-                            });
-                          },
+                        child: Text(
+                          localValue.toString(),
+                          style:
+                              Theme.of(ctx).textTheme.headlineMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.black87,
+                                  ),
+                          textAlign: TextAlign.center,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final delta in [-100, -10, 10, 100])
-                          ActionChip(
-                            label: Text(delta > 0 ? '+$delta' : '$delta'),
-                            onPressed: () {
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Main controls
+                      Row(
+                        children: [
+                          _EnhancedRoundButton(
+                            icon: Icons.remove,
+                            onTap: () {
                               setState(() {
-                                localValue = (localValue + delta)
-                                    .clamp(0, 100000)
-                                    .toInt();
+                                localValue =
+                                    (localValue - 1).clamp(0, 100000).toInt();
                                 controller.text = localValue.toString();
                               });
                             },
                           ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.of(ctx).pop(localValue),
-                        child: Text('common.add'.tr()),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: Colors.grey.shade300, width: 1.5),
+                                color: Colors.white,
+                              ),
+                              child: TextField(
+                                controller: controller,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                textAlign: TextAlign.center,
+                                style: Theme.of(ctx)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 16, horizontal: 12),
+                                  hintText: '0',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                ),
+                                onChanged: (v) {
+                                  final parsed =
+                                      int.tryParse(v.trim()) ?? localValue;
+                                  setState(() {
+                                    localValue =
+                                        parsed.clamp(0, 100000).toInt();
+                                  });
+                                },
+                                onSubmitted: (_) {
+                                  Navigator.of(ctx).pop(localValue);
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          _EnhancedRoundButton(
+                            icon: Icons.add,
+                            onTap: () {
+                              setState(() {
+                                localValue =
+                                    (localValue + 1).clamp(0, 100000).toInt();
+                                controller.text = localValue.toString();
+                              });
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                );
-              },
+                      const SizedBox(height: 20),
+                      // Quick adjustment chips
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'food_detail.quick_adjust'.tr(),
+                              style:
+                                  Theme.of(ctx).textTheme.labelMedium?.copyWith(
+                                        color: Colors.grey.shade600,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                for (final delta in [
+                                  -100,
+                                  -50,
+                                  -10,
+                                  10,
+                                  50,
+                                  100
+                                ])
+                                  _QuickAdjustChip(
+                                    label: delta > 0 ? '+$delta' : '$delta',
+                                    onPressed: () {
+                                      setState(() {
+                                        localValue = (localValue + delta)
+                                            .clamp(0, 100000)
+                                            .toInt();
+                                        controller.text = localValue.toString();
+                                      });
+                                    },
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              style: OutlinedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ),
+                              child: Text(
+                                'common.cancel'.tr(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              onPressed: () =>
+                                  Navigator.of(ctx).pop(localValue),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black87,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Text(
+                                'common.save'.tr(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           );
         },
@@ -391,165 +516,310 @@ class FoodDetailPage extends HookConsumerWidget {
       IngredientItem? initial,
       required void Function(IngredientItem) onSave,
     }) async {
-      final nameController = TextEditingController(text: initial?.name ?? '');
-      final caloriesController =
-          TextEditingController(text: (initial?.calories ?? 0).toString());
-      final proteinController =
-          TextEditingController(text: (initial?.proteinGrams ?? 0).toString());
-      final fatController =
-          TextEditingController(text: (initial?.fatGrams ?? 0).toString());
-      final carbsController =
-          TextEditingController(text: (initial?.carbsGrams ?? 0).toString());
+      final nameController = TextEditingController(text: initial?.name);
+      final caloriesController = TextEditingController(
+          text: initial?.calories != null && initial!.calories > 0
+              ? initial.calories.toString()
+              : null);
+      final proteinController = TextEditingController(
+          text: initial?.proteinGrams != null && initial!.proteinGrams > 0
+              ? initial.proteinGrams.toString()
+              : null);
+      final fatController = TextEditingController(
+          text: initial?.fatGrams != null && initial!.fatGrams > 0
+              ? initial.fatGrams.toString()
+              : null);
+      final carbsController = TextEditingController(
+          text: initial?.carbsGrams != null && initial!.carbsGrams > 0
+              ? initial.carbsGrams.toString()
+              : null);
 
       final formKey = GlobalKey<FormState>();
 
       final saved = await showModalBottomSheet<IngredientItem>(
         context: context,
         isScrollControlled: true,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+        backgroundColor: Colors.transparent,
         builder: (ctx) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
-              left: 16,
-              right: 16,
-              top: 12,
+          return Container(
+            margin: const EdgeInsets.all(8),
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.85,
             ),
-            child: Form(
-              key: formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            initial == null
-                                ? 'food_detail.add_ingredient'.tr()
-                                : 'food_detail.edit_ingredient'.tr(),
-                            style: Theme.of(ctx)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Handle bar
+                      Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.of(ctx).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: nameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: 'food_detail.name'.tr(),
-                        prefixIcon: const Icon(Icons.restaurant),
-                        border: const OutlineInputBorder(),
                       ),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? ' ' : null,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: caloriesController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: InputDecoration(
-                              labelText: 'food_detail.calories'.tr(),
-                              suffixText: kcalUnit,
-                              border: const OutlineInputBorder(),
+                      const SizedBox(height: 20),
+
+                      // Header with icon and title
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(
+                              Icons.restaurant_menu,
+                              color: Colors.orange,
+                              size: 24,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: proteinController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: InputDecoration(
-                              labelText: 'onboarding.protein'.tr(),
-                              suffixText: gramsUnit,
-                              border: const OutlineInputBorder(),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  initial == null
+                                      ? 'food_detail.add_ingredient'.tr()
+                                      : 'food_detail.edit_ingredient'.tr(),
+                                  style: Theme.of(ctx)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black87,
+                                      ),
+                                ),
+                                Text(
+                                  'food_detail.ingredient_subtitle'.tr(),
+                                  style: Theme.of(ctx)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: fatController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: InputDecoration(
-                              labelText: 'plan_generation.metric.fats'.tr(),
-                              suffixText: gramsUnit,
-                              border: const OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: carbsController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: InputDecoration(
-                              labelText: 'onboarding.carbs'.tr(),
-                              suffixText: gramsUnit,
-                              border: const OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (formKey.currentState?.validate() != true) return;
-                          final item = IngredientItem(
-                            name: nameController.text.trim(),
-                            calories:
-                                int.tryParse(caloriesController.text.trim()) ??
-                                    0,
-                            proteinGrams:
-                                int.tryParse(proteinController.text.trim()) ??
-                                    0,
-                            fatGrams:
-                                int.tryParse(fatController.text.trim()) ?? 0,
-                            carbsGrams:
-                                int.tryParse(carbsController.text.trim()) ?? 0,
-                          );
-                          Navigator.of(ctx).pop(item);
-                        },
-                        icon: const Icon(Icons.check),
-                        label: Text('common.add'.tr()),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+
+                      // Name field with enhanced styling
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade300),
+                          color: Colors.grey.shade50,
+                        ),
+                        child: TextFormField(
+                          controller: nameController,
+                          textInputAction: TextInputAction.next,
+                          style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                          decoration: InputDecoration(
+                            hintText: 'food_detail.ingredient_name'.tr(),
+                            hintStyle: TextStyle(color: Colors.grey),
+                            prefixIcon: Container(
+                              margin: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.restaurant,
+                                color: Colors.orange,
+                                size: 20,
+                              ),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 16),
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'food_detail.name_required'.tr()
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Nutrition info section
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'food_detail.nutrition_info'.tr(),
+                              style:
+                                  Theme.of(ctx).textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black87,
+                                      ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Calories field
+                            _NutritionField(
+                              controller: caloriesController,
+                              label: 'food_detail.calories'.tr(),
+                              unit: kcalUnit,
+                              icon: Icons.local_fire_department,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Macronutrients row
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _NutritionField(
+                                    controller: proteinController,
+                                    label: 'onboarding.protein'.tr(),
+                                    unit: gramsUnit,
+                                    icon: Icons.bolt_outlined,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _NutritionField(
+                                    controller: fatController,
+                                    label: 'plan_generation.metric.fats'.tr(),
+                                    unit: gramsUnit,
+                                    icon: Icons.water_drop_outlined,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Carbs field
+                            _NutritionField(
+                              controller: carbsController,
+                              label: 'onboarding.carbs'.tr(),
+                              unit: gramsUnit,
+                              icon: Icons.spa_outlined,
+                              color: Colors.amber.shade700,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              style: OutlinedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ),
+                              child: Text(
+                                'common.cancel'.tr(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (formKey.currentState?.validate() != true)
+                                  return;
+                                final item = IngredientItem(
+                                  name: nameController.text.trim(),
+                                  calories: int.tryParse(
+                                          caloriesController.text.trim()) ??
+                                      0,
+                                  proteinGrams: int.tryParse(
+                                          proteinController.text.trim()) ??
+                                      0,
+                                  fatGrams:
+                                      int.tryParse(fatController.text.trim()) ??
+                                          0,
+                                  carbsGrams: int.tryParse(
+                                          carbsController.text.trim()) ??
+                                      0,
+                                );
+                                Navigator.of(ctx).pop(item);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black87,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    size: 20,
+                                    color: context.colorScheme.onPrimary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'common.save'.tr(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1262,7 +1532,7 @@ class FoodDetailPage extends HookConsumerWidget {
                             ingredients: ingredientsState.value,
                           );
 
-                          final result = await context.push('/fix-result',
+                          final result = await GoRouter.of(context).push('/fix-result',
                               extra: fixResultArgs);
 
                           if (result != null &&
@@ -1422,6 +1692,132 @@ class _RoundIconButton extends StatelessWidget {
           width: 40,
           height: 40,
           child: Icon(icon, size: 20),
+        ),
+      ),
+    );
+  }
+}
+
+class _EnhancedRoundButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _EnhancedRoundButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Icon(icon, color: Colors.black87),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickAdjustChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+
+  const _QuickAdjustChip({
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onPressed,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NutritionField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String unit;
+  final IconData icon;
+  final Color color;
+
+  const _NutritionField({
+    required this.controller,
+    required this.label,
+    required this.unit,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+        decoration: InputDecoration(
+          hintText: label,
+          hintStyle: TextStyle(color: Colors.grey),
+          suffixText: unit,
+          suffixStyle: TextStyle(color: Colors.grey.shade600),
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 16,
+            ),
+          ),
+          border: InputBorder.none,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         ),
       ),
     );
