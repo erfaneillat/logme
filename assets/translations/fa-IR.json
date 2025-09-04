@@ -146,7 +146,8 @@
         "exercise_logged_no_goal": "ورزش ثبت شد اما به هدف روزانه اضافه نشد (تنظیمات غیرفعال)",
         "streak_title": "زنجیره روزانه",
         "streak_message": "عالیه! هر روز برای رسیدن به هدفت مهمه!",
-        "continue": "ادامه"
+        "continue": "ادامه",
+        "rollover_calories": "کالری منتقل شده"
     },
     "settings": {
         "title": "تنظیمات",

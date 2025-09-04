@@ -146,7 +146,8 @@
         "exercise_logged_no_goal": "Exercise logged but not added to daily goal (preference disabled)",
         "streak_title": "Day streak",
         "streak_message": "You're on fire! Every day matters for hitting your goal!",
-        "continue": "Continue"
+        "continue": "Continue",
+        "rollover_calories": "rollover calories"
     },
     "settings": {
         "title": "Settings",

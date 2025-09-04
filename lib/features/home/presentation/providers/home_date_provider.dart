@@ -49,6 +49,7 @@ class DailyRemaining {
   final int totalCarbs;
   final int totalProtein;
   final int totalFats;
+  final int rolloverCalories; // Calories added from yesterday
 
   const DailyRemaining({
     required this.caloriesRemaining,
@@ -59,6 +60,7 @@ class DailyRemaining {
     required this.totalCarbs,
     required this.totalProtein,
     required this.totalFats,
+    this.rolloverCalories = 0,
   });
 }
 
@@ -88,6 +90,33 @@ final dailyRemainingProvider = FutureProvider<DailyRemaining>((ref) async {
     totalDailyCalories += log.burnedCalories;
   }
 
+  // Add rollover calories from yesterday if setting is enabled
+  int rolloverCalories = 0;
+  if (prefs.rolloverCalories) {
+    try {
+      final yesterday = selected.addDays(-1);
+      final yesterdayIso = _toIsoDateFromJalali(yesterday);
+      final yesterdayLog = await logsRemote.getDailyLog(yesterdayIso);
+
+      // Calculate yesterday's remaining calories (goal - consumed)
+      int yesterdayGoal = plan.calories;
+      if (prefs.addBurnedCalories) {
+        yesterdayGoal += yesterdayLog.burnedCalories;
+      }
+
+      final yesterdayRemaining = yesterdayGoal - yesterdayLog.caloriesConsumed;
+
+      // Add up to 200 calories if there were remaining calories yesterday
+      if (yesterdayRemaining > 0) {
+        rolloverCalories = yesterdayRemaining > 200 ? 200 : yesterdayRemaining;
+        totalDailyCalories += rolloverCalories;
+      }
+    } catch (e) {
+      // If there's an error fetching yesterday's data, continue without rollover
+      print('Error calculating rollover calories: $e');
+    }
+  }
+
   return DailyRemaining(
     caloriesRemaining:
         clampNonNegative(totalDailyCalories - log.caloriesConsumed),
@@ -98,5 +127,6 @@ final dailyRemainingProvider = FutureProvider<DailyRemaining>((ref) async {
     totalCarbs: plan.carbsGrams,
     totalProtein: plan.proteinGrams,
     totalFats: plan.fatsGrams,
+    rolloverCalories: rolloverCalories,
   );
 });

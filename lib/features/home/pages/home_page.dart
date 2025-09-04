@@ -717,6 +717,30 @@ class HomePage extends HookConsumerWidget {
                         ],
                       ),
                     ],
+                    if (remaining.rolloverCalories > 0) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.history,
+                            size: 16,
+                            color: Colors.green.shade600,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '+${remaining.rolloverCalories}'
+                                    .toPersianNumbers(context) +
+                                ' ' +
+                                'home.rollover_calories'.tr(),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.green.shade700,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
