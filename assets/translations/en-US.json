@@ -143,6 +143,7 @@
         "add_burned_calories": "Add Burned Calories",
         "save_exercise": "Save Exercise",
         "exercise_added": "Exercise added successfully",
+        "exercise_logged_no_goal": "Exercise logged but not added to daily goal (preference disabled)",
         "streak_title": "Day streak",
         "streak_message": "You're on fire! Every day matters for hitting your goal!",
         "continue": "Continue"

@@ -99,7 +99,7 @@ class LogsRepositoryImpl implements LogsRepository {
   }
 
   @override
-  Future<DailyLogEntity> updateBurnedCalories({
+  Future<Map<String, dynamic>> updateBurnedCalories({
     required String dateIso,
     required int burnedCalories,
   }) {

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import DailyLog from '../models/DailyLog';
+import User from '../models/User';
 import { updateStreakIfEligible } from '../services/streakService';
 
 interface AuthRequest extends Request { user?: any }
@@ -493,30 +494,59 @@ export class LogController {
             const sanitizedDate = date.slice(0, 10);
             const burnedCals = Math.max(0, Math.round(Number(burnedCalories ?? 0)));
 
-            const log = await DailyLog.findOneAndUpdate(
-                { userId, date: sanitizedDate },
-                {
-                    $setOnInsert: {
-                        userId,
-                        date: sanitizedDate,
-                        caloriesConsumed: 0,
-                        carbsGrams: 0,
-                        proteinGrams: 0,
-                        fatsGrams: 0,
-                        burnedCalories: 0,
-                        items: [],
+            // Check user preference for adding burned calories
+            const user = await User.findById(userId).select('addBurnedCalories');
+            if (!user) {
+                res.status(404).json({ success: false, message: 'User not found' });
+                return;
+            }
+
+            // Always save burned calories to database for tracking purposes
+            // First, try to find existing log
+            let log = await DailyLog.findOne({ userId, date: sanitizedDate });
+
+            if (log) {
+                // Log exists, just increment burned calories
+                log = await DailyLog.findOneAndUpdate(
+                    { userId, date: sanitizedDate },
+                    { $inc: { burnedCalories: burnedCals } },
+                    { new: true }
+                );
+            } else {
+                // Log doesn't exist, create new one with initial burned calories
+                log = await DailyLog.findOneAndUpdate(
+                    { userId, date: sanitizedDate },
+                    {
+                        $setOnInsert: {
+                            userId,
+                            date: sanitizedDate,
+                            caloriesConsumed: 0,
+                            carbsGrams: 0,
+                            proteinGrams: 0,
+                            fatsGrams: 0,
+                            burnedCalories: burnedCals, // Set initial value directly
+                            items: [],
+                        }
                     },
-                    $inc: {
-                        burnedCalories: burnedCals,
-                    },
-                },
-                { upsert: true, new: true }
-            );
+                    { upsert: true, new: true }
+                );
+            }
 
             // Trigger streak update after totals change
             try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
-            res.json({ success: true, data: { log } });
+            // Return response indicating preference status for frontend feedback
+            const preferenceEnabled = user.addBurnedCalories ?? true;
+            res.json({
+                success: true,
+                data: {
+                    log,
+                    preferenceEnabled,
+                    message: preferenceEnabled
+                        ? 'Exercise added and will be included in daily goal'
+                        : 'Exercise logged but not added to daily goal (preference disabled)'
+                }
+            });
         } catch (error) {
             console.error('Update burned calories error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });

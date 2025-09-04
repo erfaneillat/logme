@@ -46,7 +46,7 @@ abstract class LogsRepository {
     required bool liked,
   });
 
-  Future<DailyLogEntity> updateBurnedCalories({
+  Future<Map<String, dynamic>> updateBurnedCalories({
     required String dateIso,
     required int burnedCalories,
   });

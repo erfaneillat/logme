@@ -271,6 +271,19 @@ class AddExercisePage extends HookConsumerWidget {
                                   return;
                                 }
 
+                                final burnedCalories =
+                                    int.tryParse(caloriesController.text) ?? 0;
+
+                                if (burnedCalories <= 0) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Please enter a valid number for calories burned'),
+                                    ),
+                                  );
+                                  return;
+                                }
+
                                 isLoading.value = true;
 
                                 try {
@@ -278,12 +291,9 @@ class AddExercisePage extends HookConsumerWidget {
                                       ref.read(selectedJalaliDateProvider);
                                   final targetDateIso =
                                       _toIsoFromJalali(selectedJalali);
-                                  final burnedCalories =
-                                      int.tryParse(caloriesController.text) ??
-                                          0;
 
                                   // Update burned calories for the selected date
-                                  await ref
+                                  final result = await ref
                                       .read(logsRemoteDataSourceProvider)
                                       .updateBurnedCalories(
                                         dateIso: targetDateIso,
@@ -297,11 +307,23 @@ class AddExercisePage extends HookConsumerWidget {
                                   ref.invalidate(dailyRemainingProvider);
 
                                   if (context.mounted) {
+                                    // Show appropriate message based on server response
+                                    String message;
+                                    Color backgroundColor;
+
+                                    if (result['preferenceDisabled'] == true) {
+                                      message =
+                                          'home.exercise_logged_no_goal'.tr();
+                                      backgroundColor = Colors.orange;
+                                    } else {
+                                      message = 'home.exercise_added'.tr();
+                                      backgroundColor = Colors.green;
+                                    }
+
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content:
-                                            Text('home.exercise_added'.tr()),
-                                        backgroundColor: Colors.green,
+                                        content: Text(message),
+                                        backgroundColor: backgroundColor,
                                       ),
                                     );
                                     GoRouter.of(context).pop();

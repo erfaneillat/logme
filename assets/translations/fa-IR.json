@@ -143,6 +143,7 @@
         "add_burned_calories": "افزودن کالری سوزانده",
         "save_exercise": "ذخیره ورزش",
         "exercise_added": "ورزش با موفقیت اضافه شد",
+        "exercise_logged_no_goal": "ورزش ثبت شد اما به هدف روزانه اضافه نشد (تنظیمات غیرفعال)",
         "streak_title": "زنجیره روزانه",
         "streak_message": "عالیه! هر روز برای رسیدن به هدفت مهمه!",
         "continue": "ادامه"

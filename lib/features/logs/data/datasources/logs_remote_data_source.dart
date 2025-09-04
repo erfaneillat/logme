@@ -190,7 +190,7 @@ class LogsRemoteDataSource {
     return DailyLogItemEntity.fromJson(itemJson);
   }
 
-  Future<DailyLogEntity> updateBurnedCalories({
+  Future<Map<String, dynamic>> updateBurnedCalories({
     required String dateIso,
     required int burnedCalories,
   }) async {
@@ -202,11 +202,25 @@ class LogsRemoteDataSource {
         'burnedCalories': burnedCalories,
       },
     );
+
+    // Always expect log data now
     final Map<String, dynamic> data =
         (response['data'] as Map<String, dynamic>? ?? response);
     final Map<String, dynamic> logJson =
         data['log'] as Map<String, dynamic>? ?? data;
-    return DailyLogEntity.fromJson(logJson);
+
+    // Check preference status from response
+    final bool preferenceEnabled = data['preferenceEnabled'] as bool? ?? true;
+    final String message =
+        data['message'] as String? ?? 'Exercise added successfully';
+
+    return {
+      'success': true,
+      'preferenceDisabled': !preferenceEnabled,
+      'burnedCalories': burnedCalories,
+      'message': message,
+      'log': DailyLogEntity.fromJson(logJson)
+    };
   }
 }
 
