@@ -154,7 +154,8 @@ class AddExercisePage extends HookConsumerWidget {
                     TextFormField(
                       controller: exerciseController,
                       decoration: InputDecoration(
-                        hintText: 'e.g., Running, Swimming, Cycling',
+                        hintText: 'home.exercise_hint'.tr(),
+                        hintStyle: TextStyle(color: Colors.grey),
                         prefixIcon: const Icon(Icons.directions_run),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -190,11 +191,10 @@ class AddExercisePage extends HookConsumerWidget {
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: InputDecoration(
-                        hintText: '30',
+                        hintText: 'home.duration_hint'.tr(),
+                        hintStyle: TextStyle(color: Colors.grey),
                         prefixIcon: const Icon(Icons.access_time),
-                        suffixText: context.locale.languageCode == 'fa'
-                            ? 'دقیقه'
-                            : 'min',
+                        suffixText: 'home.unit_minutes'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -229,11 +229,10 @@ class AddExercisePage extends HookConsumerWidget {
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: InputDecoration(
-                        hintText: '200',
+                        hintText: 'home.calories_hint'.tr(),
+                        hintStyle: TextStyle(color: Colors.grey),
                         prefixIcon: const Icon(Icons.local_fire_department),
-                        suffixText: context.locale.languageCode == 'fa'
-                            ? 'کالری'
-                            : 'cal',
+                        suffixText: 'home.unit_calories'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -264,8 +263,8 @@ class AddExercisePage extends HookConsumerWidget {
                                 if (caloriesController.text.isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content:
-                                          Text('Please enter calories burned'),
+                                      content: Text(
+                                          'home.please_enter_calories'.tr()),
                                     ),
                                   );
                                   return;
@@ -278,7 +277,8 @@ class AddExercisePage extends HookConsumerWidget {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'Please enter a valid number for calories burned'),
+                                          'home.please_enter_valid_calories'
+                                              .tr()),
                                     ),
                                   );
                                   return;
@@ -332,7 +332,8 @@ class AddExercisePage extends HookConsumerWidget {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Error: $e'),
+                                        content: Text('home.error_prefix'
+                                            .tr(args: [e.toString()])),
                                         backgroundColor: Colors.red,
                                       ),
                                     );

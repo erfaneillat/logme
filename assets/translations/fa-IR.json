@@ -147,7 +147,15 @@
         "streak_title": "زنجیره روزانه",
         "streak_message": "عالیه! هر روز برای رسیدن به هدفت مهمه!",
         "continue": "ادامه",
-        "rollover_calories": "کالری منتقل شده"
+        "rollover_calories": "کالری منتقل شده",
+        "exercise_hint": "مثلاً دویدن، شنا، دوچرخه‌سواری",
+        "duration_hint": "۳۰",
+        "calories_hint": "۲۰۰",
+        "please_enter_calories": "لطفاً کالری سوزانده شده را وارد کنید",
+        "please_enter_valid_calories": "لطفاً عدد معتبری برای کالری سوزانده شده وارد کنید",
+        "error_prefix": "خطا: {}",
+        "unit_minutes": "دقیقه",
+        "unit_calories": "کالری"
     },
     "settings": {
         "title": "تنظیمات",

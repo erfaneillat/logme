@@ -147,7 +147,15 @@
         "streak_title": "Day streak",
         "streak_message": "You're on fire! Every day matters for hitting your goal!",
         "continue": "Continue",
-        "rollover_calories": "rollover calories"
+        "rollover_calories": "rollover calories",
+        "exercise_hint": "e.g., Running, Swimming, Cycling",
+        "duration_hint": "30",
+        "calories_hint": "200",
+        "please_enter_calories": "Please enter calories burned",
+        "please_enter_valid_calories": "Please enter a valid number for calories burned",
+        "error_prefix": "Error: {}",
+        "unit_minutes": "min",
+        "unit_calories": "cal"
     },
     "settings": {
         "title": "Settings",
