@@ -255,49 +255,68 @@ class _LanguageCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.language,
-              color: Theme.of(context).primaryColor,
-              size: 20,
-            ),
+      child: InkWell(
+        onTap: () => context.push('/language-selection'),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'settings.language'.tr(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.language,
+                  color: Theme.of(context).primaryColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'settings.language'.tr(),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  context.locale.languageCode == 'fa' ? 'فارسی' : 'English',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right,
+                color: Colors.grey.shade400,
+                size: 20,
+              ),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              context.locale.languageCode == 'fa' ? 'فارسی' : 'English',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Icon(
-            Icons.chevron_right,
-            color: Colors.grey.shade400,
-            size: 20,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -426,24 +445,28 @@ class _SupportSection extends StatelessWidget {
                 icon: Icons.description_outlined,
                 title: 'settings.terms'.tr(),
                 color: const Color(0xFF6366F1),
+                onTap: () => context.push('/terms'),
               ),
               const _ModernDivider(),
               _ModernSettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: 'settings.privacy'.tr(),
                 color: const Color(0xFF8B5CF6),
+                onTap: () => context.push('/privacy-policy'),
               ),
               const _ModernDivider(),
               _ModernSettingsTile(
                 icon: Icons.email_outlined,
                 title: 'settings.support_email'.tr(),
                 color: const Color(0xFF06B6D4),
+                onTap: () => context.push('/support-email'),
               ),
               const _ModernDivider(),
               _ModernSettingsTile(
                 icon: Icons.person_off_outlined,
                 title: 'settings.delete_account'.tr(),
                 color: const Color(0xFFEF4444),
+                onTap: () => context.push('/delete-account'),
               ),
             ],
           ),
@@ -534,122 +557,133 @@ class _ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor.withOpacity(0.8),
-          ],
-        ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.push('/personal-details'),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 2,
-              ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor.withOpacity(0.8),
+              ],
             ),
-            child: const Icon(
-              Icons.person_outline,
-              color: Colors.white,
-              size: 32,
-            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: userAsync.when(
-              loading: () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 16,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 2,
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 12,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                ],
+                ),
+                child: const Icon(
+                  Icons.person_outline,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
-              error: (e, st) => Text(
-                'settings.error_loading_profile'.tr(),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
-                    ),
-              ),
-              data: (u) {
-                final name = u?.name ?? '-';
-                final phone = u?.phone ?? '';
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2,
-                          ),
-                    ),
-                    if (phone.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        phone,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.8),
-                              fontWeight: FontWeight.w500,
-                            ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: userAsync.when(
+                  loading: () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 16,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 12,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                       ),
                     ],
-                  ],
-                );
-              },
-            ),
+                  ),
+                  error: (e, st) => Text(
+                    'settings.error_loading_profile'.tr(),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                  ),
+                  data: (u) {
+                    final name = u?.name ?? '-';
+                    final phone = u?.phone ?? '';
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.2,
+                                  ),
+                        ),
+                        if (phone.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            phone,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.chevron_right,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

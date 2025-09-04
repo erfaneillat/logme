@@ -19,6 +19,11 @@ import '../features/settings/pages/refer_friend_page.dart';
 import '../features/settings/pages/personal_details_page.dart';
 import '../features/settings/pages/adjust_macros_page.dart';
 import '../features/settings/pages/weight_history_page.dart';
+import '../features/settings/pages/terms_page.dart';
+import '../features/settings/pages/privacy_policy_page.dart';
+import '../features/settings/pages/support_email_page.dart';
+import '../features/settings/pages/delete_account_page.dart';
+import '../features/settings/pages/language_selection_page.dart';
 import '../features/home/pages/add_exercise_page.dart';
 
 class AppRouter {
@@ -168,6 +173,31 @@ class AppRouter {
         path: '/add-exercise',
         name: 'add-exercise',
         builder: (context, state) => const AddExercisePage(),
+      ),
+      GoRoute(
+        path: '/terms',
+        name: 'terms',
+        builder: (context, state) => const TermsPage(),
+      ),
+      GoRoute(
+        path: '/privacy-policy',
+        name: 'privacy-policy',
+        builder: (context, state) => const PrivacyPolicyPage(),
+      ),
+      GoRoute(
+        path: '/support-email',
+        name: 'support-email',
+        builder: (context, state) => const SupportEmailPage(),
+      ),
+      GoRoute(
+        path: '/delete-account',
+        name: 'delete-account',
+        builder: (context, state) => const DeleteAccountPage(),
+      ),
+      GoRoute(
+        path: '/language-selection',
+        name: 'language-selection',
+        builder: (context, state) => const LanguageSelectionPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
