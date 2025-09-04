@@ -188,7 +188,16 @@
         "view_trends_subtitle": "View trends",
         "error_loading_profile": "Error loading profile",
         "welcome_default": "Welcome",
-        "logout_button": "Logout"
+        "logout_button": "Logout",
+        "edit_name": "Edit Name",
+        "enter_name": "Enter your name",
+        "name_hint": "Your name",
+        "save_name": "Save Name",
+        "name_updated": "Name updated successfully",
+        "name_update_failed": "Failed to update name",
+        "name_required": "Name is required",
+        "name_too_short": "Name must be at least 2 characters",
+        "name_too_long": "Name cannot exceed 50 characters"
     },
     "terms": {
         "title": "Terms and Conditions",

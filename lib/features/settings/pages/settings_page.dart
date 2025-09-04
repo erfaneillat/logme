@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../login/presentation/providers/auth_provider.dart';
 import '../presentation/providers/settings_providers.dart';
+import '../widgets/edit_name_bottom_sheet.dart';
 
 class SettingsPage extends HookConsumerWidget {
   const SettingsPage({super.key});
@@ -560,7 +561,14 @@ class _ProfileCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.push('/personal-details'),
+        onTap: () async {
+          // Show name editing bottom sheet
+          await userAsync.whenOrNull(
+            data: (user) async {
+              await EditNameBottomSheet.show(context, user?.name);
+            },
+          );
+        },
         borderRadius: BorderRadius.circular(20),
         child: Container(
           padding: const EdgeInsets.all(20),

@@ -188,7 +188,16 @@
         "view_trends_subtitle": "مشاهده روندها",
         "error_loading_profile": "خطا در بارگذاری پروفایل",
         "welcome_default": "خوش آمدید",
-        "logout_button": "خروج"
+        "logout_button": "خروج",
+        "edit_name": "ویرایش نام",
+        "enter_name": "نام خود را وارد کنید",
+        "name_hint": "نام شما",
+        "save_name": "ذخیره نام",
+        "name_updated": "نام با موفقیت به‌روزرسانی شد",
+        "name_update_failed": "به‌روزرسانی نام ناموفق بود",
+        "name_required": "نام الزامی است",
+        "name_too_short": "نام باید حداقل ۲ کاراکتر باشد",
+        "name_too_long": "نام نمی‌تواند بیش از ۵۰ کاراکتر باشد"
     },
     "terms": {
         "title": "شرایط و قوانین",
