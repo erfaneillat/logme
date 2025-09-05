@@ -28,8 +28,10 @@ setup_env() {
     
     cd $app_path
     
-    # Create .env file
-    cat > .env << EOF
+    # Create .env file only if it doesn't exist to preserve manual configurations
+    if [ ! -f ".env" ]; then
+        echo "⚙️  Creating new .env file for $app_name..."
+        cat > .env << EOF
 NODE_ENV=$environment
 PORT=$port
 MONGODB_URI=${MONGODB_URI:-mongodb://localhost:27017/cal_ai}
@@ -38,8 +40,10 @@ OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_api_key_here}
 API_BASE_URL=https://logme.yadbanapp.com
 CORS_ORIGIN=https://logme.yadbanapp.com
 EOF
-    
-    echo "✅ Environment file created at $app_path/.env"
+        echo "✅ Environment file created at $app_path/.env"
+    else
+        echo "✅ Existing .env file found, preserving manual configuration at $app_path/.env"
+    fi
     
     # Start PM2 process
     if pm2 describe $app_name > /dev/null 2>&1; then

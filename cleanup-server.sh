@@ -28,11 +28,16 @@ cleanup_and_deploy() {
         pm2 delete $app_name
     fi
     
-    # Remove existing directory contents
+    # Remove existing directory contents but preserve .env files
     if [ -d "$app_path" ]; then
-        echo "🗑️  Removing existing files..."
-        rm -rf $app_path/*
-        rm -rf $app_path/.[^.]*
+        echo "🗑️  Removing existing files (preserving .env)..."
+        cd $app_path
+        # Backup .env files if they exist
+        if [ -f "server/.env" ]; then
+            cp server/.env /tmp/.env.backup.$(basename $app_path) 2>/dev/null || true
+        fi
+        # Remove all files except .env backups
+        rm -rf * .[^.]* 2>/dev/null || true
     else
         mkdir -p $app_path
     fi
@@ -51,6 +56,14 @@ cleanup_and_deploy() {
     # Install dependencies and build
     echo "📦 Installing server dependencies..."
     cd server
+    
+    # Restore .env file if it was backed up
+    if [ -f "/tmp/.env.backup.$(basename $app_path)" ]; then
+        echo "🔄 Restoring .env file..."
+        cp /tmp/.env.backup.$(basename $app_path) .env
+        rm /tmp/.env.backup.$(basename $app_path)
+        echo "✅ .env file restored"
+    fi
     
     if [ -f "package-lock.json" ]; then
         npm ci

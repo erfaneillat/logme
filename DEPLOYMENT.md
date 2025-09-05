@@ -148,6 +148,14 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
+## 📝 **Important: Environment Variable Preservation**
+
+The deployment workflow is designed to **preserve existing `.env` files**:
+- ✅ **New deployments**: Creates `.env` with values from GitHub secrets
+- ✅ **Existing deployments**: Preserves your manual `.env` configurations  
+- ✅ **Manual override**: You can edit `.env` files directly on the server
+- ⚠️ **Note**: Manual changes to `.env` will not be overwritten by deployments
+
 ## 🚀 GitHub Actions Deployment
 
 ### Workflow Configuration

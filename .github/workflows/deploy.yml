@@ -185,16 +185,21 @@ jobs:
         script: |
           cd ${{ steps.env.outputs.app_path }}/server
           
-          # Create .env file
-          cat > .env << EOF
-          NODE_ENV=${{ steps.env.outputs.environment }}
-          PORT=${{ steps.env.outputs.app_port }}
-          MONGODB_URI=${{ secrets.MONGODB_URI }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          API_BASE_URL=${{ steps.env.outputs.api_url }}
-          CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev-logme.yadbanapp.com' || 'https://logme.yadbanapp.com' }}
-          EOF
+          # Create .env file only if it doesn't exist to preserve manual configurations
+          if [ ! -f ".env" ]; then
+            echo "📝 Creating new .env file..."
+            cat > .env << EOF
+NODE_ENV=${{ steps.env.outputs.environment }}
+PORT=${{ steps.env.outputs.app_port }}
+MONGODB_URI=${{ secrets.MONGODB_URI }}
+JWT_SECRET=${{ secrets.JWT_SECRET }}
+OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+API_BASE_URL=${{ steps.env.outputs.api_url }}
+CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev-logme.yadbanapp.com' || 'https://logme.yadbanapp.com' }}
+EOF
+          else
+            echo "✅ Existing .env file found, preserving manual configuration"
+          fi
           
           echo "✅ Environment variables configured"
 
