@@ -477,77 +477,166 @@ class _SupportSection extends StatelessWidget {
   }
 }
 
-class _LogoutSection extends StatelessWidget {
+// Helper function to show logout confirmation dialog
+Future<bool> _showLogoutConfirmDialog(BuildContext context) async {
+  print('🔥 Showing logout confirmation dialog'); // Debug print
+
+  return await showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // User must tap button to dismiss
+        builder: (BuildContext context) {
+          print('🔥 Dialog builder called'); // Debug print
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'settings.logout_confirm_title'.tr(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              'settings.logout_confirm_message'.tr(),
+              style: TextStyle(
+                color: Colors.grey.shade700,
+                height: 1.4,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  print('🔥 Cancel button pressed'); // Debug print
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(
+                  'settings.cancel'.tr(),
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  print('🔥 Confirm logout button pressed'); // Debug print
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(
+                  'settings.logout_confirm'.tr(),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, color: Colors.red),
+                ),
+              ),
+            ],
+          );
+        },
+      ) ??
+      false; // Return false if dialog is dismissed
+}
+
+class _LogoutSection extends HookConsumerWidget {
   const _LogoutSection({required this.ref});
   final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.red.shade50,
-            Colors.red.shade100,
-          ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoggingOut = useState(false);
+
+    return ElevatedButton(
+      onPressed: isLoggingOut.value
+          ? null
+          : () async {
+              print('🔥 Logout button pressed'); // Debug print
+
+              // Show confirmation dialog first
+              final confirmed = await _showLogoutConfirmDialog(context);
+              print('🔥 Confirmation result: $confirmed'); // Debug print
+
+              if (!confirmed) return;
+
+              isLoggingOut.value = true;
+              print('🔥 Starting logout process'); // Debug print
+
+              try {
+                // Execute logout
+                print('🔥 Calling logout use case'); // Debug print
+                await ref.read(logoutUseCaseProvider).execute();
+                print('🔥 Logout use case completed'); // Debug print
+
+                // Invalidate all cached providers to ensure clean state
+                ref.invalidate(currentUserProvider);
+                print('🔥 Providers invalidated'); // Debug print
+
+                // Navigate to login page after successful logout
+                if (context.mounted) {
+                  print('🔥 Navigating to login'); // Debug print
+                  context.go('/login');
+                }
+              } catch (e) {
+                print('🔥 Logout error: $e'); // Debug print
+                // Show error message if logout fails
+                if (context.mounted) {
+                  context.showMessage(
+                    'settings.logout_error'.tr(args: [e.toString()]),
+                    SnackBarType.error,
+                  );
+                }
+              } finally {
+                if (context.mounted) {
+                  isLoggingOut.value = false;
+                  print('🔥 Logout process finished'); // Debug print
+                }
+              }
+            },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.red.withOpacity(0.2),
-          width: 1,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
         ),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.logout,
-              color: Colors.red,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'settings.logout'.tr(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.red.shade700,
-                  ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await ref.read(logoutUseCaseProvider).execute();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+      child: isLoggingOut.value
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-            ),
-            child: Text(
+            )
+          : Text(
               'settings.logout_button'.tr(),
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
             ),
-          ),
-        ],
-      ),
     );
   }
 }
