@@ -98,10 +98,10 @@ jobs:
         
         # Build Flutter web with environment variables
         if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
-          flutter build web --release --web-renderer html --base-href / \
+          flutter build web --release l --base-href / \
             --dart-define=API_BASE_URL=https://dev-logme.yadbanapp.com/api
         else
-          flutter build web --release --web-renderer html --base-href / \
+          flutter build web --release  --base-href / \
             --dart-define=API_BASE_URL=https://logme.yadbanapp.com/api
         fi
 
