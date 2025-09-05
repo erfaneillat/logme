@@ -36,7 +36,7 @@ jobs:
     - name: ✅ Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.6.1'
+        flutter-version: '3.29.3'
         channel: 'stable'
 
     - name: 📦 Install Server Dependencies
