@@ -102,16 +102,15 @@ sudo apt install nginx
 ## 🌐 Nginx Configuration
 
 ### 1. Copy Configuration
-Use the provided `nginx.conf.example` as a template:
+Use the provided `nginx.conf.example` as a complete configuration:
 
 ```bash
-# For production
-sudo cp nginx.conf.example /etc/nginx/sites-available/cal-ai-prod
-sudo ln -s /etc/nginx/sites-available/cal-ai-prod /etc/nginx/sites-enabled/
+# Copy the configuration file
+sudo cp nginx.conf.example /etc/nginx/sites-available/cal-ai
+sudo ln -s /etc/nginx/sites-available/cal-ai /etc/nginx/sites-enabled/
 
-# For development
-sudo cp nginx.conf.example /etc/nginx/sites-available/cal-ai-dev
-sudo ln -s /etc/nginx/sites-available/cal-ai-dev /etc/nginx/sites-enabled/
+# Remove default configuration if it exists
+sudo rm -f /etc/nginx/sites-enabled/default
 ```
 
 ### 2. Configure SSL
@@ -126,16 +125,21 @@ sudo certbot --nginx -d dev-logme.yadbanapp.com
 ```
 
 ### 3. Update Nginx Configuration
-Edit the nginx configuration files to include your SSL certificate paths:
+The provided configuration includes SSL certificate paths for Let's Encrypt. If you have different certificate paths, edit the configuration:
 
 ```bash
-sudo nano /etc/nginx/sites-available/cal-ai-prod
+sudo nano /etc/nginx/sites-available/cal-ai
 ```
 
-Update the SSL certificate lines:
+Update the SSL certificate lines if needed:
 ```nginx
+# For production (logme.yadbanapp.com)
 ssl_certificate /etc/letsencrypt/live/logme.yadbanapp.com/fullchain.pem;
 ssl_certificate_key /etc/letsencrypt/live/logme.yadbanapp.com/privkey.pem;
+
+# For development (dev-logme.yadbanapp.com)
+ssl_certificate /etc/letsencrypt/live/dev-logme.yadbanapp.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/dev-logme.yadbanapp.com/privkey.pem;
 ```
 
 ### 4. Test and Reload Nginx

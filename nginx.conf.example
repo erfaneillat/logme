@@ -1,25 +1,24 @@
 # Nginx configuration for Cal AI deployment
-# Save this as /etc/nginx/sites-available/cal-ai-prod
-# Enable with: sudo ln -s /etc/nginx/sites-available/cal-ai-prod /etc/nginx/sites-enabled/
-
-# Production Configuration (logme.yadbanapp.com)
+# HTTP to HTTPS redirect for all subdomains
 server {
     listen 80;
-    server_name logme.yadbanapp.com;
-    return 301 https://$server_name$request_uri;
+    server_name logme.yadbanapp.com dev-logme.yadbanapp.com;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
 }
 
+# Production Configuration (logme.yadbanapp.com)
 server {
     listen 443 ssl http2;
     server_name logme.yadbanapp.com;
 
-    # SSL Configuration (You'll need to configure SSL certificates)
-    # ssl_certificate /path/to/your/certificate.crt;
-    # ssl_certificate_key /path/to/your/private.key;
+    ssl_certificate /etc/letsencrypt/live/logme.yadbanapp.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/logme.yadbanapp.com/privkey.pem;
     
-    # SSL Security Headers
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers off;
     
     # Security Headers
@@ -28,9 +27,10 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "no-referrer-when-downgrade" always;
     add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     # API Proxy to Node.js Backend
-    location /api {
+    location /api/ {
         proxy_pass http://127.0.0.1:9000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -44,16 +44,39 @@ server {
         proxy_connect_timeout 75s;
     }
 
+    # Health check endpoint
+    location /health {
+        proxy_pass http://127.0.0.1:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # API documentation (if available)
+    location /api-docs {
+        proxy_pass http://127.0.0.1:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
     # Flutter Web App
     location / {
         root /var/www/cal-ai/web;
         index index.html;
         try_files $uri $uri/ /index.html;
         
-        # Cache static assets
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        # Cache static assets (1 year) for immutable build files
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|wasm)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
+        }
+        
+        # No cache for HTML files
+        location ~* \.html$ {
+            add_header Cache-Control "no-store, no-cache, must-revalidate";
         }
         
         # Security headers for web app
@@ -65,7 +88,7 @@ server {
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private must-revalidate auth;
+    gzip_proxied expired no-cache no-store private auth;
     gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript application/json;
 
     # Logs
@@ -74,30 +97,27 @@ server {
 }
 
 # Development Configuration (dev-logme.yadbanapp.com)
-# Save this as /etc/nginx/sites-available/cal-ai-dev
-server {
-    listen 80;
-    server_name dev-logme.yadbanapp.com;
-    return 301 https://$server_name$request_uri;
-}
-
 server {
     listen 443 ssl http2;
     server_name dev-logme.yadbanapp.com;
 
-    # SSL Configuration (same as production)
-    # ssl_certificate /path/to/your/certificate.crt;
-    # ssl_certificate_key /path/to/your/private.key;
+    ssl_certificate /etc/letsencrypt/live/dev-logme.yadbanapp.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/dev-logme.yadbanapp.com/privkey.pem;
     
-    # Security Headers (same as production)
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+    
+    # Security Headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "no-referrer-when-downgrade" always;
     add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     # API Proxy to Development Node.js Backend
-    location /api {
+    location /api/ {
         proxy_pass http://127.0.0.1:9001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -111,11 +131,54 @@ server {
         proxy_connect_timeout 75s;
     }
 
-    # Flutter Web App (Development)
+    # Health check endpoint
+    location /health {
+        proxy_pass http://127.0.0.1:9001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # API documentation (if available)
+    location /api-docs {
+        proxy_pass http://127.0.0.1:9001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Flutter Web App (Development) - No caching for easier development
     location / {
         root /var/www/cal-ai-dev/web;
         index index.html;
         try_files $uri $uri/ /index.html;
+        
+        # No caching in development
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+        
+        # Proper MIME types for Flutter web files
+        location ~* \.js$ {
+            add_header Content-Type application/javascript;
+            add_header Cache-Control "no-store, no-cache, must-revalidate";
+        }
+        location ~* \.json$ {
+            add_header Content-Type application/json;
+            add_header Cache-Control "no-store, no-cache, must-revalidate";
+        }
+        location ~* \.wasm$ {
+            add_header Content-Type application/wasm;
+            add_header Cache-Control "no-store, no-cache, must-revalidate";
+        }
+        location ~* \.css$ {
+            add_header Content-Type text/css;
+            add_header Cache-Control "no-store, no-cache, must-revalidate";
+        }
+        location ~* \.html$ {
+            add_header Content-Type text/html;
+            add_header Cache-Control "no-store, no-cache, must-revalidate";
+        }
         
         # Security headers for web app
         add_header X-Frame-Options "SAMEORIGIN" always;

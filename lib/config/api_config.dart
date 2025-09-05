@@ -8,43 +8,21 @@ class ApiConfig {
   static const String devBaseUrlLocalhost = 'http://localhost:8000';
 
   // Production
-  static const String prodBaseUrl = 'http://10.0.2.2:8000';
+  static const String prodBaseUrl = 'https://logme.yadbanapp.com';
 
   // Staging
   static const String stagingBaseUrl = 'http://10.0.2.2:8000';
 
   // Get the appropriate base URL based on environment and platform
   static String get baseUrl {
-    // For web platform, use the environment configuration
-    if (kIsWeb) {
-      return Environment.apiBaseUrl;
-    }
-
-    // For mobile platforms, determine based on environment and platform
-    const environment =
-        String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
-
-    // For development on mobile, use local development URLs
-    if (environment == 'dev') {
-      // For Android emulator, use 10.0.2.2
-      if (Platform.isAndroid) {
-        return devBaseUrl;
-      }
-      // For iOS simulator, use localhost
-      if (Platform.isIOS) {
+    if (kDebugMode) {
+      if (kIsWeb) {
         return devBaseUrlLocalhost;
-      }
-    }
-
-    // For production/staging on mobile or other cases
-    switch (environment) {
-      case 'prod':
+      } else {
         return prodBaseUrl;
-      case 'staging':
-        return stagingBaseUrl;
-      case 'dev':
-      default:
-        return devBaseUrlLocalhost;
+      }
+    } else {
+      return prodBaseUrl;
     }
   }
 
