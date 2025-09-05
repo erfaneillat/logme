@@ -65,7 +65,7 @@ jobs:
           echo "server_port=${{ secrets.DEV_SERVER_PORT || secrets.SERVER_PORT || '22' }}" >> $GITHUB_OUTPUT
           echo "app_name=cal-ai-dev" >> $GITHUB_OUTPUT
           echo "app_port=3001" >> $GITHUB_OUTPUT
-          echo "app_path=/var/www/cal-ai-dev/server" >> $GITHUB_OUTPUT
+          echo "app_path=/var/www/cal-ai-dev" >> $GITHUB_OUTPUT
           echo "web_path=/var/www/cal-ai-dev/web" >> $GITHUB_OUTPUT
           echo "api_url=https://dev-logme.yadbanapp.com" >> $GITHUB_OUTPUT
         else
@@ -76,7 +76,7 @@ jobs:
           echo "server_port=${{ secrets.SERVER_PORT || '22' }}" >> $GITHUB_OUTPUT
           echo "app_name=cal-ai" >> $GITHUB_OUTPUT
           echo "app_port=3000" >> $GITHUB_OUTPUT
-          echo "app_path=/var/www/cal-ai/server" >> $GITHUB_OUTPUT
+          echo "app_path=/var/www/cal-ai" >> $GITHUB_OUTPUT
           echo "web_path=/var/www/cal-ai/web" >> $GITHUB_OUTPUT
           echo "api_url=https://logme.yadbanapp.com" >> $GITHUB_OUTPUT
         fi
@@ -123,7 +123,7 @@ jobs:
           # Clone or pull latest code
           if [ ! -d ".git" ]; then
             echo "🔄 Cloning repository..."
-            git clone https://github.com/YOUR_USERNAME/cal_ai.git .
+            git clone ${{ github.server_url }}/${{ github.repository }}.git .
           else
             echo "🔄 Pulling latest code..."
             git fetch origin ${{ steps.env.outputs.environment == 'development' && 'dev' || 'master' }}

@@ -37,24 +37,44 @@ DEV_SERVER_PORT=22 (defaults to SERVER_PORT)
 
 ## 🏗️ Server Setup
 
+### Quick Setup (Recommended)
+Use the provided setup script for automated installation:
+
+```bash
+# Upload and run the setup script
+scp setup-server.sh user@your-server:/tmp/
+ssh user@your-server
+cd /tmp
+./setup-server.sh
+```
+
+### Manual Setup
+If you prefer manual setup, follow these steps:
+
 ### 1. Directory Structure
 The deployment expects the following directory structure on your server:
 
 ```
 /var/www/
 ├── cal-ai/                 # Production
-│   ├── server/            # Node.js backend
-│   └── web/               # Flutter web build
+│   ├── server/            # Node.js backend (repository/server)
+│   ├── web/               # Flutter web build
+│   ├── lib/               # Flutter source (repository/lib)
+│   ├── assets/            # Flutter assets (repository/assets)
+│   └── ...                # Other repository files
 └── cal-ai-dev/            # Development
-    ├── server/            # Node.js backend
-    └── web/               # Flutter web build
+    ├── server/            # Node.js backend (repository/server)
+    ├── web/               # Flutter web build
+    ├── lib/               # Flutter source (repository/lib)
+    ├── assets/            # Flutter assets (repository/assets)
+    └── ...                # Other repository files
 ```
 
 ### 2. Create Directories
 ```bash
-sudo mkdir -p /var/www/cal-ai/server
+sudo mkdir -p /var/www/cal-ai
 sudo mkdir -p /var/www/cal-ai/web
-sudo mkdir -p /var/www/cal-ai-dev/server
+sudo mkdir -p /var/www/cal-ai-dev
 sudo mkdir -p /var/www/cal-ai-dev/web
 
 # Set permissions
@@ -172,17 +192,19 @@ If you need to deploy manually:
 
 ### Backend Deployment
 ```bash
-# Navigate to server directory
-cd /var/www/cal-ai/server
+# Navigate to repository directory
+cd /var/www/cal-ai
 
 # Pull latest code
 git pull origin master
 
 # Install dependencies
+cd server
 npm ci
 
 # Build
 npm run build
+cd ..
 
 # Restart PM2
 pm2 restart cal-ai
