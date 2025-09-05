@@ -98,18 +98,25 @@ final dailyRemainingProvider = FutureProvider<DailyRemaining>((ref) async {
       final yesterdayIso = _toIsoDateFromJalali(yesterday);
       final yesterdayLog = await logsRemote.getDailyLog(yesterdayIso);
 
-      // Calculate yesterday's remaining calories (goal - consumed)
-      int yesterdayGoal = plan.calories;
-      if (prefs.addBurnedCalories) {
-        yesterdayGoal += yesterdayLog.burnedCalories;
-      }
+      // Only apply rollover if yesterday actually has data (not a new user)
+      // Check if yesterday log has any consumed calories or logged items
+      if (yesterdayLog.caloriesConsumed > 0 ||
+          (yesterdayLog.items?.isNotEmpty ?? false)) {
+        // Calculate yesterday's remaining calories (goal - consumed)
+        int yesterdayGoal = plan.calories;
+        if (prefs.addBurnedCalories) {
+          yesterdayGoal += yesterdayLog.burnedCalories;
+        }
 
-      final yesterdayRemaining = yesterdayGoal - yesterdayLog.caloriesConsumed;
+        final yesterdayRemaining =
+            yesterdayGoal - yesterdayLog.caloriesConsumed;
 
-      // Add up to 200 calories if there were remaining calories yesterday
-      if (yesterdayRemaining > 0) {
-        rolloverCalories = yesterdayRemaining > 200 ? 200 : yesterdayRemaining;
-        totalDailyCalories += rolloverCalories;
+        // Add up to 200 calories if there were remaining calories yesterday
+        if (yesterdayRemaining > 0) {
+          rolloverCalories =
+              yesterdayRemaining > 200 ? 200 : yesterdayRemaining;
+          totalDailyCalories += rolloverCalories;
+        }
       }
     } catch (e) {
       // If there's an error fetching yesterday's data, continue without rollover
