@@ -123,6 +123,8 @@ jobs:
           # Clone or pull latest code
           if [ ! -d ".git" ]; then
             echo "🔄 Cloning repository..."
+            # Remove any existing files first
+            rm -rf * .[^.]* 2>/dev/null || true
             git clone ${{ github.server_url }}/${{ github.repository }}.git .
           else
             echo "🔄 Pulling latest code..."
@@ -132,11 +134,32 @@ jobs:
           
           echo "📦 Installing server dependencies..."
           cd server
-          npm ci
+          
+          # Check if package-lock.json exists, if not use npm install
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            echo "⚠️ No package-lock.json found, using npm install..."
+            npm install
+          fi
           echo "✅ Dependencies installed"
 
           echo "🔨 Building server..."
+          # Verify package.json exists before building
+          if [ ! -f "package.json" ]; then
+            echo "❌ Error: package.json not found in server directory"
+            ls -la
+            exit 1
+          fi
+          
           npm run build
+          
+          # Verify build was successful
+          if [ ! -d "dist" ]; then
+            echo "❌ Error: Build failed - dist directory not found"
+            exit 1
+          fi
+          
           echo "✅ Server built"
 
     # ✅ Upload Flutter Web Build

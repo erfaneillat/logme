@@ -261,6 +261,30 @@ The application includes health check endpoints:
 
 ## 🛠️ Troubleshooting
 
+### Fixing Current Deployment Issues
+
+If you're experiencing deployment issues like wrong repository or missing dependencies, use the cleanup script:
+
+```bash
+# Upload and run the cleanup script
+scp cleanup-server.sh user@your-server:/tmp/
+scp setup-env.sh user@your-server:/tmp/
+ssh user@your-server
+
+# Run cleanup (this will fix repository and dependency issues)
+cd /tmp
+./cleanup-server.sh
+
+# Setup environment variables and start services
+# First, set your environment variables:
+export MONGODB_URI="mongodb://localhost:27017/cal_ai"
+export JWT_SECRET="your_actual_jwt_secret"
+export OPENAI_API_KEY="your_actual_openai_api_key"
+
+# Then run the environment setup
+./setup-env.sh
+```
+
 ### Common Issues
 
 1. **Deployment fails at health check**:
