@@ -76,12 +76,12 @@ fi
 
 # Setup production
 echo "🏭 Setting up production environment..."
-setup_env $PROD_PATH "cal-ai" "3000" "production"
+setup_env $PROD_PATH "cal-ai" "9000" "production"
 
 # Setup development if it exists
 if [ -d "$DEV_PATH" ]; then
     echo "🔧 Setting up development environment..."
-    setup_env $DEV_PATH "cal-ai-dev" "3001" "development"
+    setup_env $DEV_PATH "cal-ai-dev" "9001" "development"
 fi
 
 echo ""
@@ -92,9 +92,9 @@ pm2 status
 
 echo ""
 echo "🔍 Health Checks:"
-echo "Production:  curl http://localhost:3000/api/health"
+echo "Production:  curl http://localhost:9000/api/health"
 if [ -d "$DEV_PATH" ]; then
-    echo "Development: curl http://localhost:3001/api/health"
+    echo "Development: curl http://localhost:9001/api/health"
 fi
 
 echo ""

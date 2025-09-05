@@ -31,7 +31,7 @@ server {
 
     # API Proxy to Node.js Backend
     location /api {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:9000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -98,7 +98,7 @@ server {
 
     # API Proxy to Development Node.js Backend
     location /api {
-        proxy_pass http://127.0.0.1:3001;
+        proxy_pass http://127.0.0.1:9001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

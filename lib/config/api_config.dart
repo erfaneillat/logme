@@ -19,7 +19,7 @@ class ApiConfig {
     if (kIsWeb) {
       return Environment.apiBaseUrl;
     }
-    
+
     // For mobile platforms, determine based on environment and platform
     const environment =
         String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');

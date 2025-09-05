@@ -171,12 +171,12 @@ The GitHub Action workflow (`.github/workflows/deploy.yml`) is configured to:
    - Perform health checks
 
 ### Environment URLs
-- **Production**: `https://logme.yadbanapp.com`
-- **Development**: `https://dev-logme.yadbanapp.com`
+- **Production**: `https://logme.yadbanapp.com` (Backend: Port 9000)
+- **Development**: `https://dev-logme.yadbanapp.com` (Backend: Port 9001)
 
 ### API Endpoints
-- **Production API**: `https://logme.yadbanapp.com/api`
-- **Development API**: `https://dev-logme.yadbanapp.com/api`
+- **Production API**: `https://logme.yadbanapp.com/api` (Backend: Port 9000)
+- **Development API**: `https://dev-logme.yadbanapp.com/api` (Backend: Port 9001)
 
 ## 📱 Flutter Web Configuration
 
