@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'environment.dart';
 
 class ApiConfig {
   // Development
@@ -14,22 +15,28 @@ class ApiConfig {
 
   // Get the appropriate base URL based on environment and platform
   static String get baseUrl {
-    // You can use different approaches to determine the environment
-    // For now, we'll use a simple const, but you can make this dynamic
+    // For web platform, use the environment configuration
+    if (kIsWeb) {
+      return Environment.apiBaseUrl;
+    }
+    
+    // For mobile platforms, determine based on environment and platform
     const environment =
         String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
 
-    // For Android emulator, always use 10.0.2.2
-    if (Platform.isAndroid) {
-      return devBaseUrl;
+    // For development on mobile, use local development URLs
+    if (environment == 'dev') {
+      // For Android emulator, use 10.0.2.2
+      if (Platform.isAndroid) {
+        return devBaseUrl;
+      }
+      // For iOS simulator, use localhost
+      if (Platform.isIOS) {
+        return devBaseUrlLocalhost;
+      }
     }
 
-    // For iOS simulator, use localhost
-    if (Platform.isIOS) {
-      return devBaseUrlLocalhost;
-    }
-
-    // For web and other platforms
+    // For production/staging on mobile or other cases
     switch (environment) {
       case 'prod':
         return prodBaseUrl;
@@ -44,10 +51,15 @@ class ApiConfig {
   // Debug method to check current configuration
   static void debugConfig() {
     if (kDebugMode) {
-      print('Platform: ${Platform.operatingSystem}');
+      print('Platform: ${kIsWeb ? 'Web' : Platform.operatingSystem}');
       print('Base URL: $baseUrl');
       print(
           'Environment: ${String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev')}');
+      if (kIsWeb) {
+        print('Web Environment API URL: ${Environment.apiBaseUrl}');
+        print('Is Development: ${Environment.isDevelopment}');
+        print('Is Production: ${Environment.isProduction}');
+      }
     }
   }
 

@@ -1,0 +1,245 @@
+name: 🚀 Deploy Cal AI Application
+
+on:
+  push:
+    branches: [ master, main, dev ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    environment: ${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}
+    
+    steps:
+    - name: ✅ Checkout Code
+      uses: actions/checkout@v4
+
+    - name: ✅ Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: server/package-lock.json
+
+    - name: ✅ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.6.1'
+        channel: 'stable'
+
+    - name: 📦 Install Server Dependencies
+      run: |
+        echo "📦 Installing server dependencies..."
+        cd server && npm ci && cd ..
+
+    - name: 📦 Install Flutter Dependencies
+      run: |
+        echo "📦 Installing Flutter dependencies..."
+        flutter pub get
+
+    - name: 🔍 Verify Flutter
+      run: |
+        flutter doctor
+        flutter --version
+
+    - name: 🔍 Determine Environment
+      id: env
+      run: |
+        if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+          echo "environment=development" >> $GITHUB_OUTPUT
+          echo "server_host=${{ secrets.DEV_SERVER_HOST || secrets.SERVER_HOST }}" >> $GITHUB_OUTPUT
+          echo "server_username=${{ secrets.DEV_SERVER_USERNAME || secrets.SERVER_USERNAME }}" >> $GITHUB_OUTPUT
+          echo "server_password=${{ secrets.DEV_SERVER_PASSWORD || secrets.SERVER_PASSWORD }}" >> $GITHUB_OUTPUT
+          echo "server_port=${{ secrets.DEV_SERVER_PORT || secrets.SERVER_PORT || '22' }}" >> $GITHUB_OUTPUT
+          echo "app_name=cal-ai-dev" >> $GITHUB_OUTPUT
+          echo "app_port=3001" >> $GITHUB_OUTPUT
+          echo "app_path=/var/www/cal-ai-dev/server" >> $GITHUB_OUTPUT
+          echo "web_path=/var/www/cal-ai-dev/web" >> $GITHUB_OUTPUT
+          echo "api_url=https://dev-logme.yadbanapp.com" >> $GITHUB_OUTPUT
+        else
+          echo "environment=production" >> $GITHUB_OUTPUT
+          echo "server_host=${{ secrets.SERVER_HOST }}" >> $GITHUB_OUTPUT
+          echo "server_username=${{ secrets.SERVER_USERNAME }}" >> $GITHUB_OUTPUT
+          echo "server_password=${{ secrets.SERVER_PASSWORD }}" >> $GITHUB_OUTPUT
+          echo "server_port=${{ secrets.SERVER_PORT || '22' }}" >> $GITHUB_OUTPUT
+          echo "app_name=cal-ai" >> $GITHUB_OUTPUT
+          echo "app_port=3000" >> $GITHUB_OUTPUT
+          echo "app_path=/var/www/cal-ai/server" >> $GITHUB_OUTPUT
+          echo "web_path=/var/www/cal-ai/web" >> $GITHUB_OUTPUT
+          echo "api_url=https://logme.yadbanapp.com" >> $GITHUB_OUTPUT
+        fi
+
+    - name: 🔨 Build Server
+      run: |
+        echo "🔨 Building server..."
+        cd server
+        if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+          NODE_ENV=development npm run build
+        else
+          NODE_ENV=production npm run build
+        fi
+        cd ..
+
+    - name: 🔨 Build Flutter Web App
+      run: |
+        echo "🔨 Building Flutter web app..."
+        
+        # Build Flutter web with environment variables
+        if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+          flutter build web --release --web-renderer html --base-href / \
+            --dart-define=API_BASE_URL=https://dev-logme.yadbanapp.com/api
+        else
+          flutter build web --release --web-renderer html --base-href / \
+            --dart-define=API_BASE_URL=https://logme.yadbanapp.com/api
+        fi
+
+    # ✅ Deploy backend code
+    - name: ✅ Deploy Server Code
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ steps.env.outputs.server_host }}
+        username: ${{ steps.env.outputs.server_username }}
+        password: ${{ steps.env.outputs.server_password }}
+        port: ${{ steps.env.outputs.server_port }}
+        script: |
+          echo "🔍 Navigating to app path: ${{ steps.env.outputs.app_path }}"
+          
+          # Create directory if it doesn't exist
+          mkdir -p ${{ steps.env.outputs.app_path }}
+          cd ${{ steps.env.outputs.app_path }}
+          
+          # Clone or pull latest code
+          if [ ! -d ".git" ]; then
+            echo "🔄 Cloning repository..."
+            git clone https://github.com/YOUR_USERNAME/cal_ai.git .
+          else
+            echo "🔄 Pulling latest code..."
+            git fetch origin ${{ steps.env.outputs.environment == 'development' && 'dev' || 'master' }}
+            git reset --hard origin/${{ steps.env.outputs.environment == 'development' && 'dev' || 'master' }}
+          fi
+          
+          echo "📦 Installing server dependencies..."
+          cd server
+          npm ci
+          echo "✅ Dependencies installed"
+
+          echo "🔨 Building server..."
+          npm run build
+          echo "✅ Server built"
+
+    # ✅ Upload Flutter Web Build
+    - name: ✅ Upload Flutter Web Build
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ steps.env.outputs.server_host }}
+        username: ${{ steps.env.outputs.server_username }}
+        password: ${{ steps.env.outputs.server_password }}
+        port: ${{ steps.env.outputs.server_port }}
+        source: "build/web/*"
+        target: ${{ steps.env.outputs.web_path }}
+        strip_components: 2
+
+    # ✅ Setup Environment Variables
+    - name: ✅ Setup Environment Variables
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ steps.env.outputs.server_host }}
+        username: ${{ steps.env.outputs.server_username }}
+        password: ${{ steps.env.outputs.server_password }}
+        port: ${{ steps.env.outputs.server_port }}
+        script: |
+          cd ${{ steps.env.outputs.app_path }}/server
+          
+          # Create .env file
+          cat > .env << EOF
+          NODE_ENV=${{ steps.env.outputs.environment }}
+          PORT=${{ steps.env.outputs.app_port }}
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          API_BASE_URL=${{ steps.env.outputs.api_url }}
+          CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev-logme.yadbanapp.com' || 'https://logme.yadbanapp.com' }}
+          EOF
+          
+          echo "✅ Environment variables configured"
+
+    # ✅ Restart PM2
+    - name: ✅ Restart PM2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ steps.env.outputs.server_host }}
+        username: ${{ steps.env.outputs.server_username }}
+        password: ${{ steps.env.outputs.server_password }}
+        port: ${{ steps.env.outputs.server_port }}
+        script: |
+          echo "🔍 Using app path: ${{ steps.env.outputs.app_path }}/server"
+          cd ${{ steps.env.outputs.app_path }}/server
+
+          # Ensure environment is set for the process
+          export NODE_ENV=${{ steps.env.outputs.environment }}
+          export PORT=${{ steps.env.outputs.app_port }}
+
+          # Start or restart the app with the correct CWD
+          if pm2 describe ${{ steps.env.outputs.app_name }} > /dev/null; then
+            echo "🔄 Restarting existing PM2 app"
+            pm2 restart ${{ steps.env.outputs.app_name }} --update-env
+          else
+            echo "🚀 Starting PM2 app for the first time"
+            pm2 start dist/index.js --name ${{ steps.env.outputs.app_name }} --cwd ${{ steps.env.outputs.app_path }}/server
+          fi
+
+          pm2 save
+          pm2 status ${{ steps.env.outputs.app_name }}
+          echo "✅ PM2 process started/restarted"
+
+    # ✅ Health Check
+    - name: ✅ Health Check
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ steps.env.outputs.server_host }}
+        username: ${{ steps.env.outputs.server_username }}
+        password: ${{ steps.env.outputs.server_password }}
+        port: ${{ steps.env.outputs.server_port }}
+        script: |
+          # Allow extra time for the server to boot and perform retries
+          echo "⏳ Waiting for application to start..."
+          sleep 10
+          ATTEMPTS=8
+          for i in $(seq 1 $ATTEMPTS); do
+            if curl -fsS http://127.0.0.1:${{ steps.env.outputs.app_port }}/api/health > /dev/null; then
+              echo "✅ Application is healthy"
+              exit 0
+            fi
+            echo "⌛ Attempt $i/$ATTEMPTS failed, retrying in 5s..."
+            sleep 5
+          done
+          echo "❌ Application health check failed after $ATTEMPTS attempts"
+          pm2 logs ${{ steps.env.outputs.app_name }} --lines 20
+          exit 1
+
+    # ✅ Deployment Summary
+    - name: ✅ Deployment Summary
+      run: |
+        echo "🎉 Deployment completed successfully!"
+        echo "📊 Summary:"
+        echo "- Environment: ${{ steps.env.outputs.environment }}"
+        echo "- API URL: ${{ steps.env.outputs.api_url }}"
+        echo "- App Port: ${{ steps.env.outputs.app_port }}"
+        echo "- PM2 App Name: ${{ steps.env.outputs.app_name }}"
+        if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+          echo "- Web URL: https://dev-logme.yadbanapp.com"
+        else
+          echo "- Web URL: https://logme.yadbanapp.com"
+        fi
