@@ -155,7 +155,20 @@
         "please_enter_valid_calories": "لطفاً عدد معتبری برای کالری سوزانده شده وارد کنید",
         "error_prefix": "خطا: {}",
         "unit_minutes": "دقیقه",
-        "unit_calories": "کالری"
+        "unit_calories": "کالری",
+        "analyze_exercise": "تحلیل با هوش مصنوعی",
+        "ai_analysis_hint": "هوش مصنوعی به طور خودکار کالری سوزانده شده را بر اساس ورزش و مدت زمان شما محاسبه می‌کند",
+        "calculating_calories": "در حال محاسبه کالری...",
+        "ai_calculated_calories": "هوش مصنوعی محاسبه کرد: {} کالری",
+        "manual_entry": "ورود دستی",
+        "use_ai_calculation": "استفاده از محاسبه هوش مصنوعی",
+        "or": "یا",
+        "exercise_tips": "نکات ورزشی",
+        "intensity_level": "شدت: {}",
+        "please_enter_exercise": "لطفاً توضیح ورزش را وارد کنید",
+        "please_enter_duration": "لطفاً مدت زمان را وارد کنید",
+        "please_enter_valid_duration": "لطفاً مدت زمان معتبری به دقیقه وارد کنید",
+        "add_exercise_desc": "تمرینات و کالری سوزانده خود را ثبت کنید"
     },
     "settings": {
         "title": "تنظیمات",

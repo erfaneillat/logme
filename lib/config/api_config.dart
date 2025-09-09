@@ -4,14 +4,14 @@ import 'environment.dart';
 
 class ApiConfig {
   // Development
-  static const String devBaseUrl = 'http://10.0.2.2:8000';
-  static const String devBaseUrlLocalhost = 'http://localhost:8000';
+  static const String devBaseUrl = 'http://10.0.2.2:9000';
+  static const String devBaseUrlLocalhost = 'http://localhost:9000';
 
   // Production
   static const String prodBaseUrl = 'https://logme.yadbanapp.com';
 
   // Staging
-  static const String stagingBaseUrl = 'http://10.0.2.2:8000';
+  static const String stagingBaseUrl = 'http://10.0.2.2:9000';
 
   // Get the appropriate base URL based on environment and platform
   static String get baseUrl {
@@ -19,7 +19,7 @@ class ApiConfig {
       if (kIsWeb) {
         return devBaseUrlLocalhost;
       } else {
-        return prodBaseUrl;
+        return devBaseUrl;
       }
     } else {
       return prodBaseUrl;

@@ -222,6 +222,33 @@ class LogsRemoteDataSource {
       'log': DailyLogEntity.fromJson(logJson)
     };
   }
+
+  Future<Map<String, dynamic>> analyzeExercise({
+    required String exercise,
+    required int duration,
+  }) async {
+    final api = ref.read(apiServiceProvider);
+    final Map<String, dynamic> response = await api.post<Map<String, dynamic>>(
+      '${ApiConfig.logsDaily}/analyze-exercise',
+      data: {
+        'exercise': exercise,
+        'duration': duration,
+      },
+    );
+
+    final Map<String, dynamic> data =
+        (response['data'] as Map<String, dynamic>? ?? response);
+
+    return {
+      'success': true,
+      'activityName': data['activityName'] as String? ?? exercise,
+      'caloriesBurned': data['caloriesBurned'] as int? ?? 0,
+      'duration': data['duration'] as int? ?? duration,
+      'intensity': data['intensity'] as String? ?? '',
+      'tips': data['tips'] as List<dynamic>? ?? [],
+      'meta': response['meta'],
+    };
+  }
 }
 
 final logsRemoteDataSourceProvider = Provider<LogsRemoteDataSource>((ref) {

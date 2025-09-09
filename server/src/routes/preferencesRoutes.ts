@@ -6,9 +6,9 @@ const router = express.Router();
 const controller = new PreferencesController();
 
 // Get user preferences
-router.get('/', authenticateToken, controller.getUserPreferences);
+router.get('/', authenticateToken, (req, res) => controller.getUserPreferences(req, res));
 
 // Update user preferences
-router.patch('/', authenticateToken, controller.updateUserPreferences);
+router.patch('/', authenticateToken, (req, res) => controller.updateUserPreferences(req, res));
 
 export default router;

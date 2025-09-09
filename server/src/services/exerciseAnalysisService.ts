@@ -1,0 +1,145 @@
+import OpenAI from 'openai';
+import { calculateOpenAICostUSD, formatUSD, roundTo6 } from '../utils/cost';
+
+export interface ExerciseAnalysisMeta {
+    model: string | null;
+    promptTokens: number | null;
+    completionTokens: number | null;
+    totalTokens: number | null;
+    costUsd: number | null;
+}
+
+export interface ExerciseAnalysisResponse {
+    data: ExerciseAnalysisResult;
+    meta: ExerciseAnalysisMeta | null;
+}
+
+export interface ExerciseAnalysisResult {
+    activityName: string;
+    caloriesBurned: number;
+    duration: number;
+    intensity: string; // e.g., "Low", "Moderate", "High"
+    tips: string[]; // Helpful tips for the exercise
+}
+
+export class ExerciseAnalysisService {
+    private client: OpenAI;
+
+    constructor() {
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+            throw new Error('OPENAI_API_KEY environment variable is required');
+        }
+        this.client = new OpenAI({ apiKey });
+    }
+
+    public async analyzeExercise(
+        activityDescription: string,
+        duration: number,
+        userWeight?: number
+    ): Promise<ExerciseAnalysisResponse> {
+        const weightInfo = userWeight ? `User weight: ${userWeight} kg.` : 'User weight is not provided - use average adult weight (70kg) for calculations.';
+
+        const prompt = `Analyze the exercise/activity and calculate calories burned.
+
+Activity description: "${activityDescription}"
+Duration: ${duration} minutes
+${weightInfo}
+
+Calculate the calories burned and return ONLY JSON (no extra text) with keys: activityName, caloriesBurned, duration, intensity, tips.
+
+Rules: 
+- activityName: Clean name in Persian (fa-IR) 
+- caloriesBurned: Integer number based on duration and estimated intensity
+- duration: Same as input (${duration})
+- intensity: One of "کم", "متوسط", "زیاد" (Low, Moderate, High in Persian)
+- tips: Array of 2-3 helpful tips in Persian about the exercise
+
+Base calculations on standard MET (Metabolic Equivalent) values:
+- Walking: 3.0-4.0 METs
+- Running: 8.0-12.0 METs  
+- Cycling: 6.0-10.0 METs
+- Swimming: 6.0-11.0 METs
+- Weight training: 3.0-6.0 METs
+
+Formula: Calories = METs × weight(kg) × duration(hours)
+Provide realistic calorie estimates based on typical exercise intensities.`;
+
+        const chat = await this.client.chat.completions.create({
+            model: 'gpt-4o-mini',
+            response_format: { type: 'json_object' } as any,
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
+            temperature: 0.3,
+            max_tokens: 400,
+        });
+
+        // Log token usage and estimated cost if available
+        let meta: ExerciseAnalysisMeta | null = null;
+        try {
+            const model = (chat as any)?.model as string | undefined;
+            const usage = (chat as any)?.usage as any | undefined;
+            if (usage) {
+                const promptTokens = usage.prompt_tokens ?? 0;
+                const completionTokens = usage.completion_tokens ?? 0;
+                const totalTokens = usage.total_tokens ?? (promptTokens + completionTokens);
+                console.log('ExerciseAnalysis token usage:', {
+                    model,
+                    promptTokens,
+                    completionTokens,
+                    totalTokens,
+                });
+                const cost = model != null ? calculateOpenAICostUSD(
+                    model,
+                    promptTokens,
+                    completionTokens
+                ) : null;
+                if (cost != null) {
+                    const rounded = roundTo6(cost);
+                    console.log('ExerciseAnalysis estimated cost (USD):', formatUSD(rounded));
+                } else {
+                    console.log('ExerciseAnalysis estimated cost: pricing not configured for model', model);
+                }
+                meta = {
+                    model: model ?? null,
+                    promptTokens: promptTokens ?? null,
+                    completionTokens: completionTokens ?? null,
+                    totalTokens: totalTokens ?? null,
+                    costUsd: cost != null ? roundTo6(cost) : null,
+                };
+            } else {
+                console.log('ExerciseAnalysis token usage: not available on response');
+            }
+        } catch {
+            // Swallow logging errors to avoid impacting request flow
+        }
+
+        const content = chat.choices?.[0]?.message?.content ?? '';
+        let parsed: ExerciseAnalysisResult;
+        try {
+            parsed = JSON.parse(content);
+        } catch (err) {
+            throw new Error('AI response parsing failed');
+        }
+
+        // Basic shape enforcement/fallbacks
+        parsed.activityName = parsed.activityName || activityDescription;
+        parsed.caloriesBurned = Math.max(0, Math.round(Number(parsed.caloriesBurned) || 0));
+        parsed.duration = Math.max(0, Math.round(Number(parsed.duration) || duration));
+        parsed.intensity = parsed.intensity || 'متوسط';
+        parsed.tips = Array.isArray(parsed.tips) ? parsed.tips : [];
+
+        // Sanity check for calories - ensure it's reasonable
+        if (parsed.caloriesBurned <= 0 || parsed.caloriesBurned > (duration * 20)) {
+            // Fallback calculation: assume moderate intensity (5 METs) for 70kg person
+            const fallbackCalories = Math.round(5 * 70 * (duration / 60));
+            parsed.caloriesBurned = fallbackCalories;
+        }
+
+        return { data: parsed, meta };
+    }
+}

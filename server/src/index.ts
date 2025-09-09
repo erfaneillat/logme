@@ -20,8 +20,13 @@ import preferencesRoutes from './routes/preferencesRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 
-// Load environment variables
+// Load environment variables first
 dotenv.config();
+
+// Validate critical environment variables
+if (!process.env.OPENAI_API_KEY) {
+  console.warn('⚠️  OPENAI_API_KEY is not configured. AI exercise analysis will not work.');
+}
 
 const app = express();
 const PORT = process.env.PORT || 8000;

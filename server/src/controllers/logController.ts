@@ -2,11 +2,28 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
+import AdditionalInfo from '../models/AdditionalInfo';
 import { updateStreakIfEligible } from '../services/streakService';
+import { ExerciseAnalysisService } from '../services/exerciseAnalysisService';
 
 interface AuthRequest extends Request { user?: any }
 
 export class LogController {
+    private exerciseAnalysisService: ExerciseAnalysisService | null = null;
+
+    constructor() {
+        // Initialize service lazily to ensure environment variables are loaded
+    }
+
+    private getExerciseAnalysisService(): ExerciseAnalysisService {
+        if (!this.exerciseAnalysisService) {
+            if (!process.env.OPENAI_API_KEY) {
+                throw new Error('OpenAI API key is not configured');
+            }
+            this.exerciseAnalysisService = new ExerciseAnalysisService();
+        }
+        return this.exerciseAnalysisService;
+    }
     async upsertDailyLog(req: AuthRequest, res: Response): Promise<void> {
         try {
             const errors = validationResult(req);
@@ -549,6 +566,64 @@ export class LogController {
             });
         } catch (error) {
             console.error('Update burned calories error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    async analyzeExercise(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const { exercise, duration } = req.body || {};
+            if (!exercise || typeof exercise !== 'string') {
+                res.status(400).json({ success: false, message: 'exercise description is required' });
+                return;
+            }
+            if (!duration || typeof duration !== 'number' || duration <= 0) {
+                res.status(400).json({ success: false, message: 'duration (minutes) must be a positive number' });
+                return;
+            }
+
+            // Check if OpenAI API key is available
+            if (!process.env.OPENAI_API_KEY) {
+                // Fallback calculation without AI
+                const fallbackCalories = Math.round(duration * 5); // 5 calories per minute estimate
+                res.json({
+                    success: true,
+                    data: {
+                        activityName: exercise,
+                        caloriesBurned: fallbackCalories,
+                        duration: duration,
+                        intensity: 'متوسط', // 'Moderate' in Persian
+                        tips: ['این محاسبه تخمینی است', 'برای محاسبه دقیق‌تر وزن خود را تکمیل کنید']
+                    },
+                    meta: null
+                });
+                return;
+            }
+
+            // Get user weight for more accurate calorie calculation
+            const additionalInfo = await AdditionalInfo.findOne({ userId }).select('weight');
+            const userWeight = additionalInfo?.weight;
+
+            // Analyze exercise using AI
+            const analysisResult = await this.getExerciseAnalysisService().analyzeExercise(
+                exercise,
+                duration,
+                userWeight
+            );
+
+            res.json({
+                success: true,
+                data: analysisResult.data,
+                meta: analysisResult.meta
+            });
+        } catch (error) {
+            console.error('Analyze exercise error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

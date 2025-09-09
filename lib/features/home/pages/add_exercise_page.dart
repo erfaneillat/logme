@@ -29,6 +29,12 @@ class AddExercisePage extends HookConsumerWidget {
     final caloriesController = useTextEditingController();
     final durationController = useTextEditingController();
     final isLoading = useState(false);
+    final isAnalyzing = useState(false);
+    final aiCalories = useState<int?>(null);
+    final showManualCalories = useState(false);
+    final exerciseTips = useState<List<String>>([]);
+    final intensity = useState<String?>(null);
+    final rebuildTrigger = useState(0); // Simple trigger to force rebuilds
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -153,6 +159,8 @@ class AddExercisePage extends HookConsumerWidget {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: exerciseController,
+                      onChanged: (_) =>
+                          rebuildTrigger.value++, // Trigger rebuild
                       decoration: InputDecoration(
                         hintText: 'home.exercise_hint'.tr(),
                         hintStyle: TextStyle(color: Colors.grey),
@@ -188,6 +196,8 @@ class AddExercisePage extends HookConsumerWidget {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: durationController,
+                      onChanged: (_) =>
+                          rebuildTrigger.value++, // Trigger rebuild
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: InputDecoration(
@@ -215,63 +225,414 @@ class AddExercisePage extends HookConsumerWidget {
 
                     const SizedBox(height: 24),
 
-                    // Calories Burned Input
-                    Text(
-                      'home.calories_burned'.tr(),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                    // AI Analysis Button with hint
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Hint text
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4, bottom: 8),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.lightbulb_outline,
+                                size: 16,
+                                color: Colors.amber.shade600,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'home.ai_analysis_hint'.tr(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: Colors.grey.shade600,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                ),
+                              ),
+                            ],
                           ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: caloriesController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        hintText: 'home.calories_hint'.tr(),
-                        hintStyle: TextStyle(color: Colors.grey),
-                        prefixIcon: const Icon(Icons.local_fire_department),
-                        suffixText: 'home.unit_calories'.tr(),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
+
+                        // AI Analysis Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton.icon(
+                            onPressed: (isAnalyzing.value ||
+                                    exerciseController.text.trim().isEmpty ||
+                                    durationController.text.trim().isEmpty)
+                                ? null
+                                : () async {
+                                    final duration = int.tryParse(
+                                            durationController.text.trim()) ??
+                                        0;
+                                    if (duration <= 0) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              'home.please_enter_valid_duration'
+                                                  .tr()),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    isAnalyzing.value = true;
+                                    try {
+                                      final result = await ref
+                                          .read(logsRemoteDataSourceProvider)
+                                          .analyzeExercise(
+                                            exercise:
+                                                exerciseController.text.trim(),
+                                            duration: duration,
+                                          );
+
+                                      aiCalories.value =
+                                          result['caloriesBurned'] as int? ?? 0;
+                                      intensity.value =
+                                          result['intensity'] as String? ?? '';
+                                      exerciseTips.value =
+                                          (result['tips'] as List<dynamic>? ??
+                                                  [])
+                                              .map((e) => e.toString())
+                                              .toList();
+
+                                      caloriesController.text =
+                                          aiCalories.value.toString();
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('home.error_prefix'
+                                                .tr(args: [e.toString()])),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    } finally {
+                                      isAnalyzing.value = false;
+                                    }
+                                  },
+                            icon: isAnalyzing.value
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.psychology,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                            label: Text(
+                              isAnalyzing.value
+                                  ? 'home.calculating_calories'.tr()
+                                  : 'home.analyze_exercise'.tr(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple.shade600,
+                              foregroundColor: Colors.white,
+                              elevation: 2,
+                              shadowColor: Colors.deepPurple.shade300,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              disabledBackgroundColor: Colors.grey.shade400,
+                              disabledForegroundColor: Colors.white,
+                            ),
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide:
-                              BorderSide(color: Theme.of(context).primaryColor),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade50,
-                      ),
+                      ],
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+
+                    // AI Results Display
+                    if (aiCalories.value != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.1),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.auto_awesome,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'home.ai_calculated_calories'.tr(args: [
+                                          aiCalories.value.toString()
+                                        ]),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.black87,
+                                            ),
+                                      ),
+                                      if (intensity.value?.isNotEmpty == true)
+                                        Text(
+                                          'home.intensity_level'
+                                              .tr(args: [intensity.value!]),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: Colors.black54,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (exerciseTips.value.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'home.exercise_tips'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...exerciseTips.value.map((tip) => Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 4),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    top: 6),
+                                                width: 4,
+                                                height: 4,
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  tip,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                        color: Colors.black87,
+                                                        height: 1.4,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Toggle for manual entry
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: () {
+                            showManualCalories.value =
+                                !showManualCalories.value;
+                            if (!showManualCalories.value) {
+                              caloriesController.text =
+                                  aiCalories.value.toString();
+                            }
+                          },
+                          icon: Icon(
+                            showManualCalories.value
+                                ? Icons.smart_toy
+                                : Icons.edit,
+                            size: 18,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          label: Text(
+                            showManualCalories.value
+                                ? 'home.use_ai_calculation'.tr()
+                                : 'home.manual_entry'.tr(),
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Theme.of(context)
+                                .primaryColor
+                                .withOpacity(0.05),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+
+                    // Calories Burned Input (conditional)
+                    if (aiCalories.value == null ||
+                        showManualCalories.value) ...[
+                      Text(
+                        'home.calories_burned'.tr(),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: caloriesController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          hintText: 'home.calories_hint'.tr(),
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: const Icon(Icons.local_fire_department),
+                          suffixText: 'home.unit_calories'.tr(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
 
                     // Save Button
                     SizedBox(
                       width: double.infinity,
+                      height: 56,
                       child: ElevatedButton(
                         onPressed: isLoading.value
                             ? null
                             : () async {
-                                if (caloriesController.text.isEmpty) {
+                                // Validate exercise input
+                                if (exerciseController.text.trim().isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'home.please_enter_calories'.tr()),
+                                          'home.please_enter_exercise'.tr()),
+                                      backgroundColor: Colors.red,
                                     ),
                                   );
                                   return;
                                 }
 
-                                final burnedCalories =
-                                    int.tryParse(caloriesController.text) ?? 0;
+                                // Validate duration input
+                                if (durationController.text.trim().isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'home.please_enter_duration'.tr()),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                // Validate calories input
+                                if (caloriesController.text.trim().isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'home.please_enter_calories'.tr()),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                final burnedCalories = int.tryParse(
+                                        caloriesController.text.trim()) ??
+                                    0;
 
                                 if (burnedCalories <= 0) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -279,6 +640,7 @@ class AddExercisePage extends HookConsumerWidget {
                                       content: Text(
                                           'home.please_enter_valid_calories'
                                               .tr()),
+                                      backgroundColor: Colors.red,
                                     ),
                                   );
                                   return;
@@ -345,11 +707,13 @@ class AddExercisePage extends HookConsumerWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          elevation: 0,
+                          disabledBackgroundColor: Colors.grey.shade400,
+                          disabledForegroundColor: Colors.white,
                         ),
                         child: isLoading.value
                             ? const SizedBox(
