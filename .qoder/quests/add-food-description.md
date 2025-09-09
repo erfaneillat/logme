@@ -291,7 +291,7 @@ Rules:
 - If description is vague, make reasonable assumptions for typical serving sizes`;
 
     const chat = await this.client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-mini-mini',
         response_format: { type: 'json_object' } as any,
         messages: [
             {

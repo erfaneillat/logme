@@ -7,7 +7,8 @@ const defaultPricingMap: Record<string, ModelPricing> = {
     // Source: OpenAI pricing docs (values represent USD per 1K tokens)
     // Keep this map minimal; prefer overriding via env JSON below
     'gpt-4o-mini-2024-07-18': { inputPer1K: 0.00015, outputPer1K: 0.0006 },
-    'gpt-4o-mini-2025-08-07': { inputPer1K: 0.00025, outputPer1K: 0.002 },
+    'gpt-5-mini-2025-08-07': { inputPer1K: 0.00025, outputPer1K: 0.002 },
+    'gpt-5-2025-08-07': { inputPer1K: 0.00025, outputPer1K: 0.002 },
 };
 
 /**

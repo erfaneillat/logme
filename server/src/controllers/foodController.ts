@@ -4,6 +4,8 @@ import { FoodAnalysisService } from '../services/foodAnalysisService';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
 import { updateStreakIfEligible } from '../services/streakService';
+import sharp from 'sharp';
+import path from 'path';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -43,8 +45,35 @@ export class FoodController {
             size: file.size
         });
 
-        // Read file buffer for OpenAI analysis
+        // Read/convert file buffer for OpenAI analysis
         const fs = require('fs');
+        try {
+            // Convert HEIC/HEIF to JPEG for compatibility and serving
+            const originalExt = (path.extname(file.originalname || file.filename || '') || '').toLowerCase();
+            const isHeif = originalExt === '.heic' || originalExt === '.heif' || /heic|heif/i.test(file.mimetype || '');
+            if (isHeif) {
+                const base = path.basename(file.filename, path.extname(file.filename));
+                const newFilename = `${base}.jpg`;
+                const newPath = path.join(path.dirname(file.path), newFilename);
+                try {
+                    const inputBuffer = fs.readFileSync(file.path);
+                    const outputBuffer = await sharp(inputBuffer, { failOn: 'none' })
+                        .rotate()
+                        .jpeg({ quality: 85, progressive: true, mozjpeg: true })
+                        .toBuffer();
+                    fs.writeFileSync(newPath, outputBuffer);
+                    try { fs.unlinkSync(file.path); } catch { }
+                    (file as any).filename = newFilename;
+                    (file as any).path = newPath;
+                    (file as any).mimetype = 'image/jpeg';
+                } catch (convErr) {
+                    console.warn('HEIC/HEIF conversion failed, proceeding with original file:', convErr);
+                }
+            }
+        } catch (convWrapErr) {
+            console.warn('Image conversion wrapper error:', convWrapErr);
+        }
+
         const fileBuffer = fs.readFileSync(file.path);
         if (aborted) {
             // Client disconnected before analysis; cleanup and stop.

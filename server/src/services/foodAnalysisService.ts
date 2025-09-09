@@ -34,42 +34,191 @@ export interface FoodAnalysisResult {
     ingredients: IngredientBreakdown[];
 }
 
+interface CompressedImageResult {
+    base64: string;
+    mime: 'image/webp' | 'image/jpeg';
+}
+
 export class FoodAnalysisService {
     private client: OpenAI;
 
+    private readonly model: string;
+    private readonly temperature: number | undefined;
+    private readonly maxTokens: number | undefined;
+
     constructor() {
         this.client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        this.model = process.env.FOOD_ANALYSIS_MODEL || 'gpt-5-mini';
+        const tempRaw = process.env.FOOD_ANALYSIS_TEMPERATURE;
+        const maxTokensRaw = process.env.FOOD_ANALYSIS_MAX_TOKENS;
+        const parsedTemp = tempRaw != null ? Number(tempRaw) : undefined;
+        const parsedMax = maxTokensRaw != null ? Number(maxTokensRaw) : undefined;
+        this.temperature = Number.isFinite(parsedTemp!) ? parsedTemp : undefined;
+        this.maxTokens = Number.isFinite(parsedMax!) ? parsedMax : undefined;
     }
 
-    private async compressBase64Image(originalBase64: string): Promise<string> {
+    private async compressBase64Image(originalBase64: string): Promise<CompressedImageResult> {
         try {
             const inputBuffer = Buffer.from(originalBase64, 'base64');
-            const outputBuffer = await sharp(inputBuffer)
-                .rotate()
-                .resize({
-                    width: 250,
-                    height: 250,
-                    fit: 'inside',
-                    withoutEnlargement: true,
-                })
-                .jpeg({ quality: 60, progressive: true, mozjpeg: true })
+            const image = sharp(inputBuffer, { failOn: 'none' }).rotate();
+            const metadata = await image.metadata();
+            const maxDimension = 768; // keep good detail while controlling tokens
+            const width = metadata.width || maxDimension;
+            const height = metadata.height || maxDimension;
+            const scale = Math.min(1, maxDimension / Math.max(width, height));
+            const targetWidth = Math.max(1, Math.floor(width * scale));
+            const targetHeight = Math.max(1, Math.floor(height * scale));
+
+            // Try WebP first for better compression; fallback to JPEG if unsupported
+            try {
+                const webpBuffer = await image
+                    .resize({ width: targetWidth, height: targetHeight, fit: 'inside', withoutEnlargement: true })
+                    .webp({ quality: 70, effort: 5 })
+                    .toBuffer();
+                return { base64: webpBuffer.toString('base64'), mime: 'image/webp' };
+            } catch (_) {
+                // fallback to JPEG
+            }
+
+            const outputBuffer = await image
+                .resize({ width: targetWidth, height: targetHeight, fit: 'inside', withoutEnlargement: true })
+                .jpeg({ quality: 65, progressive: true, mozjpeg: true })
                 .toBuffer();
-            return outputBuffer.toString('base64');
-        } catch (error) {
-            return originalBase64; // fallback without blocking
+
+            return { base64: outputBuffer.toString('base64'), mime: 'image/jpeg' };
+        } catch (_) {
+            return { base64: originalBase64, mime: 'image/jpeg' }; // fallback without blocking
         }
     }
 
+    private buildChatParams(baseParams: any): any {
+        const params: any = { ...baseParams };
+        if (this.temperature != null) params.temperature = this.temperature;
+        if (this.maxTokens != null) params.max_tokens = this.maxTokens;
+        return params;
+    }
+
+    private improveImagePrompt(): string {
+        return `Analyze the meal photo and output STRICT JSON only.
+Required JSON keys: title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
+Rules:
+- Strings MUST be Persian (fa-IR). No emoji.
+- All numbers MUST be numeric integers (no units, no text).
+- Ensure calorie consistency: calories ≈ proteinGrams*4 + carbsGrams*4 + fatGrams*9 (±20%). Prefer adjusting macros first; then adjust calories if still off.
+- Portions: default 1 if unclear.
+- healthScore: 0..10 integer. Rate based on balance and quality.
+- No explanations, no extra keys, JSON object only.`;
+    }
+
+    private improveTextPrompt(description: string): string {
+        return `Analyze the food based on the user's description and output STRICT JSON only.
+User description: "${description}"
+Required JSON keys: title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
+Rules:
+- Strings MUST be Persian (fa-IR).
+- All numbers MUST be numeric integers.
+- Ensure calories ≈ protein*4 + carbs*4 + fat*9 (±20%). Prefer adjusting macros first; then calories if needed.
+- Portions: default 1 if unclear.
+- No explanations, no extra keys, JSON object only.`;
+    }
+
+    private sanitizeIngredient(ing: any): IngredientBreakdown | null {
+        const name = typeof ing?.name === 'string' && ing.name.trim().length > 0 ? ing.name.trim() : '';
+        const calories = Math.max(0, Math.round(Number(ing?.calories ?? 0)));
+        const proteinGrams = Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0)));
+        const fatGrams = Math.max(0, Math.round(Number(ing?.fatGrams ?? 0)));
+        const carbsGrams = Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0)));
+        if (!name) return null;
+        return { name, calories, proteinGrams, fatGrams, carbsGrams };
+    }
+
+    private reconcileCaloriesAndMacros(result: FoodAnalysisResult): FoodAnalysisResult {
+        const protein = Math.max(0, Math.round(Number(result.proteinGrams) || 0));
+        const fat = Math.max(0, Math.round(Number(result.fatGrams) || 0));
+        const carbs = Math.max(0, Math.round(Number(result.carbsGrams) || 0));
+        const macroCalories = protein * 4 + carbs * 4 + fat * 9;
+        let calories = Math.max(0, Math.round(Number(result.calories) || 0));
+
+        if (macroCalories > 0) {
+            const diff = Math.abs(macroCalories - calories);
+            const tolerance = Math.max(50, Math.round(macroCalories * 0.2));
+            if (calories <= 0) {
+                calories = macroCalories;
+            } else if (diff > tolerance) {
+                // Scale macros proportionally to match calories if difference is large
+                const scale = calories / macroCalories;
+                const scaledProtein = Math.max(0, Math.round(protein * scale));
+                const scaledCarbs = Math.max(0, Math.round(carbs * scale));
+                const scaledFat = Math.max(0, Math.round(fat * scale));
+                const rescaledMacroCalories = scaledProtein * 4 + scaledCarbs * 4 + scaledFat * 9;
+                const rescaledDiff = Math.abs(rescaledMacroCalories - calories);
+                if (rescaledDiff <= tolerance) {
+                    result.proteinGrams = scaledProtein;
+                    result.carbsGrams = scaledCarbs;
+                    result.fatGrams = scaledFat;
+                } else {
+                    calories = macroCalories; // fallback to macro-driven calories
+                }
+            }
+        }
+
+        result.calories = calories;
+        result.proteinGrams = protein;
+        result.fatGrams = fat;
+        result.carbsGrams = carbs;
+        return result;
+    }
+
+    private sanitizeResult(raw: any): FoodAnalysisResult {
+        const title = typeof raw?.title === 'string' && raw.title.trim().length > 0 ? raw.title.trim() : 'غذا';
+        const portions = Math.max(1, Math.round(Number(raw?.portions ?? 1)));
+        const calories = Math.max(0, Math.round(Number(raw?.calories ?? 0)));
+        const proteinGrams = Math.max(0, Math.round(Number(raw?.proteinGrams ?? 0)));
+        const fatGrams = Math.max(0, Math.round(Number(raw?.fatGrams ?? 0)));
+        const carbsGrams = Math.max(0, Math.round(Number(raw?.carbsGrams ?? 0)));
+        const healthScoreRaw = Number(raw?.healthScore);
+        let healthScore = Number.isFinite(healthScoreRaw) ? Math.max(0, Math.min(10, Math.round(healthScoreRaw))) : 0;
+
+        let ingredients: IngredientBreakdown[] = [];
+        if (Array.isArray(raw?.ingredients)) {
+            for (const ing of raw.ingredients.slice(0, 6)) {
+                const s = this.sanitizeIngredient(ing);
+                if (s) ingredients.push(s);
+            }
+        }
+
+        let result: FoodAnalysisResult = {
+            title,
+            calories,
+            portions,
+            proteinGrams,
+            fatGrams,
+            carbsGrams,
+            healthScore,
+            ingredients,
+        };
+
+        result = this.reconcileCaloriesAndMacros(result);
+
+        // Recompute/blend health score
+        const computed = this.computeHealthScore(result);
+        if (!Number.isFinite(healthScore) || healthScore <= 0) {
+            result.healthScore = computed;
+        } else {
+            result.healthScore = Math.round(Math.max(0, Math.min(10, (healthScore + computed) / 2)));
+        }
+
+        return result;
+    }
+
     public async analyze(base64Image: string, options?: { signal?: AbortSignal }): Promise<FoodAnalysisResponse> {
-        const prompt = `Analyze the meal photo.
-Return ONLY JSON (no extra text) with keys: title, calories, portions, proteinGrams, fatGrams, carbsGrams, healthScore, ingredients (array of {name, calories, proteinGrams, fatGrams, carbsGrams}).
-Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integer; up to 6 ingredients; macros roughly consistent (4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat) ±20%.`;
+        const prompt = this.improveImagePrompt();
 
-        const compressedBase64 = await this.compressBase64Image(base64Image);
-        const imageUrl = `data:image/jpeg;base64,${compressedBase64}`;
+        const { base64, mime } = await this.compressBase64Image(base64Image);
+        const imageUrl = `data:${mime};base64,${base64}`;
 
-        const chat = await this.client.chat.completions.create({
-            model: 'gpt-4o-mini',
+        const baseParams = {
+            model: this.model,
             response_format: { type: 'json_object' } as any,
             messages: [
                 {
@@ -80,9 +229,8 @@ Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integ
                     ] as any,
                 },
             ],
-            // temperature: 0.2,
-            // max_tokens: 450,
-        }, { signal: options?.signal });
+        };
+        const chat = await this.client.chat.completions.create(this.buildChatParams(baseParams), { signal: options?.signal });
 
         // Log token usage and estimated cost if available
         let meta: FoodAnalysisMeta | null = null;
@@ -127,23 +275,10 @@ Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integ
         const content = chat.choices?.[0]?.message?.content ?? '';
         let parsed: FoodAnalysisResult;
         try {
-            parsed = JSON.parse(content);
+            const raw = JSON.parse(content);
+            parsed = this.sanitizeResult(raw);
         } catch (err) {
             throw new Error('AI response parsing failed');
-        }
-
-        // Basic shape enforcement/fallbacks
-        parsed.portions = parsed.portions || 1;
-        parsed.ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
-
-        // Compute a deterministic health score using macros as a fallback
-        const computed = this.computeHealthScore(parsed);
-        const aiScore = Number(parsed.healthScore);
-        if (!Number.isFinite(aiScore) || aiScore <= 0) {
-            parsed.healthScore = computed;
-        } else {
-            // Blend AI score with computed score for stability
-            parsed.healthScore = Math.round(Math.max(0, Math.min(10, (aiScore + computed) / 2)));
         }
 
         return { data: parsed, meta };
@@ -196,25 +331,21 @@ Rules: strings MUST be Persian (fa-IR); numbers numeric; healthScore 0..10 integ
     }
 
     public async fixAnalysis(originalData: any, userDescription: string): Promise<FoodAnalysisResult> {
-        const prompt = `Fix the food analysis based on user feedback.
+        const prompt = `Fix the food analysis based on user feedback and output STRICT JSON only.
 
 Original analysis:
 ${JSON.stringify(originalData, null, 2)}
 
 User feedback: "${userDescription}"
 
-Based on the user's description, correct the analysis and return ONLY JSON (no extra text) with the same structure: title, calories, portions, proteinGrams, fatGrams, carbsGrams, healthScore, ingredients (array of {name, calories, proteinGrams, fatGrams, carbsGrams}).
+Return the same JSON keys: title (fa-IR), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, items with name (fa-IR), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)).
+Rules:
+- Strings Persian (fa-IR). Numbers are integers.
+- Ensure calories ≈ protein*4 + carbs*4 + fat*9 (±20%). Prefer adjusting macros first; then calories if needed.
+- No explanations, no extra keys.`;
 
-Rules: 
-- Keep strings in Persian (fa-IR) 
-- Numbers must be numeric
-- healthScore 0..10 integer
-- Up to 6 ingredients
-- Macros should be roughly consistent (4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat) ±20%
-- Make reasonable adjustments based on user feedback about portion size, ingredients, or other details`;
-
-        const chat = await this.client.chat.completions.create({
-            model: 'gpt-4o-mini',
+        const baseParams = {
+            model: this.model,
             response_format: { type: 'json_object' } as any,
             messages: [
                 {
@@ -222,50 +353,26 @@ Rules:
                     content: prompt,
                 },
             ],
-            temperature: 0.3,
-        });
+        };
+        const chat = await this.client.chat.completions.create(this.buildChatParams(baseParams));
 
         const content = chat.choices?.[0]?.message?.content ?? '';
         let parsed: FoodAnalysisResult;
         try {
-            parsed = JSON.parse(content);
+            const raw = JSON.parse(content);
+            parsed = this.sanitizeResult(raw);
         } catch (err) {
             throw new Error('AI response parsing failed');
-        }
-
-        // Basic shape enforcement/fallbacks
-        parsed.portions = parsed.portions || 1;
-        parsed.ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
-
-        // Compute health score with fallback
-        const computed = this.computeHealthScore(parsed);
-        const aiScore = Number(parsed.healthScore);
-        if (!Number.isFinite(aiScore) || aiScore <= 0) {
-            parsed.healthScore = computed;
-        } else {
-            parsed.healthScore = Math.round(Math.max(0, Math.min(10, (aiScore + computed) / 2)));
         }
 
         return parsed;
     }
 
     public async analyzeFromDescription(description: string): Promise<FoodAnalysisResult> {
-        const prompt = `Analyze the food based on the user's description.
+        const prompt = this.improveTextPrompt(description);
 
-User description: "${description}"
-
-Analyze this food description and return ONLY JSON (no extra text) with keys: title, calories, portions, proteinGrams, fatGrams, carbsGrams, healthScore, ingredients (array of {name, calories, proteinGrams, fatGrams, carbsGrams}).
-
-Rules: 
-- Keep strings in Persian (fa-IR) 
-- Numbers must be numeric
-- healthScore 0..10 integer
-- Up to 6 ingredients
-- Macros should be roughly consistent (4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat) ±20%
-- Estimate reasonable portions and nutritional values based on the description`;
-
-        const chat = await this.client.chat.completions.create({
-            model: 'gpt-4o-mini',
+        const baseParams = {
+            model: this.model,
             response_format: { type: 'json_object' } as any,
             messages: [
                 {
@@ -273,28 +380,16 @@ Rules:
                     content: prompt,
                 },
             ],
-            temperature: 0.3,
-        });
+        };
+        const chat = await this.client.chat.completions.create(this.buildChatParams(baseParams));
 
         const content = chat.choices?.[0]?.message?.content ?? '';
         let parsed: FoodAnalysisResult;
         try {
-            parsed = JSON.parse(content);
+            const raw = JSON.parse(content);
+            parsed = this.sanitizeResult(raw);
         } catch (err) {
             throw new Error('AI response parsing failed');
-        }
-
-        // Basic shape enforcement/fallbacks
-        parsed.portions = parsed.portions || 1;
-        parsed.ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
-
-        // Compute health score with fallback
-        const computed = this.computeHealthScore(parsed);
-        const aiScore = Number(parsed.healthScore);
-        if (!Number.isFinite(aiScore) || aiScore <= 0) {
-            parsed.healthScore = computed;
-        } else {
-            parsed.healthScore = Math.round(Math.max(0, Math.min(10, (aiScore + computed) / 2)));
         }
 
         return parsed;

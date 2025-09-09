@@ -66,7 +66,7 @@ Formula: Calories = METs × weight(kg) × duration(hours)
 Provide realistic calorie estimates based on typical exercise intensities.`;
 
         const chat = await this.client.chat.completions.create({
-            model: 'gpt-4o-mini',
+            model: 'gpt-5-mini',
             response_format: { type: 'json_object' } as any,
             messages: [
                 {

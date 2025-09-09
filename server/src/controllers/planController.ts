@@ -113,7 +113,7 @@ export class PlanController {
 
             // Use chat.completions with JSON mode
             const chat = await client.chat.completions.create({
-                model: 'gpt-4o-mini',
+                model: 'gpt-5-mini',
                 response_format: { type: 'json_object' } as any,
                 messages: [
                     { role: 'system', content: 'You are an assistant that outputs only JSON.' },
