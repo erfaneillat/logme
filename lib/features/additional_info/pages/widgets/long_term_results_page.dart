@@ -1,4 +1,5 @@
 import 'package:cal_ai/extensions/context.dart';
+import 'package:cal_ai/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'common_next_button.dart';
@@ -321,7 +322,9 @@ class _LongTermResultsPageState extends State<LongTermResultsPage>
               children: [
                 Row(
                   children: [
-                    Icon(Icons.apple, color: chartData['appColor'], size: 16),
+                    Assets.imagesLoqmeLogoPNG
+                        .image(width: 16, height: 16, fit: BoxFit.cover),
+                    // Icon(Icons.apple, color: chartData['appColor'], size: 16),
                     const SizedBox(width: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(

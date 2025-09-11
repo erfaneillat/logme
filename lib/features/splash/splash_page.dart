@@ -1,3 +1,4 @@
+import 'package:cal_ai/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -63,17 +64,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // You can replace this with your app logo or animation
-            Icon(Icons.flash_on,
-                size: 80, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 24),
-            Text(
-              'Cal AI',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
+            Assets.imagesLoqmeLogoPNG.image(width: 100, height: 100),
           ],
         ),
       ),

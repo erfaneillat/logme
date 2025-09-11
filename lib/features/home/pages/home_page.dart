@@ -1,3 +1,4 @@
+import 'package:cal_ai/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -437,8 +438,9 @@ class HomePage extends HookConsumerWidget {
     );
     return Row(
       children: [
-        const Icon(Icons.apple, size: 28),
-        const SizedBox(width: 8),
+        Assets.imagesLoqmeLogoPNG
+            .image(width: 40, height: 40, fit: BoxFit.cover),
+        // const SizedBox(width: 8),
         Text(
           'app_title'.tr(),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
