@@ -6,12 +6,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
-import '../../../extensions/context.dart';
-import '../../../extensions/string.dart';
 import '../../logs/data/datasources/logs_remote_data_source.dart';
 import '../../logs/presentation/providers/daily_log_provider.dart';
-import '../../settings/presentation/providers/settings_providers.dart';
 import '../presentation/providers/home_date_provider.dart';
+import 'package:cal_ai/utils/error_handler.dart';
 
 class AddExercisePage extends HookConsumerWidget {
   const AddExercisePage({super.key});
@@ -692,10 +690,11 @@ class AddExercisePage extends HookConsumerWidget {
                                   }
                                 } catch (e) {
                                   if (context.mounted) {
+                                    final errorMessage =
+                                        ErrorHandler.getGenericErrorMessage(e);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('home.error_prefix'
-                                            .tr(args: [e.toString()])),
+                                        content: Text(errorMessage),
                                         backgroundColor: Colors.red,
                                       ),
                                     );

@@ -24,6 +24,8 @@ export interface IngredientBreakdown {
 }
 
 export interface FoodAnalysisResult {
+    isFood?: boolean;
+    error?: string;
     title: string;
     calories: number;
     portions: number;
@@ -100,7 +102,10 @@ export class FoodAnalysisService {
 
     private improveImagePrompt(): string {
         return `Analyze the meal photo and output STRICT JSON only.
-Required JSON keys: title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
+IMPORTANT: First check if this image contains FOOD. If the image does not contain food (e.g., objects, people, landscapes, text, etc.), return {"isFood": false, "error": "This image does not contain food. Please take a photo of your meal."}.
+
+If the image contains food, return the following JSON structure:
+Required JSON keys: isFood (true), title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
 Rules:
 - Strings MUST be Persian (fa-IR). No emoji.
 - All numbers MUST be numeric integers (no units, no text).
@@ -170,6 +175,22 @@ Rules:
     }
 
     private sanitizeResult(raw: any): FoodAnalysisResult {
+        // Check if this is a non-food image response
+        if (raw?.isFood === false) {
+            return {
+                isFood: false,
+                error: typeof raw?.error === 'string' ? raw.error : 'This image does not contain food. Please take a photo of your meal.',
+                title: '',
+                calories: 0,
+                portions: 1,
+                proteinGrams: 0,
+                fatGrams: 0,
+                carbsGrams: 0,
+                healthScore: 0,
+                ingredients: [],
+            };
+        }
+
         const title = typeof raw?.title === 'string' && raw.title.trim().length > 0 ? raw.title.trim() : 'غذا';
         const portions = Math.max(1, Math.round(Number(raw?.portions ?? 1)));
         const calories = Math.max(0, Math.round(Number(raw?.calories ?? 0)));
@@ -188,6 +209,7 @@ Rules:
         }
 
         let result: FoodAnalysisResult = {
+            isFood: true,
             title,
             calories,
             portions,

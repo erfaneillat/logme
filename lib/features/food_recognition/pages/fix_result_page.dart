@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../services/api_service_provider.dart';
 import '../../../config/api_config.dart';
 import 'food_detail_page.dart' show IngredientItem;
+import 'package:cal_ai/utils/error_handler.dart';
 
 class FixResultArgs {
   final String? id;
@@ -35,10 +36,9 @@ class FixResultArgs {
   });
 }
 
-
 class FixResultPage extends HookConsumerWidget {
   final FixResultArgs args;
-  
+
   const FixResultPage({super.key, required this.args});
 
   @override
@@ -51,10 +51,10 @@ class FixResultPage extends HookConsumerWidget {
       if (textController.text.trim().isEmpty) return;
 
       isLoading.value = true;
-      
+
       try {
         final apiService = ref.read(apiServiceProvider);
-        
+
         // Prepare the data to send to the server
         final requestData = {
           'originalData': {
@@ -71,20 +71,22 @@ class FixResultPage extends HookConsumerWidget {
           'userDescription': textController.text.trim(),
         };
 
-        final fixedData = await apiService.post(ApiConfig.foodFixResult, data: requestData);
-        
+        final fixedData =
+            await apiService.post(ApiConfig.foodFixResult, data: requestData);
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('fix_result.fixed'.tr())),
           );
-          
+
           // Navigate back to food detail page with fixed data
           context.pop(fixedData);
         }
       } catch (e) {
         if (context.mounted) {
+          final errorMessage = ErrorHandler.getGenericErrorMessage(e);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
+            SnackBar(content: Text(errorMessage)),
           );
         }
       } finally {
@@ -116,7 +118,7 @@ class FixResultPage extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            
+
             // Input field
             Container(
               decoration: BoxDecoration(
@@ -142,9 +144,9 @@ class FixResultPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Description text
             Container(
               padding: const EdgeInsets.all(16),
@@ -161,9 +163,9 @@ class FixResultPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            
+
             const Spacer(),
-            
+
             // Fix button
             SizedBox(
               width: double.infinity,
@@ -187,7 +189,8 @@ class FixResultPage extends HookConsumerWidget {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -213,7 +216,7 @@ class FixResultPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
           ],
         ),

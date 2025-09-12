@@ -21,6 +21,7 @@ import 'package:shamsi_date/shamsi_date.dart';
 import 'package:cal_ai/common/widgets/streak_dialog.dart';
 import 'package:cal_ai/features/streak/presentation/providers/streak_providers.dart';
 import 'package:cal_ai/extensions/string.dart';
+import 'package:cal_ai/utils/error_handler.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -336,8 +337,10 @@ class HomePage extends HookConsumerWidget {
             SnackBar(content: Text('home.analysis_canceled'.tr())),
           );
         } else {
+          // Use centralized error handling (includes non-food image detection)
+          final errorMessage = ErrorHandler.getGenericErrorMessage(e);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+            SnackBar(content: Text(errorMessage)),
           );
         }
       }

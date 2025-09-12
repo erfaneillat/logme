@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:flutter/foundation.dart';
 import '../config/api_config.dart';
+import '../utils/error_handler.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -154,86 +155,13 @@ class ApiService {
   }
 
   DioException _handleError(DioException error) {
-    switch (error.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-        return DioException(
-          requestOptions: error.requestOptions,
-          error: 'Connection timeout. Please check your internet connection.',
-          type: error.type,
-        );
-
-      case DioExceptionType.badResponse:
-        final statusCode = error.response?.statusCode;
-        final data = error.response?.data;
-
-        String message = 'An error occurred';
-
-        if (data is Map<String, dynamic>) {
-          message = data['message'] ?? data['error'] ?? message;
-        } else if (data is String) {
-          message = data;
-        }
-
-        switch (statusCode) {
-          case 400:
-            message = 'Bad request: $message';
-            break;
-          case 401:
-            message = 'Unauthorized: $message';
-            break;
-          case 403:
-            message = 'Forbidden: $message';
-            break;
-          case 404:
-            message = 'Not found: $message';
-            break;
-          case 422:
-            message = 'Validation error: $message';
-            break;
-          case 500:
-            message = 'Server error: $message';
-            break;
-          default:
-            message = 'HTTP $statusCode: $message';
-        }
-
-        return DioException(
-          requestOptions: error.requestOptions,
-          error: message,
-          response: error.response,
-          type: error.type,
-        );
-
-      case DioExceptionType.cancel:
-        return DioException(
-          requestOptions: error.requestOptions,
-          error: 'Request was cancelled',
-          type: error.type,
-        );
-
-      case DioExceptionType.connectionError:
-        return DioException(
-          requestOptions: error.requestOptions,
-          error: 'No internet connection. Please check your network settings.',
-          type: error.type,
-        );
-
-      case DioExceptionType.badCertificate:
-        return DioException(
-          requestOptions: error.requestOptions,
-          error: 'SSL certificate error',
-          type: error.type,
-        );
-
-      case DioExceptionType.unknown:
-        return DioException(
-          requestOptions: error.requestOptions,
-          error: 'An unexpected error occurred',
-          type: error.type,
-        );
-    }
+    final errorMessage = ErrorHandler.getErrorMessage(error);
+    return DioException(
+      requestOptions: error.requestOptions,
+      error: errorMessage,
+      response: error.response,
+      type: error.type,
+    );
   }
 
   // Generic GET request

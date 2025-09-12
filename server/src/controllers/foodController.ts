@@ -3,7 +3,7 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { FoodAnalysisService } from '../services/foodAnalysisService';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
-import { updateStreakIfEligible } from '../services/streakService';
+import { updateStreakIfEligible, updateStreakOnFirstMeal } from '../services/streakService';
 import sharp from 'sharp';
 import path from 'path';
 
@@ -104,6 +104,16 @@ export class FoodController {
         }
         const result = analysis.data;
 
+        // Check if the image contains food
+        if (result.isFood === false) {
+            res.status(400).json({
+                success: false,
+                error: result.error || 'This image does not contain food. Please take a photo of your meal.',
+                timestamp: new Date()
+            });
+            return;
+        }
+
         // Save to daily logs (upsert) using provided date (YYYY-MM-DD),
         // falling back to server local date if not provided
         const userId = req.user?.userId;
@@ -174,9 +184,19 @@ export class FoodController {
                 }
             );
 
-            // Update streak if today's goal is met
+            // Check if this is the first meal of the day and update streak accordingly
             try {
-                await updateStreakIfEligible(String(userId), todayIso);
+                // Check if there are any existing items for today before this meal
+                const existingLog = await DailyLog.findOne({ userId, date: todayIso }).lean();
+                const isFirstMealOfDay = !existingLog || !existingLog.items || existingLog.items.length === 0;
+
+                if (isFirstMealOfDay) {
+                    // First meal of the day - update streak
+                    await updateStreakOnFirstMeal(String(userId), todayIso);
+                } else {
+                    // Not first meal - check if goal is met for streak
+                    await updateStreakIfEligible(String(userId), todayIso);
+                }
             } catch (e) {
                 console.error('Streak update (food) error:', e);
             }
@@ -297,9 +317,19 @@ export class FoodController {
                     }
                 );
 
-                // Update streak if today's goal is met
+                // Check if this is the first meal of the day and update streak accordingly
                 try {
-                    await updateStreakIfEligible(String(userId), todayIso);
+                    // Check if there are any existing items for today before this meal
+                    const existingLog = await DailyLog.findOne({ userId, date: todayIso }).lean();
+                    const isFirstMealOfDay = !existingLog || !existingLog.items || existingLog.items.length === 0;
+
+                    if (isFirstMealOfDay) {
+                        // First meal of the day - update streak
+                        await updateStreakOnFirstMeal(String(userId), todayIso);
+                    } else {
+                        // Not first meal - check if goal is met for streak
+                        await updateStreakIfEligible(String(userId), todayIso);
+                    }
                 } catch (e) {
                     console.error('Streak update (food description) error:', e);
                 }

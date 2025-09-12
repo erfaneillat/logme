@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
-import '../../../common/widgets/index.dart';
 import '../domain/usecases/analyze_food_text_usecase.dart';
 import '../../../features/logs/presentation/providers/daily_log_provider.dart';
 import '../../../features/home/presentation/providers/home_date_provider.dart';
@@ -12,6 +11,7 @@ import '../../../features/login/presentation/providers/auth_provider.dart';
 import '../../../features/streak/presentation/providers/streak_providers.dart';
 import '../../../common/widgets/streak_dialog.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import 'package:cal_ai/utils/error_handler.dart';
 
 class DescribeFoodArgs {
   final String? targetDateIso;
@@ -62,7 +62,7 @@ class DescribeFoodPage extends HookConsumerWidget {
             args.targetDateIso ?? _toIsoFromJalali(selectedJalali);
 
         final usecase = ref.read(analyzeFoodTextUseCaseProvider);
-        final result = await usecase(
+        await usecase(
           description: textController.text.trim(),
           targetDateIso: targetDateIso,
           cancellationToken: token,
@@ -120,10 +120,9 @@ class DescribeFoodPage extends HookConsumerWidget {
               SnackBar(content: Text('describe_food.canceled'.tr())),
             );
           } else {
+            final errorMessage = ErrorHandler.getGenericErrorMessage(e);
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content:
-                      Text('describe_food.error'.tr(args: [e.toString()]))),
+              SnackBar(content: Text(errorMessage)),
             );
           }
         }

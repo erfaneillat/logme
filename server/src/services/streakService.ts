@@ -72,7 +72,7 @@ export async function updateStreakIfEligible(userId: string, date: string): Prom
         { $set: { userId, date: targetDate, completed: false } },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       ).exec();
-    } catch (_) {}
+    } catch (_) { }
     return;
   }
 
@@ -107,7 +107,85 @@ export async function updateStreakIfEligible(userId: string, date: string): Prom
       { $set: { userId, date: targetDate, completed: true } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).exec();
-  } catch (_) {}
+  } catch (_) { }
+}
+
+/**
+ * Update user's streak when the first meal of the day is logged.
+ * - Increments streak for the given date when any meal is logged for the first time that day.
+ * - If the user missed days (gap > 1 day) before this date, reset streak to 0 before incrementing.
+ * - If already counted for this date (lastStreakDate === date), do nothing.
+ *
+ * Dates are in YYYY-MM-DD format.
+ */
+export async function updateStreakOnFirstMeal(userId: string, date: string): Promise<void> {
+  const targetDate = (date || '').slice(0, 10);
+  if (!targetDate) return;
+
+  // Fetch user streak state
+  const user = await User.findById(userId).lean();
+  if (!user) return;
+
+  const lastStreakDate: string | null = (user as any).lastStreakDate ?? null;
+  const currentStreak: number = Math.max(0, Number((user as any).streakCount ?? 0));
+
+  // Helpers
+  const parse = (d: string) => {
+    if (!d || typeof d !== 'string') return new Date(NaN);
+    const parts = d.split('-');
+    if (parts.length !== 3) return new Date(NaN);
+    const y = Number(parts[0]);
+    const m = Number(parts[1]);
+    const dd = Number(parts[2]);
+    if (!isFinite(y) || !isFinite(m) || !isFinite(dd) || m < 1 || m > 12 || dd < 1 || dd > 31) {
+      return new Date(NaN);
+    }
+    return new Date(y, m - 1, dd);
+  };
+  const fmt = (dt: Date) => {
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const d2 = String(dt.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d2}`;
+  };
+  const prevDate = (d: string) => {
+    const t = parse(d);
+    t.setDate(t.getDate() - 1);
+    return fmt(t);
+  };
+
+  // Already counted for this date -> nothing to do
+  if (lastStreakDate === targetDate) return;
+
+  // Determine new streak value
+  const yesterday = prevDate(targetDate);
+  let nextStreak = 1;
+
+  if (lastStreakDate === yesterday) {
+    nextStreak = currentStreak + 1;
+  } else if (lastStreakDate && lastStreakDate < yesterday) {
+    // Gap > 1 day -> reset to 1
+    nextStreak = 1;
+  } else if (!lastStreakDate) {
+    nextStreak = 1;
+  }
+
+  // Update user streak
+  await User.findByIdAndUpdate(userId, {
+    $set: {
+      streakCount: nextStreak,
+      lastStreakDate: targetDate,
+    },
+  }).exec();
+
+  // Record completion for this date in Streaks collection
+  try {
+    await Streak.findOneAndUpdate(
+      { userId, date: targetDate },
+      { $set: { userId, date: targetDate, completed: true } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).exec();
+  } catch (_) { }
 }
 
 /**

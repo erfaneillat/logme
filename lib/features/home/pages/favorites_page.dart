@@ -7,6 +7,7 @@ import 'package:cal_ai/features/logs/data/datasources/logs_remote_data_source.da
 import 'package:cal_ai/features/logs/domain/entities/daily_log.dart';
 import 'package:cal_ai/features/home/presentation/providers/home_date_provider.dart';
 import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
+import 'package:cal_ai/utils/error_handler.dart';
 
 final favoritesProvider =
     FutureProvider.autoDispose<List<DailyLogItemEntity>>((ref) async {
@@ -127,8 +128,10 @@ class FavoritesPage extends ConsumerWidget {
                     }
                   } catch (e) {
                     if (context.mounted) {
+                      final errorMessage =
+                          ErrorHandler.getGenericErrorMessage(e);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
+                        SnackBar(content: Text(errorMessage)),
                       );
                     }
                   }

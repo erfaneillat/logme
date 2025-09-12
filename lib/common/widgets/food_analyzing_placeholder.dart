@@ -3,8 +3,47 @@ import 'package:flutter/material.dart';
 import 'package:cal_ai/common/widgets/progress_ring.dart';
 import 'package:cal_ai/common/widgets/custom_loading_widget.dart';
 
-class FoodAnalyzingPlaceholder extends StatelessWidget {
+class FoodAnalyzingPlaceholder extends StatefulWidget {
   const FoodAnalyzingPlaceholder({super.key});
+
+  @override
+  State<FoodAnalyzingPlaceholder> createState() =>
+      _FoodAnalyzingPlaceholderState();
+}
+
+class _FoodAnalyzingPlaceholderState extends State<FoodAnalyzingPlaceholder>
+    with TickerProviderStateMixin {
+  late AnimationController _progressController;
+  late Animation<double> _progressAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Create animation controller for the progress ring
+    _progressController = AnimationController(
+      duration: const Duration(seconds: 6), // Slower animation
+      vsync: this,
+    );
+
+    // Create a smooth progress animation that goes from 0 to 85%
+    _progressAnimation = Tween<double>(
+      begin: 0.0,
+      end: 0.85, // End at 85% for a more realistic feel (not quite complete)
+    ).animate(CurvedAnimation(
+      parent: _progressController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Start the animation when the widget is created
+    _progressController.forward();
+  }
+
+  @override
+  void dispose() {
+    _progressController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +76,21 @@ class FoodAnalyzingPlaceholder extends StatelessWidget {
                 child: SizedBox(
                   width: 36,
                   height: 36,
-                  child: AnimatedProgressRing(
-                    progress: 0.75,
-                    color: Colors.black87,
-                    backgroundColor: Colors.grey.shade400,
-                    strokeWidth: 4,
-                    child: const Icon(
-                      Icons.fastfood,
-                      size: 18,
-                      color: Colors.black87,
-                    ),
+                  child: AnimatedBuilder(
+                    animation: _progressAnimation,
+                    builder: (context, child) {
+                      return ProgressRing(
+                        progress: _progressAnimation.value,
+                        color: Colors.black87,
+                        backgroundColor: Colors.grey.shade400,
+                        strokeWidth: 4,
+                        child: const Icon(
+                          Icons.fastfood,
+                          size: 18,
+                          color: Colors.black87,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -69,12 +113,14 @@ class FoodAnalyzingPlaceholder extends StatelessWidget {
                   children: const [
                     Expanded(
                       flex: 6,
-                      child: ShimmerLoadingWidget(width: double.infinity, height: 10),
+                      child: ShimmerLoadingWidget(
+                          width: double.infinity, height: 10),
                     ),
                     SizedBox(width: 8),
                     Expanded(
                       flex: 4,
-                      child: ShimmerLoadingWidget(width: double.infinity, height: 10),
+                      child: ShimmerLoadingWidget(
+                          width: double.infinity, height: 10),
                     ),
                   ],
                 ),
@@ -83,12 +129,14 @@ class FoodAnalyzingPlaceholder extends StatelessWidget {
                   children: const [
                     Expanded(
                       flex: 5,
-                      child: ShimmerLoadingWidget(width: double.infinity, height: 10),
+                      child: ShimmerLoadingWidget(
+                          width: double.infinity, height: 10),
                     ),
                     SizedBox(width: 8),
                     Expanded(
                       flex: 3,
-                      child: ShimmerLoadingWidget(width: double.infinity, height: 10),
+                      child: ShimmerLoadingWidget(
+                          width: double.infinity, height: 10),
                     ),
                   ],
                 ),
