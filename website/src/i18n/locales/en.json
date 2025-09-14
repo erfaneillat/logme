@@ -1,0 +1,100 @@
+{
+    "header": {
+        "title": "Calz - Calorie Counter AI",
+        "subtitle": "Your Smart Nutrition Assistant",
+        "nav": {
+            "howItWorks": "How it works",
+            "accuracy": "Why trust it?",
+            "download": "Download"
+        }
+    },
+    "hero": {
+        "title": "Track Calories",
+        "titleHighlight": "in a Snap",
+        "description": "Meet Calz – the AI-powered app that makes calorie tracking effortless. Snap a photo or scan a barcode, and instantly get calories, nutrients, and personalized tips. Stay on track with smart reminders and reach your goals, hassle-free.",
+        "download": {
+            "appStore": "Download on the",
+            "appStoreTitle": "App Store",
+            "googlePlay": "GET IT ON",
+            "googlePlayTitle": "Google Play"
+        },
+        "socialProof": {
+            "users": "Over 1 million",
+            "trust": "users trust Calz"
+        }
+    },
+    "howItWorks": {
+        "title": "How Does Calz Work?",
+        "description": "It's as simple as snapping a picture. Calz uses your phone's depth sensor to estimate the volume of your food. Then, our AI — trained on thousands of meal images — identifies each part of your dish and figures out their proportions. Finally, our powerful multimodal model analyzes it all to deliver detailed nutritional info: calories, protein, carbs, fat, and more.",
+        "cta": "Start for Free",
+        "nutrition": {
+            "carbs": "CARBS",
+            "fat": "FAT",
+            "protein": "PROTEIN"
+        }
+    },
+    "accuracy": {
+        "title": "How Accurate Is Calz?",
+        "description": "Calz is about 90% accurate in most cases. Complex meals with many ingredients might be slightly less accurate, but you can always use our Describe feature or barcode or label scanner for packaged foods. If something looks off, use our \"Fix results\" option to help us improve!",
+        "comparison": {
+            "generalPopulation": {
+                "title": "General Population",
+                "description": "can only estimate the nutritional value of food with an accuracy of",
+                "accuracy": "45%"
+            },
+            "calz": {
+                "title": "Calz - Calorie Counter AI",
+                "description": "predicts the nutritional value of food with consistent accuracy over",
+                "accuracy": "90%"
+            },
+            "nutritionists": {
+                "title": "Nutritionists",
+                "description": "can predict the nutritional value of food with an average accuracy of",
+                "accuracy": "60%"
+            }
+        },
+        "features": {
+            "aiPowered": {
+                "title": "AI-Powered Recognition",
+                "description": "Advanced computer vision trained on thousands of food images"
+            },
+            "instant": {
+                "title": "Instant Results",
+                "description": "Get nutritional breakdown in seconds, not minutes"
+            },
+            "learning": {
+                "title": "Continuous Learning",
+                "description": "Improves accuracy with every photo you take"
+            }
+        }
+    },
+    "footer": {
+        "brand": {
+            "title": "Calz",
+            "subtitle": "Calorie Counter AI",
+            "description": "Your smart nutrition assistant for effortless calorie tracking."
+        },
+        "product": {
+            "title": "Product",
+            "howItWorks": "How it works",
+            "accuracy": "Accuracy",
+            "features": "Features",
+            "pricing": "Pricing"
+        },
+        "support": {
+            "title": "Support",
+            "helpCenter": "Help Center",
+            "contactUs": "Contact Us",
+            "privacyPolicy": "Privacy Policy",
+            "termsOfService": "Terms of Service"
+        },
+        "download": {
+            "title": "Download",
+            "appStore": "Download on the",
+            "appStoreTitle": "App Store",
+            "googlePlay": "GET IT ON",
+            "googlePlayTitle": "Google Play"
+        },
+        "copyright": "© 2024 Calz - Calorie Counter AI. All rights reserved."
+    }
+}
