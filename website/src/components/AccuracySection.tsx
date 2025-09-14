@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import ScrollAnimation from './ScrollAnimation';
+import CountUpAnimation from './CountUpAnimation';
 
 const AccuracySection: React.FC = () => {
     const { t } = useTranslation();
@@ -26,48 +28,116 @@ const AccuracySection: React.FC = () => {
                 {/* Three Column Comparison */}
                 <ScrollAnimation className="w-full max-w-6xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-3 gap-12 items-start" delay={0.2}>
                     {/* General Population */}
-                    <div className="flex flex-col items-center text-center">
-                        <div className="text-6xl mb-6">🌎</div>
+                    <motion.div
+                        className="flex flex-col items-center text-center"
+                        whileHover={{ scale: 1.05, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <motion.div
+                            className="text-6xl mb-6"
+                            animate={{ rotate: [0, 10, -10, 0] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                            🌎
+                        </motion.div>
                         <h2 className="text-xl font-bold mb-2 font-farsi text-white">
                             {t('accuracy.comparison.generalPopulation.title')}
                         </h2>
                         <p className="text-white text-sm mb-6 font-farsi">
                             {t('accuracy.comparison.generalPopulation.description')}
                         </p>
-                        <p className="text-7xl font-bold text-white">{t('accuracy.comparison.generalPopulation.accuracy')}</p>
-                    </div>
+                        <motion.div
+                            className="text-7xl font-bold text-white"
+                            whileHover={{ scale: 1.1 }}
+                        >
+                            <CountUpAnimation
+                                from={0}
+                                to={parseInt(t('accuracy.comparison.generalPopulation.accuracy'))}
+                                suffix="%"
+                                duration={2}
+                                className="text-7xl font-bold text-white"
+                            />
+                        </motion.div>
+                    </motion.div>
 
                     {/* Calz AI - Highlighted */}
-                    <div className="relative flex flex-col items-center text-center p-8 rounded-2xl" style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(18, 18, 18, 0) 70%)' }}>
-                        <div className="w-20 h-20 mb-6 flex items-center justify-center">
+                    <motion.div
+                        className="relative flex flex-col items-center text-center p-8 rounded-2xl"
+                        style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(18, 18, 18, 0) 70%)' }}
+                        whileHover={{ scale: 1.08, y: -15 }}
+                        transition={{ duration: 0.3 }}
+                        animate={{
+                            boxShadow: [
+                                "0 0 0px rgba(16, 185, 129, 0.3)",
+                                "0 0 30px rgba(16, 185, 129, 0.6)",
+                                "0 0 0px rgba(16, 185, 129, 0.3)"
+                            ]
+                        }}
+                    >
+                        <motion.div
+                            className="w-20 h-20 mb-6 flex items-center justify-center"
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.8 }}
+                        >
                             <img
                                 src="/loqme_logo.jpg"
                                 alt="Loqme Logo"
                                 className="w-full h-full object-contain rounded-2xl shadow-lg"
                             />
-                        </div>
+                        </motion.div>
                         <h2 className="text-xl font-bold text-green-400 mb-2 font-farsi">
                             {t('accuracy.comparison.calz.title')}
                         </h2>
                         <p className="text-gray-300 text-sm mb-6 font-farsi">
                             {t('accuracy.comparison.calz.description')}
                         </p>
-                        <p className="text-8xl font-bold text-green-400" style={{ textShadow: '0 0 20px rgba(52, 211, 153, 0.7)' }}>
-                            {t('accuracy.comparison.calz.accuracy')}
-                        </p>
-                    </div>
+                        <motion.div
+                            className="text-8xl font-bold text-green-400"
+                            style={{ textShadow: '0 0 20px rgba(52, 211, 153, 0.7)' }}
+                            whileHover={{ scale: 1.15 }}
+                        >
+                            <CountUpAnimation
+                                from={0}
+                                to={parseInt(t('accuracy.comparison.calz.accuracy'))}
+                                suffix="%"
+                                duration={2.5}
+                                className="text-8xl font-bold text-green-400"
+                            />
+                        </motion.div>
+                    </motion.div>
 
                     {/* Nutritionists */}
-                    <div className="flex flex-col items-center text-center">
-                        <div className="text-6xl mb-6">👨‍⚕️</div>
+                    <motion.div
+                        className="flex flex-col items-center text-center"
+                        whileHover={{ scale: 1.05, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <motion.div
+                            className="text-6xl mb-6"
+                            animate={{ y: [0, -10, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                            👨‍⚕️
+                        </motion.div>
                         <h2 className="text-xl font-bold mb-2 font-farsi text-white">
                             {t('accuracy.comparison.nutritionists.title')}
                         </h2>
                         <p className="text-white text-sm mb-6 font-farsi">
                             {t('accuracy.comparison.nutritionists.description')}
                         </p>
-                        <p className="text-7xl font-bold text-white">{t('accuracy.comparison.nutritionists.accuracy')}</p>
-                    </div>
+                        <motion.div
+                            className="text-7xl font-bold text-white"
+                            whileHover={{ scale: 1.1 }}
+                        >
+                            <CountUpAnimation
+                                from={0}
+                                to={parseInt(t('accuracy.comparison.nutritionists.accuracy'))}
+                                suffix="%"
+                                duration={2}
+                                className="text-7xl font-bold text-white"
+                            />
+                        </motion.div>
+                    </motion.div>
                 </ScrollAnimation>
 
             </div>

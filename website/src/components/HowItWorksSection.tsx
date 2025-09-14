@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ScrollAnimation from './ScrollAnimation';
+import GlowButton from './GlowButton';
 import { scrollToDownload } from '../utils/scrollToSection';
 
 const HowItWorksSection: React.FC = () => {
@@ -29,12 +30,14 @@ const HowItWorksSection: React.FC = () => {
                             {t('howItWorks.description')}
                         </p>
 
-                        <button
+                        <GlowButton
                             onClick={scrollToDownload}
                             className="bg-white text-black px-6 py-3 rounded-lg font-semibold text-base hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border border-gray-300 font-farsi mt-6"
+                            glowColor="rgba(255, 255, 255, 0.3)"
+                            pulseDuration={2.5}
                         >
                             {t('howItWorks.cta')}
-                        </button>
+                        </GlowButton>
                     </ScrollAnimation>
                 </div>
             </div>
