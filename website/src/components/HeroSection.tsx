@@ -36,7 +36,7 @@ const HeroSection: React.FC = () => {
                         <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 justify-center sm:justify-start sm:space-x-reverse sm:space-x-6">
                             {/* QR Code */}
                             <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 flex items-center justify-center">
-                                <img src="/qr-code.png" alt="QR Code" className="w-20 h-20 object-cover" />
+                                <img src="/qr-code.png" alt="QR Code" className="w-20 h-20 object-contain" />
                             </div>
 
                             {/* Download Buttons */}
