@@ -4,6 +4,7 @@ import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import HowItWorksSection from './components/HowItWorksSection';
 import AccuracySection from './components/AccuracySection';
+import CallToActionSection from './components/CallToActionSection';
 import Footer from './components/Footer';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <HeroSection />
         <HowItWorksSection />
         <AccuracySection />
+        <CallToActionSection />
         <Footer />
       </div>
     </div>

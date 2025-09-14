@@ -1,6 +1,6 @@
 {
     "header": {
-        "title": "Calz - Calorie Counter AI",
+        "title": "لقمه - Calorie Counter AI",
         "subtitle": "Your Smart Nutrition Assistant",
         "nav": {
             "howItWorks": "How it works",
@@ -11,22 +11,26 @@
     "hero": {
         "title": "Track Calories",
         "titleHighlight": "in a Snap",
-        "description": "Meet Calz – the AI-powered app that makes calorie tracking effortless. Snap a photo or scan a barcode, and instantly get calories, nutrients, and personalized tips. Stay on track with smart reminders and reach your goals, hassle-free.",
+        "description": "Hey there! Meet لقمه – your friendly AI companion that makes calorie tracking super easy and fun! 📸 Just snap a quick photo of your meal or scan a barcode, and voilà! You'll instantly get all the calories, nutrients, and personalized tips you need. We'll keep you motivated with gentle reminders, so you can reach your health goals without any stress! 💪✨",
         "download": {
             "appStore": "Download on the",
             "appStoreTitle": "App Store",
             "googlePlay": "GET IT ON",
-            "googlePlayTitle": "Google Play"
+            "googlePlayTitle": "Google Play",
+            "cafeBazaar": "Download from CafeBazaar",
+            "cafeBazaarTitle": "CafeBazaar",
+            "webApp": "Use Web App",
+            "webAppTitle": "Web Application"
         },
         "socialProof": {
             "users": "Over 1 million",
-            "trust": "users trust Calz"
+            "trust": "happy users love لقمه"
         }
     },
     "howItWorks": {
-        "title": "How Does Calz Work?",
-        "description": "It's as simple as snapping a picture. Calz uses your phone's depth sensor to estimate the volume of your food. Then, our AI — trained on thousands of meal images — identifies each part of your dish and figures out their proportions. Finally, our powerful multimodal model analyzes it all to deliver detailed nutritional info: calories, protein, carbs, fat, and more.",
-        "cta": "Start for Free",
+        "title": "How Does لقمه Work?",
+        "description": "It's incredibly simple! 😊 Just take a quick photo of your food, and لقمه does all the magic! Our smart AI uses your phone's camera to understand exactly what you're eating and how much. We've trained it on thousands of delicious meals, so it knows the difference between a slice of pizza and a salad! 🍕🥗 Then, like a friendly nutritionist, it tells you everything you need to know: calories, protein, carbs, fat, and more!",
+        "cta": "Let's Get Started! 🚀",
         "nutrition": {
             "carbs": "CARBS",
             "fat": "FAT",
@@ -34,8 +38,8 @@
         }
     },
     "accuracy": {
-        "title": "How Accurate Is Calz?",
-        "description": "Calz is about 90% accurate in most cases. Complex meals with many ingredients might be slightly less accurate, but you can always use our Describe feature or barcode or label scanner for packaged foods. If something looks off, use our \"Fix results\" option to help us improve!",
+        "title": "How Accurate Is لقمه?",
+        "description": "Great question! لقمه is super accurate – about 90% of the time! 🎯 Sure, when you have a super complex meal with tons of ingredients, it might need a tiny bit of help, but that's totally okay! You can always use our friendly \"Describe\" feature or scan barcodes for packaged foods. And if something doesn't look quite right? Just tap \"Fix results\" and help us learn! We love getting better! 💕",
         "comparison": {
             "generalPopulation": {
                 "title": "General Population",
@@ -43,7 +47,7 @@
                 "accuracy": "45%"
             },
             "calz": {
-                "title": "Calz - Calorie Counter AI",
+                "title": "لقمه - Calorie Counter AI",
                 "description": "predicts the nutritional value of food with consistent accuracy over",
                 "accuracy": "90%"
             },
@@ -55,22 +59,22 @@
         },
         "features": {
             "aiPowered": {
-                "title": "AI-Powered Recognition",
-                "description": "Advanced computer vision trained on thousands of food images"
+                "title": "Super Smart AI 🧠",
+                "description": "Our clever computer vision has learned from thousands of yummy food photos!"
             },
             "instant": {
-                "title": "Instant Results",
-                "description": "Get nutritional breakdown in seconds, not minutes"
+                "title": "Lightning Fast ⚡",
+                "description": "Get your nutritional info in seconds – no waiting around!"
             },
             "learning": {
-                "title": "Continuous Learning",
-                "description": "Improves accuracy with every photo you take"
+                "title": "Always Getting Better 📈",
+                "description": "Every photo you take helps us become even more accurate!"
             }
         }
     },
     "footer": {
         "brand": {
-            "title": "Calz",
+            "title": "لقمه",
             "subtitle": "Calorie Counter AI",
             "description": "Your smart nutrition assistant for effortless calorie tracking."
         },
@@ -95,6 +99,6 @@
             "googlePlay": "GET IT ON",
             "googlePlayTitle": "Google Play"
         },
-        "copyright": "© 2024 Calz - Calorie Counter AI. All rights reserved."
+        "copyright": "© 2024 لقمه - Calorie Counter AI. All rights reserved."
     }
 }
