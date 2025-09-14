@@ -188,7 +188,7 @@ jobs:
           # Create .env file only if it doesn't exist to preserve manual configurations
           if [ ! -f ".env" ]; then
             echo "📝 Creating new .env file..."
-            cat > .env << 'EOF'
+            cat > .env << EOF
 NODE_ENV=${{ steps.env.outputs.environment }}
 PORT=${{ steps.env.outputs.app_port }}
 MONGODB_URI=${{ secrets.MONGODB_URI }}
