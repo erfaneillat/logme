@@ -165,10 +165,10 @@ jobs:
           
           # Install website dependencies if needed
           if [ -f "package-lock.json" ]; then
-            npm ci
+            npm ci --legacy-peer-deps
           else
             echo "⚠️ No package-lock.json found, using npm install..."
-            npm install
+            npm install --legacy-peer-deps
           fi
           
           # Build React app with environment variables
