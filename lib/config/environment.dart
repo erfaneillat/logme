@@ -2,8 +2,8 @@
 /// This file contains API endpoints and configuration based on build environment
 
 class Environment {
-  static const String _prodApiUrl = 'https://logme.yadbanapp.com/api';
-  static const String _devApiUrl = 'https://dev-logme.yadbanapp.com/api';
+  static const String _prodApiUrl = 'https://loqmeapp.ir/api';
+  static const String _devApiUrl = 'https://dev.loqmeapp.ir/api';
 
   /// Get the API base URL based on build configuration
   static String get apiBaseUrl {

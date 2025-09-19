@@ -15,6 +15,7 @@ A Node.js backend with MongoDB and TypeScript for Cal AI nutrition tracking appl
 - Node.js >= 18.0.0
 - MongoDB running locally or remotely
 - OpenAI API key for food analysis and plan generation
+- Kave Negar API key for SMS OTP functionality
 
 ## Environment Variables
 
@@ -36,6 +37,10 @@ MONGODB_URI=mongodb://127.0.0.1:27017/cal_ai
 # OpenAI API (required for food analysis)
 OPENAI_API_KEY=your-openai-api-key-here
 
+# Kave Negar SMS Service (required for OTP)
+KAVENEGAR_API_KEY=your-kavenegar-api-key-here
+KAVENEGAR_OTP_TEMPLATE=verify
+
 # Rate Limiting
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
@@ -50,7 +55,13 @@ npm install
 
 2. Set up environment variables (see above)
 
-3. Start MongoDB:
+3. Configure Kave Negar SMS service:
+   - Sign up at [Kave Negar](https://kavenegar.com/)
+   - Get your API key from the dashboard
+   - Create an OTP template named "verify" (or update KAVENEGAR_OTP_TEMPLATE)
+   - The template should include a `{token}` placeholder for the OTP code
+
+4. Start MongoDB:
 ```bash
 # macOS
 brew services start mongodb-community

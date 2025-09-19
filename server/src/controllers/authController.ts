@@ -3,12 +3,15 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import { validationResult } from 'express-validator';
+import { createSMSService } from '../services/smsService';
 
 interface AuthRequest extends Request {
   user?: any;
 }
 
 export class AuthController {
+  private smsService = createSMSService();
+
   // Send verification code to phone number
   async sendVerificationCode(req: Request, res: Response): Promise<void> {
     try {
@@ -24,8 +27,8 @@ export class AuthController {
 
       const { phone } = req.body;
 
-      // Generate a 6-digit verification code (hardcoded for development)
-      const verificationCode = "123456";
+      // Generate a random 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
       // Check if user exists
@@ -47,16 +50,25 @@ export class AuthController {
         await user.save();
       }
 
-      // TODO: Integrate with SMS service to send verification code
-      // For now, we'll just return the code in development
-      console.log(`Verification code for ${phone}: ${verificationCode}`);
+      // Send OTP via Kave Negar SMS service
+      const smsSent = await this.smsService.sendOTP(phone, verificationCode);
+
+      if (!smsSent) {
+        res.status(500).json({
+          success: false,
+          message: 'Failed to send verification code. Please try again.'
+        });
+        return;
+      }
+
+      console.log(`Verification code sent to ${phone}: ${verificationCode}`);
 
       res.json({
         success: true,
         message: 'Verification code sent successfully',
         data: {
           phone,
-          // Remove this in production
+          // Only return code in development mode for testing
           verificationCode: process.env.NODE_ENV === 'development' ? verificationCode : undefined
         }
       });

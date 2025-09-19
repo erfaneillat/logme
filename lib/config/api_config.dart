@@ -8,7 +8,7 @@ class ApiConfig {
   static const String devBaseUrlLocalhost = 'http://localhost:9000';
 
   // Production
-  static const String prodBaseUrl = 'https://logme.yadbanapp.com';
+  static const String prodBaseUrl = 'https://loqmeapp.ir';
 
   // Staging
   static const String stagingBaseUrl = 'http://10.0.2.2:9000';

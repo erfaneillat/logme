@@ -37,8 +37,8 @@ PORT=$port
 MONGODB_URI=${MONGODB_URI:-mongodb://localhost:27017/cal_ai}
 JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key_here}
 OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_api_key_here}
-API_BASE_URL=https://logme.yadbanapp.com
-CORS_ORIGIN=https://logme.yadbanapp.com
+API_BASE_URL=https://loqmeapp.ir
+CORS_ORIGIN=https://loqmeapp.ir
 EOF
         echo "✅ Environment file created at $app_path/.env"
     else
