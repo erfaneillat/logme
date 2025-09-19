@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart' as tr;
-import 'package:pinput/pinput.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/login_provider.dart';
 import '../../../../extensions/context.dart';
@@ -22,6 +22,13 @@ class VerificationPage extends HookConsumerWidget {
 
     final loginNotifier = ref.read(loginProvider.notifier);
     final loginState = ref.watch(loginProvider);
+
+    useEffect(() {
+      SmsAutoFill().listenForCode();
+      return () {
+        SmsAutoFill().unregisterListener();
+      };
+    }, const []);
 
     void handleVerifyCode() async {
       final code = pinController.text;
@@ -100,57 +107,31 @@ class VerificationPage extends HookConsumerWidget {
                 ],
               ),
               const SizedBox(height: 32),
-              // Pinput for verification code
+              // Auto-fill PIN field (Android SMS Retriever compatible)
               Center(
                 child: Directionality(
                   textDirection: TextDirection.ltr,
-                  child: Pinput(
-                    controller: pinController,
-                    focusNode: focusNode,
-                    length: 6, // Changed to 6 digits for OTP
-                    defaultPinTheme: PinTheme(
-                      width: 56,
-                      height: 56,
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    focusedPinTheme: PinTheme(
-                      width: 56,
-                      height: 56,
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: context.colorScheme.primary, width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    submittedPinTheme: PinTheme(
-                      width: 56,
-                      height: 56,
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-                    showCursor: true,
-                    onCompleted: (pin) => handleVerifyCode(),
-                    onChanged: (value) {
-                      // Optional: Add any additional logic when pin changes
+                  child: PinFieldAutoFill(
+                    currentCode: pinController.text,
+                    codeLength: 6,
+                    onCodeChanged: (code) {
+                      final value = code ?? '';
+                      pinController.text = value;
+                      if (value.length == 6) {
+                        focusNode.unfocus();
+                        handleVerifyCode();
+                      }
                     },
+                    onCodeSubmitted: (_) => handleVerifyCode(),
+                    decoration: BoxLooseDecoration(
+                      gapSpace: 12,
+                      radius: const Radius.circular(8),
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      strokeColorBuilder: FixedColorBuilder(Colors.grey[300]!),
+                    ),
                   ),
                 ),
               ),

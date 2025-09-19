@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import '../providers/login_provider.dart';
 import 'verification_page.dart';
 
@@ -13,6 +16,16 @@ class LoginPage extends HookConsumerWidget {
     final phoneController = useTextEditingController();
     final loginNotifier = ref.read(loginProvider.notifier);
     final loginState = ref.watch(loginProvider);
+    final appSignature = useState<String?>(null);
+
+    useEffect(() {
+      Future.microtask(() async {
+        try {
+          appSignature.value = await SmsAutoFill().getAppSignature;
+        } catch (_) {}
+      });
+      return null;
+    }, const []);
 
     void handleSendCode() async {
       if (phoneController.text.trim().isEmpty) {
@@ -84,6 +97,28 @@ class LoginPage extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              if (kDebugMode && appSignature.value != null) ...[
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () async {
+                    final value = appSignature.value!;
+                    await Clipboard.setData(ClipboardData(text: value));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('App hash copied')),
+                      );
+                    }
+                  },
+                  child: Text(
+                    'SMS app hash: ${appSignature.value}',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
               const Spacer(),
               // Continue Button
               SizedBox(
