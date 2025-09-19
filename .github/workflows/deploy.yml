@@ -31,28 +31,19 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: server/package-lock.json
-
-    - name: ✅ Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.29.3'
-        channel: 'stable'
+        cache-dependency-path: |
+          server/package-lock.json
+          website/package-lock.json
 
     - name: 📦 Install Server Dependencies
       run: |
         echo "📦 Installing server dependencies..."
         cd server && npm ci && cd ..
 
-    - name: 📦 Install Flutter Dependencies
+    - name: 📦 Install Website Dependencies
       run: |
-        echo "📦 Installing Flutter dependencies..."
-        flutter pub get
-
-    - name: 🔍 Verify Flutter
-      run: |
-        flutter doctor
-        flutter --version
+        echo "📦 Installing website dependencies..."
+        cd website && npm ci && cd ..
 
     - name: 🔍 Determine Environment
       id: env
@@ -66,8 +57,7 @@ jobs:
           echo "app_name=cal-ai-dev" >> $GITHUB_OUTPUT
           echo "app_port=9001" >> $GITHUB_OUTPUT
           echo "app_path=/var/www/cal-ai-dev" >> $GITHUB_OUTPUT
-          echo "web_path=/var/www/cal-ai-dev/web" >> $GITHUB_OUTPUT
-          echo "api_url=https://dev-logme.yadbanapp.com" >> $GITHUB_OUTPUT
+          echo "api_url=https://dev.loqmeapp.ir" >> $GITHUB_OUTPUT
         else
           echo "environment=production" >> $GITHUB_OUTPUT
           echo "server_host=${{ secrets.SERVER_HOST }}" >> $GITHUB_OUTPUT
@@ -77,8 +67,7 @@ jobs:
           echo "app_name=cal-ai" >> $GITHUB_OUTPUT
           echo "app_port=9000" >> $GITHUB_OUTPUT
           echo "app_path=/var/www/cal-ai" >> $GITHUB_OUTPUT
-          echo "web_path=/var/www/cal-ai/web" >> $GITHUB_OUTPUT
-          echo "api_url=https://logme.yadbanapp.com" >> $GITHUB_OUTPUT
+          echo "api_url=https://loqmeapp.ir" >> $GITHUB_OUTPUT
         fi
 
     - name: 🔨 Build Server
@@ -92,18 +81,26 @@ jobs:
         fi
         cd ..
 
-    - name: 🔨 Build Flutter Web App
+    - name: 🔨 Build React Website
       run: |
-        echo "🔨 Building Flutter web app..."
+        echo "🔨 Building React website..."
+        cd website
         
-        # Build Flutter web with environment variables
+        # Build React app with environment variables
         if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
-          flutter build web --release l --base-href / \
-            --dart-define=API_BASE_URL=https://dev-logme.yadbanapp.com/api
+          REACT_APP_API_URL=https://dev.loqmeapp.ir/api npm run build
         else
-          flutter build web --release  --base-href / \
-            --dart-define=API_BASE_URL=https://logme.yadbanapp.com/api
+          REACT_APP_API_URL=https://loqmeapp.ir/api npm run build
         fi
+        
+        # Verify build was successful
+        if [ ! -d "build" ]; then
+          echo "❌ Error: React build failed - build directory not found"
+          exit 1
+        fi
+        
+        echo "✅ React website built successfully"
+        cd ..
 
     # ✅ Deploy backend code
     - name: ✅ Deploy Server Code
@@ -161,18 +158,33 @@ jobs:
           fi
           
           echo "✅ Server built"
-
-    # ✅ Upload Flutter Web Build
-    - name: ✅ Upload Flutter Web Build
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ steps.env.outputs.server_host }}
-        username: ${{ steps.env.outputs.server_username }}
-        password: ${{ steps.env.outputs.server_password }}
-        port: ${{ steps.env.outputs.server_port }}
-        source: "build/web/*"
-        target: ${{ steps.env.outputs.web_path }}
-        strip_components: 2
+          
+          # Build React website
+          echo "🔨 Building React website..."
+          cd ../website
+          
+          # Install website dependencies if needed
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            echo "⚠️ No package-lock.json found, using npm install..."
+            npm install
+          fi
+          
+          # Build React app with environment variables
+          if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+            REACT_APP_API_URL=https://dev.loqmeapp.ir/api npm run build
+          else
+            REACT_APP_API_URL=https://loqmeapp.ir/api npm run build
+          fi
+          
+          # Verify website build was successful
+          if [ ! -d "build" ]; then
+            echo "❌ Error: React build failed - build directory not found"
+            exit 1
+          fi
+          
+          echo "✅ React website built successfully"
 
     # ✅ Setup Environment Variables
     - name: ✅ Setup Environment Variables
@@ -194,7 +206,7 @@ jobs:
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
             echo "API_BASE_URL=${{ steps.env.outputs.api_url }}" >> .env
-            echo "CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev-logme.yadbanapp.com' || 'https://logme.yadbanapp.com' }}" >> .env
+            echo "CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev.loqmeapp.ir' || 'https://loqmeapp.ir' }}" >> .env
           else
             echo "✅ Existing .env file found, preserving manual configuration"
           fi
@@ -265,7 +277,7 @@ jobs:
         echo "- App Port: ${{ steps.env.outputs.app_port }}"
         echo "- PM2 App Name: ${{ steps.env.outputs.app_name }}"
         if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
-          echo "- Web URL: https://dev-logme.yadbanapp.com"
+          echo "- Web URL: https://dev.loqmeapp.ir"
         else
-          echo "- Web URL: https://logme.yadbanapp.com"
+          echo "- Web URL: https://loqmeapp.ir"
         fi

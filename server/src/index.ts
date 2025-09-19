@@ -5,6 +5,7 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import DatabaseConnection from './config/database';
 import healthRoutes from './routes/healthRoutes';
@@ -72,14 +73,28 @@ app.use('/api/weight', weightRoutes);
 app.use('/api/preferences', preferencesRoutes);
 app.use('/api/referral', referralRoutes);
 
-// Root endpoint
-app.get('/', (req, res) => {
+// Serve static files from the React app build directory
+const websiteBuildPath = path.join(__dirname, '../../website/build');
+app.use(express.static(websiteBuildPath));
+
+// API status endpoint (moved to /api/status to avoid conflicts with React routing)
+app.get('/api/status', (req, res) => {
   res.json({
     message: 'Cal AI Backend API',
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
   });
+});
+
+// Handle React routing - serve index.html for all non-API routes
+app.get('*', (req, res) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+
+  return res.sendFile(path.join(websiteBuildPath, 'index.html'));
 });
 
 // 404 handler
