@@ -35,6 +35,19 @@ const Footer: React.FC = () => {
                         >
                             تماس با پشتیبانی
                         </motion.button>
+                        <a
+                            referrerPolicy="origin"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://trustseal.enamad.ir/?id=650090&Code=rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt"
+                        >
+                            <img
+                                referrerPolicy="origin"
+                                src="https://trustseal.enamad.ir/logo.aspx?id=650090&Code=rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt"
+                                alt=""
+                                style={{ cursor: 'pointer' }}
+                            />
+                        </a>
                         <motion.span
                             className="text-white"
                             whileHover={{ scale: 1.05 }}
