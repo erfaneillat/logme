@@ -205,6 +205,7 @@ jobs:
             echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
             echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+            echo "KAVENEGAR_API_KEY=${{ secrets.KAVENEGAR_API_KEY }}" >> .env
             echo "API_BASE_URL=${{ steps.env.outputs.api_url }}" >> .env
             echo "CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev.loqmeapp.ir' || 'https://loqmeapp.ir' }}" >> .env
           else
