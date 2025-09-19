@@ -186,34 +186,6 @@ jobs:
           
           echo "✅ React website built successfully"
 
-    # ✅ Setup Environment Variables
-    - name: ✅ Setup Environment Variables
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ steps.env.outputs.server_host }}
-        username: ${{ steps.env.outputs.server_username }}
-        password: ${{ steps.env.outputs.server_password }}
-        port: ${{ steps.env.outputs.server_port }}
-        script: |
-          cd ${{ steps.env.outputs.app_path }}/server
-          
-          # Create .env file only if it doesn't exist to preserve manual configurations
-          if [ ! -f ".env" ]; then
-            echo "📝 Creating new .env file..."
-            echo "NODE_ENV=${{ steps.env.outputs.environment }}" > .env
-            echo "PORT=${{ steps.env.outputs.app_port }}" >> .env
-            echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-            echo "KAVENEGAR_API_KEY=${{ secrets.KAVENEGAR_API_KEY }}" >> .env
-            echo "API_BASE_URL=${{ steps.env.outputs.api_url }}" >> .env
-            echo "CORS_ORIGIN=${{ steps.env.outputs.environment == 'development' && 'http://localhost:3000,https://dev.loqmeapp.ir' || 'https://loqmeapp.ir' }}" >> .env
-          else
-            echo "✅ Existing .env file found, preserving manual configuration"
-          fi
-          
-          echo "✅ Environment variables configured"
-
     # ✅ Restart PM2
     - name: ✅ Restart PM2
       uses: appleboy/ssh-action@v1.0.3

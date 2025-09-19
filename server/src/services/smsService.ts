@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import * as Kavenegar from 'kavenegar';
 
 export interface SMSServiceInterface {
@@ -67,7 +68,8 @@ export class KaveNegarSMSService implements SMSServiceInterface {
 
 // Factory function to create SMS service
 export function createSMSService(): SMSServiceInterface {
-    if (process.env.NODE_ENV === 'development' && !process.env.KAVENEGAR_API_KEY) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (!isProduction && !process.env.KAVENEGAR_API_KEY) {
         // Mock service for development
         return {
             async sendOTP(phone: string, code: string): Promise<boolean> {
