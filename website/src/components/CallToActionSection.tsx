@@ -77,6 +77,30 @@ const CallToActionSection: React.FC = () => {
                         </GlowButton>
                     </motion.div>
                 </ScrollAnimation>
+
+                <ScrollAnimation delay={0.6}>
+                    <motion.div
+                        className="mt-8 flex justify-center"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.7 }}
+                    >
+                        <a
+                            referrerPolicy="origin"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://trustseal.enamad.ir/?id=650090&Code=rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt"
+                        >
+                            <img
+                                referrerPolicy="origin"
+                                src="https://trustseal.enamad.ir/logo.aspx?id=650090&Code=rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt"
+                                alt=""
+                                style={{ cursor: 'pointer' }}
+                                className="hover:opacity-80 transition-opacity duration-300"
+                            />
+                        </a>
+                    </motion.div>
+                </ScrollAnimation>
             </div>
         </section>
     );
