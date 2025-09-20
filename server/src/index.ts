@@ -34,7 +34,11 @@ const PORT = process.env.PORT || 8000;
 const HOST = process.env.HOST || '0.0.0.0'; // Changed from 'localhost' to '0.0.0.0'
 
 // Security middleware
-app.use(helmet());
+// Configure Helmet to allow referrer information for third‑party trust badges (e.g., Enamad)
+app.use(helmet({
+  // Sends the origin for cross-origin requests while keeping strong privacy defaults
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+}));
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*', // Allow all origins for development
   credentials: true,
