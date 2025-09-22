@@ -1,22 +1,30 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    // END: FlutterFire Configuration
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.example.cal_ai"
-    compileSdk = 36
-    ndkVersion = flutter.ndkVersion
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = "29.0.13846066"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = '17'
     }
 
     defaultConfig {
@@ -24,17 +32,33 @@ android {
         applicationId = "com.example.cal_ai"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
-        targetSdk = 36
+        minSdkVersion 23
+        targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Add Google Sign-In configuration and application name
+        manifestPlaceholders = [
+            'GOOGLE_CLIENT_ID': '1033973813560-jum3tbbqu1oec1je2us6orv592eod98d.apps.googleusercontent.com',
+            'applicationName': 'io.flutter.app.FlutterApplication'
+        ]
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                storePassword keystoreProperties['storePassword']
+            }
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
         }
     }
 }

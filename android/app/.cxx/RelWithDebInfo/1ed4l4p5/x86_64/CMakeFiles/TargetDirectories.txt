@@ -1,0 +1,2 @@
+/Users/erfan/repositories/cal_ai/android/app/.cxx/RelWithDebInfo/1ed4l4p5/x86_64/CMakeFiles/edit_cache.dir
+/Users/erfan/repositories/cal_ai/android/app/.cxx/RelWithDebInfo/1ed4l4p5/x86_64/CMakeFiles/rebuild_cache.dir

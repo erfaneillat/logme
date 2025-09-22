@@ -12,6 +12,15 @@ interface AuthRequest extends Request {
 export class AuthController {
   private smsService = createSMSService();
 
+  constructor() {
+    // Bind methods to preserve 'this' context
+    this.sendVerificationCode = this.sendVerificationCode.bind(this);
+    this.verifyPhone = this.verifyPhone.bind(this);
+    this.getProfile = this.getProfile.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
+    this.refreshToken = this.refreshToken.bind(this);
+  }
+
   // Send verification code to phone number
   async sendVerificationCode(req: Request, res: Response): Promise<void> {
     try {

@@ -100,6 +100,7 @@
         "phone_verification_failed": "تایید شماره تلفن ناموفق بود",
         "invalid_verification_code": "کد تایید نامعتبر است",
         "expired_verification_code": "کد تایید منقضی شده است",
+        "paste_code": "چسباندن کد",
         "failed_to_send_code": "ارسال کد تایید ناموفق بود",
         "phone_number_not_found": "شماره تلفن یافت نشد",
         "invalid_phone_number": "لطفا یک شماره تلفن معتبر وارد کنید"

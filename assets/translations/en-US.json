@@ -100,6 +100,7 @@
         "phone_verification_failed": "Phone verification failed",
         "invalid_verification_code": "Invalid verification code",
         "expired_verification_code": "Verification code has expired",
+        "paste_code": "Paste Code",
         "failed_to_send_code": "Failed to send verification code",
         "phone_number_not_found": "Phone number not found",
         "invalid_phone_number": "Please enter a valid phone number"

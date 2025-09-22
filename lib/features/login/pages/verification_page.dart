@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart' as tr;
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 import '../providers/login_provider.dart';
 import '../../../../extensions/context.dart';
 
@@ -17,8 +18,10 @@ class VerificationPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pinController = useTextEditingController();
-    final focusNode = useFocusNode();
+    final pinControllers =
+        List.generate(6, (index) => useTextEditingController());
+    final focusNodes = List.generate(6, (index) => useFocusNode());
+    final currentIndex = useState(0);
 
     final loginNotifier = ref.read(loginProvider.notifier);
     final loginState = ref.watch(loginProvider);
@@ -31,8 +34,8 @@ class VerificationPage extends HookConsumerWidget {
     }, const []);
 
     void handleVerifyCode() async {
-      final code = pinController.text;
-      if (code.length != 6) return; // Changed to 6 digits for OTP
+      final code = pinControllers.map((controller) => controller.text).join();
+      if (code.length != 6) return;
 
       try {
         final user = await loginNotifier.verifyCode(code);
@@ -49,11 +52,32 @@ class VerificationPage extends HookConsumerWidget {
       }
     }
 
+    // Note: SMS auto-fill is handled by the SmsAutoFill().listenForCode() call in the first useEffect
+    // The manual input fields will work with both manual typing and auto-fill
+
     void handleResendCode() async {
       try {
         await loginNotifier.sendCode(phoneNumber);
       } catch (e) {
         // Error is already handled in notifier
+      }
+    }
+
+    void onDigitChanged(String value, int index) {
+      if (value.length == 1) {
+        // Move to next field
+        if (index < 5) {
+          currentIndex.value = index + 1;
+          focusNodes[index + 1].requestFocus();
+        } else {
+          // Last digit entered, verify code
+          focusNodes[index].unfocus();
+          handleVerifyCode();
+        }
+      } else if (value.isEmpty && index > 0) {
+        // Move to previous field on backspace
+        currentIndex.value = index - 1;
+        focusNodes[index - 1].requestFocus();
       }
     }
 
@@ -107,31 +131,67 @@ class VerificationPage extends HookConsumerWidget {
                 ],
               ),
               const SizedBox(height: 32),
-              // Auto-fill PIN field (Android SMS Retriever compatible)
+              // Manual PIN input fields
               Center(
                 child: Directionality(
                   textDirection: TextDirection.ltr,
-                  child: PinFieldAutoFill(
-                    currentCode: pinController.text,
-                    codeLength: 6,
-                    onCodeChanged: (code) {
-                      final value = code ?? '';
-                      pinController.text = value;
-                      if (value.length == 6) {
-                        focusNode.unfocus();
-                        handleVerifyCode();
-                      }
-                    },
-                    onCodeSubmitted: (_) => handleVerifyCode(),
-                    decoration: BoxLooseDecoration(
-                      gapSpace: 12,
-                      radius: const Radius.circular(8),
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      strokeColorBuilder: FixedColorBuilder(Colors.grey[300]!),
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(6, (index) {
+                      return Container(
+                        width: 45,
+                        height: 55,
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        child: TextFormField(
+                          controller: pinControllers[index],
+                          focusNode: focusNodes[index],
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          maxLength: 1,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: InputDecoration(
+                            counterText: '',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: currentIndex.value == index
+                                    ? context.colorScheme.primary
+                                    : Colors.grey[300]!,
+                                width: 2,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: context.colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: currentIndex.value == index
+                                ? context.colorScheme.primary.withOpacity(0.05)
+                                : Colors.grey[50],
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: (value) => onDigitChanged(value, index),
+                          onTap: () {
+                            currentIndex.value = index;
+                          },
+                        ),
+                      );
+                    }),
                   ),
                 ),
               ),
