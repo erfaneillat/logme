@@ -40,9 +40,11 @@ export class ReferralController {
         return;
       }
 
+      // Generate referral code if user doesn't have one
       if (!user.referralCode) {
-        user.referralCode = await generateUniqueReferralCode(user.id);
-        await user.save();
+        const newReferralCode = await generateUniqueReferralCode(user.id);
+        await User.findByIdAndUpdate(userId, { referralCode: newReferralCode }, { new: true });
+        user.referralCode = newReferralCode;
       }
 
       res.json({ success: true, code: user.referralCode });
@@ -87,7 +89,9 @@ export class ReferralController {
 
       // Ensure user has/gets a referralCode too (for sharing later)
       if (!user.referralCode) {
-        user.referralCode = await generateUniqueReferralCode(user.id);
+        const newReferralCode = await generateUniqueReferralCode(user.id);
+        await User.findByIdAndUpdate(userId, { referralCode: newReferralCode }, { new: true });
+        user.referralCode = newReferralCode;
       }
 
       const referrer = await User.findOne({ referralCode: code });
@@ -168,7 +172,7 @@ export class ReferralController {
       }
 
       // Check if the new code is the same as current code
-      if (user.referralCode === newCode) {
+      if (user.referralCode && user.referralCode === newCode) {
         res.status(400).json({ success: false, message: 'New code must be different from current code' });
         return;
       }

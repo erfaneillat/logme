@@ -133,7 +133,6 @@
         "describe_food": "توضیح غذا",
         "describe_food_desc": "دستی تایپ کنید",
         "add_exercise": "افزودن ورزش",
-        "add_exercise_desc": "ثبت کالری سوزانده",
         "favorites": "علاقه‌مندی‌ها",
         "favorites_desc": "انتخاب‌های سریع",
         "profile": "پروفایل",
@@ -388,7 +387,10 @@
         "unable_to_load": "قابل بارگذاری نیست",
         "save_tooltip": "ذخیره",
         "cancel_tooltip": "انصراف",
-        "edit_code_tooltip": "ویرایش کد"
+        "edit_code_tooltip": "ویرایش کد",
+        "code_updated_success": "کد معرفی با موفقیت به‌روزرسانی شد!",
+        "code_input_hint": "کد را وارد کنید (۴-۸ حرف)",
+        "code_input_helper": "فقط از حروف بزرگ انگلیسی و اعداد استفاده کنید"
     },
     "analytics": {
         "overview": "نمای کلی",

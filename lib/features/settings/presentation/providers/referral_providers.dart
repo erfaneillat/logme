@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../data/referral_repository.dart';
 
 /// State for referral code update
@@ -41,7 +42,7 @@ class ReferralCodeUpdateNotifier
       final updatedCode = await _repository.updateCode(newCode);
       state = state.copyWith(
         isLoading: false,
-        successMessage: 'Referral code updated successfully!',
+        successMessage: 'refer.code_updated_success'.tr(),
       );
       return updatedCode;
     } catch (e) {
@@ -78,11 +79,11 @@ final referralSuccessCountProvider = FutureProvider<int>((ref) async {
 
 /// Reward amount (in toman) per successful referral.
 final rewardPerReferralProvider = Provider<int>((ref) {
-  final summary = ref.watch(referralSummaryProvider).maybeWhen(
+  final rewardAmount = ref.watch(referralSummaryProvider).maybeWhen(
         data: (s) => s.rewardPerReferral,
         orElse: () => 25000,
       );
-  return summary;
+  return rewardAmount;
 });
 
 /// Total earnings in toman

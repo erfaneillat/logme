@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +55,7 @@ class ReferFriendPage extends HookConsumerWidget {
               children: [
                 const Icon(Icons.check_circle, color: Colors.white),
                 const SizedBox(width: 8),
-                Text('Referral code updated successfully!'),
+                Text('refer.code_updated_success'.tr()),
               ],
             ),
             backgroundColor: const Color(0xFF4CAF50),
@@ -89,11 +88,14 @@ class ReferFriendPage extends HookConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           'refer.title'.tr(),
-          style: const TextStyle(fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -105,7 +107,7 @@ class ReferFriendPage extends HookConsumerWidget {
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            color: const Color(0xFFEEEEEE),
+            color: Colors.grey.shade200,
           ),
         ),
       ),
@@ -119,29 +121,50 @@ class ReferFriendPage extends HookConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF6366F1).withValues(alpha: 0.1),
-                      const Color(0xFF8B5CF6).withValues(alpha: 0.1),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 15,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
+                    // Icon with gradient background
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.group_add_rounded,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Text(
                       'refer.headline'.tr(),
                       style:
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF1F2937),
+                                color: Colors.black87,
                               ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 20),
-                    const _AvatarsOrbit(),
                     const SizedBox(height: 16),
                     Center(
                       child: Column(
@@ -152,8 +175,8 @@ class ReferFriendPage extends HookConsumerWidget {
                                 .textTheme
                                 .titleLarge
                                 ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1F2937),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
                                 ),
                             textAlign: TextAlign.center,
                           ),
@@ -164,7 +187,7 @@ class ReferFriendPage extends HookConsumerWidget {
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(
-                                  color: const Color(0xFF6B7280),
+                                  color: Colors.grey.shade600,
                                   height: 1.5,
                                 ),
                             textAlign: TextAlign.center,
@@ -183,10 +206,10 @@ class ReferFriendPage extends HookConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.08),
+                      color: Colors.black.withOpacity(0.04),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -198,15 +221,15 @@ class ReferFriendPage extends HookConsumerWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color:
-                                const Color(0xFF6366F1).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
+                                Theme.of(context).primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
                             Icons.discount,
-                            color: const Color(0xFF6366F1),
+                            color: Theme.of(context).primaryColor,
                             size: 20,
                           ),
                         ),
@@ -216,7 +239,7 @@ class ReferFriendPage extends HookConsumerWidget {
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF1F2937),
+                                    color: Colors.black87,
                                   ),
                         ),
                       ],
@@ -238,17 +261,14 @@ class ReferFriendPage extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: codeAsync.maybeWhen(
-                        orElse: () => _ShareButton(
-                          onPressed: null,
-                          text: 'refer.share'.tr(),
-                        ),
-                        data: (code) => _ShareButton(
-                          onPressed: () => shareCode(code),
-                          text: 'refer.share'.tr(),
-                        ),
+                    codeAsync.maybeWhen(
+                      orElse: () => _ShareButton(
+                        onPressed: null,
+                        text: 'refer.share'.tr(),
+                      ),
+                      data: (code) => _ShareButton(
+                        onPressed: () => shareCode(code),
+                        text: 'refer.share'.tr(),
                       ),
                     ),
                   ],
@@ -279,51 +299,29 @@ class _ShareButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: onPressed != null
-              ? [const Color(0xFF6366F1), const Color(0xFF8B5CF6)]
-              : [const Color(0xFF9CA3AF), const Color(0xFF6B7280)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: onPressed != null
-            ? [
-                BoxShadow(
-                  color: const Color(0xFF6366F1).withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
-      ),
-      child: ElevatedButton(
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
         onPressed: onPressed,
+        icon: const Icon(Icons.share, size: 18, color: Colors.white),
+        label: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
+          backgroundColor: onPressed != null
+              ? Theme.of(context).primaryColor
+              : Colors.grey.shade400,
           foregroundColor: Colors.white,
-          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          elevation: 0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.share, size: 20, color: Colors.white),
-            const SizedBox(width: 8),
-            Text(
-              text,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-          ],
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          elevation: onPressed != null ? 2 : 0,
         ),
       ),
     );
@@ -349,10 +347,10 @@ class _EarningsSection extends HookConsumerWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF6366F1).withValues(alpha: 0.06),
+              color: Colors.black.withOpacity(0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -364,19 +362,19 @@ class _EarningsSection extends HookConsumerWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isError
-                    ? const Color(0xFFEF4444).withValues(alpha: 0.1)
+                    ? Colors.red.withOpacity(0.1)
                     : isLoading
-                        ? const Color(0xFFF59E0B).withValues(alpha: 0.1)
-                        : const Color(0xFF10B981).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                        ? Colors.orange.withOpacity(0.1)
+                        : Theme.of(context).primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
                 color: isError
-                    ? const Color(0xFFEF4444)
+                    ? Colors.red
                     : isLoading
-                        ? const Color(0xFFF59E0B)
-                        : const Color(0xFF10B981),
+                        ? Colors.orange
+                        : Theme.of(context).primaryColor,
                 size: 20,
               ),
             ),
@@ -388,7 +386,7 @@ class _EarningsSection extends HookConsumerWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF6B7280),
+                          color: Colors.grey.shade600,
                           fontWeight: FontWeight.w500,
                         ),
                   ),
@@ -397,7 +395,7 @@ class _EarningsSection extends HookConsumerWidget {
                     value,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1F2937),
+                          color: Colors.black87,
                         ),
                   ),
                 ],
@@ -418,12 +416,12 @@ class _EarningsSection extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.account_balance_wallet,
-                color: Color(0xFF6366F1),
+                color: Theme.of(context).primaryColor,
                 size: 20,
               ),
             ),
@@ -432,7 +430,7 @@ class _EarningsSection extends HookConsumerWidget {
               'refer.earnings_title'.tr(),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1F2937),
+                    color: Colors.black87,
                   ),
             ),
           ],
@@ -482,155 +480,6 @@ class _EarningsSection extends HookConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _AvatarsOrbit extends StatefulWidget {
-  const _AvatarsOrbit();
-
-  @override
-  State<_AvatarsOrbit> createState() => _AvatarsOrbitState();
-}
-
-class _AvatarsOrbitState extends State<_AvatarsOrbit>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _rotationAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
-
-    _rotationAnimation = Tween<double>(
-      begin: 0.0,
-      end: 2 * pi,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = [
-      const Color(0xFF3B82F6), // blue-500
-      const Color(0xFF10B981), // emerald-500
-      const Color(0xFF6366F1), // indigo-500
-      const Color(0xFFF59E0B), // amber-500
-      const Color(0xFFEF4444), // red-500
-      const Color(0xFF8B5CF6), // violet-500
-    ];
-
-    return SizedBox(
-      height: 180,
-      child: AnimatedBuilder(
-        animation: _rotationAnimation,
-        builder: (context, child) {
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              // Outer rotating ring
-              Transform.rotate(
-                angle: _rotationAnimation.value,
-                child: Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.2),
-                      width: 2,
-                    ),
-                  ),
-                ),
-              ),
-
-              // Center circle with icon
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.3),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.local_dining_rounded,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
-
-              // Animated avatars
-              ...List.generate(6, (index) {
-                final angle = (index * pi / 3) + _rotationAnimation.value;
-                final radius = 70.0;
-                final x = radius * cos(angle);
-                final y = radius * sin(angle);
-
-                return Transform.translate(
-                  offset: Offset(x, y),
-                  child: _Avatar(color: colors[index]),
-                );
-              }),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _Avatar extends StatelessWidget {
-  const _Avatar({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: CircleAvatar(
-        radius: 24,
-        backgroundColor: color,
-        child: const Icon(
-          Icons.person,
-          color: Colors.white,
-          size: 20,
-        ),
-      ),
     );
   }
 }
@@ -727,149 +576,183 @@ class _CodeBoxState extends State<_CodeBox> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isError
-              ? const Color(0xFFEF4444).withValues(alpha: 0.2)
-              : const Color(0xFF6366F1).withValues(alpha: 0.1),
+              ? Colors.red.withOpacity(0.2)
+              : Theme.of(context).primaryColor.withOpacity(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6366F1).withValues(alpha: 0.08),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isError
-                  ? const Color(0xFFEF4444).withValues(alpha: 0.1)
-                  : isLoading
-                      ? const Color(0xFFF59E0B).withValues(alpha: 0.1)
-                      : const Color(0xFF6366F1).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              isError
-                  ? Icons.error_outline
-                  : isLoading
-                      ? Icons.access_time
-                      : Icons.discount,
-              color: isError
-                  ? const Color(0xFFEF4444)
-                  : isLoading
-                      ? const Color(0xFFF59E0B)
-                      : const Color(0xFF6366F1),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _isEditing
-                ? TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1F2937),
-                        ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter code (4-8 chars)',
-                      hintStyle: TextStyle(
-                        color: const Color(0xFF6B7280),
-                        fontSize:
-                            Theme.of(context).textTheme.titleLarge?.fontSize,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 2,
+          // Input field container
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isError
+                      ? Colors.red.withOpacity(0.1)
+                      : isLoading
+                          ? Colors.orange.withOpacity(0.1)
+                          : Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  isError
+                      ? Icons.error_outline
+                      : isLoading
+                          ? Icons.access_time
+                          : Icons.discount,
+                  color: isError
+                      ? Colors.red
+                      : isLoading
+                          ? Colors.orange
+                          : Theme.of(context).primaryColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _isEditing
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextField(
+                            controller: _controller,
+                            focusNode: _focusNode,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  letterSpacing: 2,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'refer.code_input_hint'.tr(),
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: (Theme.of(context)
+                                            .textTheme
+                                            .titleLarge
+                                            ?.fontSize ??
+                                        20) *
+                                    0.6,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[A-Z0-9]')),
+                              LengthLimitingTextInputFormatter(8),
+                            ],
+                            onSubmitted: (_) => _saveEditing(),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'refer.code_input_helper'.tr(),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey.shade500,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      )
+                    : Text(
+                        widget.code,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w700,
+                              color: isError ? Colors.red : Colors.black87,
+                            ),
                       ),
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
-                      LengthLimitingTextInputFormatter(8),
-                    ],
-                    onSubmitted: (_) => _saveEditing(),
-                  )
-                : Text(
-                    widget.code,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w700,
-                          color: isError
-                              ? const Color(0xFFEF4444)
-                              : const Color(0xFF1F2937),
-                        ),
-                  ),
-          ),
-          if (_isEditing) ...[
-            IconButton(
-              onPressed: widget.isUpdating ? null : _saveEditing,
-              icon: widget.isUpdating
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.check, color: Color(0xFF10B981)),
-              tooltip: 'refer.save_tooltip'.tr(),
-              style: IconButton.styleFrom(
-                backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: _cancelEditing,
-              icon: const Icon(Icons.close, color: Color(0xFFEF4444)),
-              tooltip: 'refer.cancel_tooltip'.tr(),
-              style: IconButton.styleFrom(
-                backgroundColor: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ] else ...[
-            IconButton(
-              onPressed: widget.onCopy,
-              icon: Icon(
-                Icons.copy_rounded,
-                color: widget.onCopy != null
-                    ? const Color(0xFF6366F1)
-                    : const Color(0xFF9CA3AF),
-              ),
-              tooltip: 'refer.copy'.tr(),
-              style: IconButton.styleFrom(
-                backgroundColor: widget.onCopy != null
-                    ? const Color(0xFF6366F1).withValues(alpha: 0.1)
-                    : const Color(0xFFF3F4F6),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            if (widget.onUpdate != null && !isLoading && !isError) ...[
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: _startEditing,
-                icon: const Icon(Icons.edit, color: Color(0xFF6366F1)),
-                tooltip: 'refer.edit_code_tooltip'.tr(),
-                style: IconButton.styleFrom(
-                  backgroundColor:
-                      const Color(0xFF6366F1).withValues(alpha: 0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
               ),
             ],
-          ],
+          ),
+          const SizedBox(height: 12),
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: _isEditing
+                ? [
+                    IconButton(
+                      onPressed: widget.isUpdating ? null : _saveEditing,
+                      icon: widget.isUpdating
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.check, color: Colors.green),
+                      tooltip: 'refer.save_tooltip'.tr(),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.green.withOpacity(0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: _cancelEditing,
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      tooltip: 'refer.cancel_tooltip'.tr(),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.red.withOpacity(0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ]
+                : [
+                    IconButton(
+                      onPressed: widget.onCopy,
+                      icon: Icon(
+                        Icons.copy_rounded,
+                        color: widget.onCopy != null
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey.shade400,
+                      ),
+                      tooltip: 'refer.copy'.tr(),
+                      style: IconButton.styleFrom(
+                        backgroundColor: widget.onCopy != null
+                            ? Theme.of(context).primaryColor.withOpacity(0.1)
+                            : Colors.grey.shade100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    if (widget.onUpdate != null && !isLoading && !isError) ...[
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: _startEditing,
+                        icon: Icon(Icons.edit,
+                            color: Theme.of(context).primaryColor),
+                        tooltip: 'refer.edit_code_tooltip'.tr(),
+                        style: IconButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).primaryColor.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+          ),
         ],
       ),
     );
@@ -883,10 +766,10 @@ class _HowToEarnCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6366F1).withValues(alpha: 0.08),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -900,12 +783,12 @@ class _HowToEarnCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lightbulb_outline,
-                  color: Color(0xFF6366F1),
+                  color: Theme.of(context).primaryColor,
                   size: 20,
                 ),
               ),
@@ -914,7 +797,7 @@ class _HowToEarnCard extends StatelessWidget {
                 'refer.how_title'.tr(),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1F2937),
+                      color: Colors.black87,
                     ),
               ),
             ],
@@ -923,13 +806,13 @@ class _HowToEarnCard extends StatelessWidget {
           _HowToPoint(
             icon: Icons.share,
             text: 'refer.how_point1'.tr(),
-            color: const Color(0xFF10B981),
+            color: Colors.green,
           ),
           const SizedBox(height: 12),
           _HowToPoint(
             icon: Icons.celebration,
             text: 'refer.how_point2'.tr(),
-            color: const Color(0xFFF59E0B),
+            color: Colors.orange,
           ),
         ],
       ),
@@ -955,7 +838,7 @@ class _HowToPoint extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Icon(
@@ -969,7 +852,7 @@ class _HowToPoint extends StatelessWidget {
           child: Text(
             text,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF374151),
+                  color: Colors.grey.shade700,
                   height: 1.5,
                 ),
           ),

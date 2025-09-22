@@ -133,7 +133,6 @@
         "describe_food": "Describe food",
         "describe_food_desc": "Type manually",
         "add_exercise": "Add Exercise",
-        "add_exercise_desc": "Log burned calories",
         "favorites": "Favorites",
         "favorites_desc": "Quick selections",
         "profile": "Profile",
@@ -388,7 +387,10 @@
         "unable_to_load": "Unable to load",
         "save_tooltip": "Save",
         "cancel_tooltip": "Cancel",
-        "edit_code_tooltip": "Edit code"
+        "edit_code_tooltip": "Edit code",
+        "code_updated_success": "Referral code updated successfully!",
+        "code_input_hint": "Enter code (4-8 chars)",
+        "code_input_helper": "Use only uppercase letters and numbers"
     },
     "analytics": {
         "overview": "Overview",
