@@ -20,6 +20,8 @@ import weightRoutes from './routes/weightRoutes';
 import preferencesRoutes from './routes/preferencesRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
+import * as cron from 'node-cron';
+import { resetInactiveUserStreaks } from './services/streakService';
 
 // Load environment variables first
 dotenv.config();
@@ -30,7 +32,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 9000;
 const HOST = process.env.HOST || '0.0.0.0'; // Changed from 'localhost' to '0.0.0.0'
 
 // Security middleware
@@ -107,12 +109,35 @@ app.use(notFoundHandler);
 // Error handling middleware
 app.use(errorHandler);
 
+// Cron job setup
+function setupCronJobs(): void {
+  console.log('Setting up cron jobs...');
+
+  // Reset inactive user streaks daily at 2 AM
+  cron.schedule('0 2 * * *', async () => {
+    try {
+      console.log('Running daily streak reset cron job...');
+      const resetCount = await resetInactiveUserStreaks(7); // Reset streaks for users inactive for 7+ days
+      console.log(`Cron job completed: Reset ${resetCount} user streaks`);
+    } catch (error) {
+      console.error('Error in streak reset cron job:', error);
+    }
+  }, {
+    timezone: 'UTC' // Use UTC timezone for consistency
+  });
+
+  console.log('Cron jobs setup completed');
+}
+
 // Database connection and server startup
 const startServer = async (): Promise<void> => {
   try {
     // Connect to MongoDB
     const dbConnection = DatabaseConnection.getInstance();
     await dbConnection.connect();
+
+    // Setup cron jobs
+    setupCronJobs();
 
     // Start server
     const server = app.listen(Number(PORT), HOST, () => {

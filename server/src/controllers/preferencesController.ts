@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import User from '../models/User';
+import { updateUserLastActivity } from '../services/streakService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -71,6 +72,9 @@ export class PreferencesController {
                 res.status(404).json({ success: false, message: 'User not found' });
                 return;
             }
+
+            // Update user's last activity
+            try { await updateUserLastActivity(userId); } catch (_) { }
 
             res.json({
                 success: true,

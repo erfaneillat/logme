@@ -116,10 +116,13 @@ export class AuthController {
       }
 
       // Check if verification code is valid and not expired
-      if (!user.verificationCode ||
+      // In development mode, accept "123456" as a valid code for testing
+      const isValidCode = process.env.NODE_ENV === 'development' && verificationCode === '123456';
+
+      if (!isValidCode && (!user.verificationCode ||
         user.verificationCode !== verificationCode ||
         !user.verificationCodeExpires ||
-        user.verificationCodeExpires < new Date()) {
+        user.verificationCodeExpires < new Date())) {
         res.status(400).json({
           success: false,
           message: 'Invalid or expired verification code'

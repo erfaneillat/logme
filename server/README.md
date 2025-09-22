@@ -46,6 +46,26 @@ RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 ```
 
+## Development Setup
+
+For quick development setup, run:
+
+```bash
+npm run setup-dev
+```
+
+This will create a `.env` file with development configuration and show you the development verification code.
+
+### Development Verification Code
+
+In development mode (`NODE_ENV=development`), you can use **"123456"** as the verification code for testing purposes. This bypasses the SMS verification system and allows for quick testing of the authentication flow.
+
+**Important Notes:**
+- This only works when `NODE_ENV=development`
+- In production, real SMS verification is required
+- The server returns the actual verification code in development mode for testing
+- Mobile app expects server on port 9000 (already configured)
+
 ## Installation
 
 1. Install dependencies:

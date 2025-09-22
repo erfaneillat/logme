@@ -55,6 +55,17 @@ class VerificationPage extends HookConsumerWidget {
     // Note: SMS auto-fill is handled by the SmsAutoFill().listenForCode() call in the first useEffect
     // The manual input fields will work with both manual typing and auto-fill
 
+    // Auto-focus on first input field
+    useEffect(() {
+      Future.microtask(() {
+        if (focusNodes.isNotEmpty) {
+          currentIndex.value = 0;
+          focusNodes[0].requestFocus();
+        }
+      });
+      return null;
+    }, const []);
+
     void handleResendCode() async {
       try {
         await loginNotifier.sendCode(phoneNumber);
@@ -64,6 +75,11 @@ class VerificationPage extends HookConsumerWidget {
     }
 
     void onDigitChanged(String value, int index) {
+      // Clear error message when user starts typing
+      if (loginState.error != null && value.length == 1) {
+        loginNotifier.clearError();
+      }
+
       if (value.length == 1) {
         // Move to next field
         if (index < 5) {
@@ -200,15 +216,43 @@ class VerificationPage extends HookConsumerWidget {
               if (loginState.error != null)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.red[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red[200]!, width: 1),
                   ),
-                  child: Text(
-                    loginState.error!,
-                    style: TextStyle(color: Colors.red[700]),
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: Colors.red[600],
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'login.error_title'.tr(),
+                            style: TextStyle(
+                              color: Colors.red[700],
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        loginState.error!.tr(),
+                        style: TextStyle(
+                          color: Colors.red[700],
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
               if (loginState.error != null) const SizedBox(height: 16),

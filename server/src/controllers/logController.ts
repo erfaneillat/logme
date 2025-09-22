@@ -3,7 +3,7 @@ import { validationResult } from 'express-validator';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
 import AdditionalInfo from '../models/AdditionalInfo';
-import { updateStreakIfEligible } from '../services/streakService';
+import { updateStreakIfEligible, updateStreakOnFirstMeal, updateUserLastActivity } from '../services/streakService';
 import { ExerciseAnalysisService } from '../services/exerciseAnalysisService';
 
 interface AuthRequest extends Request { user?: any }
@@ -62,6 +62,9 @@ export class LogController {
 
             // Trigger streak update after totals change
             try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
+
+            // Update user's last activity
+            try { await updateUserLastActivity(userId); } catch (_) { }
 
             res.json({ success: true, data: { log } });
         } catch (error) {
@@ -246,6 +249,10 @@ export class LogController {
             const portionsSanitized = Math.max(1, Math.round(Number(portions ?? 1)));
             const timeIso = new Date().toISOString();
 
+            // Check if this is the first item of the day for streak calculation
+            const existingLog = await DailyLog.findOne({ userId, date: sanitizedDate }).lean();
+            const isFirstItemOfDay = !existingLog || !existingLog.items || existingLog.items.length === 0;
+
             // Upsert totals
             await DailyLog.findOneAndUpdate(
                 { userId, date: sanitizedDate },
@@ -299,7 +306,20 @@ export class LogController {
             const pushed = updated?.items?.find((it: any) => it.timeIso === timeIso);
 
             // Trigger streak update after totals change
-            try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
+            try {
+                if (isFirstItemOfDay) {
+                    // First item of the day - update streak regardless of calories
+                    await updateStreakOnFirstMeal(userId, sanitizedDate);
+                } else {
+                    // Not first item - always update streak (no calorie requirement)
+                    await updateStreakIfEligible(userId, sanitizedDate);
+                }
+            } catch (error) {
+                console.error(`Error updating streak for user ${userId}:`, error);
+            }
+
+            // Update user's last activity
+            try { await updateUserLastActivity(userId); } catch (_) { }
 
             res.json({ success: true, data: { item: pushed ?? null } });
         } catch (error) {
@@ -360,6 +380,9 @@ export class LogController {
 
             // Trigger streak update after totals change
             try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
+
+            // Update user's last activity
+            try { await updateUserLastActivity(userId); } catch (_) { }
 
             res.json({ success: true, data: { itemId } });
         } catch (error) {
@@ -487,6 +510,9 @@ export class LogController {
             // Trigger streak update after totals change
             try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
+            // Update user's last activity
+            try { await updateUserLastActivity(userId); } catch (_) { }
+
             res.json({ success: true, data: { item: updatedItem } });
         } catch (error) {
             console.error('Update log item error:', error);
@@ -551,6 +577,9 @@ export class LogController {
 
             // Trigger streak update after totals change
             try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
+
+            // Update user's last activity
+            try { await updateUserLastActivity(userId); } catch (_) { }
 
             // Return response indicating preference status for frontend feedback
             const preferenceEnabled = user.addBurnedCalories ?? true;

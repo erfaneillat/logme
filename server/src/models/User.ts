@@ -17,6 +17,7 @@ export interface IUser extends Document {
   // Streak fields
   streakCount?: number; // number of consecutive days completed
   lastStreakDate?: string | null; // YYYY-MM-DD of last completed day
+  lastActivity?: Date; // timestamp of last user activity
   // User preferences
   addBurnedCalories?: boolean; // whether to add burned calories to daily goal
   rolloverCalories?: boolean; // whether to rollover remaining calories
@@ -106,6 +107,11 @@ const userSchema = new Schema<IUser>(
     },
     lastStreakDate: {
       type: String,
+      required: false,
+      default: null,
+    },
+    lastActivity: {
+      type: Date,
       required: false,
       default: null,
     },

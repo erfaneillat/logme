@@ -103,7 +103,15 @@
         "paste_code": "Paste Code",
         "failed_to_send_code": "Failed to send verification code",
         "phone_number_not_found": "Phone number not found",
-        "invalid_phone_number": "Please enter a valid phone number"
+        "invalid_phone_number": "Please enter a valid phone number",
+        "error_title": "Error",
+        "network_error": "Network error. Please check your internet connection and try again.",
+        "connection_timeout": "Connection timeout. Please check your internet connection and try again.",
+        "server_error": "Server error occurred. Please try again later.",
+        "request_timeout": "Request timed out. Please try again.",
+        "authentication_failed": "Authentication failed. Please try again.",
+        "too_many_attempts": "Too many failed attempts. Please try again later.",
+        "unexpected_error": "An error occurred. Please try again."
     },
     "home": {
         "title": "Home",

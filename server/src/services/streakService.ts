@@ -4,8 +4,24 @@ import User from '../models/User';
 import Streak from '../models/Streak';
 
 /**
- * Update user's streak based on whether a given date's log meets the daily calorie goal.
- * - If caloriesConsumed >= plan.calories for that date, increment streak for that date.
+ * Update user's last activity timestamp to current time
+ * @param userId - The user's ID
+ */
+export async function updateUserLastActivity(userId: string): Promise<void> {
+  try {
+    await User.findByIdAndUpdate(userId, {
+      $set: { lastActivity: new Date() }
+    }).exec();
+  } catch (error) {
+    console.error('Error updating user last activity:', error);
+    // Don't throw error as this is not critical functionality
+  }
+}
+
+/**
+ * Update user's streak when additional meals are logged.
+ * - Since we want streaks to increase by just logging meals (not requiring calorie goals),
+ *   this function always increments the streak when meals are logged.
  * - If the user missed days (gap > 1 day) before this date, reset streak to 0 before incrementing.
  * - If already counted for this date (lastStreakDate === date), do nothing.
  *
@@ -15,21 +31,15 @@ export async function updateStreakIfEligible(userId: string, date: string): Prom
   const targetDate = (date || '').slice(0, 10);
   if (!targetDate) return;
 
-  // Fetch latest plan
-  const plan = await Plan.findOne({ userId }).sort({ createdAt: -1 }).lean();
-  if (!plan || !plan.calories || plan.calories <= 0) return;
-
-  // Fetch that day's log
-  const log = await DailyLog.findOne({ userId, date: targetDate }).lean();
-  const consumed = Number(log?.caloriesConsumed ?? 0);
-  const goal = Number(plan.calories);
-
   // Fetch user streak state
   const user = await User.findById(userId).lean();
   if (!user) return;
 
   const lastStreakDate: string | null = (user as any).lastStreakDate ?? null;
   const currentStreak: number = Math.max(0, Number((user as any).streakCount ?? 0));
+
+  // Already counted for this date -> nothing to do
+  if (lastStreakDate === targetDate) return;
 
   // Helpers
   const parse = (d: string) => {
@@ -56,32 +66,11 @@ export async function updateStreakIfEligible(userId: string, date: string): Prom
     return fmt(t);
   };
 
-  // If not meeting goal, no increment. Optionally reset if missed days before targetDate.
-  if (consumed < goal) {
-    // If last streak date is older than yesterday of target date, reset to 0
-    if (lastStreakDate) {
-      const yesterday = prevDate(targetDate);
-      if (lastStreakDate < yesterday) {
-        await User.findByIdAndUpdate(userId, { $set: { streakCount: 0 } }).exec();
-      }
-    }
-    // Persist non-completion for the date to keep explicit records (optional)
-    try {
-      await Streak.findOneAndUpdate(
-        { userId, date: targetDate },
-        { $set: { userId, date: targetDate, completed: false } },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      ).exec();
-    } catch (_) { }
-    return;
-  }
+  // Since we want streaks to increase just by logging meals (not requiring calorie goals),
+  // we always increment the streak when meals are logged (except for the first meal which uses updateStreakOnFirstMeal)
 
-  // At this point the day meets the goal.
-  // Determine new streak value.
+  // Determine new streak value (always increment when meals are logged).
   const yesterday = prevDate(targetDate);
-
-  // Already counted for this date -> nothing to do
-  if (lastStreakDate === targetDate) return;
 
   let nextStreak = 1;
   if (lastStreakDate === yesterday) {
@@ -99,6 +88,9 @@ export async function updateStreakIfEligible(userId: string, date: string): Prom
       lastStreakDate: targetDate,
     },
   }).exec();
+
+  // Update last activity timestamp
+  await updateUserLastActivity(userId);
 
   // Record completion for this date in Streaks collection
   try {
@@ -178,6 +170,9 @@ export async function updateStreakOnFirstMeal(userId: string, date: string): Pro
     },
   }).exec();
 
+  // Update last activity timestamp
+  await updateUserLastActivity(userId);
+
   // Record completion for this date in Streaks collection
   try {
     await Streak.findOneAndUpdate(
@@ -210,4 +205,62 @@ export async function getCompletedStreakDatesInRange(
     .lean();
 
   return (docs || []).map((d: any) => String(d?.date || '')).filter(Boolean);
+}
+
+/**
+ * Reset streaks for users who have been inactive for more than the specified number of days.
+ * A user is considered inactive if their lastActivity is older than the threshold.
+ *
+ * @param inactivityDaysThreshold - Number of days of inactivity before resetting streak (default: 7)
+ * @returns Promise with the number of users whose streaks were reset
+ */
+export async function resetInactiveUserStreaks(inactivityDaysThreshold: number = 7): Promise<number> {
+  try {
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - inactivityDaysThreshold);
+
+    // Find users who are inactive (lastActivity is null or older than threshold)
+    // and have an active streak (streakCount > 0)
+    const inactiveUsers = await User.find({
+      $or: [
+        { lastActivity: { $lt: thresholdDate } },
+        { lastActivity: null }
+      ],
+      streakCount: { $gt: 0 }
+    }).select('_id streakCount lastStreakDate lastActivity');
+
+    console.log(`Found ${inactiveUsers.length} users with active streaks who may be inactive`);
+
+    let resetCount = 0;
+
+    for (const user of inactiveUsers) {
+      // Double-check if user is still inactive by checking their most recent activity
+      // This could be from DailyLog entries or other activity sources
+      const lastLog = await DailyLog.findOne({ userId: user._id })
+        .sort({ updatedAt: -1 })
+        .select('updatedAt');
+
+      const lastActivityDate = lastLog?.updatedAt || user.lastActivity;
+
+      // If the user has been inactive for the threshold period, reset their streak
+      if (!lastActivityDate || lastActivityDate < thresholdDate) {
+        await User.findByIdAndUpdate(user._id, {
+          $set: {
+            streakCount: 0,
+            lastStreakDate: null,
+            lastActivity: new Date(), // Update lastActivity to current time to avoid reprocessing
+          }
+        });
+
+        console.log(`Reset streak for user ${user._id} (streak was ${user.streakCount}, last activity: ${lastActivityDate})`);
+        resetCount++;
+      }
+    }
+
+    console.log(`Streak reset completed. Reset ${resetCount} user streaks.`);
+    return resetCount;
+  } catch (error) {
+    console.error('Error resetting inactive user streaks:', error);
+    throw error;
+  }
 }

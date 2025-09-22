@@ -4,6 +4,7 @@ import '../domain/usecases/send_verification_code_usecase.dart';
 import '../domain/usecases/verify_phone_usecase.dart';
 import '../domain/entities/user.dart';
 import '../presentation/providers/auth_provider.dart';
+import '../../../../extensions/error_handler.dart';
 
 class LoginNotifier extends StateNotifier<LoginState> {
   final SendVerificationCodeUseCase sendVerificationCodeUseCase;
@@ -28,7 +29,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: ErrorHandler.getErrorTranslationKey(e),
       );
     }
   }
@@ -52,7 +53,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: ErrorHandler.getErrorTranslationKey(e),
       );
       return null;
     }
@@ -60,6 +61,10 @@ class LoginNotifier extends StateNotifier<LoginState> {
 
   void reset() {
     state = const LoginState();
+  }
+
+  void clearError() {
+    state = state.copyWith(error: null);
   }
 }
 

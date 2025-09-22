@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import WeightEntry from '../models/WeightEntry';
 import DailyLog from '../models/DailyLog';
+import { updateUserLastActivity } from '../services/streakService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -45,7 +46,10 @@ export class WeightController {
           },
           { upsert: true, new: true, setDefaultsOnInsert: true }
         ).exec();
-      } catch (_) {}
+      } catch (_) { }
+
+      // Update user's last activity
+      try { await updateUserLastActivity(userId); } catch (_) { }
 
       res.json({ success: true, data: { entry } });
     } catch (error) {
