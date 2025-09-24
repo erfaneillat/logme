@@ -36,8 +36,8 @@ export class AuthController {
 
       const { phone } = req.body;
 
-      // Generate a random 6-digit verification code
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      // Use static verification code for development and production
+      const verificationCode = '123456';
       const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
       // Check if user exists
@@ -59,26 +59,25 @@ export class AuthController {
         await user.save();
       }
 
-      // Send OTP via Kave Negar SMS service
-      const smsSent = await this.smsService.sendOTP(phone, verificationCode);
+      // SMS service commented out - using static code for development and production
+      // const smsSent = await this.smsService.sendOTP(phone, verificationCode);
+      // if (!smsSent) {
+      //   res.status(500).json({
+      //     success: false,
+      //     message: 'Failed to send verification code. Please try again.'
+      //   });
+      //   return;
+      // }
 
-      if (!smsSent) {
-        res.status(500).json({
-          success: false,
-          message: 'Failed to send verification code. Please try again.'
-        });
-        return;
-      }
-
-      console.log(`Verification code sent to ${phone}: ${verificationCode}`);
+      console.log(`Using static verification code for ${phone}: ${verificationCode}`);
 
       res.json({
         success: true,
         message: 'Verification code sent successfully',
         data: {
           phone,
-          // Only return code in development mode for testing
-          verificationCode: process.env.NODE_ENV === 'development' ? verificationCode : undefined
+          // Return static code for both development and production
+          verificationCode: verificationCode
         }
       });
     } catch (error) {
@@ -116,8 +115,8 @@ export class AuthController {
       }
 
       // Check if verification code is valid and not expired
-      // In development mode, accept "123456" as a valid code for testing
-      const isValidCode = process.env.NODE_ENV === 'development' && verificationCode === '123456';
+      // Accept "123456" as a valid code for both development and production
+      const isValidCode = verificationCode === '123456';
 
       if (!isValidCode && (!user.verificationCode ||
         user.verificationCode !== verificationCode ||
