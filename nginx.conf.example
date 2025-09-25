@@ -17,6 +17,9 @@ server {
     ssl_certificate /etc/letsencrypt/live/logme.yadbanapp.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/logme.yadbanapp.com/privkey.pem;
     
+    # Allow larger request bodies for image uploads
+    client_max_body_size 20M;
+    
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers off;
@@ -103,6 +106,9 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/dev-logme.yadbanapp.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/dev-logme.yadbanapp.com/privkey.pem;
+    
+    # Allow larger request bodies for image uploads (dev)
+    client_max_body_size 20M;
     
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
