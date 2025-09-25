@@ -78,37 +78,6 @@ const CallToActionSection: React.FC = () => {
                     </motion.div>
                 </ScrollAnimation>
 
-                <ScrollAnimation delay={0.6}>
-                    <motion.div
-                        className="mt-8 flex justify-center"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.7 }}
-                    >
-                        {/* eslint-disable-next-line react/jsx-no-target-blank */}
-                        <a
-                            referrerPolicy="origin"
-                            target="_blank"
-                            href="https://trustseal.enamad.ir/?id=650090&Code=rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt"
-                            style={{ display: 'inline-block', cursor: 'pointer' }}
-                            className="hover:opacity-80 transition-opacity duration-300"
-                        >
-                            <img
-                                referrerPolicy="origin"
-                                src="https://trustseal.enamad.ir/logo.aspx?id=650090&Code=rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt"
-                                alt="نماد اعتماد الکترونیک"
-                                style={{
-                                    cursor: 'pointer',
-                                    width: 'auto',
-                                    height: '80px',
-                                    display: 'block',
-                                    border: 'none'
-                                }}
-                                {...({ code: "rqekd1jNfC3F5qF2bjG7gQNIUIEFQOQt" } as any)}
-                            />
-                        </a>
-                    </motion.div>
-                </ScrollAnimation>
             </div>
         </section>
     );

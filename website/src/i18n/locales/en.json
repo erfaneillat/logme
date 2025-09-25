@@ -72,6 +72,27 @@
             }
         }
     },
+    "contact": {
+        "title": "Get In Touch",
+        "subtitle": "We'd love to hear from you!",
+        "description": "Have questions about لقمه? Want to share feedback? Or just want to say hello? We'd love to hear from you!",
+        "form": {
+            "name": "Your Name",
+            "email": "Your Email",
+            "subject": "Subject",
+            "message": "Your Message",
+            "send": "Send Message",
+            "sending": "Sending...",
+            "success": "Message sent successfully!",
+            "error": "Failed to send message. Please try again."
+        },
+        "info": {
+            "email": "erfaneillat@gmail.com",
+            "phone": "09149668006",
+            "address": "West Azerbaijan, Urmia, Azadi District, Shahid Reza Esmailpour St., No. 8",
+            "hours": "Sat-Wed: 9:00 AM - 9:00 PM"
+        }
+    },
     "footer": {
         "brand": {
             "title": "لقمه",
@@ -100,5 +121,103 @@
             "googlePlayTitle": "Google Play"
         },
         "copyright": "© 2024 لقمه - Calorie Counter AI. All rights reserved."
+    },
+    "privacyPolicy": {
+        "title": "Privacy Policy",
+        "lastUpdated": "Last Updated: January 15, 2025",
+        "introduction": {
+            "title": "Introduction",
+            "content": "At لقمه, we respect your privacy and are committed to protecting your personal information. This privacy policy explains how we collect, use, and protect your information. By using our services, you agree to this policy."
+        },
+        "dataCollection": {
+            "title": "Data Collection",
+            "content": "We collect the following information from you:",
+            "personalInfo": {
+                "title": "Personal Information",
+                "phone": "Phone number (for authentication)",
+                "email": "Email address (optional)",
+                "name": "Full name (optional)",
+                "password": "Password (stored encrypted)"
+            },
+            "healthInfo": {
+                "title": "Health Information",
+                "gender": "Gender",
+                "age": "Age",
+                "weight": "Current weight",
+                "height": "Height",
+                "activityLevel": "Activity level",
+                "weightGoal": "Weight goal (lose/maintain/gain)",
+                "targetWeight": "Target weight"
+            },
+            "nutritionData": {
+                "title": "Nutrition Data",
+                "foodPhotos": "Food photos (for AI analysis)",
+                "mealLogs": "Meal logs",
+                "calorieData": "Calorie consumption data",
+                "nutritionInfo": "Nutrition information (protein, carbs, fat)",
+                "weightEntries": "Weight entries"
+            },
+            "usageData": {
+                "title": "Usage Data",
+                "appUsage": "App usage patterns",
+                "features": "Features used",
+                "deviceInfo": "Device information (type, OS version)",
+                "logs": "System logs and errors"
+            }
+        },
+        "dataUsage": {
+            "title": "Data Usage",
+            "content": "We use your information for the following purposes:",
+            "provideService": "Providing calorie tracking and nutrition services",
+            "personalizeExperience": "Personalizing user experience and recommendations",
+            "improveAccuracy": "Improving AI accuracy in food recognition",
+            "sendNotifications": "Sending reminders and notifications",
+            "analytics": "Analyzing and improving app performance",
+            "support": "Providing technical support and answering questions"
+        },
+        "dataSharing": {
+            "title": "Data Sharing",
+            "content": "We do not share your information with third parties, except in the following cases:",
+            "serviceProviders": "Trusted service providers (such as secure cloud services)",
+            "legalRequirements": "When required by law or requested by competent authorities",
+            "userConsent": "With your explicit consent",
+            "businessTransfer": "In case of business transfer or company merger"
+        },
+        "dataSecurity": {
+            "title": "Data Security",
+            "content": "We use strong security measures to protect your information:",
+            "encryption": "Encryption of sensitive data during transmission and storage",
+            "accessControl": "Limited access control to personal information",
+            "secureStorage": "Secure storage on protected servers",
+            "regularAudits": "Regular security audits and system updates"
+        },
+        "userRights": {
+            "title": "User Rights",
+            "content": "You have the following rights regarding your personal information:",
+            "access": "Access to your personal information",
+            "correction": "Correction of incorrect or incomplete information",
+            "deletion": "Deletion of personal information (right to be forgotten)",
+            "portability": "Receiving a copy of information in readable format",
+            "objection": "Objection to processing information for specific purposes"
+        },
+        "dataRetention": {
+            "title": "Data Retention",
+            "content": "We retain your information only as long as necessary to provide services. Inactive account information is deleted after 3 years. Your nutrition and health information is retained as long as your account is active to provide personalized services."
+        },
+        "children": {
+            "title": "Children",
+            "content": "Our services are designed for people over 13 years old. We do not knowingly collect personal information from children under 13. If we discover that we have collected information from a child under 13, we will delete it immediately."
+        },
+        "changes": {
+            "title": "Policy Changes",
+            "content": "We may update this privacy policy. Significant changes will be notified through app notifications or email. Continued use of services after changes means you agree to the new policy."
+        },
+        "contact": {
+            "title": "Contact Us",
+            "content": "If you have questions about this privacy policy or want to exercise your rights, please contact us:",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address"
+        }
     }
 }

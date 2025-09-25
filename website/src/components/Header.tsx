@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { scrollToDownload } from '../utils/scrollToSection';
 
 const Header: React.FC = () => {
@@ -87,6 +88,17 @@ const Header: React.FC = () => {
                                 >
                                     {t('header.nav.accuracy')}
                                 </motion.a>
+                                <Link
+                                    to="/contact"
+                                    className="text-white hover:text-gray-300 transition-colors font-farsi text-sm"
+                                >
+                                    <motion.div
+                                        whileHover={{ scale: 1.1, y: -2 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        {t('footer.support.contactUs')}
+                                    </motion.div>
+                                </Link>
                                 <motion.button
                                     onClick={scrollToDownload}
                                     className="bg-white text-black px-4 py-2 rounded-xl font-medium hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg font-farsi text-sm"
@@ -189,6 +201,13 @@ const Header: React.FC = () => {
                                         >
                                             {t('header.nav.accuracy')}
                                         </a>
+                                        <Link
+                                            to="/contact"
+                                            onClick={closeDrawer}
+                                            className="block text-white hover:text-gray-300 px-4 py-3 rounded-lg transition-colors font-farsi text-base hover:bg-opacity-10 hover:bg-white"
+                                        >
+                                            {t('footer.support.contactUs')}
+                                        </Link>
                                         <button
                                             onClick={() => {
                                                 scrollToDownload();
