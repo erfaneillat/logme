@@ -36,8 +36,8 @@ export class AuthController {
 
       const { phone } = req.body;
 
-      // Use static verification code for development and production
-      const verificationCode = '123456';
+      // Generate random 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
       // Check if user exists
@@ -59,25 +59,24 @@ export class AuthController {
         await user.save();
       }
 
-      // SMS service commented out - using static code for development and production
-      // const smsSent = await this.smsService.sendOTP(phone, verificationCode);
-      // if (!smsSent) {
-      //   res.status(500).json({
-      //     success: false,
-      //     message: 'Failed to send verification code. Please try again.'
-      //   });
-      //   return;
-      // }
+      // Send SMS with OTP code
+      const smsSent = await this.smsService.sendOTP(phone, verificationCode);
+      if (!smsSent) {
+        res.status(500).json({
+          success: false,
+          message: 'Failed to send verification code. Please try again.'
+        });
+        return;
+      }
 
-      console.log(`Using static verification code for ${phone}: ${verificationCode}`);
+      console.log(`Verification code sent successfully to ${phone}: ${verificationCode}`);
 
       res.json({
         success: true,
         message: 'Verification code sent successfully',
         data: {
-          phone,
-          // Return static code for both development and production
-          verificationCode: verificationCode
+          phone
+          // Note: Verification code is sent via SMS only
         }
       });
     } catch (error) {
@@ -115,13 +114,10 @@ export class AuthController {
       }
 
       // Check if verification code is valid and not expired
-      // Accept "123456" as a valid code for both development and production
-      const isValidCode = verificationCode === '123456';
-
-      if (!isValidCode && (!user.verificationCode ||
+      if (!user.verificationCode ||
         user.verificationCode !== verificationCode ||
         !user.verificationCodeExpires ||
-        user.verificationCodeExpires < new Date())) {
+        user.verificationCodeExpires < new Date()) {
         res.status(400).json({
           success: false,
           message: 'Invalid or expired verification code'

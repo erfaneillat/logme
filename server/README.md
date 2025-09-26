@@ -54,17 +54,26 @@ For quick development setup, run:
 npm run setup-dev
 ```
 
-This will create a `.env` file with development configuration and show you the development verification code.
+This will create a `.env` file with development configuration and show you the SMS service configuration.
 
-### Development Verification Code
+### SMS Service Configuration
 
-In development mode (`NODE_ENV=development`), you can use **"123456"** as the verification code for testing purposes. This bypasses the SMS verification system and allows for quick testing of the authentication flow.
+The SMS service behaves differently based on the environment and API key configuration:
+
+**Development Mode (`NODE_ENV=development`):**
+- If `KAVENEGAR_API_KEY` is configured: Real SMS OTP will be sent
+- If no API key is configured: Mock service will be used (no actual SMS sent)
+- The server does NOT return the verification code in the API response (security)
+
+**Production Mode (`NODE_ENV=production`):**
+- `KAVENEGAR_API_KEY` is required
+- Real SMS OTP will always be sent
+- The server does NOT return the verification code in the API response (security)
 
 **Important Notes:**
-- This only works when `NODE_ENV=development`
-- In production, real SMS verification is required
-- The server returns the actual verification code in development mode for testing
 - Mobile app expects server on port 9000 (already configured)
+- In development, check server logs to see if SMS was actually sent or mocked
+- Use the verification code received via SMS for authentication
 
 ## Installation
 
@@ -75,13 +84,14 @@ npm install
 
 2. Set up environment variables (see above)
 
-3. Configure Kave Negar SMS service:
+3. Configure Kave Negar SMS service (optional for development, required for production):
    - Sign up at [Kave Negar](https://kavenegar.com/)
    - Get your API key from the dashboard
    - Create an OTP template named "verify" (or update KAVENEGAR_OTP_TEMPLATE)
    - The template should include a `{token}` placeholder for the OTP code
+   - Add your API key to the `.env` file
 
-4. Start MongoDB:
+5. Start MongoDB:
 ```bash
 # macOS
 brew services start mongodb-community

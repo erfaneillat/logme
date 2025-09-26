@@ -21,15 +21,24 @@ export class KaveNegarSMSService implements SMSServiceInterface {
             // Clean phone number - remove any non-digit characters except +
             const cleanPhone = phone.replace(/[^\d+]/g, '');
 
-            // If phone starts with +98, remove the +
-            const formattedPhone = cleanPhone.startsWith('+98')
-                ? cleanPhone.substring(3)
-                : cleanPhone.startsWith('98')
-                    ? cleanPhone.substring(2)
-                    : cleanPhone;
+            let finalPhone: string;
 
-            // Ensure phone starts with 9 for Iranian numbers
-            const finalPhone = formattedPhone.startsWith('9') ? formattedPhone : `9${formattedPhone}`;
+            if (cleanPhone.startsWith('+98')) {
+                // Remove +98 and keep the rest
+                finalPhone = cleanPhone.substring(3);
+            } else if (cleanPhone.startsWith('98')) {
+                // Remove 98 and keep the rest
+                finalPhone = cleanPhone.substring(2);
+            } else if (cleanPhone.startsWith('09')) {
+                // Already in correct format for Iranian numbers
+                finalPhone = cleanPhone;
+            } else if (cleanPhone.startsWith('9')) {
+                // Add leading zero for Iranian numbers
+                finalPhone = `0${cleanPhone}`;
+            } else {
+                // Default: assume it's a local number and add 09
+                finalPhone = `09${cleanPhone}`;
+            }
 
             console.log(`Sending OTP ${code} to phone: ${finalPhone}`);
 
@@ -39,13 +48,23 @@ export class KaveNegarSMSService implements SMSServiceInterface {
                 this.api.VerifyLookup({
                     receptor: finalPhone,
                     token: code,
-                    template: process.env.KAVENEGAR_OTP_TEMPLATE || 'verify', // Default template name
+                    template: process.env.KAVENEGAR_OTP_TEMPLATE || 'loqmeVerificationCode', // Default template name
                 }, (response: any, status: number) => {
                     if (status === 200) {
                         console.log('SMS sent successfully:', response);
                         resolve(response);
                     } else {
                         console.error('SMS sending failed:', response, 'Status:', status);
+                        console.error('Kave Negar Error Codes:');
+                        console.error('- 411: Insufficient Credit');
+                        console.error('- 400: Invalid Parameters');
+                        console.error('- 401: Authentication Failed');
+                        console.error('- 402: Account Deactivated');
+                        console.error('- 403: Forbidden');
+                        console.error('- 404: Template Not Found');
+                        console.error('- 405: No Template Content');
+                        console.error('- 406: Daily Limit Exceeded');
+                        console.error('- 407: Daily Limit Exceeded for Receptor');
                         reject(new Error(`SMS sending failed with status: ${status}`));
                     }
                 });
@@ -68,9 +87,14 @@ export class KaveNegarSMSService implements SMSServiceInterface {
 
 // Factory function to create SMS service
 export function createSMSService(): SMSServiceInterface {
+    // Use real SMS service if API key is provided, regardless of environment
+    if (process.env.KAVENEGAR_API_KEY) {
+        return new KaveNegarSMSService();
+    }
+
+    // Mock service only when no API key is configured
     const isProduction = process.env.NODE_ENV === 'production';
-    if (!isProduction && !process.env.KAVENEGAR_API_KEY) {
-        // Mock service for development
+    if (!isProduction) {
         return {
             async sendOTP(phone: string, code: string): Promise<boolean> {
                 console.log(`Mock SMS Service: Would send OTP ${code} to ${phone}`);
@@ -79,5 +103,5 @@ export function createSMSService(): SMSServiceInterface {
         };
     }
 
-    return new KaveNegarSMSService();
+    throw new Error('KAVENEGAR_API_KEY is required in production mode');
 }

@@ -46,10 +46,10 @@ if (!fs.existsSync(envPath)) {
 }
 
 // Development verification code info
-console.log('\n📱 Development Verification Code:');
-console.log('   • Use "123456" as the verification code');
-console.log('   • This works only in development mode (NODE_ENV=development)');
-console.log('   • In production, real SMS verification is required\n');
+console.log('\n📱 SMS Service Configuration:');
+console.log('   • Real SMS service will be used if KAVENEGAR_API_KEY is configured');
+console.log('   • If no API key is set, a mock service will be used');
+console.log('   • In production, KAVENEGAR_API_KEY is required\n');
 
 console.log('🛠️  Server Configuration:');
 console.log('   • Port: 9000 (matches mobile app configuration)');
@@ -64,4 +64,4 @@ console.log('   4. Run: npm run dev');
 console.log('   5. Mobile app will connect to: http://10.0.2.2:9000\n');
 
 console.log('✅ Development setup complete!');
-console.log('💡 Remember: Use "123456" as the verification code for testing!');
+console.log('💡 SMS Service: Real SMS will be sent if KAVENEGAR_API_KEY is configured!');
