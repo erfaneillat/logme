@@ -6,7 +6,7 @@ part of 'delete_account_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deleteAccountHash() => r'714517fc5f6b3a822efb36fe1644a5b724c7ab92';
+String _$deleteAccountHash() => r'ff2681bf2b8e54dc6a1b00d23f35dd66058724a8';
 
 /// See also [DeleteAccount].
 @ProviderFor(DeleteAccount)

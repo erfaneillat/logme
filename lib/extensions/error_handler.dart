@@ -78,6 +78,17 @@ class ErrorHandler {
       return 'login.authentication_failed';
     }
 
+    // Handle account deletion errors
+    if (errorString.contains('account deletion failed') ||
+        errorString.contains('failed to delete account')) {
+      return 'delete_account.deletion_failed';
+    }
+
+    if (errorString.contains('user not found') &&
+        errorString.contains('delete')) {
+      return 'delete_account.user_not_found';
+    }
+
     // Default fallback
     return 'login.unexpected_error';
   }

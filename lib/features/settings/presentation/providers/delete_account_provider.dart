@@ -1,4 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:dio/dio.dart';
+import '../../../../config/api_config.dart';
+import '../../../../services/api_service_provider.dart';
+import '../../../../extensions/error_handler.dart';
 
 part 'delete_account_provider.g.dart';
 
@@ -9,21 +13,51 @@ class DeleteAccount extends _$DeleteAccount {
     return const DeleteAccountState();
   }
 
-  Future<bool> deleteAccount() async {
+  Future<bool> deleteAccount({String? reason}) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // TODO: Implement actual delete account API call
-      // For now, simulate the API call
-      await Future.delayed(const Duration(seconds: 2));
+      final apiService = ref.read(apiServiceProvider);
 
-      // Simulate success
-      state = state.copyWith(isLoading: false, isDeleted: true);
-      return true;
-    } catch (e) {
+      final response = await apiService.delete(
+        ApiConfig.authDeleteAccount,
+        data: reason != null ? {'reason': reason} : null,
+      );
+
+      print('DeleteAccount: Response received - $response');
+      print('DeleteAccount: Response success value - ${response['success']}');
+      print(
+          'DeleteAccount: Response success type - ${response['success'].runtimeType}');
+
+      if (response['success'] == true) {
+        print('DeleteAccount: Success response received, updating state');
+        state = state.copyWith(
+          isLoading: false,
+          isDeleted: true,
+          error: null,
+        );
+        print(
+            'DeleteAccount: New state - isLoading: ${state.isLoading}, isDeleted: ${state.isDeleted}, error: ${state.error}');
+        return true;
+      } else {
+        throw Exception(response['message'] ?? 'Failed to delete account');
+      }
+    } on DioException catch (e) {
+      print('DeleteAccount: DioException caught - $e');
+      final errorMessage = ErrorHandler.getErrorTranslationKey(e);
+      print('DeleteAccount: Error message - $errorMessage');
       state = state.copyWith(
         isLoading: false,
-        error: 'Failed to delete account. Please try again.',
+        error: errorMessage,
+      );
+      return false;
+    } catch (e) {
+      print('DeleteAccount: General exception caught - $e');
+      final errorMessage = ErrorHandler.getErrorTranslationKey(e);
+      print('DeleteAccount: Error message - $errorMessage');
+      state = state.copyWith(
+        isLoading: false,
+        error: errorMessage,
       );
       return false;
     }
@@ -49,7 +83,7 @@ class DeleteAccountState {
     return DeleteAccountState(
       isLoading: isLoading ?? this.isLoading,
       isDeleted: isDeleted ?? this.isDeleted,
-      error: error ?? this.error,
+      error: error,
     );
   }
 }

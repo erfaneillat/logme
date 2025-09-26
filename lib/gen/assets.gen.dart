@@ -27,6 +27,10 @@ class Assets {
   static const AssetGenImage imagesFoodOnboarding =
       AssetGenImage('assets/images/food-onboarding.jpg');
 
+  /// File path: assets/images/loqme_logo.jpg
+  static const AssetGenImage imagesLoqmeLogo =
+      AssetGenImage('assets/images/loqme_logo.jpg');
+
   /// File path: assets/images/loqme_logo_PNG.png
   static const AssetGenImage imagesLoqmeLogoPNG =
       AssetGenImage('assets/images/loqme_logo_PNG.png');
@@ -47,6 +51,7 @@ class Assets {
         fontsVazirMedium,
         fontsVazirThin,
         imagesFoodOnboarding,
+        imagesLoqmeLogo,
         imagesLoqmeLogoPNG,
         imagesManOnboarding,
         translationsEnUS,

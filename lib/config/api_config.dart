@@ -46,6 +46,7 @@ class ApiConfig {
   static const String authVerifyPhone = '/api/auth/verify-phone';
   static const String authProfile = '/api/auth/profile';
   static const String authRefreshToken = '/api/auth/refresh-token';
+  static const String authDeleteAccount = '/api/auth/account';
 
   // Additional Information Endpoints
   static const String additionalInfo = '/api/user/additional-info';

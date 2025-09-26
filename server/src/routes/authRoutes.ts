@@ -21,11 +21,16 @@ const profileUpdateValidation = [
   body('email').optional().isEmail().normalizeEmail()
 ];
 
+const deleteAccountValidation = [
+  body('reason').optional().trim().isLength({ max: 500 }).withMessage('Reason must be less than 500 characters')
+];
+
 // Routes
 router.post('/send-code', phoneValidation, authController.sendVerificationCode);
 router.post('/verify-phone', verificationCodeValidation, authController.verifyPhone);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, authController.updateProfile);
 router.post('/refresh-token', authenticateTokenAllowExpired, authController.refreshToken);
+router.delete('/account', authenticateToken, deleteAccountValidation, authController.deleteAccount);
 
 export default router;

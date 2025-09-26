@@ -308,6 +308,8 @@
     },
     "delete_account": {
         "title": "Delete Account",
+        "user_not_found": "User account not found.",
+        "deleting": "Deleting account...",
         "warning_title": "Permanent Account Deletion",
         "warning_subtitle": "This action cannot be undone. All your data will be permanently deleted.",
         "what_deleted": "What will be deleted",

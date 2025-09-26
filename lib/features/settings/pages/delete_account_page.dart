@@ -16,6 +16,10 @@ class DeleteAccountPage extends HookConsumerWidget {
     final isAgreed = useState(false);
     final deleteState = ref.watch(deleteAccountProvider);
 
+    // Debug logging
+    print(
+        'DeleteAccountPage build - isLoading: ${deleteState.isLoading}, isDeleted: ${deleteState.isDeleted}, error: ${deleteState.error}');
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -23,28 +27,15 @@ class DeleteAccountPage extends HookConsumerWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.arrow_back_ios, size: 18),
-          ),
+          icon: const Icon(Icons.arrow_back_ios,
+              size: 20, color: Color(0xFF6B7280)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'delete_account.title'.tr(),
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1F2937),
               ),
         ),
         centerTitle: true,
@@ -57,43 +48,36 @@ class DeleteAccountPage extends HookConsumerWidget {
             children: [
               // Warning Header
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.red.shade50,
-                      Colors.red.shade100,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
+                  color: const Color(0xFFFEF2F2),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.red.withOpacity(0.2),
+                    color: const Color(0xFFFECACA),
+                    width: 1,
                   ),
                 ),
                 child: Column(
                   children: [
                     Icon(
                       Icons.warning_amber_rounded,
-                      color: Colors.red.shade600,
-                      size: 48,
+                      color: const Color(0xFFDC2626),
+                      size: 32,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Text(
                       'delete_account.warning_title'.tr(),
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.red.shade700,
-                              ),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF991B1B),
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'delete_account.warning_subtitle'.tr(),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.red.shade600,
+                            color: const Color(0xFF7F1D1D),
                             height: 1.4,
                           ),
                       textAlign: TextAlign.center,
@@ -106,20 +90,14 @@ class DeleteAccountPage extends HookConsumerWidget {
 
               // What will be deleted
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.red.withOpacity(0.1),
+                    color: const Color(0xFFE5E7EB),
+                    width: 1,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,16 +106,16 @@ class DeleteAccountPage extends HookConsumerWidget {
                       children: [
                         Icon(
                           Icons.delete_forever_outlined,
-                          color: Colors.red.shade600,
-                          size: 24,
+                          color: const Color(0xFFDC2626),
+                          size: 20,
                         ),
                         const SizedBox(width: 12),
                         Text(
                           'delete_account.what_deleted'.tr(),
                           style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.black87,
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF1F2937),
                                   ),
                         ),
                       ],
@@ -160,17 +138,14 @@ class DeleteAccountPage extends HookConsumerWidget {
 
               // Confirmation Input
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFFE5E7EB),
+                    width: 1,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,15 +154,15 @@ class DeleteAccountPage extends HookConsumerWidget {
                       'delete_account.confirm_title'.tr(),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: const Color(0xFF1F2937),
                           ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
                       'delete_account.confirm_instruction'
                           .tr(namedArgs: {'text': 'DELETE'}),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade600,
+                            color: const Color(0xFF6B7280),
                             height: 1.4,
                           ),
                     ),
@@ -196,29 +171,40 @@ class DeleteAccountPage extends HookConsumerWidget {
                       controller: confirmationController,
                       decoration: InputDecoration(
                         hintText: 'DELETE',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade400,
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF9CA3AF),
                         ),
                         filled: true,
-                        fillColor: Colors.grey.shade50,
+                        fillColor: const Color(0xFFF9FAFB),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                            width: 1,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                            width: 1,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.red.shade300,
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFDC2626),
                             width: 2,
                           ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 16,
+                          vertical: 14,
                         ),
                       ),
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF1F2937),
                           ),
                     ),
                   ],
@@ -229,17 +215,14 @@ class DeleteAccountPage extends HookConsumerWidget {
 
               // Agreement Checkbox
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFFE5E7EB),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +230,8 @@ class DeleteAccountPage extends HookConsumerWidget {
                     Checkbox(
                       value: isAgreed.value,
                       onChanged: (value) => isAgreed.value = value ?? false,
-                      activeColor: Colors.red.shade600,
+                      activeColor: const Color(0xFFDC2626),
+                      checkColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
@@ -257,7 +241,7 @@ class DeleteAccountPage extends HookConsumerWidget {
                       child: Text(
                         'delete_account.agreement_text'.tr(),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey.shade700,
+                              color: const Color(0xFF374151),
                               height: 1.4,
                             ),
                       ),
@@ -277,59 +261,78 @@ class DeleteAccountPage extends HookConsumerWidget {
                           ? () => _showFinalConfirmation(context, ref)
                           : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade600,
+                    backgroundColor:
+                        _canDelete(confirmationController.text, isAgreed.value)
+                            ? const Color(0xFFDC2626)
+                            : const Color(0xFF9CA3AF),
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey.shade300,
+                    disabledBackgroundColor: const Color(0xFF9CA3AF),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    elevation: 0,
                   ),
                   child: deleteState.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'delete_account.deleting'.tr(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
                         )
                       : Text(
                           'delete_account.delete_button'.tr(),
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
-                            fontSize: 16,
+                            fontSize: 15,
                           ),
                         ),
                 ),
               ),
 
-              if (deleteState.error != null) ...[
+              if (deleteState.error != null && !deleteState.isDeleted) ...[
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(12),
+                    color: const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.red.shade200,
+                      color: const Color(0xFFFECACA),
+                      width: 1,
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.error_outline,
-                        color: Colors.red.shade600,
-                        size: 20,
+                        color: const Color(0xFFDC2626),
+                        size: 18,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           deleteState.error!,
-                          style: TextStyle(
-                            color: Colors.red.shade700,
+                          style: const TextStyle(
+                            color: Color(0xFF991B1B),
                             fontWeight: FontWeight.w500,
+                            fontSize: 14,
                           ),
                         ),
                       ),
@@ -353,7 +356,7 @@ class DeleteAccountPage extends HookConsumerWidget {
         children: [
           Icon(
             Icons.close,
-            color: Colors.red.shade500,
+            color: const Color(0xFFDC2626),
             size: 16,
           ),
           const SizedBox(width: 8),
@@ -361,7 +364,7 @@ class DeleteAccountPage extends HookConsumerWidget {
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey.shade700,
+                    color: const Color(0xFF6B7280),
                   ),
             ),
           ),
@@ -378,52 +381,60 @@ class DeleteAccountPage extends HookConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
         ),
         title: Row(
           children: [
             Icon(
               Icons.warning_amber_rounded,
-              color: Colors.red.shade600,
-              size: 28,
+              color: const Color(0xFFDC2626),
+              size: 24,
             ),
             const SizedBox(width: 12),
-            Text(
-              'delete_account.final_confirm_title'.tr(),
-              style: TextStyle(
-                color: Colors.red.shade700,
-                fontWeight: FontWeight.w700,
+            Expanded(
+              child: Text(
+                'delete_account.final_confirm_title'.tr(),
+                style: const TextStyle(
+                  color: Color(0xFF1F2937),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],
         ),
         content: Text(
           'delete_account.final_confirm_message'.tr(),
-          style: const TextStyle(height: 1.4),
+          style: const TextStyle(
+            color: Color(0xFF6B7280),
+            fontSize: 14,
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(
               'delete_account.cancel'.tr(),
               style: const TextStyle(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
               ),
             ),
           ),
-          ElevatedButton(
+          TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
               _deleteAccount(context, ref);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
+              backgroundColor: const Color(0xFFDC2626),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
+              elevation: 0,
             ),
             child: Text(
               'delete_account.confirm_delete'.tr(),
@@ -466,9 +477,13 @@ class DeleteAccountPage extends HookConsumerWidget {
             margin: const EdgeInsets.all(16),
           ),
         );
+      } else if (context.mounted) {
+        // If deletion failed, the error will be shown in the UI
+        // No need to do anything here as the provider handles the error state
       }
     } catch (e) {
       // Error handling is done in the provider state
+      print('Error in _deleteAccount: $e');
     }
   }
 }
