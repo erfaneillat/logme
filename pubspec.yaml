@@ -54,6 +54,7 @@ dependencies:
   pinput: ^5.0.1
   shamsi_date: ^1.1.1
   sms_autofill: ^2.4.1
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:

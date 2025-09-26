@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../login/presentation/providers/auth_provider.dart';
 import '../presentation/providers/settings_providers.dart';
@@ -443,24 +444,56 @@ class _SupportSection extends StatelessWidget {
           child: Column(
             children: [
               _ModernSettingsTile(
-                icon: Icons.description_outlined,
-                title: 'settings.terms'.tr(),
-                color: const Color(0xFF6366F1),
-                onTap: () => context.push('/terms'),
-              ),
-              const _ModernDivider(),
-              _ModernSettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: 'settings.privacy'.tr(),
                 color: const Color(0xFF8B5CF6),
-                onTap: () => context.push('/privacy-policy'),
+                onTap: () async {
+                  final Uri url =
+                      Uri.parse('https://loqmeapp.ir/privacy-policy');
+                  try {
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url,
+                          mode: LaunchMode.externalApplication);
+                    } else {
+                      // Fallback to platform default
+                      await launchUrl(url);
+                    }
+                  } catch (e) {
+                    // Show error message if URL cannot be launched
+                    if (context.mounted) {
+                      context.showMessage(
+                        'settings.url_launch_error'.tr(),
+                        SnackBarType.error,
+                      );
+                    }
+                  }
+                },
               ),
               const _ModernDivider(),
               _ModernSettingsTile(
                 icon: Icons.email_outlined,
-                title: 'settings.support_email'.tr(),
+                title: 'settings.support'.tr(),
                 color: const Color(0xFF06B6D4),
-                onTap: () => context.push('/support-email'),
+                onTap: () async {
+                  final Uri url = Uri.parse('https://loqmeapp.ir/contact');
+                  try {
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url,
+                          mode: LaunchMode.externalApplication);
+                    } else {
+                      // Fallback to platform default
+                      await launchUrl(url);
+                    }
+                  } catch (e) {
+                    // Show error message if URL cannot be launched
+                    if (context.mounted) {
+                      context.showMessage(
+                        'settings.url_launch_error'.tr(),
+                        SnackBarType.error,
+                      );
+                    }
+                  }
+                },
               ),
               const _ModernDivider(),
               _ModernSettingsTile(

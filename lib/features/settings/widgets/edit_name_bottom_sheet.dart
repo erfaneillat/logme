@@ -46,10 +46,10 @@ class EditNameBottomSheet extends HookConsumerWidget {
       try {
         final updateProfileUseCase = ref.read(updateProfileUseCaseProvider);
         await updateProfileUseCase.call(nameController.text.trim(), null);
-        
+
         // Refresh the current user provider to get updated data
         ref.invalidate(currentUserProvider);
-        
+
         if (context.mounted) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +95,7 @@ class EditNameBottomSheet extends HookConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          
+
           // Title
           Row(
             children: [
@@ -115,7 +115,7 @@ class EditNameBottomSheet extends HookConsumerWidget {
             ],
           ),
           const SizedBox(height: 20),
-          
+
           // Name input field
           CustomTextField(
             controller: nameController,
@@ -126,7 +126,7 @@ class EditNameBottomSheet extends HookConsumerWidget {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => updateName(),
           ),
-          
+
           // Error message
           if (errorMessage.value != null) ...[
             const SizedBox(height: 12),
@@ -162,9 +162,9 @@ class EditNameBottomSheet extends HookConsumerWidget {
               ),
             ),
           ],
-          
+
           const SizedBox(height: 24),
-          
+
           // Action buttons
           Row(
             children: [
@@ -194,7 +194,7 @@ class EditNameBottomSheet extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // Save button
               Expanded(
                 flex: 2,
@@ -215,7 +215,8 @@ class EditNameBottomSheet extends HookConsumerWidget {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
                       : Text(
@@ -229,7 +230,7 @@ class EditNameBottomSheet extends HookConsumerWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 8),
         ],
       ),

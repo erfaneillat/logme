@@ -211,7 +211,7 @@
         "rollover_desc": "Add up to 200 left over calories from yesterday into today's daily goal",
         "terms": "Terms and Conditions",
         "privacy": "Privacy Policy",
-        "support_email": "Support Email",
+        "support": "Support",
         "delete_account": "Delete Account?",
         "logout": "Logout",
         "version": "VERSION {version}",
@@ -239,7 +239,8 @@
         "name_update_failed": "Failed to update name",
         "name_required": "Name is required",
         "name_too_short": "Name must be at least 2 characters",
-        "name_too_long": "Name cannot exceed 50 characters"
+        "name_too_long": "Name cannot exceed 50 characters",
+        "url_launch_error": "Unable to open link. Please try again."
     },
     "terms": {
         "title": "Terms and Conditions",
