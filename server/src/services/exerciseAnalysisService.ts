@@ -74,8 +74,7 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
                     content: prompt,
                 },
             ],
-            temperature: 0.3,
-            max_tokens: 400,
+            max_completion_tokens: 800,
         });
 
         // Log token usage and estimated cost if available
@@ -118,12 +117,44 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
             // Swallow logging errors to avoid impacting request flow
         }
 
-        const content = chat.choices?.[0]?.message?.content ?? '';
+        const choice = chat.choices?.[0];
+        const message = (choice?.message ?? {}) as any;
+        const structured = message?.parsed;
+        const fallbackResult = this.buildFallbackResult(activityDescription, duration, userWeight);
         let parsed: ExerciseAnalysisResult;
-        try {
-            parsed = JSON.parse(content);
-        } catch (err) {
-            throw new Error('AI response parsing failed');
+
+        if (structured && typeof structured === 'object') {
+            parsed = structured as ExerciseAnalysisResult;
+        } else {
+            const content = typeof message?.content === 'string' ? message.content : '';
+            if (!content.trim()) {
+                console.error('AI response parsing failed. Empty content with finish reason:', choice?.finish_reason);
+                console.warn('Falling back to heuristic exercise analysis result.');
+                parsed = fallbackResult;
+            } else {
+                try {
+                    // Try to parse the content directly first
+                    parsed = JSON.parse(content);
+                } catch (err) {
+                    console.error('AI response parsing failed. Content:', content);
+                    console.error('Parse error:', err);
+
+                    // Try to extract JSON from the content if it's wrapped in other text
+                    try {
+                        const jsonMatch = content.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            parsed = JSON.parse(jsonMatch[0]);
+                            console.log('Successfully extracted JSON from wrapped content');
+                        } else {
+                            throw new Error('No JSON object found in response');
+                        }
+                    } catch (extractErr) {
+                        console.error('JSON extraction also failed:', extractErr);
+                        console.warn('Falling back to heuristic exercise analysis result.');
+                        parsed = fallbackResult;
+                    }
+                }
+            }
         }
 
         // Basic shape enforcement/fallbacks
@@ -141,5 +172,63 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
         }
 
         return { data: parsed, meta };
+    }
+
+    private buildFallbackResult(activityDescription: string, duration: number, userWeight?: number): ExerciseAnalysisResult {
+        const met = this.estimateMet(activityDescription);
+        const weight = userWeight ?? 70;
+        const calories = Math.round(met * weight * (duration / 60));
+        const intensity = this.mapMetToIntensity(met);
+
+        return {
+            activityName: this.getPersianActivityName(activityDescription),
+            caloriesBurned: Math.max(calories, 0),
+            duration,
+            intensity,
+            tips: [
+                'قبل از شروع ورزش بدن را گرم کنید',
+                'در طول فعالیت آب کافی بنوشید',
+                'شدت تمرین را متناسب با توان خود تنظیم کنید',
+            ],
+        };
+    }
+
+    private estimateMet(activityDescription: string): number {
+        const activity = activityDescription.toLowerCase();
+        if (this.includesAny(activity, ['sprint', 'hiit', 'interval', 'دویدن سریع'])) return 12;
+        if (this.includesAny(activity, ['run', 'running', 'دویدن'])) return 9;
+        if (this.includesAny(activity, ['walk', 'walking', 'پیاده'])) return 3.5;
+        if (this.includesAny(activity, ['cycle', 'cycling', 'bike', 'دوچرخه'])) return 7;
+        if (this.includesAny(activity, ['swim', 'swimming', 'شنا'])) return 7.5;
+        if (this.includesAny(activity, ['yoga', 'pilates', 'یوگا', 'پیلاتس'])) return 3;
+        if (this.includesAny(activity, ['strength', 'weight', 'resistance', 'وزنه'])) return 5;
+        if (this.includesAny(activity, ['football', 'soccer', 'فوتبال'])) return 8;
+        if (this.includesAny(activity, ['basketball', 'بسکتبال'])) return 6.5;
+        if (this.includesAny(activity, ['tennis', 'تنیس'])) return 7;
+        return 4.5; // default moderate activity
+    }
+
+    private mapMetToIntensity(met: number): string {
+        if (met < 4) return 'کم';
+        if (met > 8) return 'زیاد';
+        return 'متوسط';
+    }
+
+    private includesAny(haystack: string, needles: string[]): boolean {
+        return needles.some((needle) => haystack.includes(needle));
+    }
+
+    private getPersianActivityName(activityDescription: string): string {
+        const activity = activityDescription.toLowerCase();
+        if (this.includesAny(activity, ['run', 'running', 'دویدن'])) return 'دویدن';
+        if (this.includesAny(activity, ['walk', 'walking', 'پیاده'])) return 'پیاده روی';
+        if (this.includesAny(activity, ['cycle', 'cycling', 'bike', 'دوچرخه'])) return 'دوچرخه سواری';
+        if (this.includesAny(activity, ['swim', 'swimming', 'شنا'])) return 'شنا کردن';
+        if (this.includesAny(activity, ['strength', 'weight', 'resistance', 'وزنه'])) return 'تمرین قدرتی';
+        if (this.includesAny(activity, ['yoga', 'pilates', 'یوگا', 'پیلاتس'])) return 'یوگا';
+        if (this.includesAny(activity, ['football', 'soccer', 'فوتبال'])) return 'فوتبال';
+        if (this.includesAny(activity, ['basketball', 'بسکتبال'])) return 'بسکتبال';
+        if (this.includesAny(activity, ['tennis', 'تنیس'])) return 'تنیس';
+        return activityDescription;
     }
 }

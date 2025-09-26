@@ -95,8 +95,11 @@ export class FoodAnalysisService {
 
     private buildChatParams(baseParams: any): any {
         const params: any = { ...baseParams };
-        if (this.temperature != null) params.temperature = this.temperature;
-        if (this.maxTokens != null) params.max_tokens = this.maxTokens;
+        // Only set temperature if not using gpt-5-mini (which only supports default temperature)
+        if (this.temperature != null && this.model !== 'gpt-5-mini') {
+            params.temperature = this.temperature;
+        }
+        if (this.maxTokens != null) params.max_completion_tokens = this.maxTokens;
         return params;
     }
 
