@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
+import crypto from 'crypto';
 import User from '../models/User';
 
-function generateCode(seed: string): string {
-  // Simple deterministic-ish generator: take alphanum of seed + random fallback
-  const base = seed.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+function generateCode(seed: string, attempt: number): string {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const hash = crypto.createHash('sha256').update(`${seed || 'fallback'}:${attempt}`).digest();
   let code = '';
   for (let i = 0; i < 6; i++) {
-    const idx = (base.charCodeAt(i % base.length) + i * 17) % alphabet.length;
-    code += alphabet[idx];
+    const byte = hash[i] ?? Math.floor(Math.random() * alphabet.length);
+    code += alphabet[byte % alphabet.length];
   }
   return code;
 }
@@ -17,7 +17,7 @@ async function generateUniqueReferralCode(userId: string): Promise<string> {
   // Try deterministic code first, then add randomness if collision
   let attempt = 0;
   while (attempt < 10) {
-    const base = attempt === 0 ? generateCode(userId) : generateCode(userId + ':' + attempt);
+    const base = generateCode(userId, attempt);
     const existing = await User.findOne({ referralCode: base });
     if (!existing) return base;
     attempt++;
@@ -25,7 +25,11 @@ async function generateUniqueReferralCode(userId: string): Promise<string> {
   // Final fallback: random
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let finalCode = '';
-  for (let i = 0; i < 6; i++) finalCode += alphabet[Math.floor(Math.random() * alphabet.length)];
+  const randomBytes = crypto.randomBytes(6);
+  for (let i = 0; i < 6; i++) {
+    const byte = randomBytes[i] ?? Math.floor(Math.random() * alphabet.length);
+    finalCode += alphabet[byte % alphabet.length];
+  }
   return finalCode;
 }
 
