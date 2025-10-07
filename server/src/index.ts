@@ -20,6 +20,7 @@ import weightRoutes from './routes/weightRoutes';
 import preferencesRoutes from './routes/preferencesRoutes';
 import luckyWheelRoutes from './routes/luckyWheelRoutes';
 import subscriptionPlanRoutes from './routes/subscriptionPlanRoutes';
+import userRoutes from './routes/userRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
@@ -103,6 +104,7 @@ app.use('/api/preferences', preferencesRoutes);
 app.use('/api/referral', referralRoutes);
 app.use('/api/lucky-wheel', luckyWheelRoutes);
 app.use('/api/subscription-plans', subscriptionPlanRoutes);
+app.use('/api/users', userRoutes);
 
 // Serve static files from the React app build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');

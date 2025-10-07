@@ -27,6 +27,20 @@ const Sidebar = () => {
             ),
         },
         {
+            name: 'Users',
+            path: '/users',
+            icon: (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6m-3-6a4 4 0 100-8 4 4 0 000 8z"
+                    />
+                </svg>
+            ),
+        },
+        {
             name: 'Subscription Plans',
             path: '/plans',
             icon: (

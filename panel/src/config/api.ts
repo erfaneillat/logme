@@ -11,6 +11,10 @@ export const API_ENDPOINTS = {
         VERIFY_ADMIN_PHONE: '/api/auth/admin/verify-phone',
         PROFILE: '/api/auth/profile',
     },
+    USERS: {
+        BASE: '/api/users',
+        BY_ID: (id: string) => `/api/users/${id}`,
+    },
 } as const;
 
 export const API_TIMEOUT = 30000; // 30 seconds
