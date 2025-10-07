@@ -25,6 +25,7 @@ import '../features/settings/pages/support_email_page.dart';
 import '../features/settings/pages/delete_account_page.dart';
 import '../features/settings/pages/language_selection_page.dart';
 import '../features/home/pages/add_exercise_page.dart';
+import '../features/subscription/pages/subscription_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -198,6 +199,11 @@ class AppRouter {
         path: '/language-selection',
         name: 'language-selection',
         builder: (context, state) => const LanguageSelectionPage(),
+      ),
+      GoRoute(
+        path: '/subscription',
+        name: 'subscription',
+        builder: (context, state) => const SubscriptionPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

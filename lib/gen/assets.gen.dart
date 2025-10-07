@@ -39,6 +39,10 @@ class Assets {
   static const AssetGenImage imagesManOnboarding =
       AssetGenImage('assets/images/man-onboarding.jpg');
 
+  /// File path: assets/images/subscription_bg.png
+  static const AssetGenImage imagesSubscriptionBg =
+      AssetGenImage('assets/images/subscription_bg.png');
+
   /// File path: assets/translations/en-US.json
   static const String translationsEnUS = 'assets/translations/en-US.json';
 
@@ -54,6 +58,7 @@ class Assets {
         imagesLoqmeLogo,
         imagesLoqmeLogoPNG,
         imagesManOnboarding,
+        imagesSubscriptionBg,
         translationsEnUS,
         translationsFaIR
       ];

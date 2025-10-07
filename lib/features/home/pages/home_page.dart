@@ -439,6 +439,40 @@ class HomePage extends HookConsumerWidget {
       data: (u) => u?.streakCount ?? 0,
       orElse: () => 0,
     );
+
+    // Animation controller for crown icon
+    final animationController = useAnimationController(
+      duration: const Duration(seconds: 2),
+    );
+
+    // Scale animation for crown
+    final scaleAnimation = useMemoized(
+      () => Tween<double>(begin: 1.0, end: 1.2).animate(
+        CurvedAnimation(
+          parent: animationController,
+          curve: Curves.elasticInOut,
+        ),
+      ),
+      [animationController],
+    );
+
+    // Rotation animation for crown
+    final rotationAnimation = useMemoized(
+      () => Tween<double>(begin: 0.0, end: 0.1).animate(
+        CurvedAnimation(
+          parent: animationController,
+          curve: Curves.easeInOut,
+        ),
+      ),
+      [animationController],
+    );
+
+    // Start animation when widget builds
+    useEffect(() {
+      animationController.repeat(reverse: true);
+      return () => animationController.dispose();
+    }, [animationController]);
+
     return Row(
       children: [
         Assets.imagesLoqmeLogoPNG
@@ -451,6 +485,49 @@ class HomePage extends HookConsumerWidget {
               ),
         ),
         const Spacer(),
+        // Animated crown icon for subscription
+        AnimatedBuilder(
+          animation: animationController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: scaleAnimation.value,
+              child: Transform.rotate(
+                angle: rotationAnimation.value,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () {
+                    context.pushNamed('subscription');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFFD700).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/images/crown.png',
+                      width: 20,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 12),
         InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () async {

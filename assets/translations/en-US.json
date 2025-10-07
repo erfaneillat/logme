@@ -192,7 +192,9 @@
         "please_enter_exercise": "Please enter exercise description",
         "please_enter_duration": "Please enter duration",
         "please_enter_valid_duration": "Please enter a valid duration in minutes",
-        "add_exercise_desc": "Track your workouts and burned calories"
+        "add_exercise_desc": "Track your workouts and burned calories",
+        "subscription": "Subscription",
+        "subscription_desc": "Upgrade to premium"
     },
     "settings": {
         "title": "Settings",
@@ -698,5 +700,51 @@
         "success": "Food analyzed successfully!",
         "canceled": "Analysis canceled",
         "error": "Error: {}"
+    },
+    "subscription": {
+        "title": "Choose Your Plan",
+        "subtitle": "Join among 10,345 fans!",
+        "still_in_doubt": "Still in doubt? Try it for free",
+        "yearly_plan": "Yearly",
+        "monthly_plan": "Monthly",
+        "yearly_price": "$11.99",
+        "yearly_per_month": "$1.00 / month",
+        "monthly_price": "$4.99",
+        "sale_60": "SALE 70%",
+        "sale_70_description": "Get 70% off your yearly subscription! This exclusive offer won't last long.",
+        "sale_70_remaining": "Limited time remaining",
+        "countdown_ends_in": "Ends in",
+        "countdown_days": "days",
+        "countdown_hours": "hours",
+        "countdown_minutes": "minutes",
+        "countdown_seconds": "seconds",
+        "countdown_expired": "Offer Expired",
+        "limited_time_offer": "🔥 Limited Time Offer! 🔥",
+        "you_can_cancel": "You can cancel your subscription anytime",
+        "continue": "Continue",
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "restore": "Restore",
+        "have_a_code": "Have a code?",
+        "food_name": "Meat Sandwich",
+        "calories": "Calories",
+        "carbs": "Carbs",
+        "protein": "Protein",
+        "fat": "Fat",
+        "kcal": "kcal",
+        "grams": "g",
+        "lucky_wheel": {
+            "title": "🎉 Special Surprise for You!",
+            "hurry_badge": "Limited Time Offer",
+            "subtitle": "Take a spin and unlock amazing savings on your premium journey!",
+            "description": "We've prepared something special just for you! This exclusive offer is only available for a limited time—don't miss out on your chance to save big.",
+            "timer_hint": "This special offer expires in 48 hours, so don't wait too long!",
+            "subheading": "Join thousands of happy users who've already claimed their savings today!",
+            "spin_button": "Let's spin! 🎯",
+            "spinning": "Good luck! ✨",
+            "result_cta": "Claim your amazing deal! 🎉",
+            "result_title": "Congratulations! Your special discount is ready! 🎊",
+            "none": "Better luck next time! 😊"
+        }
     }
 }

@@ -58,6 +58,11 @@ class ApiConfig {
   // Logs Endpoints
   static const String logsDaily = '/api/logs';
 
+  // Lucky Wheel Endpoints
+  static const String luckyWheelView = '/api/lucky-wheel/view';
+  static const String luckyWheelHistory = '/api/lucky-wheel/history';
+  static const String luckyWheelStats = '/api/lucky-wheel/stats';
+
   // Weight endpoints
   static const String weightBase = '/api/weight';
   static const String weightLatest = '/api/weight/latest';
