@@ -7,6 +7,7 @@ export interface IUser extends Document {
   name?: string;
   password?: string;
   isPhoneVerified: boolean;
+  isAdmin?: boolean; // Admin access flag
   hasCompletedAdditionalInfo: boolean;
   hasGeneratedPlan: boolean;
   aiCostUsdTotal?: number;
@@ -59,6 +60,10 @@ const userSchema = new Schema<IUser>(
       select: false,
     },
     isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isAdmin: {
       type: Boolean,
       default: false,
     },

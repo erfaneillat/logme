@@ -41,7 +41,7 @@ final isYearlySelectedProvider = AutoDisposeProvider<bool>.internal(
 // ignore: unused_element
 typedef IsYearlySelectedRef = AutoDisposeProviderRef<bool>;
 String _$subscriptionNotifierHash() =>
-    r'240a73ac8279d1d8f4944c1e06b63cda517dc526';
+    r'bb582cdc79b7b676df387909833d1d9dbe6463cc';
 
 /// See also [SubscriptionNotifier].
 @ProviderFor(SubscriptionNotifier)

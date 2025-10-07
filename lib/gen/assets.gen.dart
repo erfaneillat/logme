@@ -23,6 +23,10 @@ class Assets {
   /// File path: assets/fonts/vazir-thin.ttf
   static const String fontsVazirThin = 'assets/fonts/vazir-thin.ttf';
 
+  /// File path: assets/images/crown.png
+  static const AssetGenImage imagesCrown =
+      AssetGenImage('assets/images/crown.png');
+
   /// File path: assets/images/food-onboarding.jpg
   static const AssetGenImage imagesFoodOnboarding =
       AssetGenImage('assets/images/food-onboarding.jpg');
@@ -54,6 +58,7 @@ class Assets {
         fontsVazirBold,
         fontsVazirMedium,
         fontsVazirThin,
+        imagesCrown,
         imagesFoodOnboarding,
         imagesLoqmeLogo,
         imagesLoqmeLogoPNG,

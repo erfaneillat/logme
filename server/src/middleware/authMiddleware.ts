@@ -110,3 +110,52 @@ export const authenticateTokenAllowExpired = async (
     });
   }
 };
+
+// Admin authentication middleware
+export const authenticateAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      res.status(401).json({
+        success: false,
+        message: 'Access token is missing'
+      });
+      return;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+
+    // Check if user still exists and is admin
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      res.status(401).json({
+        success: false,
+        message: 'User not found'
+      });
+      return;
+    }
+
+    if (!user.isAdmin) {
+      res.status(403).json({
+        success: false,
+        message: 'Access denied. Admin privileges required.'
+      });
+      return;
+    }
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error('Admin auth middleware error:', error);
+    res.status(403).json({
+      success: false,
+      message: 'Invalid or expired token'
+    });
+  }
+};

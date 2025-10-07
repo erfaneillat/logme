@@ -19,6 +19,7 @@ import streakRoutes from './routes/streakRoutes';
 import weightRoutes from './routes/weightRoutes';
 import preferencesRoutes from './routes/preferencesRoutes';
 import luckyWheelRoutes from './routes/luckyWheelRoutes';
+import subscriptionPlanRoutes from './routes/subscriptionPlanRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
@@ -42,8 +43,29 @@ app.use(helmet({
   // Sends the origin for cross-origin requests while keeping strong privacy defaults
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
+
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173', // Admin panel
+  'http://localhost:9001', // Website dev
+  'https://loqmeapp.ir',    // Production
+];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*', // Allow all origins for development
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    // Check if the origin is in our allowed list
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else if (process.env.NODE_ENV === 'development') {
+      // In development, allow all origins
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
@@ -80,6 +102,7 @@ app.use('/api/weight', weightRoutes);
 app.use('/api/preferences', preferencesRoutes);
 app.use('/api/referral', referralRoutes);
 app.use('/api/lucky-wheel', luckyWheelRoutes);
+app.use('/api/subscription-plans', subscriptionPlanRoutes);
 
 // Serve static files from the React app build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');

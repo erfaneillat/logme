@@ -18,6 +18,7 @@ export class AuthController {
     // Bind methods to preserve 'this' context
     this.sendVerificationCode = this.sendVerificationCode.bind(this);
     this.verifyPhone = this.verifyPhone.bind(this);
+    this.verifyAdminPhone = this.verifyAdminPhone.bind(this);
     this.getProfile = this.getProfile.bind(this);
     this.updateProfile = this.updateProfile.bind(this);
     this.refreshToken = this.refreshToken.bind(this);
@@ -159,6 +160,89 @@ export class AuthController {
       });
     } catch (error) {
       console.error('Verify phone error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Verify admin phone number with code
+  async verifyAdminPhone(req: Request, res: Response): Promise<void> {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+        return;
+      }
+
+      const { phone, verificationCode } = req.body;
+
+      // Find user by phone
+      const user = await User.findOne({ phone });
+      if (!user) {
+        res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+        return;
+      }
+
+      // Check if user is admin
+      if (!user.isAdmin) {
+        res.status(403).json({
+          success: false,
+          message: 'Access denied. Admin privileges required.'
+        });
+        return;
+      }
+
+      // Check if verification code is valid and not expired
+      if (!user.verificationCode ||
+        user.verificationCode !== verificationCode ||
+        !user.verificationCodeExpires ||
+        user.verificationCodeExpires < new Date()) {
+        res.status(400).json({
+          success: false,
+          message: 'Invalid or expired verification code'
+        });
+        return;
+      }
+
+      // Mark phone as verified
+      user.isPhoneVerified = true;
+      user.verificationCode = null as any;
+      user.verificationCodeExpires = null as any;
+      await user.save();
+
+      // Generate JWT token with admin flag
+      const token = jwt.sign(
+        { userId: user._id, phone: user.phone, isAdmin: true },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      res.json({
+        success: true,
+        message: 'Admin phone verified successfully',
+        data: {
+          token,
+          user: {
+            id: user._id,
+            phone: user.phone,
+            name: user.name,
+            email: user.email,
+            isPhoneVerified: user.isPhoneVerified,
+            isAdmin: user.isAdmin
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Verify admin phone error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'

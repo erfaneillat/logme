@@ -28,6 +28,7 @@ const deleteAccountValidation = [
 // Routes
 router.post('/send-code', phoneValidation, authController.sendVerificationCode);
 router.post('/verify-phone', verificationCodeValidation, authController.verifyPhone);
+router.post('/admin/verify-phone', verificationCodeValidation, authController.verifyAdminPhone);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, authController.updateProfile);
 router.post('/refresh-token', authenticateTokenAllowExpired, authController.refreshToken);

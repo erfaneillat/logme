@@ -158,14 +158,41 @@ class SubscriptionPage extends HookConsumerWidget {
 
   Widget _buildPricingOptions(
       SubscriptionNotifier notifier, SubscriptionState state) {
+    if (state.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
+    }
+
+    if (state.error != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.red),
+          ),
+          child: Text(
+            'Failed to load prices. Using default values.',
+            style: const TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    // Use fetched prices or fallback to translation keys
+    final yearlyPrice = state.yearlyPrice;
+    final yearlyPricePerMonth = state.yearlyPricePerMonth;
+    final yearlyDiscountPercentage = state.yearlyDiscountPercentage;
+    final monthlyPrice = state.monthlyPrice;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
-          // Selection state
-          // Highlight the selected plan and dim the other
-          // so the user can clearly see which plan is active
-
           // Yearly plan
           GestureDetector(
             onTap: () => notifier.selectPlan(SubscriptionPlan.yearly),
@@ -211,7 +238,9 @@ class SubscriptionPage extends HookConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'subscription.yearly_price'.tr(),
+                            yearlyPrice != null
+                                ? '${_formatPrice(yearlyPrice)} تومان'
+                                : 'subscription.yearly_price'.tr(),
                             style: TextStyle(
                               color: (state.selectedPlan ==
                                       SubscriptionPlan.yearly)
@@ -224,12 +253,14 @@ class SubscriptionPage extends HookConsumerWidget {
                         ],
                       ),
                       Text(
-                        'subscription.yearly_per_month'.tr(),
+                        yearlyPricePerMonth != null
+                            ? '${_formatPrice(yearlyPricePerMonth)} تومان/ماه'
+                            : 'subscription.yearly_per_month'.tr(),
                         style: TextStyle(
                           color: (state.selectedPlan == SubscriptionPlan.yearly)
                               ? Colors.white
                               : Colors.grey,
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -238,28 +269,52 @@ class SubscriptionPage extends HookConsumerWidget {
                   ),
                 ),
                 // Sale badge
-                Positioned(
-                  right: 16,
-                  top: -8,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.orange, Colors.pink],
+                if (yearlyDiscountPercentage != null)
+                  Positioned(
+                    right: 16,
+                    top: -8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.orange, Colors.pink],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      child: Text(
+                        '$yearlyDiscountPercentage% تخفیف',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      'subscription.sale_60'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                  )
+                else
+                  Positioned(
+                    right: 16,
+                    top: -8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.orange, Colors.pink],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        'subscription.sale_60'.tr(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -300,7 +355,9 @@ class SubscriptionPage extends HookConsumerWidget {
                     ),
                   ),
                   Text(
-                    'subscription.monthly_price'.tr(),
+                    monthlyPrice != null
+                        ? '${_formatPrice(monthlyPrice)} تومان'
+                        : 'subscription.monthly_price'.tr(),
                     style: TextStyle(
                       color: (state.selectedPlan == SubscriptionPlan.monthly)
                           ? Colors.white
@@ -316,6 +373,14 @@ class SubscriptionPage extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _formatPrice(double price) {
+    // Format price with Persian number separators
+    return price.toInt().toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   // Footer links removed by request
