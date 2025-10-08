@@ -90,6 +90,13 @@ class ApiConfig {
   // Subscription Plans endpoints
   static const String subscriptionPlans = '/api/subscription-plans';
 
+  // Subscription endpoints
+  static const String subscriptionVerifyPurchase =
+      '/api/subscription/verify-purchase';
+  static const String subscriptionStatus = '/api/subscription/status';
+  static const String subscriptionCancel = '/api/subscription/cancel';
+  static const String subscriptionHistory = '/api/subscription/history';
+
   // Timeouts
   static const Duration connectTimeout = Duration(seconds: 60);
   static const Duration receiveTimeout = Duration(seconds: 60);

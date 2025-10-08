@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cal_ai/features/subscription/presentation/providers/subscription_provider.dart';
+import 'package:cal_ai/services/api_service_provider.dart';
 import 'package:cal_ai/services/lucky_wheel_service.dart';
+import 'package:cal_ai/services/payment_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -17,10 +19,18 @@ class SubscriptionPage extends HookConsumerWidget {
     final subscriptionState = ref.watch(subscriptionNotifierProvider);
     final subscriptionNotifier =
         ref.read(subscriptionNotifierProvider.notifier);
+    final paymentService = ref.watch(paymentServiceProvider);
+    final isProcessing = useState(false);
 
     useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showLuckyWheelDialog(context, subscriptionNotifier);
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        // Check if lucky wheel has been shown before
+        final secureStorage = ref.read(secureStorageProvider);
+        final hasBeenShown = await secureStorage.hasLuckyWheelBeenShown();
+
+        if (!hasBeenShown && context.mounted) {
+          _showLuckyWheelDialog(context, subscriptionNotifier, ref);
+        }
       });
       return null;
     }, const []);
@@ -71,7 +81,8 @@ class SubscriptionPage extends HookConsumerWidget {
                   _buildPricingOptions(subscriptionNotifier, subscriptionState),
 
                   // Continue button
-                  _buildContinueButton(subscriptionState),
+                  _buildContinueButton(subscriptionState, paymentService,
+                      context, ref, isProcessing),
                 ],
               ),
             ],
@@ -385,16 +396,28 @@ class SubscriptionPage extends HookConsumerWidget {
 
   // Footer links removed by request
 
-  Widget _buildContinueButton(SubscriptionState state) {
+  Widget _buildContinueButton(
+    SubscriptionState state,
+    PaymentService paymentService,
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<bool> isProcessing,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(left: 32, right: 32, top: 32, bottom: 32),
       child: SizedBox(
         width: double.infinity,
         height: 56,
         child: ElevatedButton(
-          onPressed: () {
-            // Handle subscription logic here
-          },
+          onPressed: isProcessing.value
+              ? null
+              : () => _handleSubscriptionPurchase(
+                    context,
+                    ref,
+                    state,
+                    paymentService,
+                    isProcessing,
+                  ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
@@ -402,23 +425,208 @@ class SubscriptionPage extends HookConsumerWidget {
               borderRadius: BorderRadius.circular(28),
             ),
             elevation: 0,
+            disabledBackgroundColor: Colors.grey[300],
           ),
-          child: Text(
-            'subscription.continue'.tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: isProcessing.value
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'subscription.payment.processing'.tr(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                )
+              : Text(
+                  'subscription.continue'.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
         ),
       ),
     );
   }
 
+  Future<void> _handleSubscriptionPurchase(
+    BuildContext context,
+    WidgetRef ref,
+    SubscriptionState state,
+    PaymentService paymentService,
+    ValueNotifier<bool> isProcessing,
+  ) async {
+    try {
+      isProcessing.value = true;
+
+      // Get the product key based on selected plan
+      final productKey = state.selectedPlan == SubscriptionPlan.yearly
+          ? state.yearlyCafebazaarProductKey
+          : state.monthlyCafebazaarProductKey;
+
+      if (productKey == null || productKey.isEmpty) {
+        _showErrorDialog(
+          context,
+          'subscription.payment.product_not_found'.tr(),
+        );
+        return;
+      }
+
+      // Show processing message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('subscription.payment.processing'.tr()),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Initiate purchase
+      final result = await paymentService.purchaseSubscription(productKey);
+
+      if (!context.mounted) return;
+
+      if (result.success) {
+        // Store subscription status locally
+        final secureStorage = ref.read(secureStorageProvider);
+        await secureStorage.setSubscriptionActive(true);
+
+        // Show success message
+        _showSuccessDialog(context);
+      } else {
+        // Show error message
+        _showErrorDialog(context, result.message);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        _showErrorDialog(
+          context,
+          'subscription.payment.error'.tr(),
+        );
+      }
+    } finally {
+      isProcessing.value = false;
+    }
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'subscription.payment.success'.tr(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'subscription.payment.subscription_activated'.tr(),
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.pop();
+            },
+            child: Text(
+              'common.success'.tr(),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.red, size: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'subscription.payment.failed'.tr(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              'common.cancel'.tr(),
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+            },
+            child: Text(
+              'subscription.payment.try_again'.tr(),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showLuckyWheelDialog(
-      BuildContext context, SubscriptionNotifier notifier) {
+      BuildContext context, SubscriptionNotifier notifier, WidgetRef ref) {
     // Log the lucky wheel view to the server
     _logLuckyWheelView(context);
+
+    // Mark lucky wheel as shown
+    final secureStorage = ref.read(secureStorageProvider);
+    secureStorage.setLuckyWheelShown(true);
 
     showDialog<void>(
       context: context,

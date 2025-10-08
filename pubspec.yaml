@@ -55,6 +55,7 @@ dependencies:
   shamsi_date: ^1.1.1
   sms_autofill: ^2.4.1
   url_launcher: ^6.2.5
+  flutter_poolakey: ^2.2.0+1.0.0
 
 dev_dependencies:
   flutter_test:

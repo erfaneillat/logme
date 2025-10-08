@@ -745,6 +745,22 @@
             "result_cta": "Claim your amazing deal! 🎉",
             "result_title": "Congratulations! Your special discount is ready! 🎊",
             "none": "Better luck next time! 😊"
+        },
+        "payment": {
+            "processing": "Processing payment...",
+            "success": "Payment successful!",
+            "failed": "Payment failed",
+            "cancelled": "Payment cancelled",
+            "error": "An error occurred during payment",
+            "verifying": "Verifying purchase...",
+            "activating": "Activating subscription...",
+            "billing_unavailable": "Billing service is currently unavailable",
+            "product_not_found": "Product not found",
+            "product_unavailable": "Product is not available for purchase",
+            "already_owned": "You already own this subscription",
+            "network_error": "Network error. Please check your connection",
+            "try_again": "Please try again",
+            "subscription_activated": "Your subscription has been activated!"
         }
     }
 }
