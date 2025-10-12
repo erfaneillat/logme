@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Subscription from '../models/Subscription';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { PurchaseVerificationService } from '../services/purchaseVerificationService';
+import { CafeBazaarApiService } from '../services/cafeBazaarApiService';
 
 export class SubscriptionController {
     // Verify purchase from CafeBazaar
@@ -314,5 +315,248 @@ export class SubscriptionController {
             });
         }
     }
-}
 
+    /**
+     * Validate in-app purchase with Cafe Bazaar API
+     * متد بررسی وضعیت خرید درون برنامه ای
+     * 
+     * This method calls Cafe Bazaar's validation API to verify the purchase
+     * and returns detailed information about the purchase state.
+     */
+    async validateCafeBazaarPurchase(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: 'User not authenticated',
+                });
+                return;
+            }
+
+            // Extract parameters from request body
+            const { productId, purchaseToken } = req.body;
+
+            // Validate required parameters
+            if (!productId || !purchaseToken) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Missing required fields: productId and purchaseToken',
+                });
+                return;
+            }
+
+            // Get package name from environment
+            const packageName = process.env.CAFEBAZAAR_PACKAGE_NAME;
+            if (!packageName) {
+                console.error('CAFEBAZAAR_PACKAGE_NAME not configured');
+                res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error',
+                });
+                return;
+            }
+
+            // Create Cafe Bazaar API service
+            let cafeBazaarService: CafeBazaarApiService;
+            try {
+                cafeBazaarService = CafeBazaarApiService.fromEnvironment();
+            } catch (error) {
+                console.error('Failed to initialize Cafe Bazaar service:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error',
+                });
+                return;
+            }
+
+            // Call Cafe Bazaar validation API
+            const validationResult = await cafeBazaarService.validateInAppPurchase(
+                packageName,
+                productId,
+                purchaseToken
+            );
+
+            // Check if validation was successful
+            if (!validationResult.valid) {
+                // Handle specific error cases
+                if (validationResult.error === 'not_found') {
+                    res.status(404).json({
+                        success: false,
+                        message: 'Purchase not found',
+                        error: validationResult.error,
+                        errorDescription: validationResult.errorDescription,
+                    });
+                    return;
+                }
+
+                if (validationResult.error === 'unauthorized') {
+                    console.error('Cafe Bazaar access token is invalid or expired');
+                    res.status(500).json({
+                        success: false,
+                        message: 'Server authentication error',
+                    });
+                    return;
+                }
+
+                // Other errors
+                res.status(400).json({
+                    success: false,
+                    message: 'Purchase validation failed',
+                    error: validationResult.error,
+                    errorDescription: validationResult.errorDescription,
+                });
+                return;
+            }
+
+            // Check if purchase was refunded
+            if (validationResult.refunded) {
+                res.json({
+                    success: true,
+                    data: {
+                        valid: true,
+                        purchaseState: 'refunded',
+                        consumptionState: validationResult.consumed ? 'consumed' : 'not_consumed',
+                        purchaseTime: validationResult.purchaseTime,
+                        developerPayload: validationResult.developerPayload,
+                    },
+                });
+                return;
+            }
+
+            // Purchase is valid and not refunded
+            res.json({
+                success: true,
+                data: {
+                    valid: true,
+                    purchaseState: 'purchased',
+                    consumptionState: validationResult.consumed ? 'consumed' : 'not_consumed',
+                    purchaseTime: validationResult.purchaseTime,
+                    developerPayload: validationResult.developerPayload,
+                },
+            });
+
+        } catch (error) {
+            console.error('Validate Cafe Bazaar purchase error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+
+    /**
+     * Check subscription status with Cafe Bazaar API
+     * متد بررسی وضعیت اشتراک
+     * 
+     * This method calls Cafe Bazaar's subscription status API to check
+     * if a subscription is active and get its details.
+     */
+    async checkCafeBazaarSubscriptionStatus(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: 'User not authenticated',
+                });
+                return;
+            }
+
+            // Extract parameters from request body
+            const { subscriptionId, purchaseToken } = req.body;
+
+            // Validate required parameters
+            if (!subscriptionId || !purchaseToken) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Missing required fields: subscriptionId and purchaseToken',
+                });
+                return;
+            }
+
+            // Get package name from environment
+            const packageName = process.env.CAFEBAZAAR_PACKAGE_NAME;
+            if (!packageName) {
+                console.error('CAFEBAZAAR_PACKAGE_NAME not configured');
+                res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error',
+                });
+                return;
+            }
+
+            // Create Cafe Bazaar API service
+            let cafeBazaarService: CafeBazaarApiService;
+            try {
+                cafeBazaarService = CafeBazaarApiService.fromEnvironment();
+            } catch (error) {
+                console.error('Failed to initialize Cafe Bazaar service:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error',
+                });
+                return;
+            }
+
+            // Call Cafe Bazaar subscription status API
+            const statusResult = await cafeBazaarService.checkSubscriptionStatus(
+                packageName,
+                subscriptionId,
+                purchaseToken
+            );
+
+            // Check if validation was successful
+            if (!statusResult.valid) {
+                // Handle specific error cases
+                if (statusResult.error === 'not_found') {
+                    res.status(404).json({
+                        success: false,
+                        message: 'Subscription not found',
+                        error: statusResult.error,
+                        errorDescription: statusResult.errorDescription,
+                    });
+                    return;
+                }
+
+                if (statusResult.error === 'unauthorized') {
+                    console.error('Cafe Bazaar access token is invalid or expired');
+                    res.status(500).json({
+                        success: false,
+                        message: 'Server authentication error',
+                    });
+                    return;
+                }
+
+                // Other errors
+                res.status(400).json({
+                    success: false,
+                    message: 'Subscription status check failed',
+                    error: statusResult.error,
+                    errorDescription: statusResult.errorDescription,
+                });
+                return;
+            }
+
+            // Return subscription status
+            res.json({
+                success: true,
+                data: {
+                    valid: true,
+                    active: statusResult.active,
+                    initiationTime: statusResult.initiationTime,
+                    expiryTime: statusResult.expiryTime,
+                    autoRenewing: statusResult.autoRenewing,
+                    linkedSubscriptionToken: statusResult.linkedSubscriptionToken,
+                },
+            });
+
+        } catch (error) {
+            console.error('Check Cafe Bazaar subscription status error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+}

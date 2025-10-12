@@ -16,7 +16,7 @@ class PaymentService {
 
   // Replace with your actual RSA public key from CafeBazaar developer console
   static const String _rsaPublicKey =
-      'MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDLG0Y8xJZ4F8JOVcKQSWsEF3U5C7QgLj+V4N5l3D4q0wJTfLzM0TwF1HaZpN7vqNqM3hSPLOJR5AZF7sG3fqKTWLXDJ3o7eqCOPBJlLZYN0M1ePqL1EZ5nHQ3fqJ7Y5l0qZvKJVT8F3Z5N7qOPL1E5nH3fqJ7Y5l0qZvKJVT8F3Z5N7qOPL1E5nH3fqJ7Y5l0qZvKJVT8F3Z5N7qOPL1E5nH3fqJ7Y5l0qZvKJVT8F3Z5N7qOPL1E5nH3AgMBAAE=';
+      'MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDLYqEpaWeTklUBlRiRLrAmpB2/YGIX2NWCWZBhkTBlabQq29d+cMetKLh94f3Zqfe+DJzGLi2+lVIAOGhLx3bRHNvN+UNVV3CxxtfgmQJoSlm8q9hoHxm6R9fj2WGRbryrWRWo1llSvA7ca1xEDJay6xZorRIskfn4VA/A4fl8p+gPxlC5aeiyNTQgRLqi1PcJcupU9MHN17Tr95esIZFWimNLEUY578lJNDMjJGMCAwEAAQ==';
 
   PaymentService(this._apiService) {
     _initializePayment();
@@ -81,7 +81,23 @@ class PaymentService {
         payload: payload,
       );
 
-      // Verify with backend
+      // Step 1: Validate with Cafe Bazaar API (fraud detection)
+      debugPrint('Validating purchase with Cafe Bazaar...');
+      final isValidWithCafeBazaar = await validateWithCafeBazaar(
+        productId: productKey,
+        purchaseToken: purchaseInfo.purchaseToken,
+      );
+
+      if (!isValidWithCafeBazaar) {
+        debugPrint('Cafe Bazaar validation failed');
+        return PurchaseResult(
+          success: false,
+          message: 'Purchase validation failed. Please contact support if you were charged.',
+        );
+      }
+
+      // Step 2: Verify with backend (creates subscription in database)
+      debugPrint('Verifying purchase with backend...');
       final verificationResult = await _verifyPurchaseWithBackend(
         productKey: productKey,
         purchaseToken: purchaseInfo.purchaseToken,
@@ -174,6 +190,71 @@ class PaymentService {
         success: false,
         message: 'An error occurred during purchase: $e',
       );
+    }
+  }
+
+  /// Validate purchase with Cafe Bazaar API
+  /// This provides an extra layer of validation before backend verification
+  Future<bool> validateWithCafeBazaar({
+    required String productId,
+    required String purchaseToken,
+  }) async {
+    try {
+      final response = await _apiService.post(
+        '/api/subscription/validate-cafebazaar',
+        data: {
+          'productId': productId,
+          'purchaseToken': purchaseToken,
+        },
+      );
+
+      if (response['success'] == true && response['data'] != null) {
+        final data = response['data'];
+        // Check if purchase is valid and not refunded
+        final isValid = data['valid'] == true;
+        final isPurchased = data['purchaseState'] == 'purchased';
+        final isNotRefunded = data['purchaseState'] != 'refunded';
+        
+        return isValid && isPurchased && isNotRefunded;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Cafe Bazaar validation error: $e');
+      return false;
+    }
+  }
+
+  /// Check subscription status with Cafe Bazaar API
+  /// Returns detailed subscription information including expiry and auto-renewal
+  Future<CafeBazaarSubscriptionStatus?> checkCafeBazaarSubscriptionStatus({
+    required String subscriptionId,
+    required String purchaseToken,
+  }) async {
+    try {
+      final response = await _apiService.post(
+        '/api/subscription/check-subscription-status',
+        data: {
+          'subscriptionId': subscriptionId,
+          'purchaseToken': purchaseToken,
+        },
+      );
+
+      if (response['success'] == true && response['data'] != null) {
+        final data = response['data'];
+        return CafeBazaarSubscriptionStatus(
+          valid: data['valid'] ?? false,
+          active: data['active'] ?? false,
+          expiryTime: data['expiryTime'] != null
+              ? DateTime.fromMillisecondsSinceEpoch(data['expiryTime'])
+              : null,
+          autoRenewing: data['autoRenewing'] ?? false,
+          linkedSubscriptionToken: data['linkedSubscriptionToken'] as String?,
+        );
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Cafe Bazaar subscription status error: $e');
+      return null;
     }
   }
 
@@ -400,4 +481,29 @@ class ProductInfo {
     required this.description,
     required this.price,
   });
+}
+
+class CafeBazaarSubscriptionStatus {
+  final bool valid;
+  final bool active;
+  final DateTime? expiryTime;
+  final bool autoRenewing;
+  final String? linkedSubscriptionToken;
+
+  CafeBazaarSubscriptionStatus({
+    required this.valid,
+    required this.active,
+    this.expiryTime,
+    required this.autoRenewing,
+    this.linkedSubscriptionToken,
+  });
+
+  bool get isExpired => expiryTime != null && expiryTime!.isBefore(DateTime.now());
+  
+  String get statusText {
+    if (!valid) return 'Invalid';
+    if (!active) return 'Expired';
+    if (autoRenewing) return 'Active (Auto-renewing)';
+    return 'Active';
+  }
 }

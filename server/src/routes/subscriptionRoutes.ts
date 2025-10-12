@@ -22,5 +22,15 @@ router.get('/history', authenticate, (req, res) =>
     subscriptionController.getSubscriptionHistory(req, res)
 );
 
+// Validate purchase with Cafe Bazaar API
+router.post('/validate-cafebazaar', authenticate, (req, res) =>
+    subscriptionController.validateCafeBazaarPurchase(req, res)
+);
+
+// Check subscription status with Cafe Bazaar API
+router.post('/check-subscription-status', authenticate, (req, res) =>
+    subscriptionController.checkCafeBazaarSubscriptionStatus(req, res)
+);
+
 export default router;
 

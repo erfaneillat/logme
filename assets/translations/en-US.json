@@ -760,7 +760,18 @@
             "already_owned": "You already own this subscription",
             "network_error": "Network error. Please check your connection",
             "try_again": "Please try again",
-            "subscription_activated": "Your subscription has been activated!"
+            "subscription_activated": "Your subscription has been activated!",
+            "validating": "Validating purchase...",
+            "purchase_not_found": "Purchase not found",
+            "purchase_invalid": "Purchase is invalid",
+            "purchase_refunded": "Purchase has been refunded",
+            "server_error": "Server error. Please try again later",
+            "checking_status": "Checking subscription status...",
+            "subscription_not_found": "Subscription not found",
+            "subscription_expired": "Subscription has expired",
+            "subscription_active": "Subscription is active",
+            "auto_renewing": "Auto-renewal is enabled",
+            "not_auto_renewing": "Auto-renewal is disabled"
         }
     }
 }
