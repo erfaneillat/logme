@@ -1,4 +1,4 @@
-package com.example.cal_ai
+package ir.loqmeapp.application
 
 import io.flutter.embedding.android.FlutterActivity
 
