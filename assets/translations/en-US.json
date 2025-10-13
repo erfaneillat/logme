@@ -771,7 +771,9 @@
             "subscription_expired": "Subscription has expired",
             "subscription_active": "Subscription is active",
             "auto_renewing": "Auto-renewal is enabled",
-            "not_auto_renewing": "Auto-renewal is disabled"
+            "not_auto_renewing": "Auto-renewal is disabled",
+            "already_have_active": "You already have an active subscription",
+            "subscription_reactivated": "Your subscription has been reactivated!"
         }
     }
 }

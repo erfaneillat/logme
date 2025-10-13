@@ -122,12 +122,12 @@ export class PurchaseVerificationService {
         }
 
         // CafeBazaar tokens are typically long alphanumeric strings
-        if (token.length < 20 || token.length > 500) {
+        if (token.length < 16 || token.length > 500) {
             return false;
         }
 
         // Token should only contain valid characters
-        const validPattern = /^[a-zA-Z0-9\-_.=]+$/;
+        const validPattern = /^[a-zA-Z0-9\-_.=+]+$/;
         return validPattern.test(token);
     }
 

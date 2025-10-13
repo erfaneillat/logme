@@ -12,7 +12,6 @@ import 'package:cal_ai/features/home/presentation/providers/home_date_provider.d
 import 'package:cal_ai/features/login/presentation/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cal_ai/features/food_recognition/pages/food_detail_page.dart';
-
 import 'package:cal_ai/services/image_picker_service.dart';
 import 'package:cal_ai/features/food_recognition/domain/usecases/analyze_food_image_usecase.dart';
 import 'package:cal_ai/features/logs/presentation/providers/daily_log_provider.dart';
@@ -22,6 +21,7 @@ import 'package:cal_ai/common/widgets/streak_dialog.dart';
 import 'package:cal_ai/features/streak/presentation/providers/streak_providers.dart';
 import 'package:cal_ai/extensions/string.dart';
 import 'package:cal_ai/utils/error_handler.dart';
+import 'package:cal_ai/features/subscription/presentation/providers/subscription_status_provider.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -440,6 +440,12 @@ class HomePage extends HookConsumerWidget {
       orElse: () => 0,
     );
 
+    final subActiveAsync = ref.watch(subscriptionActiveProvider);
+    final isSubscribed = subActiveAsync.maybeWhen(
+      data: (v) => v,
+      orElse: () => false,
+    );
+
     // Animation controller for crown icon
     final animationController = useAnimationController(
       duration: const Duration(seconds: 2),
@@ -485,48 +491,49 @@ class HomePage extends HookConsumerWidget {
               ),
         ),
         const Spacer(),
-        // Animated crown icon for subscription
-        AnimatedBuilder(
-          animation: animationController,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: scaleAnimation.value,
-              child: Transform.rotate(
-                angle: rotationAnimation.value,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {
-                    context.pushNamed('subscription');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFD700).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+        // Animated crown icon for subscription (hidden when subscribed)
+        if (!isSubscribed)
+          AnimatedBuilder(
+            animation: animationController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: scaleAnimation.value,
+                child: Transform.rotate(
+                  angle: rotationAnimation.value,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      context.pushNamed('subscription');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: Image.asset(
-                      'assets/images/crown.png',
-                      width: 20,
-                      height: 20,
-                      color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFFD700).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        'assets/images/crown.png',
+                        width: 20,
+                        height: 20,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
         const SizedBox(width: 12),
         InkWell(
           borderRadius: BorderRadius.circular(20),

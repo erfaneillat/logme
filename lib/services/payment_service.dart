@@ -4,21 +4,24 @@ import 'package:flutter_poolakey/flutter_poolakey.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'api_service.dart';
 import 'api_service_provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:cal_ai/features/subscription/presentation/providers/subscription_status_provider.dart';
 
 final paymentServiceProvider = Provider<PaymentService>((ref) {
   final apiService = ref.watch(apiServiceProvider);
-  return PaymentService(apiService);
+  return PaymentService(apiService, ref);
 });
 
 class PaymentService {
   final ApiService _apiService;
+  final Ref _ref;
   bool _isInitialized = false;
 
   // Replace with your actual RSA public key from CafeBazaar developer console
   static const String _rsaPublicKey =
       'MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDLYqEpaWeTklUBlRiRLrAmpB2/YGIX2NWCWZBhkTBlabQq29d+cMetKLh94f3Zqfe+DJzGLi2+lVIAOGhLx3bRHNvN+UNVV3CxxtfgmQJoSlm8q9hoHxm6R9fj2WGRbryrWRWo1llSvA7ca1xEDJay6xZorRIskfn4VA/A4fl8p+gPxlC5aeiyNTQgRLqi1PcJcupU9MHN17Tr95esIZFWimNLEUY578lJNDMjJGMCAwEAAQ==';
 
-  PaymentService(this._apiService) {
+  PaymentService(this._apiService, this._ref) {
     _initializePayment();
   }
 
@@ -98,6 +101,7 @@ class PaymentService {
 
       // Step 2: Verify with backend (creates subscription in database)
       debugPrint('Verifying purchase with backend...');
+      debugPrint('Purchase info: productKey=$productKey, orderId=${purchaseInfo.orderId}, payload=${purchaseInfo.payload}');
       final verificationResult = await _verifyPurchaseWithBackend(
         productKey: productKey,
         purchaseToken: purchaseInfo.purchaseToken,
@@ -106,6 +110,8 @@ class PaymentService {
       );
 
       if (verificationResult) {
+        // Trigger subscription status refresh by incrementing the trigger
+        _ref.read(subscriptionRefreshTriggerProvider.notifier).state++;
         return PurchaseResult(
           success: true,
           message: 'Subscription activated successfully',
@@ -163,6 +169,8 @@ class PaymentService {
       );
 
       if (verificationResult) {
+        // Trigger subscription status refresh by incrementing the trigger
+        _ref.read(subscriptionRefreshTriggerProvider.notifier).state++;
         // Consume the purchase for regular products
         await FlutterPoolakey.consume(purchaseInfo.purchaseToken);
 
@@ -266,6 +274,7 @@ class PaymentService {
     required String payload,
   }) async {
     try {
+      debugPrint('Sending to backend: productKey=$productKey, orderId=$orderId, payload=$payload');
       final response = await _apiService.post(
         '/api/subscription/verify-purchase',
         data: {
@@ -276,6 +285,7 @@ class PaymentService {
         },
       );
 
+      debugPrint('Backend response: ${response['success']}, message: ${response['message']}');
       return response['success'] == true;
     } catch (e) {
       debugPrint('Backend verification error: $e');

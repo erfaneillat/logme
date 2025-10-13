@@ -35,7 +35,8 @@ const subscriptionSchema = new Schema<ISubscription>(
         purchaseToken: {
             type: String,
             required: [true, 'Purchase token is required'],
-            unique: true,
+            // Removed unique constraint to allow multiple subscriptions with same token
+            // (e.g., for testing, renewals, reactivations)
         },
         orderId: {
             type: String,

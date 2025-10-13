@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { SubscriptionController } from '../controllers/subscriptionController';
-import { authenticateToken as authenticate } from '../middleware/authMiddleware';
+import { authenticateToken as authenticate, authenticateAdmin } from '../middleware/authMiddleware';
 
 const router = Router();
 const subscriptionController = new SubscriptionController();
@@ -30,6 +30,19 @@ router.post('/validate-cafebazaar', authenticate, (req, res) =>
 // Check subscription status with Cafe Bazaar API
 router.post('/check-subscription-status', authenticate, (req, res) =>
     subscriptionController.checkCafeBazaarSubscriptionStatus(req, res)
+);
+
+// Admin routes
+router.get('/admin/all', authenticateAdmin, (req, res) =>
+    subscriptionController.listAllSubscriptions(req, res)
+);
+
+router.post('/admin/:subscriptionId/cancel', authenticateAdmin, (req, res) =>
+    subscriptionController.cancelUserSubscription(req, res)
+);
+
+router.post('/admin/:subscriptionId/extend', authenticateAdmin, (req, res) =>
+    subscriptionController.extendSubscription(req, res)
 );
 
 export default router;

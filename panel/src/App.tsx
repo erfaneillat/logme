@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardPage from './pages/DashboardPage';
 import PlansPage from './pages/PlansPage';
 import UsersPage from './pages/UsersPage';
+import SubscriptionsPage from './pages/SubscriptionsPage';
 
 const App = () => {
     return (
@@ -15,6 +16,7 @@ const App = () => {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/plans" element={<PlansPage />} />
                         <Route path="/users" element={<UsersPage />} />
+                        <Route path="/subscriptions" element={<SubscriptionsPage />} />
                     </Routes>
                 </ProtectedRoute>
             </AuthProvider>

@@ -775,7 +775,9 @@
             "subscription_expired": "اشتراک منقضی شده است",
             "subscription_active": "اشتراک فعال است",
             "auto_renewing": "تمدید خودکار فعال است",
-            "not_auto_renewing": "تمدید خودکار غیرفعال است"
+            "not_auto_renewing": "تمدید خودکار غیرفعال است",
+            "already_have_active": "شما در حال حاضر یک اشتراک فعال دارید",
+            "subscription_reactivated": "اشتراک شما مجدداً فعال شد!"
         }
     }
 }

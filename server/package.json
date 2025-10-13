@@ -10,7 +10,8 @@
     "lint": "eslint src/**/*.ts",
     "test": "jest",
     "seed": "ts-node src/scripts/seed.ts",
-    "setup-dev": "node setup-dev.js"
+    "setup-dev": "node setup-dev.js",
+    "migrate:drop-purchase-token-index": "ts-node src/scripts/dropPurchaseTokenUniqueIndex.ts"
   },
   "keywords": [
     "nodejs",

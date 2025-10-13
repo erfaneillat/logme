@@ -99,6 +99,13 @@ export class CafeBazaarApiService {
             // Construct the API URL
             const url = `${CafeBazaarApiService.BASE_URL}/validate/${packageName}/inapp/${productId}/purchases/${purchaseToken}/`;
 
+            console.log('🌐 Calling Cafe Bazaar API:', {
+                url,
+                productId,
+                packageName,
+                hasAccessToken: !!this.accessToken,
+            });
+
             // Make API request
             const response = await axios.get<CafeBazaarPurchaseResponse>(url, {
                 headers: {
@@ -106,6 +113,11 @@ export class CafeBazaarApiService {
                     'Content-Type': 'application/json',
                 },
                 timeout: 10000, // 10 seconds timeout
+            });
+
+            console.log('✅ Cafe Bazaar API response:', {
+                status: response.status,
+                data: response.data,
             });
 
             // Parse successful response
@@ -196,12 +208,18 @@ export class CafeBazaarApiService {
 
                 // 404 - Purchase not found (could be fraud attempt)
                 if (status === 404) {
+                    console.error('❌ Cafe Bazaar 404 Error:', {
+                        status,
+                        error: errorData?.error,
+                        errorDescription: errorData?.error_description,
+                        fullResponse: axiosError.response.data,
+                    });
                     return {
                         valid: false,
                         consumed: false,
                         refunded: false,
                         error: errorData?.error || 'not_found',
-                        errorDescription: errorData?.error_description || 'Purchase not found',
+                        errorDescription: errorData?.error_description || 'The requested purchase is not found!',
                     };
                 }
 
