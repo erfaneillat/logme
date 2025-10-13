@@ -51,9 +51,11 @@ app.use(helmet({
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173', // Admin panel
-  'http://localhost:9001', // Website dev
-  'https://loqmeapp.ir',    // Production
+  'http://localhost:5173',     // Admin panel dev
+  'http://localhost:9001',     // Website dev
+  'http://localhost:9000',     // Local server
+  'https://loqmeapp.ir',       // Production website
+  'https://dev.loqmeapp.ir',   // Development website
 ];
 
 app.use(cors({
@@ -114,9 +116,13 @@ app.use('/api/statistics', statisticsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin/logs', adminLogsRoutes);
 
-// Serve static files from the React app build directory
+// Serve static files from the React website build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');
 app.use(express.static(websiteBuildPath));
+
+// Serve static files from the admin panel build directory
+const panelBuildPath = path.join(__dirname, '../../panel/dist');
+app.use('/panel', express.static(panelBuildPath));
 
 // API status endpoint (moved to /api/status to avoid conflicts with React routing)
 app.get('/api/status', (req, res) => {
@@ -128,7 +134,12 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Handle React routing - serve index.html for all non-API routes
+// Handle admin panel routing - serve index.html for all /panel/* routes
+app.get('/panel/*', (req, res) => {
+  return res.sendFile(path.join(panelBuildPath, 'index.html'));
+});
+
+// Handle React website routing - serve index.html for all non-API routes
 app.get('*', (req, res) => {
   // Skip API routes
   if (req.path.startsWith('/api/')) {

@@ -2,20 +2,20 @@
 # HTTP to HTTPS redirect for all subdomains
 server {
     listen 80;
-    server_name logme.yadbanapp.com dev-logme.yadbanapp.com;
+    server_name loqmeapp.ir www.loqmeapp.ir dev.loqmeapp.ir;
 
     location / {
         return 301 https://$host$request_uri;
     }
 }
 
-# Production Configuration (logme.yadbanapp.com)
+# Production Configuration (loqmeapp.ir)
 server {
     listen 443 ssl http2;
-    server_name logme.yadbanapp.com;
+    server_name loqmeapp.ir www.loqmeapp.ir;
 
-    ssl_certificate /etc/letsencrypt/live/logme.yadbanapp.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/logme.yadbanapp.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/loqmeapp.ir/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/loqmeapp.ir/privkey.pem;
     
     # Allow larger request bodies for image uploads
     client_max_body_size 20M;
@@ -32,6 +32,19 @@ server {
     add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
+    # Admin Panel - Proxy to Node.js (serves React SPA at /panel)
+    location /panel {
+        proxy_pass http://127.0.0.1:9000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
     # API Proxy to Node.js Backend
     location /api/ {
         proxy_pass http://127.0.0.1:9000;
@@ -47,44 +60,17 @@ server {
         proxy_connect_timeout 75s;
     }
 
-    # Health check endpoint
-    location /health {
-        proxy_pass http://127.0.0.1:9000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # API documentation (if available)
-    location /api-docs {
-        proxy_pass http://127.0.0.1:9000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Flutter Web App
+    # React Website - Proxy everything else to Node.js
     location / {
-        root /var/www/cal-ai/web;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-        
-        # Cache static assets (1 year) for immutable build files
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|wasm)$ {
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
-        
-        # No cache for HTML files
-        location ~* \.html$ {
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
-        
-        # Security headers for web app
-        add_header X-Frame-Options "SAMEORIGIN" always;
-        add_header X-Content-Type-Options "nosniff" always;
+        proxy_pass http://127.0.0.1:9000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
     }
 
     # Gzip compression
@@ -99,13 +85,13 @@ server {
     error_log /var/log/nginx/cal-ai-prod.error.log;
 }
 
-# Development Configuration (dev-logme.yadbanapp.com)
+# Development Configuration (dev.loqmeapp.ir)
 server {
     listen 443 ssl http2;
-    server_name dev-logme.yadbanapp.com;
+    server_name dev.loqmeapp.ir;
 
-    ssl_certificate /etc/letsencrypt/live/dev-logme.yadbanapp.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/dev-logme.yadbanapp.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/dev.loqmeapp.ir/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/dev.loqmeapp.ir/privkey.pem;
     
     # Allow larger request bodies for image uploads (dev)
     client_max_body_size 20M;
@@ -122,6 +108,20 @@ server {
     add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
+    # Admin Panel - Proxy to Development Node.js (serves React SPA at /panel)
+    location /panel {
+        proxy_pass http://127.0.0.1:9001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
     # API Proxy to Development Node.js Backend
     location /api/ {
         proxy_pass http://127.0.0.1:9001;
@@ -137,58 +137,18 @@ server {
         proxy_connect_timeout 75s;
     }
 
-    # Health check endpoint
-    location /health {
-        proxy_pass http://127.0.0.1:9001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # API documentation (if available)
-    location /api-docs {
-        proxy_pass http://127.0.0.1:9001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Flutter Web App (Development) - No caching for easier development
+    # React Website (Development) - Proxy everything else to Node.js
     location / {
-        root /var/www/cal-ai-dev/web;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-        
-        # No caching in development
+        proxy_pass http://127.0.0.1:9001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
         add_header Cache-Control "no-store, no-cache, must-revalidate";
-        
-        # Proper MIME types for Flutter web files
-        location ~* \.js$ {
-            add_header Content-Type application/javascript;
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
-        location ~* \.json$ {
-            add_header Content-Type application/json;
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
-        location ~* \.wasm$ {
-            add_header Content-Type application/wasm;
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
-        location ~* \.css$ {
-            add_header Content-Type text/css;
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
-        location ~* \.html$ {
-            add_header Content-Type text/html;
-            add_header Cache-Control "no-store, no-cache, must-revalidate";
-        }
-        
-        # Security headers for web app
-        add_header X-Frame-Options "SAMEORIGIN" always;
-        add_header X-Content-Type-Options "nosniff" always;
     }
 
     # Logs

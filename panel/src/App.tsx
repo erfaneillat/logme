@@ -11,7 +11,7 @@ import LogsPage from './pages/LogsPage';
 
 const App = () => {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/panel">
             <AuthProvider>
                 <ProtectedRoute>
                     <Routes>

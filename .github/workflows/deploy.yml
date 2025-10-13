@@ -34,6 +34,7 @@ jobs:
         cache-dependency-path: |
           server/package-lock.json
           website/package-lock.json
+          panel/package-lock.json
 
     - name: 📦 Install Server Dependencies
       run: |
@@ -44,6 +45,11 @@ jobs:
       run: |
         echo "📦 Installing website dependencies..."
         cd website && npm ci && cd ..
+
+    - name: 📦 Install Panel Dependencies
+      run: |
+        echo "📦 Installing panel dependencies..."
+        cd panel && npm ci && cd ..
 
     - name: 🔍 Determine Environment
       id: env
@@ -100,6 +106,27 @@ jobs:
         fi
         
         echo "✅ React website built successfully"
+        cd ..
+
+    - name: 🔨 Build Admin Panel
+      run: |
+        echo "🔨 Building admin panel..."
+        cd panel
+        
+        # Build admin panel with environment variables
+        if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+          VITE_API_URL=https://dev.loqmeapp.ir/api npm run build
+        else
+          VITE_API_URL=https://loqmeapp.ir/api npm run build
+        fi
+        
+        # Verify build was successful
+        if [ ! -d "dist" ]; then
+          echo "❌ Error: Panel build failed - dist directory not found"
+          exit 1
+        fi
+        
+        echo "✅ Admin panel built successfully"
         cd ..
 
     # ✅ Deploy backend code
@@ -185,6 +212,33 @@ jobs:
           fi
           
           echo "✅ React website built successfully"
+          
+          # Build Admin Panel
+          echo "🔨 Building admin panel..."
+          cd ../panel
+          
+          # Install panel dependencies if needed
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            echo "⚠️ No package-lock.json found, using npm install..."
+            npm install
+          fi
+          
+          # Build admin panel with environment variables
+          if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+            VITE_API_URL=https://dev.loqmeapp.ir/api npm run build
+          else
+            VITE_API_URL=https://loqmeapp.ir/api npm run build
+          fi
+          
+          # Verify panel build was successful
+          if [ ! -d "dist" ]; then
+            echo "❌ Error: Panel build failed - dist directory not found"
+            exit 1
+          fi
+          
+          echo "✅ Admin panel built successfully"
 
     # ✅ Restart PM2
     - name: ✅ Restart PM2

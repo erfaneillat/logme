@@ -1,9 +1,12 @@
 // API Configuration
 const isDevelopment = import.meta.env.DEV;
 
-export const API_BASE_URL = isDevelopment
-    ? 'http://localhost:9000'
-    : 'https://loqmeapp.ir';
+// Use environment variable if available, otherwise use default based on environment
+export const API_BASE_URL = import.meta.env.VITE_API_URL 
+    ? import.meta.env.VITE_API_URL.replace('/api', '') // Remove /api suffix if present
+    : isDevelopment
+        ? 'http://localhost:9000'
+        : 'https://loqmeapp.ir';
 
 export const API_ENDPOINTS = {
     AUTH: {
