@@ -17,6 +17,7 @@ export interface User {
   lastActivity?: string | null;
   addBurnedCalories?: boolean;
   rolloverCalories?: boolean;
+  hasActiveSubscription?: boolean;
   createdAt: string;
   updatedAt: string;
 }

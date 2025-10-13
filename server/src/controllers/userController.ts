@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
+import Subscription from '../models/Subscription';
 
 interface ListQuery {
   page?: string;
@@ -71,10 +72,32 @@ export class UserController {
         User.countDocuments(filter),
       ]);
 
+      // Get active subscriptions for all users
+      const userIds = items.map(user => user._id);
+      const activeSubscriptions = await Subscription.find({
+        userId: { $in: userIds },
+        isActive: true,
+        expiryDate: { $gt: new Date() }
+      }).select('userId');
+
+      const subscribedUserIds = new Set(
+        activeSubscriptions.map(sub => sub.userId.toString())
+      );
+
+      // Add hasActiveSubscription field to each user
+      const itemsWithSubscription = items.map(user => {
+        const userObj = user.toObject();
+        const userId = (user._id as any).toString();
+        return {
+          ...userObj,
+          hasActiveSubscription: subscribedUserIds.has(userId)
+        };
+      });
+
       res.json({
         success: true,
         data: {
-          items,
+          items: itemsWithSubscription,
           pagination: {
             page: pageNum,
             limit: limitNum,

@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import PlansPage from './pages/PlansPage';
 import UsersPage from './pages/UsersPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 const App = () => {
     return (
@@ -14,6 +15,7 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                         <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/analytics" element={<AnalyticsPage />} />
                         <Route path="/plans" element={<PlansPage />} />
                         <Route path="/users" element={<UsersPage />} />
                         <Route path="/subscriptions" element={<SubscriptionsPage />} />

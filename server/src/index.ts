@@ -22,6 +22,8 @@ import luckyWheelRoutes from './routes/luckyWheelRoutes';
 import subscriptionPlanRoutes from './routes/subscriptionPlanRoutes';
 import subscriptionRoutes from './routes/subscriptionRoutes';
 import userRoutes from './routes/userRoutes';
+import statisticsRoutes from './routes/statisticsRoutes';
+import analyticsRoutes from './routes/analyticsRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
@@ -107,6 +109,8 @@ app.use('/api/lucky-wheel', luckyWheelRoutes);
 app.use('/api/subscription-plans', subscriptionPlanRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/statistics', statisticsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Serve static files from the React app build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');
