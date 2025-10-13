@@ -132,7 +132,25 @@ export class UserController {
         res.status(404).json({ success: false, message: 'User not found' });
         return;
       }
-      res.json({ success: true, data: { user } });
+
+      // Check if user has active subscription
+      const activeSubscription = await Subscription.findOne({
+        userId: user._id,
+        isActive: true,
+        expiryDate: { $gt: new Date() }
+      });
+
+      // Get log count for this user
+      const logCount = await DailyLog.countDocuments({ userId: user._id });
+
+      const userObj = user.toObject();
+      const userWithSubscription = {
+        ...userObj,
+        hasActiveSubscription: !!activeSubscription,
+        logCount
+      };
+
+      res.json({ success: true, data: { user: userWithSubscription } });
     } catch (error) {
       console.error('Get user error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
