@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
+import DailyLog from '../models/DailyLog';
 
 interface ListQuery {
   page?: string;
@@ -84,13 +85,24 @@ export class UserController {
         activeSubscriptions.map(sub => sub.userId.toString())
       );
 
-      // Add hasActiveSubscription field to each user
+      // Get log counts for all users
+      const logCounts = await DailyLog.aggregate([
+        { $match: { userId: { $in: userIds } } },
+        { $group: { _id: '$userId', count: { $sum: 1 } } }
+      ]);
+
+      const logCountMap = new Map(
+        logCounts.map(log => [log._id.toString(), log.count])
+      );
+
+      // Add hasActiveSubscription and logCount fields to each user
       const itemsWithSubscription = items.map(user => {
         const userObj = user.toObject();
         const userId = (user._id as any).toString();
         return {
           ...userObj,
-          hasActiveSubscription: subscribedUserIds.has(userId)
+          hasActiveSubscription: subscribedUserIds.has(userId),
+          logCount: logCountMap.get(userId) || 0
         };
       });
 

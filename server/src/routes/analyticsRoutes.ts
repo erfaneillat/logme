@@ -3,7 +3,8 @@ import {
     getUserAnalytics, 
     getSubscriptionAnalytics,
     getActivityAnalytics,
-    getEngagementAnalytics
+    getEngagementAnalytics,
+    getCostAnalytics
 } from '../controllers/analyticsController';
 import { authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -39,5 +40,12 @@ router.get('/activity', getActivityAnalytics);
  * Query params: period (daily, weekly, monthly, yearly)
  */
 router.get('/engagement', getEngagementAnalytics);
+
+/**
+ * GET /api/analytics/costs
+ * Get AI cost analytics (total cost, avg cost, top users, cost over time)
+ * Query params: period (daily, weekly, monthly, yearly)
+ */
+router.get('/costs', getCostAnalytics);
 
 export default router;

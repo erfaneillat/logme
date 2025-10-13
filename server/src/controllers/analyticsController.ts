@@ -447,6 +447,140 @@ export const getActivityAnalytics = async (req: Request, res: Response): Promise
 };
 
 /**
+ * Get AI cost analytics
+ */
+export const getCostAnalytics = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { period = 'monthly' } = req.query;
+        
+        let groupFormat: string;
+        let startDate = new Date();
+        
+        switch (period) {
+            case 'daily':
+                groupFormat = '%Y-%m-%d';
+                startDate.setDate(startDate.getDate() - 30);
+                break;
+            case 'weekly':
+                groupFormat = '%Y-W%U';
+                startDate.setDate(startDate.getDate() - 84);
+                break;
+            case 'yearly':
+                groupFormat = '%Y';
+                startDate.setFullYear(startDate.getFullYear() - 3);
+                break;
+            case 'monthly':
+            default:
+                groupFormat = '%Y-%m';
+                startDate.setMonth(startDate.getMonth() - 12);
+                break;
+        }
+
+        // Total AI cost across all users
+        const totalCostResult = await User.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalCost: { $sum: '$aiCostUsdTotal' }
+                }
+            }
+        ]);
+        const totalCost = totalCostResult.length > 0 ? totalCostResult[0].totalCost : 0;
+
+        // Average cost per user
+        const avgCostResult = await User.aggregate([
+            {
+                $match: {
+                    aiCostUsdTotal: { $gt: 0 }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    avgCost: { $avg: '$aiCostUsdTotal' },
+                    usersWithCost: { $sum: 1 }
+                }
+            }
+        ]);
+        const avgCost = avgCostResult.length > 0 ? avgCostResult[0].avgCost : 0;
+        const usersWithCost = avgCostResult.length > 0 ? avgCostResult[0].usersWithCost : 0;
+
+        // Top 10 users by AI cost
+        const topUsers = await User.aggregate([
+            {
+                $match: {
+                    aiCostUsdTotal: { $gt: 0 }
+                }
+            },
+            {
+                $sort: { aiCostUsdTotal: -1 }
+            },
+            {
+                $limit: 10
+            },
+            {
+                $project: {
+                    phone: 1,
+                    name: 1,
+                    aiCostUsdTotal: 1,
+                    createdAt: 1
+                }
+            }
+        ]);
+
+        // Cost distribution over time (approximation based on user creation)
+        const costOverTime = await User.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: startDate },
+                    aiCostUsdTotal: { $gt: 0 }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: { format: groupFormat, date: '$createdAt' }
+                    },
+                    totalCost: { $sum: '$aiCostUsdTotal' },
+                    userCount: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalCost: Math.round(totalCost * 1000000) / 1000000, // 6 decimal places
+                avgCost: Math.round(avgCost * 1000000) / 1000000,
+                usersWithCost,
+                topUsers: topUsers.map(user => ({
+                    phone: user.phone,
+                    name: user.name || 'N/A',
+                    cost: Math.round(user.aiCostUsdTotal * 1000000) / 1000000,
+                    createdAt: user.createdAt
+                })),
+                costOverTime: costOverTime.map(item => ({
+                    period: item._id,
+                    totalCost: Math.round(item.totalCost * 1000000) / 1000000,
+                    userCount: item.userCount,
+                    avgCost: Math.round((item.totalCost / item.userCount) * 1000000) / 1000000
+                }))
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching cost analytics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch cost analytics',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+/**
  * Get engagement analytics
  */
 export const getEngagementAnalytics = async (req: Request, res: Response): Promise<void> => {

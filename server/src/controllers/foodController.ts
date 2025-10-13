@@ -224,11 +224,19 @@ export class FoodController {
         }
 
         try {
-            const fixedData = await this.service.fixAnalysis(originalData, userDescription);
+            const analysis = await this.service.fixAnalysis(originalData, userDescription);
+
+            // Increment user's cumulative AI cost if available
+            const userId = req.user?.userId;
+            const cost = analysis.meta?.costUsd;
+            if (userId && typeof cost === 'number' && isFinite(cost) && cost > 0) {
+                await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: cost } }).exec();
+            }
 
             res.status(200).json({
                 success: true,
-                data: fixedData,
+                data: analysis.data,
+                meta: analysis.meta,
                 timestamp: new Date()
             });
         } catch (error: any) {
@@ -254,7 +262,8 @@ export class FoodController {
         }
 
         try {
-            const analysisData = await this.service.analyzeFromDescription(description.trim());
+            const analysis = await this.service.analyzeFromDescription(description.trim());
+            const analysisData = analysis.data;
 
             // Get the user ID from the authenticated request
             const userId = req.user?.userId;
@@ -333,11 +342,18 @@ export class FoodController {
                 } catch (e) {
                     console.error('Streak update (food description) error:', e);
                 }
+
+                // Increment user's cumulative AI cost if available
+                const cost = analysis.meta?.costUsd;
+                if (typeof cost === 'number' && isFinite(cost) && cost > 0) {
+                    await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: cost } }).exec();
+                }
             }
 
             res.status(200).json({
                 success: true,
                 data: analysisData,
+                meta: analysis.meta,
                 timestamp: new Date()
             });
         } catch (error: any) {

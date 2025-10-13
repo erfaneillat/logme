@@ -18,6 +18,7 @@ export interface User {
   addBurnedCalories?: boolean;
   rolloverCalories?: boolean;
   hasActiveSubscription?: boolean;
+  logCount?: number;
   createdAt: string;
   updatedAt: string;
 }

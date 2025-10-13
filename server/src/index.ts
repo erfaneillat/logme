@@ -24,6 +24,7 @@ import subscriptionRoutes from './routes/subscriptionRoutes';
 import userRoutes from './routes/userRoutes';
 import statisticsRoutes from './routes/statisticsRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
+import adminLogsRoutes from './routes/adminLogsRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
@@ -111,6 +112,7 @@ app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/statistics', statisticsRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin/logs', adminLogsRoutes);
 
 // Serve static files from the React app build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');

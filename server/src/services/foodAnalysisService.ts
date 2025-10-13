@@ -355,7 +355,7 @@ Rules:
         return Math.max(0, Math.min(10, Math.round(raw)));
     }
 
-    public async fixAnalysis(originalData: any, userDescription: string): Promise<FoodAnalysisResult> {
+    public async fixAnalysis(originalData: any, userDescription: string): Promise<FoodAnalysisResponse> {
         const prompt = `Fix the food analysis based on user feedback and output STRICT JSON only.
 
 Original analysis:
@@ -381,6 +381,46 @@ Rules:
         };
         const chat = await this.client.chat.completions.create(this.buildChatParams(baseParams));
 
+        // Log token usage and estimated cost if available
+        let meta: FoodAnalysisMeta | null = null;
+        try {
+            const model = (chat as any)?.model as string | undefined;
+            const usage = (chat as any)?.usage as any | undefined;
+            if (usage) {
+                const promptTokens = usage.prompt_tokens ?? 0;
+                const completionTokens = usage.completion_tokens ?? 0;
+                const totalTokens = usage.total_tokens ?? (promptTokens + completionTokens);
+                console.log('FoodAnalysisFix token usage:', {
+                    model,
+                    promptTokens,
+                    completionTokens,
+                    totalTokens,
+                });
+                const cost = model != null ? calculateOpenAICostUSD(
+                    model,
+                    promptTokens,
+                    completionTokens
+                ) : null;
+                if (cost != null) {
+                    const rounded = roundTo6(cost);
+                    console.log('FoodAnalysisFix estimated cost (USD):', formatUSD(rounded));
+                } else {
+                    console.log('FoodAnalysisFix estimated cost: pricing not configured for model', model);
+                }
+                meta = {
+                    model: model ?? null,
+                    promptTokens: promptTokens ?? null,
+                    completionTokens: completionTokens ?? null,
+                    totalTokens: totalTokens ?? null,
+                    costUsd: cost != null ? roundTo6(cost) : null,
+                };
+            } else {
+                console.log('FoodAnalysisFix token usage: not available on response');
+            }
+        } catch {
+            // Swallow logging errors to avoid impacting request flow
+        }
+
         const content = chat.choices?.[0]?.message?.content ?? '';
         let parsed: FoodAnalysisResult;
         try {
@@ -390,10 +430,10 @@ Rules:
             throw new Error('AI response parsing failed');
         }
 
-        return parsed;
+        return { data: parsed, meta };
     }
 
-    public async analyzeFromDescription(description: string): Promise<FoodAnalysisResult> {
+    public async analyzeFromDescription(description: string): Promise<FoodAnalysisResponse> {
         const prompt = this.improveTextPrompt(description);
 
         const baseParams = {
@@ -408,6 +448,46 @@ Rules:
         };
         const chat = await this.client.chat.completions.create(this.buildChatParams(baseParams));
 
+        // Log token usage and estimated cost if available
+        let meta: FoodAnalysisMeta | null = null;
+        try {
+            const model = (chat as any)?.model as string | undefined;
+            const usage = (chat as any)?.usage as any | undefined;
+            if (usage) {
+                const promptTokens = usage.prompt_tokens ?? 0;
+                const completionTokens = usage.completion_tokens ?? 0;
+                const totalTokens = usage.total_tokens ?? (promptTokens + completionTokens);
+                console.log('FoodAnalysisText token usage:', {
+                    model,
+                    promptTokens,
+                    completionTokens,
+                    totalTokens,
+                });
+                const cost = model != null ? calculateOpenAICostUSD(
+                    model,
+                    promptTokens,
+                    completionTokens
+                ) : null;
+                if (cost != null) {
+                    const rounded = roundTo6(cost);
+                    console.log('FoodAnalysisText estimated cost (USD):', formatUSD(rounded));
+                } else {
+                    console.log('FoodAnalysisText estimated cost: pricing not configured for model', model);
+                }
+                meta = {
+                    model: model ?? null,
+                    promptTokens: promptTokens ?? null,
+                    completionTokens: completionTokens ?? null,
+                    totalTokens: totalTokens ?? null,
+                    costUsd: cost != null ? roundTo6(cost) : null,
+                };
+            } else {
+                console.log('FoodAnalysisText token usage: not available on response');
+            }
+        } catch {
+            // Swallow logging errors to avoid impacting request flow
+        }
+
         const content = chat.choices?.[0]?.message?.content ?? '';
         let parsed: FoodAnalysisResult;
         try {
@@ -417,7 +497,7 @@ Rules:
             throw new Error('AI response parsing failed');
         }
 
-        return parsed;
+        return { data: parsed, meta };
     }
 }
 

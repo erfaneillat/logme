@@ -646,6 +646,12 @@ export class LogController {
                 userWeight
             );
 
+            // Increment user's cumulative AI cost if available
+            const cost = analysisResult.meta?.costUsd;
+            if (typeof cost === 'number' && isFinite(cost) && cost > 0) {
+                await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: cost } }).exec();
+            }
+
             res.json({
                 success: true,
                 data: analysisResult.data,

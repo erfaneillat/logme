@@ -47,6 +47,24 @@ export interface EngagementAnalytics {
     }>;
 }
 
+export interface CostAnalytics {
+    totalCost: number;
+    avgCost: number;
+    usersWithCost: number;
+    topUsers: Array<{
+        phone: string;
+        name: string;
+        cost: number;
+        createdAt: string;
+    }>;
+    costOverTime: Array<{
+        period: string;
+        totalCost: number;
+        userCount: number;
+        avgCost: number;
+    }>;
+}
+
 class AnalyticsService {
     private async fetchWithTimeout(url: string, options: RequestInit = {}) {
         const controller = new AbortController();
@@ -139,6 +157,23 @@ class AnalyticsService {
             return data.data;
         } catch (error) {
             console.error('Error fetching engagement analytics:', error);
+            throw error;
+        }
+    }
+
+    async getCostAnalytics(token: string, period: TimePeriod = 'monthly'): Promise<CostAnalytics> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/analytics/costs?period=${period}`,
+                {
+                    method: 'GET',
+                    headers: this.getAuthHeaders(token),
+                }
+            );
+            const data = await response.json();
+            return data.data;
+        } catch (error) {
+            console.error('Error fetching cost analytics:', error);
             throw error;
         }
     }
