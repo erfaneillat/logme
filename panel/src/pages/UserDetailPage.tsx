@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { userService } from '../services/user.service';
 import { logsService, LogItem } from '../services/logs.service';
+import { subscriptionService } from '../services/subscription.service';
 import { useAuth } from '../contexts/AuthContext';
 import type { User } from '../types/user';
 
@@ -18,6 +19,10 @@ const UserDetailPage = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(false);
+  const [showActivateModal, setShowActivateModal] = useState(false);
+  const [selectedPlanType, setSelectedPlanType] = useState<'monthly' | 'yearly'>('monthly');
+  const [customDays, setCustomDays] = useState('');
+  const [activating, setActivating] = useState(false);
 
   const totalPages = useMemo(() => Math.max(Math.ceil(total / limit), 1), [total, limit]);
 
@@ -277,6 +282,56 @@ const UserDetailPage = () => {
           </div>
         </div>
 
+        {/* Subscription Management Section */}
+        <div className="mb-8 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg">
+          <div className="border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-white px-6 py-4">
+            <h3 className="text-lg font-bold text-black">Subscription Management</h3>
+          </div>
+          <div className="p-6">
+            {user.hasActiveSubscription ? (
+              <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg className="h-6 w-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Active Premium Subscription</p>
+                    <p className="text-xs text-gray-600">User has an active subscription</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowActivateModal(true)}
+                  className="rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-yellow-700"
+                >
+                  Extend / Renew
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-gray-50 to-slate-50 p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">No Active Subscription</p>
+                    <p className="text-xs text-gray-600">Activate a subscription for this user</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowActivateModal(true)}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+                >
+                  Activate Subscription
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Logs Section */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg">
           {/* Logs Header */}
@@ -479,6 +534,99 @@ const UserDetailPage = () => {
             </div>
           )}
         </div>
+
+        {/* Subscription Activation Modal */}
+        {showActivateModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4">
+                <h3 className="text-xl font-bold text-white">Activate Subscription</h3>
+              </div>
+              <div className="p-6">
+                <div className="mb-4">
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Plan Type</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setSelectedPlanType('monthly')}
+                      className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all ${
+                        selectedPlanType === 'monthly'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      Monthly (30 days)
+                    </button>
+                    <button
+                      onClick={() => setSelectedPlanType('yearly')}
+                      className={`rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all ${
+                        selectedPlanType === 'yearly'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      Yearly (365 days)
+                    </button>
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Custom Duration (optional)
+                  </label>
+                  <input
+                    type="number"
+                    value={customDays}
+                    onChange={(e) => setCustomDays(e.target.value)}
+                    placeholder="Leave empty for standard duration"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">Override standard duration with custom days</p>
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowActivateModal(false);
+                      setCustomDays('');
+                    }}
+                    disabled={activating}
+                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setActivating(true);
+                      try {
+                        const durationDays = customDays ? parseInt(customDays) : undefined;
+                        const res = await subscriptionService.activate(userId!, selectedPlanType, durationDays);
+                        if (res.success) {
+                          alert('Subscription activated successfully!');
+                          setShowActivateModal(false);
+                          setCustomDays('');
+                          // Refresh user data
+                          const userRes = await userService.getById(userId!);
+                          if (userRes.success && userRes.data?.user) {
+                            setUser(userRes.data.user);
+                          }
+                        } else {
+                          alert(res.message || 'Failed to activate subscription');
+                        }
+                      } catch (e) {
+                        console.error('Activation error:', e);
+                        alert('Failed to activate subscription');
+                      } finally {
+                        setActivating(false);
+                      }
+                    }}
+                    disabled={activating}
+                    className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {activating ? 'Activating...' : 'Activate'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

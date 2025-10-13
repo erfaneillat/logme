@@ -45,5 +45,9 @@ router.post('/admin/:subscriptionId/extend', authenticateAdmin, (req, res) =>
     subscriptionController.extendSubscription(req, res)
 );
 
+router.post('/admin/activate', authenticateAdmin, (req, res) =>
+    subscriptionController.activateSubscriptionForUser(req, res)
+);
+
 export default router;
 

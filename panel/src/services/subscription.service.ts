@@ -63,6 +63,15 @@ class SubscriptionService {
         });
         return res.json();
     }
+
+    async activate(userId: string, planType: 'monthly' | 'yearly', durationDays?: number): Promise<{ success: boolean; message?: string; data?: any }> {
+        const url = `${API_BASE_URL}/api/subscription/admin/activate`;
+        const res = await this.fetchWithTimeout(url, {
+            method: 'POST',
+            body: JSON.stringify({ userId, planType, durationDays }),
+        });
+        return res.json();
+    }
 }
 
 export const subscriptionService = new SubscriptionService();

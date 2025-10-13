@@ -894,6 +894,104 @@ export class SubscriptionController {
     }
 
     /**
+     * Admin: Activate a subscription for a user
+     */
+    async activateSubscriptionForUser(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const { userId, planType, durationDays } = req.body;
+
+            if (!userId) {
+                res.status(400).json({
+                    success: false,
+                    message: 'User ID is required',
+                });
+                return;
+            }
+
+            if (!planType || (planType !== 'monthly' && planType !== 'yearly')) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Invalid plan type. Must be "monthly" or "yearly"',
+                });
+                return;
+            }
+
+            // Calculate dates
+            const startDate = new Date();
+            let expiryDate: Date;
+
+            if (durationDays && durationDays > 0) {
+                // Use custom duration if provided
+                expiryDate = new Date(startDate);
+                expiryDate.setDate(expiryDate.getDate() + parseInt(durationDays as string));
+            } else {
+                // Use standard plan duration
+                expiryDate = PurchaseVerificationService.calculateExpiryDate(planType, startDate);
+            }
+
+            // Validate dates
+            if (!PurchaseVerificationService.validateSubscriptionDates(startDate, expiryDate)) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Invalid subscription dates',
+                });
+                return;
+            }
+
+            // Deactivate any existing active subscriptions for this user
+            await Subscription.updateMany(
+                { userId, isActive: true },
+                { $set: { isActive: false } }
+            );
+
+            // Create new subscription
+            const subscription = new Subscription({
+                userId,
+                planType,
+                productKey: `admin_activated_${planType}`,
+                purchaseToken: `admin_${Date.now()}_${userId}`,
+                orderId: `ADMIN_${Date.now()}`,
+                payload: 'Admin activated',
+                isActive: true,
+                startDate,
+                expiryDate,
+                autoRenew: false, // Admin activations don't auto-renew
+            });
+
+            await subscription.save();
+
+            console.log('✅ Admin activated subscription:', {
+                subscriptionId: subscription._id,
+                userId,
+                planType,
+                startDate,
+                expiryDate,
+                adminUserId: req.user?.userId,
+            });
+
+            res.json({
+                success: true,
+                message: 'Subscription activated successfully',
+                data: {
+                    subscription: {
+                        _id: subscription._id,
+                        planType: subscription.planType,
+                        isActive: subscription.isActive,
+                        startDate: subscription.startDate,
+                        expiryDate: subscription.expiryDate,
+                    },
+                },
+            });
+        } catch (error) {
+            console.error('Activate subscription error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+
+    /**
      * Parse sort parameter
      */
     private parseSortParam(sort: string): any {
