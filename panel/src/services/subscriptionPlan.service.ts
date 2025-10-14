@@ -202,6 +202,53 @@ class SubscriptionPlanService {
             };
         }
     }
+
+    async uploadPlanImage(token: string, id: string, imageFile: File): Promise<ApiResponse<{ plan: SubscriptionPlan }>> {
+        try {
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            const response = await fetch(`${API_BASE_URL}/api/subscription-plans/${id}/image`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Upload plan image error:', error);
+            return {
+                success: false,
+                message: 'Failed to upload image. Please try again.',
+            };
+        }
+    }
+
+    async deletePlanImage(token: string, id: string): Promise<ApiResponse<{ plan: SubscriptionPlan }>> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/subscription-plans/${id}/image`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Delete plan image error:', error);
+            return {
+                success: false,
+                message: 'Failed to delete image. Please try again.',
+            };
+        }
+    }
 }
 
 export const subscriptionPlanService = new SubscriptionPlanService();

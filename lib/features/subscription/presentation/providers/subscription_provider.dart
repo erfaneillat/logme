@@ -74,6 +74,9 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
         monthlyCafebazaarProductKey: monthlyPlan?.cafebazaarProductKey,
         threeMonthCafebazaarProductKey: threeMonthPlan?.cafebazaarProductKey,
         yearlyCafebazaarProductKey: yearlyPlan?.cafebazaarProductKey,
+        monthlyImageUrl: monthlyPlan?.imageUrl,
+        threeMonthImageUrl: threeMonthPlan?.imageUrl,
+        yearlyImageUrl: yearlyPlan?.imageUrl,
         offers: offers,
         activeOffer: yearlyOffer,
         isLoading: false,
@@ -132,6 +135,9 @@ class SubscriptionState {
   final String? monthlyCafebazaarProductKey;
   final String? threeMonthCafebazaarProductKey;
   final String? yearlyCafebazaarProductKey;
+  final String? monthlyImageUrl;
+  final String? threeMonthImageUrl;
+  final String? yearlyImageUrl;
   final List<OfferModel> offers;
   final OfferModel? activeOffer;
   final bool isLoading;
@@ -157,6 +163,9 @@ class SubscriptionState {
     this.monthlyCafebazaarProductKey,
     this.threeMonthCafebazaarProductKey,
     this.yearlyCafebazaarProductKey,
+    this.monthlyImageUrl,
+    this.threeMonthImageUrl,
+    this.yearlyImageUrl,
     this.offers = const [],
     this.activeOffer,
     this.isLoading = false,
@@ -183,6 +192,9 @@ class SubscriptionState {
     String? monthlyCafebazaarProductKey,
     String? threeMonthCafebazaarProductKey,
     String? yearlyCafebazaarProductKey,
+    String? monthlyImageUrl,
+    String? threeMonthImageUrl,
+    String? yearlyImageUrl,
     List<OfferModel>? offers,
     OfferModel? activeOffer,
     bool? isLoading,
@@ -214,6 +226,9 @@ class SubscriptionState {
           threeMonthCafebazaarProductKey ?? this.threeMonthCafebazaarProductKey,
       yearlyCafebazaarProductKey:
           yearlyCafebazaarProductKey ?? this.yearlyCafebazaarProductKey,
+      monthlyImageUrl: monthlyImageUrl ?? this.monthlyImageUrl,
+      threeMonthImageUrl: threeMonthImageUrl ?? this.threeMonthImageUrl,
+      yearlyImageUrl: yearlyImageUrl ?? this.yearlyImageUrl,
       offers: offers ?? this.offers,
       activeOffer: activeOffer ?? this.activeOffer,
       isLoading: isLoading ?? this.isLoading,

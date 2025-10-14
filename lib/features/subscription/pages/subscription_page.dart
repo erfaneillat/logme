@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:cal_ai/config/api_config.dart';
 import 'package:cal_ai/extensions/context.dart';
 import 'package:cal_ai/extensions/int.dart';
 import 'package:cal_ai/extensions/string.dart';
@@ -56,7 +57,7 @@ class SubscriptionPage extends HookConsumerWidget {
                     _buildHeader(context),
 
                     // Hero Section with Image and Testimonial
-                    _buildHeroSection(currentTestimonial),
+                    _buildHeroSection(currentTestimonial, subscriptionState),
 
                     // Pricing Section
                     _buildPricingSection(
@@ -139,7 +140,7 @@ class SubscriptionPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildHeroSection(ValueNotifier<int> currentTestimonial) {
+  Widget _buildHeroSection(ValueNotifier<int> currentTestimonial, SubscriptionState state) {
     final testimonials = [
       {
         'name': 'Jake Sullivan',
@@ -150,16 +151,26 @@ class SubscriptionPage extends HookConsumerWidget {
       },
     ];
 
+    // Get image URL from yearly plan if available, otherwise use default
+    String? planImageUrl;
+    if (state.yearlyImageUrl != null) {
+      planImageUrl = '${ApiConfig.baseUrl}${state.yearlyImageUrl}';
+    } else if (state.threeMonthImageUrl != null) {
+      planImageUrl = '${ApiConfig.baseUrl}${state.threeMonthImageUrl}';
+    } else if (state.monthlyImageUrl != null) {
+      planImageUrl = '${ApiConfig.baseUrl}${state.monthlyImageUrl}';
+    }
+
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 5),
       color: Colors.white,
       child: Column(
         children: [
-          // Hero Image
+          // Hero Image - Display from plan or fallback to default
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.network(
-              'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop',
+              planImageUrl ?? 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop',
               height: 200,
               width: double.infinity,
               fit: BoxFit.cover,

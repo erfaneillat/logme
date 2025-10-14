@@ -9,6 +9,7 @@ export interface ISubscriptionPlan extends Document {
     discountPercentage?: number; // e.g., 60 for 60% off
     pricePerMonth?: number; // Monthly equivalent price (manually set, not auto-calculated)
     cafebazaarProductKey?: string; // Cafebazaar product key for in-app purchases
+    imageUrl?: string; // URL to the plan's image
     isActive: boolean; // Whether this plan is currently available
     features: string[]; // List of features included in the plan
     sortOrder: number; // For ordering plans in the UI
@@ -55,6 +56,11 @@ const subscriptionPlanSchema = new Schema<ISubscriptionPlan>(
             min: [0, 'Price per month cannot be negative'],
         },
         cafebazaarProductKey: {
+            type: String,
+            required: false,
+            trim: true,
+        },
+        imageUrl: {
             type: String,
             required: false,
             trim: true,

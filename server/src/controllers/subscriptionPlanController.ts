@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import SubscriptionPlan from '../models/SubscriptionPlan';
+import fs from 'fs';
+import path from 'path';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -82,6 +84,7 @@ export class SubscriptionPlanController {
                 discountPercentage,
                 pricePerMonth,
                 cafebazaarProductKey,
+                imageUrl,
                 isActive,
                 features,
                 sortOrder,
@@ -106,6 +109,7 @@ export class SubscriptionPlanController {
                 discountPercentage,
                 pricePerMonth,
                 cafebazaarProductKey,
+                imageUrl,
                 isActive: isActive !== undefined ? isActive : true,
                 features: features || [],
                 sortOrder: sortOrder !== undefined ? sortOrder : 0,
@@ -149,6 +153,7 @@ export class SubscriptionPlanController {
                 discountPercentage,
                 pricePerMonth,
                 cafebazaarProductKey,
+                imageUrl,
                 isActive,
                 features,
                 sortOrder,
@@ -173,6 +178,7 @@ export class SubscriptionPlanController {
             if (discountPercentage !== undefined) plan.discountPercentage = discountPercentage;
             if (pricePerMonth !== undefined) plan.pricePerMonth = pricePerMonth;
             if (cafebazaarProductKey !== undefined) plan.cafebazaarProductKey = cafebazaarProductKey;
+            if (imageUrl !== undefined) plan.imageUrl = imageUrl;
             if (isActive !== undefined) plan.isActive = isActive;
             if (features !== undefined) plan.features = features;
             if (sortOrder !== undefined) plan.sortOrder = sortOrder;
@@ -258,6 +264,11 @@ export class SubscriptionPlanController {
                 return;
             }
 
+            // Delete associated image if exists
+            if (plan.imageUrl) {
+                this.deleteImageFile(plan.imageUrl);
+            }
+
             await plan.deleteOne();
 
             res.json({
@@ -302,6 +313,120 @@ export class SubscriptionPlanController {
                 success: false,
                 message: 'Internal server error',
             });
+        }
+    }
+
+    // Upload plan image (admin only)
+    async uploadPlanImage(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const file = (req as any).file as Express.Multer.File | undefined;
+
+            if (!file) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Image file is required',
+                });
+                return;
+            }
+
+            const plan = await SubscriptionPlan.findById(id);
+
+            if (!plan) {
+                // Delete uploaded file if plan not found
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (err) {
+                    console.error('Error deleting file:', err);
+                }
+                res.status(404).json({
+                    success: false,
+                    message: 'Plan not found',
+                });
+                return;
+            }
+
+            // Delete old image if exists
+            if (plan.imageUrl) {
+                this.deleteImageFile(plan.imageUrl);
+            }
+
+            // Update plan with new image URL
+            plan.imageUrl = `/api/subscription-plans/images/${file.filename}`;
+            await plan.save();
+
+            res.json({
+                success: true,
+                data: { plan },
+                message: 'Image uploaded successfully',
+            });
+        } catch (error) {
+            console.error('Upload plan image error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+
+    // Delete plan image (admin only)
+    async deletePlanImage(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+
+            const plan = await SubscriptionPlan.findById(id);
+
+            if (!plan) {
+                res.status(404).json({
+                    success: false,
+                    message: 'Plan not found',
+                });
+                return;
+            }
+
+            if (!plan.imageUrl) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Plan has no image',
+                });
+                return;
+            }
+
+            // Delete image file
+            this.deleteImageFile(plan.imageUrl);
+
+            // Remove image URL from plan using $unset
+            plan.set({ imageUrl: undefined });
+            await plan.save();
+
+            res.json({
+                success: true,
+                data: { plan },
+                message: 'Image deleted successfully',
+            });
+        } catch (error) {
+            console.error('Delete plan image error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+
+    // Helper method to delete image file from disk
+    private deleteImageFile(imageUrl: string): void {
+        try {
+            // Extract filename from URL
+            const filename = imageUrl.split('/').pop();
+            if (filename) {
+                const uploadsDir = path.join(__dirname, '../../uploads/plans');
+                const filepath = path.join(uploadsDir, filename);
+                if (fs.existsSync(filepath)) {
+                    fs.unlinkSync(filepath);
+                }
+            }
+        } catch (err) {
+            console.error('Error deleting image file:', err);
         }
     }
 

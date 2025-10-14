@@ -8,6 +8,7 @@ class SubscriptionPlanModel {
   final int? discountPercentage;
   final double? pricePerMonth;
   final String? cafebazaarProductKey;
+  final String? imageUrl;
   final bool isActive;
   final List<String> features;
   final int sortOrder;
@@ -24,6 +25,7 @@ class SubscriptionPlanModel {
     this.discountPercentage,
     this.pricePerMonth,
     this.cafebazaarProductKey,
+    this.imageUrl,
     required this.isActive,
     required this.features,
     required this.sortOrder,
@@ -46,6 +48,7 @@ class SubscriptionPlanModel {
           ? (json['pricePerMonth'] as num).toDouble()
           : null,
       cafebazaarProductKey: json['cafebazaarProductKey'] as String?,
+      imageUrl: json['imageUrl'] as String?,
       isActive: json['isActive'] as bool,
       features:
           (json['features'] as List<dynamic>).map((e) => e as String).toList(),
@@ -66,6 +69,7 @@ class SubscriptionPlanModel {
       'discountPercentage': discountPercentage,
       'pricePerMonth': pricePerMonth,
       'cafebazaarProductKey': cafebazaarProductKey,
+      'imageUrl': imageUrl,
       'isActive': isActive,
       'features': features,
       'sortOrder': sortOrder,

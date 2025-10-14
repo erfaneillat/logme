@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { subscriptionPlanService } from '../services/subscriptionPlan.service';
 import { SubscriptionPlan } from '../types/subscriptionPlan';
+import { API_BASE_URL } from '../config/api';
 import Layout from '../components/Layout';
 
 const PlansPage = () => {
@@ -28,6 +29,10 @@ const PlansPage = () => {
     const [cafebazaarProductKey, setCafebazaarProductKey] = useState<string>('');
     const [isActive, setIsActive] = useState<boolean>(true);
     const [sortOrder, setSortOrder] = useState<number>(0);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchPlans();
@@ -59,6 +64,8 @@ const PlansPage = () => {
         setCafebazaarProductKey('');
         setIsActive(true);
         setSortOrder(0);
+        setSelectedImage(null);
+        setImagePreview(null);
         setShowModal(true);
         setError('');
         setSuccess('');
@@ -77,6 +84,8 @@ const PlansPage = () => {
         setCafebazaarProductKey(plan.cafebazaarProductKey || '');
         setIsActive(plan.isActive);
         setSortOrder(plan.sortOrder);
+        setSelectedImage(null);
+        setImagePreview(plan.imageUrl ? `${API_BASE_URL}${plan.imageUrl}` : null);
         setShowModal(true);
         setError('');
         setSuccess('');
@@ -86,6 +95,58 @@ const PlansPage = () => {
         setShowModal(false);
         setEditingPlan(null);
         setIsCreating(false);
+    };
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                setError('Image size must be less than 5MB');
+                return;
+            }
+            setSelectedImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUploadImage = async (planId: string) => {
+        if (!token || !selectedImage) return;
+
+        setUploadingImage(true);
+        setError('');
+        const response = await subscriptionPlanService.uploadPlanImage(token, planId, selectedImage);
+
+        if (response.success) {
+            setSuccess('Image uploaded successfully!');
+            await fetchPlans();
+            setSelectedImage(null);
+            setTimeout(() => setSuccess(''), 2000);
+        } else {
+            setError(response.message || 'Failed to upload image');
+        }
+        setUploadingImage(false);
+    };
+
+    const handleDeleteImage = async (planId: string) => {
+        if (!token) return;
+
+        setUploadingImage(true);
+        setError('');
+        const response = await subscriptionPlanService.deletePlanImage(token, planId);
+
+        if (response.success) {
+            setSuccess('Image deleted successfully!');
+            await fetchPlans();
+            setImagePreview(null);
+            setTimeout(() => setSuccess(''), 2000);
+        } else {
+            setError(response.message || 'Failed to delete image');
+        }
+        setUploadingImage(false);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -112,6 +173,10 @@ const PlansPage = () => {
                 });
 
                 if (response.success) {
+                    // Upload image if selected
+                    if (selectedImage && response.data?.plan._id) {
+                        await handleUploadImage(response.data.plan._id);
+                    }
                     setSuccess('Plan created successfully!');
                     await fetchPlans();
                     setTimeout(() => {
@@ -155,6 +220,10 @@ const PlansPage = () => {
                 const response = await subscriptionPlanService.updatePlan(token, editingPlan._id, updatePayload);
 
                 if (response.success) {
+                    // Upload image if selected
+                    if (selectedImage) {
+                        await handleUploadImage(editingPlan._id);
+                    }
                     setSuccess('Plan updated successfully!');
                     await fetchPlans();
                     setTimeout(() => {
@@ -303,6 +372,20 @@ const PlansPage = () => {
                                 )}
 
                                 <div className="relative">
+                                    {/* Plan Image */}
+                                    {plan.imageUrl && (
+                                        <div className="mb-6 overflow-hidden rounded-xl">
+                                            <img
+                                                src={`${API_BASE_URL}${plan.imageUrl}`}
+                                                alt={plan.title || plan.name}
+                                                className="h-40 w-full object-cover"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className="mb-6 flex items-center justify-between">
                                         <div>
                                             <h3 className="text-2xl font-bold text-black">{plan.title || plan.name}</h3>
@@ -547,6 +630,49 @@ const PlansPage = () => {
                                         placeholder="e.g., monthly_plan or yearly_plan"
                                         className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-black transition-all duration-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/10"
                                     />
+                                </div>
+
+                                {/* Image Upload Section */}
+                                <div>
+                                    <label className="mb-2 block text-sm font-semibold text-black">
+                                        Plan Image (Optional)
+                                    </label>
+                                    <div className="space-y-3">
+                                        {imagePreview && (
+                                            <div className="relative inline-block">
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Plan preview"
+                                                    className="h-32 w-full max-w-md rounded-xl object-cover border-2 border-gray-200"
+                                                />
+                                                {editingPlan && !selectedImage && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDeleteImage(editingPlan._id)}
+                                                        disabled={uploadingImage}
+                                                        className="absolute top-2 right-2 rounded-lg bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-lg hover:bg-red-700 disabled:opacity-50"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageSelect}
+                                            className="hidden"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="rounded-xl border-2 border-dashed border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-black hover:bg-gray-50"
+                                        >
+                                            {imagePreview ? '📷 Change Image' : '📷 Upload Image'}
+                                        </button>
+                                        <p className="text-xs text-gray-500">Max size: 5MB. Formats: JPG, PNG, GIF, WebP</p>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">

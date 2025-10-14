@@ -8,6 +8,7 @@ export interface SubscriptionPlan {
     discountPercentage?: number;
     pricePerMonth?: number;
     cafebazaarProductKey?: string;
+    imageUrl?: string;
     isActive: boolean;
     features: string[];
     sortOrder: number;
@@ -24,6 +25,7 @@ export interface CreatePlanInput {
     discountPercentage?: number | null;
     pricePerMonth?: number | null;
     cafebazaarProductKey?: string;
+    imageUrl?: string;
     isActive?: boolean;
     features?: string[];
     sortOrder?: number;
