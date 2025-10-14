@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardPage from './pages/DashboardPage';
 import PlansPage from './pages/PlansPage';
+import OffersPage from './pages/OffersPage';
 import UsersPage from './pages/UsersPage';
 import UserDetailPage from './pages/UserDetailPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
@@ -20,6 +21,7 @@ const App = () => {
                         <Route path="/analytics" element={<AnalyticsPage />} />
                         <Route path="/logs" element={<LogsPage />} />
                         <Route path="/plans" element={<PlansPage />} />
+                        <Route path="/offers" element={<OffersPage />} />
                         <Route path="/users" element={<UsersPage />} />
                         <Route path="/users/:userId" element={<UserDetailPage />} />
                         <Route path="/subscriptions" element={<SubscriptionsPage />} />

@@ -9,6 +9,7 @@ class User {
   final bool hasGeneratedPlan;
   final int streakCount;
   final String? lastStreakDate; // YYYY-MM-DD
+  final DateTime? createdAt;
 
   const User({
     required this.id,
@@ -21,6 +22,7 @@ class User {
     this.hasGeneratedPlan = false,
     this.streakCount = 0,
     this.lastStreakDate,
+    this.createdAt,
   });
 
   User copyWith({
@@ -34,6 +36,7 @@ class User {
     bool? hasGeneratedPlan,
     int? streakCount,
     String? lastStreakDate,
+    DateTime? createdAt,
   }) {
     return User(
       id: id ?? this.id,
@@ -47,6 +50,7 @@ class User {
       hasGeneratedPlan: hasGeneratedPlan ?? this.hasGeneratedPlan,
       streakCount: streakCount ?? this.streakCount,
       lastStreakDate: lastStreakDate ?? this.lastStreakDate,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -61,6 +65,7 @@ class User {
         'hasGeneratedPlan': hasGeneratedPlan,
         'streakCount': streakCount,
         'lastStreakDate': lastStreakDate,
+        'createdAt': createdAt?.toIso8601String(),
       };
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -76,11 +81,12 @@ class User {
             ? (json['streakCount'] ?? 0) as int
             : int.tryParse((json['streakCount'] ?? '0').toString()) ?? 0,
         lastStreakDate: json['lastStreakDate'],
+        createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       );
 
   @override
   String toString() =>
-      'User(id: $id, phone: $phone, email: $email, name: $name, isPhoneVerified: $isPhoneVerified, hasCompletedAdditionalInfo: $hasCompletedAdditionalInfo, hasGeneratedPlan: $hasGeneratedPlan, streakCount: $streakCount, lastStreakDate: $lastStreakDate)';
+      'User(id: $id, phone: $phone, email: $email, name: $name, isPhoneVerified: $isPhoneVerified, hasCompletedAdditionalInfo: $hasCompletedAdditionalInfo, hasGeneratedPlan: $hasGeneratedPlan, streakCount: $streakCount, lastStreakDate: $lastStreakDate, createdAt: $createdAt)';
 
   @override
   bool operator ==(Object other) {
@@ -94,7 +100,8 @@ class User {
         other.hasCompletedAdditionalInfo == hasCompletedAdditionalInfo &&
         other.hasGeneratedPlan == hasGeneratedPlan &&
         other.streakCount == streakCount &&
-        other.lastStreakDate == lastStreakDate;
+        other.lastStreakDate == lastStreakDate &&
+        other.createdAt == createdAt;
   }
 
   @override
@@ -107,5 +114,6 @@ class User {
       hasCompletedAdditionalInfo.hashCode ^
       hasGeneratedPlan.hashCode ^
       streakCount.hashCode ^
-      lastStreakDate.hashCode;
+      lastStreakDate.hashCode ^
+      createdAt.hashCode;
 }

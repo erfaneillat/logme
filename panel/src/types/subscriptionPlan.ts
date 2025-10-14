@@ -1,7 +1,8 @@
 export interface SubscriptionPlan {
     _id: string;
     name: string;
-    duration: 'monthly' | 'yearly';
+    title?: string;
+    duration: 'monthly' | '3month' | 'yearly';
     price: number;
     originalPrice?: number;
     discountPercentage?: number;
@@ -16,11 +17,12 @@ export interface SubscriptionPlan {
 
 export interface CreatePlanInput {
     name: string;
-    duration: 'monthly' | 'yearly';
+    title?: string;
+    duration: 'monthly' | '3month' | 'yearly';
     price: number;
-    originalPrice?: number;
-    discountPercentage?: number;
-    pricePerMonth?: number;
+    originalPrice?: number | null;
+    discountPercentage?: number | null;
+    pricePerMonth?: number | null;
     cafebazaarProductKey?: string;
     isActive?: boolean;
     features?: string[];

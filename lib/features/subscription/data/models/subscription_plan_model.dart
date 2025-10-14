@@ -1,6 +1,7 @@
 class SubscriptionPlanModel {
   final String id;
   final String name;
+  final String? title;
   final String duration; // 'monthly' or 'yearly'
   final double price;
   final double? originalPrice;
@@ -16,6 +17,7 @@ class SubscriptionPlanModel {
   SubscriptionPlanModel({
     required this.id,
     required this.name,
+    this.title,
     required this.duration,
     required this.price,
     this.originalPrice,
@@ -33,6 +35,7 @@ class SubscriptionPlanModel {
     return SubscriptionPlanModel(
       id: json['_id'] as String,
       name: json['name'] as String,
+      title: json['title'] as String?,
       duration: json['duration'] as String,
       price: (json['price'] as num).toDouble(),
       originalPrice: json['originalPrice'] != null
@@ -56,6 +59,7 @@ class SubscriptionPlanModel {
     return {
       '_id': id,
       'name': name,
+      'title': title,
       'duration': duration,
       'price': price,
       'originalPrice': originalPrice,
@@ -71,10 +75,11 @@ class SubscriptionPlanModel {
   }
 
   bool get isMonthly => duration == 'monthly';
+  bool get is3Month => duration == '3month';
   bool get isYearly => duration == 'yearly';
 
   @override
   String toString() {
-    return 'SubscriptionPlanModel(id: $id, name: $name, duration: $duration, price: $price, cafebazaarProductKey: $cafebazaarProductKey)';
+    return 'SubscriptionPlanModel(id: $id, name: $name, title: $title, duration: $duration, price: $price, cafebazaarProductKey: $cafebazaarProductKey)';
   }
 }

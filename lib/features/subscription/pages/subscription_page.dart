@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' as ui;
 
+import 'package:cal_ai/extensions/context.dart';
+import 'package:cal_ai/extensions/int.dart';
+import 'package:cal_ai/extensions/string.dart';
+import 'package:cal_ai/features/login/presentation/providers/auth_provider.dart';
 import 'package:cal_ai/features/subscription/presentation/providers/subscription_provider.dart';
+import 'package:cal_ai/features/subscription/presentation/widgets/offer_countdown_timer.dart';
 import 'package:cal_ai/services/api_service_provider.dart';
 import 'package:cal_ai/services/lucky_wheel_service.dart';
 import 'package:cal_ai/services/payment_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SubscriptionPage extends HookConsumerWidget {
@@ -21,6 +26,8 @@ class SubscriptionPage extends HookConsumerWidget {
         ref.read(subscriptionNotifierProvider.notifier);
     final paymentService = ref.watch(paymentServiceProvider);
     final isProcessing = useState(false);
+    final currentTestimonial = useState(0);
+    final currentUser = ref.watch(currentUserProvider).value;
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -36,83 +43,226 @@ class SubscriptionPage extends HookConsumerWidget {
     }, const []);
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/subscription_bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              // Black overlay from bottom to center
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                top: 0,
-                child: Container(
-                  // height: MediaQuery.of(context).size.height * 0.5,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black,
-                        Colors.black,
-                        Colors.transparent,
-                      ],
-                      stops: [0.0, 0.3, 1.0],
-                    ),
-                  ),
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: Column(
+                  children: [
+                    // Header
+                    _buildHeader(context),
+
+                    // Hero Section with Image and Testimonial
+                    _buildHeroSection(currentTestimonial),
+
+                    // Pricing Section
+                    _buildPricingSection(
+                        context, subscriptionNotifier, subscriptionState, currentUser),
+                  ],
                 ),
               ),
-
-              Column(
-                children: [
-                  // Top status bar and close button
-                  _buildTopBar(context),
-
-                  // Title and subtitle
-                  _buildTitleSection(),
-
-                  // Pricing options
-                  _buildPricingOptions(subscriptionNotifier, subscriptionState),
-
-                  // Continue button
-                  _buildContinueButton(subscriptionState, paymentService,
-                      context, ref, isProcessing),
-                ],
-              ),
-            ],
-          ),
+            ),
+            // Purchase Button
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildPurchaseButton(subscriptionState, paymentService,
+                  context, ref, isProcessing),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, right: 16),
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
             width: 32,
             height: 32,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFE5E5),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              icon: const Icon(
-                Icons.close,
-                size: 18,
-                color: Colors.black,
+            child: const Icon(
+              Icons.description_outlined,
+              color: Color(0xFFFF4D4D),
+              size: 20,
+            ),
+          ),
+          10.widthBox,
+          RichText(
+            text: TextSpan(
+              style: context.textTheme.bodyMedium,
+              children: [
+                TextSpan(
+                  text: 'وضعیت اشتراک: ',
+                  style: context.textTheme.bodyMedium,
+                ),
+                TextSpan(
+                  text: 'بدون اشتراک',
+                  style: context.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w900, color: Colors.black),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            tooltip: 'بستن',
+            icon: const Icon(Icons.close, color: Color(0xFF1A1A1A)),
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(ValueNotifier<int> currentTestimonial) {
+    final testimonials = [
+      {
+        'name': 'Jake Sullivan',
+        'text':
+            '۱۵ پوند در ۲ ماه کاهش وزن داشتم! می‌خواستم از اوزمپیک استفاده کنم اما تصمیم گرفتم به این برنامه فرصت بدهم و جواب داد :)',
+        'image':
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+      },
+    ];
+
+    return Container(
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 5),
+      color: Colors.white,
+      child: Column(
+        children: [
+          // Hero Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop',
+              height: 200,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Testimonial Card
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 15,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: const Color(0xFF4CAF50),
+                      backgroundImage: NetworkImage(
+                        testimonials[currentTestimonial.value]['image']
+                            as String,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            testimonials[currentTestimonial.value]['name']
+                                as String,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1A1A1A),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: List.generate(
+                        5,
+                        (index) => Icon(
+                          Icons.star,
+                          color: Color(0xFFFF9800),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  testimonials[currentTestimonial.value]['text'] as String,
+                  style: const TextStyle(
+                    color: Color(0xFF666666),
+                    fontSize: 15,
+                    height: 1.8,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Pagination Dots
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              7,
+              (index) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: index == 0 ? 25 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: index == 0
+                      ? const Color(0xFF1A1A1A)
+                      : const Color(0xFFDDDDDD),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-              onPressed: () => context.pop(),
             ),
           ),
         ],
@@ -120,267 +270,594 @@ class SubscriptionPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTitleSection() {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'subscription.title'.tr(),
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'subscription.subtitle'.tr(),
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            // Countdown timer for the special offer
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: CountdownTimer(
-                endTime: DateTime.now().add(const Duration(days: 2)),
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-                backgroundColor: Colors.transparent,
-                padding: EdgeInsets.zero,
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPricingOptions(
-      SubscriptionNotifier notifier, SubscriptionState state) {
+  Widget _buildPricingSection(BuildContext context,
+      SubscriptionNotifier notifier, SubscriptionState state, dynamic currentUser) {
     if (state.isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Colors.white),
-      );
-    }
-
-    if (state.error != null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.red),
-          ),
-          child: Text(
-            'Failed to load prices. Using default values.',
-            style: const TextStyle(color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(),
         ),
       );
     }
 
-    // Use fetched prices or fallback to translation keys
+    // Get data from state
+    final yearlyTitle = state.yearlyTitle;
     final yearlyPrice = state.yearlyPrice;
-    final yearlyPricePerMonth = state.yearlyPricePerMonth;
+    final yearlyOriginalPrice = state.yearlyOriginalPrice;
     final yearlyDiscountPercentage = state.yearlyDiscountPercentage;
-    final monthlyPrice = state.monthlyPrice;
+    final yearlyPricePerMonth = state.yearlyPricePerMonth;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+    final threeMonthTitle = state.threeMonthTitle;
+    final threeMonthPrice = state.threeMonthPrice;
+    final threeMonthOriginalPrice = state.threeMonthOriginalPrice;
+    final threeMonthDiscountPercentage = state.threeMonthDiscountPercentage;
+    final threeMonthPricePerMonth = state.threeMonthPricePerMonth;
+
+    final monthlyTitle = state.monthlyTitle;
+    final monthlyPrice = state.monthlyPrice;
+    final monthlyOriginalPrice = state.monthlyOriginalPrice;
+    final monthlyDiscountPercentage = state.monthlyDiscountPercentage;
+    final monthlyPricePerMonth = state.monthlyPricePerMonth;
+
+    // Get active offer from state
+    final activeOffer = state.activeOffer;
+    
+    // Parse offer colors
+    final offerBgColor = activeOffer != null
+        ? _parseColor(activeOffer.display.backgroundColor)
+        : const Color(0xFFE53935);
+    final offerTextColor = activeOffer != null
+        ? _parseColor(activeOffer.display.textColor)
+        : Colors.white;
+
+    return Container(
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+      ),
       child: Column(
         children: [
-          // Yearly plan
-          GestureDetector(
-            onTap: () => notifier.selectPlan(SubscriptionPlan.yearly),
-            child: Stack(
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: (state.selectedPlan == SubscriptionPlan.yearly)
-                      ? BoxDecoration(
-                          border: Border.all(
-                            color: Colors.green,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(32),
-                          color: const Color(0xFF1B2E1B),
-                        )
-                      : BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey.withOpacity(0.3),
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(32),
-                          color: Colors.black.withOpacity(0.3),
-                        ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'subscription.yearly_plan'.tr(),
-                            style: TextStyle(
-                              color: (state.selectedPlan ==
-                                      SubscriptionPlan.yearly)
-                                  ? Colors.white
-                                  : Colors.grey,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            yearlyPrice != null
-                                ? '${_formatPrice(yearlyPrice)} تومان'
-                                : 'subscription.yearly_price'.tr(),
-                            style: TextStyle(
-                              color: (state.selectedPlan ==
-                                      SubscriptionPlan.yearly)
-                                  ? Colors.white
-                                  : Colors.grey,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        yearlyPricePerMonth != null
-                            ? '${_formatPrice(yearlyPricePerMonth)} تومان/ماه'
-                            : 'subscription.yearly_per_month'.tr(),
-                        style: TextStyle(
-                          color: (state.selectedPlan == SubscriptionPlan.yearly)
-                              ? Colors.white
-                              : Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+          // Special Offer Card with Yearly Plan (show if offer exists and still valid for this user)
+          if (() {
+                if (activeOffer == null) return false;
+                final effectiveEndDate =
+                    activeOffer.getEffectiveEndDate(currentUser?.createdAt);
+                final now = DateTime.now();
+                // Offer is valid in general AND (no user-specific end OR not passed yet)
+                return activeOffer.isCurrentlyValid &&
+                    (effectiveEndDate == null || now.isBefore(effectiveEndDate));
+              }())
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [offerBgColor, _darkenColor(offerBgColor)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                // Sale badge
-                if (yearlyDiscountPercentage != null)
-                  Positioned(
-                    right: 16,
-                    top: -8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.orange, Colors.pink],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        '$yearlyDiscountPercentage% تخفیف',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  Positioned(
-                    right: 16,
-                    top: -8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.orange, Colors.pink],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        'subscription.sale_60'.tr(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // Monthly plan
-          GestureDetector(
-            onTap: () => notifier.selectPlan(SubscriptionPlan.monthly),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              decoration: (state.selectedPlan == SubscriptionPlan.monthly)
-                  ? BoxDecoration(
-                      border: Border.all(
-                        color: Colors.green,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(32),
-                      color: const Color(0xFF1B2E1B),
-                    )
-                  : BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey.withOpacity(0.3),
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(32),
-                      color: Colors.black.withOpacity(0.3),
-                    ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'subscription.monthly_plan'.tr(),
-                    style: TextStyle(
-                      color: (state.selectedPlan == SubscriptionPlan.monthly)
-                          ? Colors.white
-                          : Colors.grey,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    monthlyPrice != null
-                        ? '${_formatPrice(monthlyPrice)} تومان'
-                        : 'subscription.monthly_price'.tr(),
-                    style: TextStyle(
-                      color: (state.selectedPlan == SubscriptionPlan.monthly)
-                          ? Colors.white
-                          : Colors.grey,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: offerBgColor.withOpacity(0.3),
+                    blurRadius: 25,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
+              padding: const EdgeInsets.only(top: 10, left: 2, right: 2, bottom: 2),
+              margin: const EdgeInsets.only(bottom: 15),
+              child: Column(
+                children: [
+                  // Offer Header with Timer
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                activeOffer!.display.bannerText,
+                                style: TextStyle(
+                                  color: offerTextColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (activeOffer!.display.bannerSubtext != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    activeOffer!.display.bannerSubtext!,
+                                    style: TextStyle(
+                                      color: offerTextColor.withOpacity(0.9),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        () {
+                          // Get effective end date based on offer type and user registration
+                          final effectiveEndDate = activeOffer!.getEffectiveEndDate(currentUser?.createdAt);
+                          
+                          if (effectiveEndDate != null) {
+                            return Directionality(
+                              textDirection: ui.TextDirection.ltr,
+                              child: OfferCountdownTimer(
+                                endDate: effectiveEndDate,
+                                style: TextStyle(color: offerTextColor),
+                                onExpired: () {
+                                  // Refresh the subscription state when offer expires
+                                  notifier.refresh();
+                                },
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        }(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Yearly Plan Card inside offer
+                  GestureDetector(
+                    onTap: () => notifier.selectPlan(SubscriptionPlan.yearly),
+                    child: Container(
+                    height: 80,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color(0xFFE53935),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                yearlyTitle ?? 'Yearly',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF666666),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  // Show original price with strikethrough if exists OR if offer is active
+                                  if (yearlyOriginalPrice != null || (activeOffer != null && activeOffer.isCurrentlyValid)) ...[
+                                    Text(
+                                      _formatPrice(yearlyOriginalPrice ?? yearlyPrice ?? 69990)
+                                          .toPersianNumbers(context),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF999999),
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                  // Show discounted price
+                                  Text(
+                                    () {
+                                      double displayPrice = yearlyPrice ?? 69990;
+                                      if (activeOffer != null && activeOffer.isCurrentlyValid) {
+                                        displayPrice = activeOffer.calculateDiscountedPrice(displayPrice);
+                                      }
+                                      return _formatPrice(displayPrice).toPersianNumbers(context);
+                                    }(),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF1A1A1A),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  // Show offer discount if available, otherwise plan discount
+                                  if (activeOffer!.discountPercentage != null)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: offerBgColor,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${activeOffer!.discountPercentage!.toStringAsFixed(0).toPersianNumbers(context)}٪',
+                                        style: TextStyle(
+                                          color: offerTextColor,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    )
+                                  else if (yearlyDiscountPercentage != null)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFE53935),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${yearlyDiscountPercentage.toStringAsFixed(0).toPersianNumbers(context)}٪',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // Show monthly equivalent price
+                            if (yearlyPricePerMonth != null)
+                              Text(
+                                _formatPrice(yearlyPricePerMonth).toPersianNumbers(context),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Color(0xFF1A1A1A),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            if (yearlyPricePerMonth != null)
+                              Text(
+                                'subscription.per_month'.tr(),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFF999999),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                ],
+              ),
+            )
+          else
+            // Yearly Plan without offer wrapper
+            GestureDetector(
+              onTap: () => notifier.selectPlan(SubscriptionPlan.yearly),
+              child: Container(
+                height: 80,
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(bottom: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: const Color(0xFFE53935),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            yearlyTitle ?? 'Yearly',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF666666),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              // Show original price with strikethrough if discount exists
+                              if (yearlyOriginalPrice != null) ...[
+                                Text(
+                                  _formatPrice(yearlyOriginalPrice)
+                                      .toPersianNumbers(context),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xFF999999),
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                              // Show yearly price
+                              Text(
+                                _formatPrice(yearlyPrice ?? 69990).toPersianNumbers(context),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Color(0xFF1A1A1A),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // Show discount badge if exists
+                              if (yearlyDiscountPercentage != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE53935),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '${yearlyDiscountPercentage.toStringAsFixed(0).toPersianNumbers(context)}٪',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Show monthly equivalent price
+                        if (yearlyPricePerMonth != null)
+                          Text(
+                            _formatPrice(yearlyPricePerMonth).toPersianNumbers(context),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF1A1A1A),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        if (yearlyPricePerMonth != null)
+                          Text(
+                            'subscription.per_month'.tr(),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF999999),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+
+          // 3 Months Plan
+          if (threeMonthPrice != null)
+            GestureDetector(
+              onTap: () => notifier.selectPlan(SubscriptionPlan.threeMonth),
+              child: Container(
+                height: 80,
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0F9FF),
+                  border: Border.all(
+                    color: const Color(0xFF0EA5E9),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            threeMonthTitle ?? '3 Months',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF666666),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 8,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              if (threeMonthOriginalPrice != null)
+                                Text(
+                                  _formatPrice(threeMonthOriginalPrice)
+                                      .toPersianNumbers(context),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFF999999),
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              const SizedBox.shrink(),
+                              if (threeMonthDiscountPercentage != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0EA5E9),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '${threeMonthDiscountPercentage.toStringAsFixed(0).toPersianNumbers(context)}٪'
+                                        .toPersianNumbers(context),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          _formatPrice(
+                                  (threeMonthPricePerMonth ?? threeMonthPrice))
+                              .toPersianNumbers(context),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Color(0xFF1A1A1A),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        (threeMonthPricePerMonth != null)
+                            ? Text(
+                                'subscription.per_month'.tr(),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFF999999),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Monthly Plan (if exists)
+          if (monthlyPrice != null)
+            GestureDetector(
+              onTap: () => notifier.selectPlan(SubscriptionPlan.monthly),
+              child: Container(
+                height: 80,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  border: Border.all(
+                    color: const Color(0xFFE0E0E0),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            monthlyTitle ?? 'Monthly',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF666666),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 8,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              if (monthlyOriginalPrice != null)
+                                Text(
+                                  _formatPrice(monthlyOriginalPrice)
+                                      .toPersianNumbers(context),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFF999999),
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              const SizedBox.shrink(),
+                              if (monthlyDiscountPercentage != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF64748B),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '${monthlyDiscountPercentage.toStringAsFixed(0).toPersianNumbers(context)}٪'
+                                        .toPersianNumbers(context),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          _formatPrice((monthlyPricePerMonth ?? monthlyPrice))
+                              .toPersianNumbers(context),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Color(0xFF1A1A1A),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        (monthlyPricePerMonth != null)
+                            ? Text(
+                                'subscription.per_month'.tr(),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFF999999),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -394,9 +871,23 @@ class SubscriptionPage extends HookConsumerWidget {
         );
   }
 
-  // Footer links removed by request
+  // Parse color from hex string
+  Color _parseColor(String hexColor) {
+    try {
+      final hexCode = hexColor.replaceAll('#', '');
+      return Color(int.parse('FF$hexCode', radix: 16));
+    } catch (e) {
+      return const Color(0xFFE53935); // Default red color
+    }
+  }
 
-  Widget _buildContinueButton(
+  // Darken a color by 20%
+  Color _darkenColor(Color color) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl.withLightness((hsl.lightness - 0.2).clamp(0.0, 1.0)).toColor();
+  }
+
+  Widget _buildPurchaseButton(
     SubscriptionState state,
     PaymentService paymentService,
     BuildContext context,
@@ -404,7 +895,7 @@ class SubscriptionPage extends HookConsumerWidget {
     ValueNotifier<bool> isProcessing,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(left: 32, right: 32, top: 32, bottom: 32),
+      padding: const EdgeInsets.all(8.0),
       child: SizedBox(
         width: double.infinity,
         height: 56,
@@ -419,10 +910,10 @@ class SubscriptionPage extends HookConsumerWidget {
                     isProcessing,
                   ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
+            backgroundColor: const Color(0xFF1A1A1A),
+            foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(50),
             ),
             elevation: 0,
             disabledBackgroundColor: Colors.grey[300],
@@ -436,7 +927,7 @@ class SubscriptionPage extends HookConsumerWidget {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -449,9 +940,9 @@ class SubscriptionPage extends HookConsumerWidget {
                     ),
                   ],
                 )
-              : Text(
-                  'subscription.continue'.tr(),
-                  style: const TextStyle(
+              : const Text(
+                  'خرید اشتراک لقمه پلاس',
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -474,7 +965,9 @@ class SubscriptionPage extends HookConsumerWidget {
       // Get the product key based on selected plan
       final productKey = state.selectedPlan == SubscriptionPlan.yearly
           ? state.yearlyCafebazaarProductKey
-          : state.monthlyCafebazaarProductKey;
+          : state.selectedPlan == SubscriptionPlan.threeMonth
+              ? state.threeMonthCafebazaarProductKey
+              : state.monthlyCafebazaarProductKey;
 
       if (productKey == null || productKey.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -524,7 +1017,8 @@ class SubscriptionPage extends HookConsumerWidget {
                 const Icon(Icons.check_circle, color: Colors.white),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text('subscription.payment.subscription_activated'.tr()),
+                  child:
+                      Text('subscription.payment.subscription_activated'.tr()),
                 ),
               ],
             ),
@@ -533,9 +1027,9 @@ class SubscriptionPage extends HookConsumerWidget {
             behavior: SnackBarBehavior.floating,
           ),
         );
-        
+
         // Navigate back
-        context.pop();
+        Navigator.pop(context);
       } else {
         // Show error snackbar
         ScaffoldMessenger.of(context).showSnackBar(

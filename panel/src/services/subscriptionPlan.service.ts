@@ -74,10 +74,59 @@ class SubscriptionPlanService {
         }
     }
 
+    async createPlan(token: string, planData: CreatePlanInput): Promise<ApiResponse<{ plan: SubscriptionPlan }>> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/subscription-plans`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(planData),
+                }
+            );
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Create plan error:', error);
+            return {
+                success: false,
+                message: 'Failed to create plan. Please try again.',
+            };
+        }
+    }
+
+    async updatePlan(token: string, id: string, planData: UpdatePlanInput): Promise<ApiResponse<{ plan: SubscriptionPlan }>> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/subscription-plans/${id}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(planData),
+                }
+            );
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Update plan error:', error);
+            return {
+                success: false,
+                message: 'Failed to update plan. Please try again.',
+            };
+        }
+    }
+
     async updatePlanPrice(
         token: string,
         duration: 'monthly' | 'yearly',
         priceData: {
+            title?: string;
             price?: number;
             originalPrice?: number;
             discountPercentage?: number;
@@ -104,6 +153,52 @@ class SubscriptionPlanService {
             return {
                 success: false,
                 message: 'Failed to update price. Please try again.',
+            };
+        }
+    }
+
+    async deletePlan(token: string, id: string): Promise<ApiResponse<{}>> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/subscription-plans/${id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Delete plan error:', error);
+            return {
+                success: false,
+                message: 'Failed to delete plan. Please try again.',
+            };
+        }
+    }
+
+    async togglePlanStatus(token: string, id: string): Promise<ApiResponse<{ plan: SubscriptionPlan }>> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/subscription-plans/${id}/toggle-status`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Toggle plan status error:', error);
+            return {
+                success: false,
+                message: 'Failed to toggle plan status. Please try again.',
             };
         }
     }

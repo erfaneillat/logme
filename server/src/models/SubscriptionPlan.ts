@@ -1,12 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ISubscriptionPlan extends Document {
-    name: string; // e.g., "Monthly Plan", "Yearly Plan"
-    duration: 'monthly' | 'yearly';
+    name: string; // e.g., "Monthly Plan", "Yearly Plan", "3 Month Plan"
+    title?: string; // Display title for the plan (e.g., "Premium", "Pro")
+    duration: 'monthly' | '3month' | 'yearly';
     price: number; // Price in Toman
     originalPrice?: number; // Original price before discount (optional)
     discountPercentage?: number; // e.g., 60 for 60% off
-    pricePerMonth?: number; // For yearly plans: price divided by 12
+    pricePerMonth?: number; // Monthly equivalent price (manually set, not auto-calculated)
     cafebazaarProductKey?: string; // Cafebazaar product key for in-app purchases
     isActive: boolean; // Whether this plan is currently available
     features: string[]; // List of features included in the plan
@@ -22,10 +23,15 @@ const subscriptionPlanSchema = new Schema<ISubscriptionPlan>(
             required: [true, 'Plan name is required'],
             trim: true,
         },
+        title: {
+            type: String,
+            required: false,
+            trim: true,
+        },
         duration: {
             type: String,
             required: [true, 'Duration is required'],
-            enum: ['monthly', 'yearly'],
+            enum: ['monthly', '3month', 'yearly'],
         },
         price: {
             type: Number,
