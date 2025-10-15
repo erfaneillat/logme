@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cal_ai/extensions/string.dart';
@@ -7,12 +8,16 @@ class OfferCountdownTimer extends StatefulWidget {
   final DateTime endDate;
   final TextStyle? style;
   final VoidCallback? onExpired;
+  final double boxWidth;
+  final double boxHeight;
 
   const OfferCountdownTimer({
     super.key,
     required this.endDate,
     this.style,
     this.onExpired,
+    this.boxWidth = 36,
+    this.boxHeight = 36,
   });
 
   @override
@@ -82,22 +87,25 @@ class _OfferCountdownTimerState extends State<OfferCountdownTimer> {
   }
 
   Widget _buildTimerBox(String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        value,
-        style: widget.style?.copyWith(
-          color: const Color(0xFFE53935),
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ) ?? const TextStyle(
-          color: Color(0xFFE53935),
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+    final baseStyle = widget.style ?? const TextStyle();
+    return SizedBox(
+      width: widget.boxWidth,
+      height: widget.boxHeight,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          value,
+          textAlign: TextAlign.center,
+          style: baseStyle.copyWith(
+            color: const Color(0xFFE53935),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            fontFeatures: const [ui.FontFeature.tabularFigures()],
+          ),
         ),
       ),
     );

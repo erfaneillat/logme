@@ -135,6 +135,9 @@ class SubscriptionPricingSection extends StatelessWidget {
                             children: [
                               Text(
                                 activeOffer!.display.bannerText,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: offerTextColor,
                                   fontSize: 14,
@@ -146,6 +149,9 @@ class SubscriptionPricingSection extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
                                     activeOffer!.display.bannerSubtext!,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       color: offerTextColor.withOpacity(0.9),
                                       fontSize: 12,
@@ -161,14 +167,19 @@ class SubscriptionPricingSection extends StatelessWidget {
                               .getEffectiveEndDate(currentUser?.createdAt);
 
                           if (effectiveEndDate != null) {
-                            return Directionality(
-                              textDirection: ui.TextDirection.ltr,
-                              child: OfferCountdownTimer(
-                                endDate: effectiveEndDate,
-                                style: TextStyle(color: offerTextColor),
-                                onExpired: () {
-                                  notifier.refresh();
-                                },
+                            return SizedBox(
+                              width: 120,
+                              child: Directionality(
+                                textDirection: ui.TextDirection.ltr,
+                                child: OfferCountdownTimer(
+                                  endDate: effectiveEndDate,
+                                  style: TextStyle(color: offerTextColor),
+                                  onExpired: () {
+                                    notifier.refresh();
+                                  },
+                                  boxWidth: 32,
+                                  boxHeight: 32,
+                                ),
                               ),
                             );
                           }

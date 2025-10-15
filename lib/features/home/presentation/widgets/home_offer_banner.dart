@@ -69,6 +69,9 @@ class HomeOfferBanner extends StatelessWidget {
                     children: [
                       Text(
                         offer.display.bannerText,
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           color: offerTextColor,
@@ -81,6 +84,9 @@ class HomeOfferBanner extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             offer.display.bannerSubtext!,
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.right,
                             style: TextStyle(
                               color: offerTextColor.withOpacity(0.9),
@@ -94,12 +100,17 @@ class HomeOfferBanner extends StatelessWidget {
                 const SizedBox(width: 12),
                 // Countdown timer on the left
                 if (effectiveEndDate != null)
-                  Directionality(
-                    textDirection: ui.TextDirection.ltr,
-                    child: OfferCountdownTimer(
-                      endDate: effectiveEndDate,
-                      style: TextStyle(color: offerTextColor),
-                      onExpired: onExpired,
+                  SizedBox(
+                    width: 120,
+                    child: Directionality(
+                      textDirection: ui.TextDirection.ltr,
+                      child: OfferCountdownTimer(
+                        endDate: effectiveEndDate,
+                        style: TextStyle(color: offerTextColor),
+                        onExpired: onExpired,
+                        boxWidth: 32,
+                        boxHeight: 32,
+                      ),
                     ),
                   ),
                 const SizedBox(width: 12),
