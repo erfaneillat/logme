@@ -20,6 +20,12 @@ export interface IOfferDisplay {
     icon?: string; // Icon name or emoji
 }
 
+export interface IOfferPlanPricing {
+    planId: mongoose.Types.ObjectId;
+    discountedPrice?: number; // Override price after discount
+    discountedPricePerMonth?: number; // Override per-month price after discount
+}
+
 export interface IOffer extends Document {
     name: string; // Internal name (e.g., "Winter Sale 2024")
     slug: string; // URL-friendly identifier
@@ -32,6 +38,10 @@ export interface IOffer extends Document {
     offerType: OfferType;
     discountPercentage?: number; // For percentage type
     discountAmount?: number; // For fixed amount type
+    planPricing?: IOfferPlanPricing[]; // Per-plan pricing overrides
+    
+    // CafeBazaar integration
+    cafebazaarProductKey?: string; // CafeBazaar product key for offers
     
     // Time settings
     startDate?: Date;
@@ -108,6 +118,19 @@ const offerSchema = new Schema<IOffer>(
         discountAmount: {
             type: Number,
             min: [0, 'Discount amount cannot be negative'],
+        },
+        planPricing: [{
+            planId: {
+                type: Schema.Types.ObjectId,
+                ref: 'SubscriptionPlan',
+            },
+            discountedPrice: Number,
+            discountedPricePerMonth: Number,
+        }],
+        cafebazaarProductKey: {
+            type: String,
+            required: false,
+            trim: true,
         },
         startDate: Date,
         endDate: Date,

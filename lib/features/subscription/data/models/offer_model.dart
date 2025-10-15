@@ -1,3 +1,35 @@
+class OfferPlanPricingModel {
+  final String planId;
+  final double? discountedPrice;
+  final double? discountedPricePerMonth;
+
+  OfferPlanPricingModel({
+    required this.planId,
+    this.discountedPrice,
+    this.discountedPricePerMonth,
+  });
+
+  factory OfferPlanPricingModel.fromJson(Map<String, dynamic> json) {
+    return OfferPlanPricingModel(
+      planId: json['planId'] as String,
+      discountedPrice: json['discountedPrice'] != null
+          ? (json['discountedPrice'] as num).toDouble()
+          : null,
+      discountedPricePerMonth: json['discountedPricePerMonth'] != null
+          ? (json['discountedPricePerMonth'] as num).toDouble()
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'planId': planId,
+      'discountedPrice': discountedPrice,
+      'discountedPricePerMonth': discountedPricePerMonth,
+    };
+  }
+}
+
 class OfferConditionsModel {
   final int? userRegisteredWithinDays;
   final int? userRegisteredAfterDays;
@@ -85,6 +117,8 @@ class OfferModel {
   final String offerType;
   final double? discountPercentage;
   final double? discountAmount;
+  final List<OfferPlanPricingModel>? planPricing;
+  final String? cafebazaarProductKey;
   final DateTime? startDate;
   final DateTime? endDate;
   final bool isTimeLimited;
@@ -108,6 +142,8 @@ class OfferModel {
     required this.offerType,
     this.discountPercentage,
     this.discountAmount,
+    this.planPricing,
+    this.cafebazaarProductKey,
     this.startDate,
     this.endDate,
     required this.isTimeLimited,
@@ -137,6 +173,12 @@ class OfferModel {
       discountAmount: json['discountAmount'] != null
           ? (json['discountAmount'] as num).toDouble()
           : null,
+      planPricing: json['planPricing'] != null
+          ? (json['planPricing'] as List<dynamic>)
+              .map((e) => OfferPlanPricingModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
+      cafebazaarProductKey: json['cafebazaarProductKey'] as String?,
       startDate: json['startDate'] != null
           ? DateTime.parse(json['startDate'] as String)
           : null,
@@ -171,6 +213,8 @@ class OfferModel {
       'offerType': offerType,
       'discountPercentage': discountPercentage,
       'discountAmount': discountAmount,
+      'planPricing': planPricing?.map((e) => e.toJson()).toList(),
+      'cafebazaarProductKey': cafebazaarProductKey,
       'startDate': startDate?.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
       'isTimeLimited': isTimeLimited,

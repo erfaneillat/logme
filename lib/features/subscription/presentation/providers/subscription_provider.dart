@@ -56,16 +56,19 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
       final yearlyOffer = _findBestOffer(offers, yearlyPlan?.id);
       
       state = state.copyWith(
+        monthlyPlanId: monthlyPlan?.id,
         monthlyTitle: monthlyPlan?.title,
         monthlyPrice: monthlyPlan?.price,
         monthlyOriginalPrice: monthlyPlan?.originalPrice,
         monthlyDiscountPercentage: monthlyPlan?.discountPercentage,
         monthlyPricePerMonth: monthlyPlan?.pricePerMonth,
+        threeMonthPlanId: threeMonthPlan?.id,
         threeMonthTitle: threeMonthPlan?.title,
         threeMonthPrice: threeMonthPlan?.price,
         threeMonthOriginalPrice: threeMonthPlan?.originalPrice,
         threeMonthDiscountPercentage: threeMonthPlan?.discountPercentage,
         threeMonthPricePerMonth: threeMonthPlan?.pricePerMonth,
+        yearlyPlanId: yearlyPlan?.id,
         yearlyTitle: yearlyPlan?.title,
         yearlyPrice: yearlyPlan?.price,
         yearlyOriginalPrice: yearlyPlan?.originalPrice,
@@ -117,16 +120,19 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
 
 class SubscriptionState {
   final SubscriptionPlan selectedPlan;
+  final String? monthlyPlanId;
   final String? monthlyTitle;
   final double? monthlyPrice;
   final double? monthlyOriginalPrice;
   final int? monthlyDiscountPercentage;
   final double? monthlyPricePerMonth;
+  final String? threeMonthPlanId;
   final String? threeMonthTitle;
   final double? threeMonthPrice;
   final double? threeMonthOriginalPrice;
   final int? threeMonthDiscountPercentage;
   final double? threeMonthPricePerMonth;
+  final String? yearlyPlanId;
   final String? yearlyTitle;
   final double? yearlyPrice;
   final double? yearlyOriginalPrice;
@@ -145,16 +151,19 @@ class SubscriptionState {
 
   const SubscriptionState({
     required this.selectedPlan,
+    this.monthlyPlanId,
     this.monthlyTitle,
     this.monthlyPrice,
     this.monthlyOriginalPrice,
     this.monthlyDiscountPercentage,
     this.monthlyPricePerMonth,
+    this.threeMonthPlanId,
     this.threeMonthTitle,
     this.threeMonthPrice,
     this.threeMonthOriginalPrice,
     this.threeMonthDiscountPercentage,
     this.threeMonthPricePerMonth,
+    this.yearlyPlanId,
     this.yearlyTitle,
     this.yearlyPrice,
     this.yearlyOriginalPrice,
@@ -174,16 +183,19 @@ class SubscriptionState {
 
   SubscriptionState copyWith({
     SubscriptionPlan? selectedPlan,
+    String? monthlyPlanId,
     String? monthlyTitle,
     double? monthlyPrice,
     double? monthlyOriginalPrice,
     int? monthlyDiscountPercentage,
     double? monthlyPricePerMonth,
+    String? threeMonthPlanId,
     String? threeMonthTitle,
     double? threeMonthPrice,
     double? threeMonthOriginalPrice,
     int? threeMonthDiscountPercentage,
     double? threeMonthPricePerMonth,
+    String? yearlyPlanId,
     String? yearlyTitle,
     double? yearlyPrice,
     double? yearlyOriginalPrice,
@@ -202,18 +214,21 @@ class SubscriptionState {
   }) {
     return SubscriptionState(
       selectedPlan: selectedPlan ?? this.selectedPlan,
+      monthlyPlanId: monthlyPlanId ?? this.monthlyPlanId,
       monthlyTitle: monthlyTitle ?? this.monthlyTitle,
       monthlyPrice: monthlyPrice ?? this.monthlyPrice,
       monthlyOriginalPrice: monthlyOriginalPrice ?? this.monthlyOriginalPrice,
       monthlyDiscountPercentage:
           monthlyDiscountPercentage ?? this.monthlyDiscountPercentage,
       monthlyPricePerMonth: monthlyPricePerMonth ?? this.monthlyPricePerMonth,
+      threeMonthPlanId: threeMonthPlanId ?? this.threeMonthPlanId,
       threeMonthTitle: threeMonthTitle ?? this.threeMonthTitle,
       threeMonthPrice: threeMonthPrice ?? this.threeMonthPrice,
       threeMonthOriginalPrice: threeMonthOriginalPrice ?? this.threeMonthOriginalPrice,
       threeMonthDiscountPercentage:
           threeMonthDiscountPercentage ?? this.threeMonthDiscountPercentage,
       threeMonthPricePerMonth: threeMonthPricePerMonth ?? this.threeMonthPricePerMonth,
+      yearlyPlanId: yearlyPlanId ?? this.yearlyPlanId,
       yearlyTitle: yearlyTitle ?? this.yearlyTitle,
       yearlyPrice: yearlyPrice ?? this.yearlyPrice,
       yearlyOriginalPrice: yearlyOriginalPrice ?? this.yearlyOriginalPrice,

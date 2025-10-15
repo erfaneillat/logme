@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { offerService } from '../services/offer.service';
-import { Offer, OfferUserType, OfferType } from '../types/offer';
+import { Offer, OfferUserType, OfferType, OfferPlanPricing } from '../types/offer';
 import { SubscriptionPlan } from '../types/subscriptionPlan';
 
 interface OfferFormModalProps {
@@ -42,6 +42,8 @@ const OfferFormModal = ({ token, isCreating, editingOffer, plans, onClose, onSuc
     const [minPurchaseAmount, setMinPurchaseAmount] = useState<number | undefined>(undefined);
     const [applicablePlans, setApplicablePlans] = useState<string[]>([]);
     const [applyToAllPlans, setApplyToAllPlans] = useState(false);
+    const [planPricing, setPlanPricing] = useState<OfferPlanPricing[]>([]);
+    const [cafebazaarProductKey, setCafebazaarProductKey] = useState('');
     const [priority, setPriority] = useState(0);
     const [isActive, setIsActive] = useState(true);
     const [maxUsageLimit, setMaxUsageLimit] = useState<number | undefined>(undefined);
@@ -71,6 +73,8 @@ const OfferFormModal = ({ token, isCreating, editingOffer, plans, onClose, onSuc
             setMinPurchaseAmount(editingOffer.conditions?.minPurchaseAmount);
             setApplicablePlans(editingOffer.applicablePlans?.map((p: any) => p._id || p) || []);
             setApplyToAllPlans(editingOffer.applyToAllPlans);
+            setPlanPricing(editingOffer.planPricing || []);
+            setCafebazaarProductKey(editingOffer.cafebazaarProductKey || '');
             setPriority(editingOffer.priority);
             setIsActive(editingOffer.isActive);
             setMaxUsageLimit(editingOffer.maxUsageLimit);
@@ -111,6 +115,8 @@ const OfferFormModal = ({ token, isCreating, editingOffer, plans, onClose, onSuc
             },
             applicablePlans: applyToAllPlans ? [] : applicablePlans,
             applyToAllPlans,
+            planPricing: planPricing.length > 0 ? planPricing : undefined,
+            cafebazaarProductKey: cafebazaarProductKey || undefined,
             priority,
             isActive,
             maxUsageLimit,
@@ -147,6 +153,25 @@ const OfferFormModal = ({ token, isCreating, editingOffer, plans, onClose, onSuc
                 ? prev.filter(id => id !== planId)
                 : [...prev, planId]
         );
+    };
+
+    const updatePlanPricing = (planId: string, field: 'discountedPrice' | 'discountedPricePerMonth', value: number | undefined) => {
+        setPlanPricing(prev => {
+            const existing = prev.find(p => p.planId === planId);
+            if (existing) {
+                return prev.map(p => 
+                    p.planId === planId 
+                        ? { ...p, [field]: value }
+                        : p
+                );
+            } else {
+                return [...prev, { planId, [field]: value }];
+            }
+        });
+    };
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
     };
 
     return (
@@ -393,6 +418,72 @@ const OfferFormModal = ({ token, isCreating, editingOffer, plans, onClose, onSuc
                                 ))}
                             </div>
                         )}
+                    </div>
+
+                    {/* Per-Plan Pricing Override */}
+                    {(applyToAllPlans || applicablePlans.length > 0) && (
+                        <div className="border-b border-gray-200 pb-6">
+                            <h3 className="text-lg font-bold text-black mb-4">💵 Per-Plan Pricing (Optional Override)</h3>
+                            <p className="text-sm text-gray-600 mb-4">Enter the exact discounted price and per-month price for each plan after applying the offer. Leave blank to auto-calculate from discount percentage/amount.</p>
+                            <div className="space-y-4">
+                                {(applyToAllPlans ? plans : plans.filter(p => applicablePlans.includes(p._id))).map(plan => {
+                                    const pricing = planPricing.find(p => p.planId === plan._id);
+                                    return (
+                                        <div key={plan._id} className="p-4 rounded-lg border-2 border-gray-200 bg-gray-50">
+                                            <div className="mb-3">
+                                                <div className="font-semibold text-black">{plan.title || plan.name}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    Original: {formatPrice(plan.price)} | Duration: {plan.duration}
+                                                    {plan.pricePerMonth && ` | Per Month: ${formatPrice(plan.pricePerMonth)}`}
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="mb-1 block text-xs font-semibold text-black">Discounted Price (Toman)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={pricing?.discountedPrice || ''}
+                                                        onChange={(e) => updatePlanPricing(plan._id, 'discountedPrice', e.target.value ? Number(e.target.value) : undefined)}
+                                                        min="0"
+                                                        placeholder="Auto-calculated"
+                                                        className="w-full rounded-lg border-2 border-gray-200 px-3 py-2 text-sm text-black transition-all duration-200 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1 block text-xs font-semibold text-black">Discounted Per Month (Toman)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={pricing?.discountedPricePerMonth || ''}
+                                                        onChange={(e) => updatePlanPricing(plan._id, 'discountedPricePerMonth', e.target.value ? Number(e.target.value) : undefined)}
+                                                        min="0"
+                                                        placeholder="Auto-calculated"
+                                                        className="w-full rounded-lg border-2 border-gray-200 px-3 py-2 text-sm text-black transition-all duration-200 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* CafeBazaar Integration */}
+                    <div className="border-b border-gray-200 pb-6">
+                        <h3 className="text-lg font-bold text-black mb-4">🛍️ CafeBazaar Integration</h3>
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-black">CafeBazaar Product Key</label>
+                            <input
+                                type="text"
+                                value={cafebazaarProductKey}
+                                onChange={(e) => setCafebazaarProductKey(e.target.value)}
+                                placeholder="e.g., premium_offer_monthly"
+                                className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-black transition-all duration-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/10"
+                            />
+                            <p className="mt-2 text-xs text-gray-500">
+                                When users purchase a plan with this offer, this CafeBazaar product key will be used instead of the plan's default key.
+                            </p>
+                        </div>
                     </div>
 
                     {/* Additional Settings */}

@@ -18,6 +18,12 @@ export interface OfferDisplay {
     icon?: string;
 }
 
+export interface OfferPlanPricing {
+    planId: string;
+    discountedPrice?: number;
+    discountedPricePerMonth?: number;
+}
+
 export interface Offer {
     _id: string;
     name: string;
@@ -27,6 +33,8 @@ export interface Offer {
     offerType: OfferType;
     discountPercentage?: number;
     discountAmount?: number;
+    planPricing?: OfferPlanPricing[];
+    cafebazaarProductKey?: string;
     startDate?: string;
     endDate?: string;
     isTimeLimited: boolean;
@@ -50,6 +58,8 @@ export interface CreateOfferRequest {
     offerType: OfferType;
     discountPercentage?: number;
     discountAmount?: number;
+    planPricing?: OfferPlanPricing[];
+    cafebazaarProductKey?: string;
     startDate?: string;
     endDate?: string;
     isTimeLimited: boolean;
