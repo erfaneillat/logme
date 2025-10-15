@@ -67,30 +67,38 @@ class HomeOfferBanner extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        offer.display.bannerText,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          color: offerTextColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          offer.display.bannerText,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            color: offerTextColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       if (offer.display.bannerSubtext != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            offer.display.bannerSubtext!,
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: offerTextColor.withOpacity(0.9),
-                              fontSize: 13,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              offer.display.bannerSubtext!,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                color: offerTextColor.withOpacity(0.9),
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ),
@@ -101,7 +109,7 @@ class HomeOfferBanner extends StatelessWidget {
                 // Countdown timer on the left
                 if (effectiveEndDate != null)
                   SizedBox(
-                    width: 120,
+                    width: 160,
                     child: Directionality(
                       textDirection: ui.TextDirection.ltr,
                       child: OfferCountdownTimer(

@@ -15,19 +15,35 @@ Future<void> handleSubscriptionPurchase(
   try {
     isProcessing.value = true;
 
-    final activeOffer = state.activeOffer;
-    final offerHasCafebazaarKey = activeOffer != null &&
-        activeOffer.isCurrentlyValid &&
-        activeOffer.cafebazaarProductKey != null &&
-        activeOffer.cafebazaarProductKey!.isNotEmpty;
+    // Determine selected plan id and plan product key
+    final String? selectedPlanId;
+    final String? planProductKey;
+    if (state.selectedPlan == SubscriptionPlan.yearly) {
+      selectedPlanId = state.yearlyPlanId;
+      planProductKey = state.yearlyCafebazaarProductKey;
+    } else if (state.selectedPlan == SubscriptionPlan.threeMonth) {
+      selectedPlanId = state.threeMonthPlanId;
+      planProductKey = state.threeMonthCafebazaarProductKey;
+    } else {
+      selectedPlanId = state.monthlyPlanId;
+      planProductKey = state.monthlyCafebazaarProductKey;
+    }
 
-    final productKey = offerHasCafebazaarKey
-        ? activeOffer.cafebazaarProductKey
-        : (state.selectedPlan == SubscriptionPlan.yearly
-            ? state.yearlyCafebazaarProductKey
-            : state.selectedPlan == SubscriptionPlan.threeMonth
-                ? state.threeMonthCafebazaarProductKey
-                : state.monthlyCafebazaarProductKey);
+    // Pick applicable offer for the selected plan (highest priority), if any
+    String? productKey = planProductKey;
+    if (selectedPlanId != null) {
+      final applicableOffers = state.offers
+          .where((o) => o.isCurrentlyValid && o.appliesToPlan(selectedPlanId!))
+          .toList();
+      if (applicableOffers.isNotEmpty) {
+        applicableOffers.sort((a, b) => b.priority.compareTo(a.priority));
+        final bestOffer = applicableOffers.first;
+        final offerKey = bestOffer.cafebazaarProductKey;
+        if (offerKey != null && offerKey.isNotEmpty) {
+          productKey = offerKey;
+        }
+      }
+    }
 
     if (productKey == null || productKey.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -65,6 +81,8 @@ Future<void> handleSubscriptionPurchase(
     if (result.success) {
       final secureStorage = ref.read(secureStorageProvider);
       await secureStorage.setSubscriptionActive(true);
+      // Refresh plans and offers so UI updates immediately
+      await ref.read(subscriptionNotifierProvider.notifier).refresh();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

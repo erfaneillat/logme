@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ISubscription extends Document {
     userId: mongoose.Types.ObjectId;
-    planType: 'monthly' | 'yearly';
+    planType: 'monthly' | 'yearly' | 'threeMonth';
     productKey: string;
     purchaseToken: string;
     orderId: string;
@@ -26,7 +26,7 @@ const subscriptionSchema = new Schema<ISubscription>(
         planType: {
             type: String,
             required: [true, 'Plan type is required'],
-            enum: ['monthly', 'yearly'],
+            enum: ['monthly', 'yearly', 'threeMonth'],
         },
         productKey: {
             type: String,

@@ -8,18 +8,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class PurchaseButton extends StatelessWidget {
   const PurchaseButton({
     super.key,
-    required this.state,
     required this.paymentService,
     required this.isProcessing,
   });
 
-  final SubscriptionState state;
   final PaymentService paymentService;
   final ValueNotifier<bool> isProcessing;
 
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, _) {
+      final state = ref.watch(subscriptionNotifierProvider);
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(

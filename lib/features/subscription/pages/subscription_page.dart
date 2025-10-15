@@ -73,7 +73,6 @@ class SubscriptionPage extends HookConsumerWidget {
               left: 0,
               right: 0,
               child: PurchaseButton(
-                state: subscriptionState,
                 paymentService: paymentService,
                 isProcessing: isProcessing,
               ),

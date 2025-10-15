@@ -66,10 +66,12 @@ class _OfferCountdownTimerState extends State<OfferCountdownTimer> {
       return const SizedBox.shrink(); // Hide when expired
     }
 
-    final hours = _timeRemaining.inHours;
+    final days = _timeRemaining.inDays;
+    final hours = _timeRemaining.inHours.remainder(24);
     final minutes = _timeRemaining.inMinutes.remainder(60);
     final seconds = _timeRemaining.inSeconds.remainder(60);
 
+    final daysStr = days.toString().padLeft(2, '0').toPersianNumbers(context);
     final hoursStr = hours.toString().padLeft(2, '0').toPersianNumbers(context);
     final minutesStr = minutes.toString().padLeft(2, '0').toPersianNumbers(context);
     final secondsStr = seconds.toString().padLeft(2, '0').toPersianNumbers(context);
@@ -77,6 +79,10 @@ class _OfferCountdownTimerState extends State<OfferCountdownTimer> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (days > 0) ...[
+          _buildTimerBox(daysStr),
+          const SizedBox(width: 6),
+        ],
         _buildTimerBox(hoursStr),
         const SizedBox(width: 6),
         _buildTimerBox(minutesStr),

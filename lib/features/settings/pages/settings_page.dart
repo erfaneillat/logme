@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 
 import '../../login/presentation/providers/auth_provider.dart';
+import '../../subscription/presentation/providers/subscription_status_provider.dart';
+import '../../../services/payment_service.dart';
 import '../presentation/providers/settings_providers.dart';
 import '../widgets/edit_name_bottom_sheet.dart';
 
@@ -31,6 +34,10 @@ class SettingsPage extends HookConsumerWidget {
                 delegate: SliverChildListDelegate([
                   // Profile card
                   _ProfileCard(userAsync: userAsync),
+                  const SizedBox(height: 20),
+
+                  // Subscription card
+                  _SubscriptionCard(),
                   const SizedBox(height: 20),
 
                   // Invite friends card
@@ -83,6 +90,7 @@ class SettingsPage extends HookConsumerWidget {
       ),
     );
   }
+
 }
 
 // New component widgets
@@ -1089,6 +1097,283 @@ class _ModernDivider extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4),
       height: 1,
       color: Colors.grey.shade100,
+    );
+  }
+}
+
+class _SubscriptionCard extends HookConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final subscriptionAsync = ref.watch(subscriptionActiveProvider);
+
+    return subscriptionAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (isActive) {
+        if (!isActive) return const SizedBox.shrink();
+
+        // Fetch full subscription details
+        return FutureBuilder<SubscriptionStatus>(
+          future: ref.read(paymentServiceProvider).checkSubscriptionStatus(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox.shrink();
+            }
+
+            final status = snapshot.data!;
+            if (!status.isActive) return const SizedBox.shrink();
+
+            return _buildSubscriptionCard(context, status);
+          },
+        );
+      },
+    );
+  }
+
+  String _toPersianDigits(String input) {
+    const en = ['0','1','2','3','4','5','6','7','8','9'];
+    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    var out = input;
+    for (var i = 0; i < en.length; i++) {
+      out = out.replaceAll(en[i], fa[i]);
+    }
+    return out;
+  }
+
+  String _localizedPlanTitle(BuildContext context, String? planType) {
+    final t = (planType ?? '').toLowerCase();
+    if (t.isEmpty) return '';
+    if (t.contains('year')) {
+      return 'subscription.yearly_plan'.tr();
+    }
+    if (t.contains('three') || t.contains('3')) {
+      return 'subscription.three_month_plan'.tr();
+    }
+    if (t.contains('month')) {
+      return 'subscription.monthly_plan'.tr();
+    }
+    return planType ?? '';
+  }
+
+  Widget _buildSubscriptionCard(BuildContext context, SubscriptionStatus status) {
+    final expiryDate = status.expiryDate;
+    final planType = status.planType ?? '';
+    final daysLeft = expiryDate != null
+        ? expiryDate.difference(DateTime.now()).inDays
+        : null;
+    String? formattedDate;
+    if (expiryDate != null) {
+      if (context.locale.languageCode == 'fa') {
+        final j = Jalali.fromDateTime(expiryDate);
+        final f = j.formatter;
+        formattedDate = _toPersianDigits('${f.yyyy}/${f.mm}/${f.dd}');
+      } else {
+        formattedDate = DateFormat('MMM dd, yyyy').format(expiryDate);
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF6366F1),
+            const Color(0xFF8B5CF6),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6366F1).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.workspace_premium,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'settings.subscription.active_subscription'.tr(),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _localizedPlanTitle(context, planType),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.8),
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'settings.subscription.active'.tr(),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                if (expiryDate != null) ...[
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.white.withOpacity(0.9),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'settings.subscription.expires_on'.tr(),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        formattedDate ?? '',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ],
+                  ),
+                  if (daysLeft != null && daysLeft > 0) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            color: Colors.white.withOpacity(0.9),
+                            size: 14,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'settings.subscription.days_left'.tr(
+                              namedArgs: {
+                                'days': context.locale.languageCode == 'fa'
+                                    ? _toPersianDigits(daysLeft.toString())
+                                    : daysLeft.toString(),
+                              },
+                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => context.push('/subscription'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF6366F1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                'settings.subscription.manage'.tr(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -242,7 +242,14 @@
         "name_required": "Name is required",
         "name_too_short": "Name must be at least 2 characters",
         "name_too_long": "Name cannot exceed 50 characters",
-        "url_launch_error": "Unable to open link. Please try again."
+        "url_launch_error": "Unable to open link. Please try again.",
+        "subscription": {
+            "active_subscription": "Active Subscription",
+            "active": "Active",
+            "expires_on": "Expires on",
+            "days_left": "{days} days left",
+            "manage": "Manage Subscription"
+        }
     },
     "terms": {
         "title": "Terms and Conditions",
@@ -724,56 +731,6 @@
         "sale_70_remaining": "Limited time remaining",
         "countdown_ends_in": "Ends in",
         "countdown_days": "days",
-        "countdown_hours": "hours",
-        "countdown_minutes": "minutes",
-        "countdown_seconds": "seconds",
-        "countdown_expired": "Offer Expired",
-        "limited_time_offer": "🔥 Limited Time Offer! 🔥",
-        "you_can_cancel": "You can cancel your subscription anytime",
-        "continue": "Continue",
-        "terms": "Terms",
-        "privacy": "Privacy",
-        "restore": "Restore",
-        "have_a_code": "Have a code?",
-        "food_name": "Meat Sandwich",
-        "calories": "Calories",
-        "carbs": "Carbs",
-        "protein": "Protein",
-        "fat": "Fat",
-        "kcal": "kcal",
-        "grams": "g",
-        "offers": {
-            "special_offer": "Special Offer",
-            "limited_time": "Limited",
-            "new_users_only": "New Users Only",
-            "old_users_only": "Special for Existing Users",
-            "expires_in": "Expires in",
-            "days": "days",
-            "hours": "hours",
-            "minutes": "minutes",
-            "seconds": "seconds",
-            "off": "OFF",
-            "save": "Save",
-            "for_limited_time": "For Limited Time",
-            "winter_sale": "Winter Sale",
-            "summer_sale": "Summer Sale",
-            "seasonal_offer": "Seasonal Offer",
-            "exclusive_deal": "Exclusive Deal",
-            "best_value": "Best Value"
-        },
-        "lucky_wheel": {
-            "title": "🎉 Special Surprise for You!",
-            "hurry_badge": "Limited Time Offer",
-            "subtitle": "Take a spin and unlock amazing savings on your premium journey!",
-            "description": "We've prepared something special just for you! This exclusive offer is only available for a limited time—don't miss out on your chance to save big.",
-            "timer_hint": "This special offer expires in 48 hours, so don't wait too long!",
-            "subheading": "Join thousands of happy users who've already claimed their savings today!",
-            "spin_button": "Let's spin! 🎯",
-            "spinning": "Good luck! ✨",
-            "result_cta": "Claim your amazing deal! 🎉",
-            "result_title": "Congratulations! Your special discount is ready! 🎊",
-            "none": "Better luck next time! 😊"
-        },
         "payment": {
             "processing": "Processing payment...",
             "success": "Payment successful!",
@@ -802,6 +759,15 @@
             "not_auto_renewing": "Auto-renewal is disabled",
             "already_have_active": "You already have an active subscription",
             "subscription_reactivated": "Your subscription has been reactivated!"
+        },
+        "header": {
+          "status": "Subscription Status",
+          "loading": "Loading",
+          "none": "No subscription",
+          "active": "Active",
+          "until": " until {}",
+          "until_fa": " until {}",
+          "close": "Close"
         },
         "testimonials": [
             {

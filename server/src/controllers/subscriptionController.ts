@@ -119,11 +119,35 @@ export class SubscriptionController {
             }
 
             // Determine plan type from product key
-            const planType = productKey.toLowerCase().includes('yearly') ? 'yearly' : 'monthly';
+            const pk = productKey.toLowerCase();
+            let planType: 'monthly' | 'yearly' | 'threeMonth';
+            if (pk.includes('year') || pk.includes('yearly') || pk.includes('annual')) {
+                planType = 'yearly';
+            } else if (
+                pk.includes('3month') ||
+                (pk.includes('3') && pk.includes('month')) ||
+                pk.includes('three') ||
+                pk.includes('quarter')
+            ) {
+                planType = 'threeMonth';
+            } else {
+                planType = 'monthly';
+            }
 
             // Calculate dates using verification service
             const startDate = new Date();
-            const expiryDate = PurchaseVerificationService.calculateExpiryDate(planType, startDate);
+            const previousActive = await Subscription.findOne({
+                userId,
+                isActive: true,
+                expiryDate: { $gt: startDate },
+            }).sort({ expiryDate: -1 });
+            let expiryDate = PurchaseVerificationService.calculateExpiryDate(planType, startDate);
+            if (previousActive) {
+                const remainingMs = previousActive.expiryDate.getTime() - startDate.getTime();
+                if (remainingMs > 0) {
+                    expiryDate = new Date(expiryDate.getTime() + remainingMs);
+                }
+            }
 
             // Validate dates
             if (!PurchaseVerificationService.validateSubscriptionDates(startDate, expiryDate)) {
@@ -722,7 +746,7 @@ export class SubscriptionController {
             const query: any = {};
 
             // Filter by plan type
-            if (planType && (planType === 'monthly' || planType === 'yearly')) {
+            if (planType && (planType === 'monthly' || planType === 'yearly' || planType === 'threeMonth')) {
                 query.planType = planType;
             }
 

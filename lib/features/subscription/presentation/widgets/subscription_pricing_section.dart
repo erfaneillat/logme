@@ -133,28 +133,36 @@ class SubscriptionPricingSection extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                activeOffer!.display.bannerText,
-                                maxLines: 1,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: offerTextColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  activeOffer!.display.bannerText,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: offerTextColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               if (activeOffer!.display.bannerSubtext != null)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    activeOffer!.display.bannerSubtext!,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: offerTextColor.withOpacity(0.9),
-                                      fontSize: 12,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      activeOffer!.display.bannerSubtext!,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: offerTextColor.withOpacity(0.9),
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -168,7 +176,7 @@ class SubscriptionPricingSection extends StatelessWidget {
 
                           if (effectiveEndDate != null) {
                             return SizedBox(
-                              width: 120,
+                              width: 160,
                               child: Directionality(
                                 textDirection: ui.TextDirection.ltr,
                                 child: OfferCountdownTimer(

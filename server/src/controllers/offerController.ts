@@ -97,10 +97,23 @@ export class OfferController {
                 .populate('applicablePlans', 'name title duration price originalPrice discountPercentage')
                 .sort({ priority: -1 });
 
-            // Filter offers that apply to this user
+            // Build set of product keys already purchased by the user (to hide such offers)
+            let purchasedKeys = new Set<string>();
+            if (userId) {
+                try {
+                    const keys = await Subscription.distinct('productKey', { userId });
+                    purchasedKeys = new Set((keys as string[]).filter(Boolean));
+                } catch (_) {}
+            }
+
+            // Filter offers that apply to this user and are not previously purchased
             const applicableOffers = allOffers.filter((offer: any) => {
                 // Check usage limit
                 if (offer.maxUsageLimit && offer.usageCount >= offer.maxUsageLimit) {
+                    return false;
+                }
+                // Exclude if the user has already purchased this offer's product key
+                if (offer.cafebazaarProductKey && purchasedKeys.has(offer.cafebazaarProductKey)) {
                     return false;
                 }
 

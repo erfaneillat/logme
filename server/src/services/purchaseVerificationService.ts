@@ -185,11 +185,13 @@ export class PurchaseVerificationService {
     /**
      * Calculate subscription expiry date
      */
-    static calculateExpiryDate(planType: 'monthly' | 'yearly', startDate: Date = new Date()): Date {
+    static calculateExpiryDate(planType: 'monthly' | 'yearly' | 'threeMonth', startDate: Date = new Date()): Date {
         const expiryDate = new Date(startDate);
 
         if (planType === 'yearly') {
             expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+        } else if (planType === 'threeMonth') {
+            expiryDate.setMonth(expiryDate.getMonth() + 3);
         } else {
             expiryDate.setMonth(expiryDate.getMonth() + 1);
         }
