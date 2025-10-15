@@ -22,6 +22,9 @@ import 'package:cal_ai/features/streak/presentation/providers/streak_providers.d
 import 'package:cal_ai/extensions/string.dart';
 import 'package:cal_ai/utils/error_handler.dart';
 import 'package:cal_ai/features/subscription/presentation/providers/subscription_status_provider.dart';
+import 'package:cal_ai/features/subscription/presentation/providers/subscription_provider.dart';
+import 'package:cal_ai/features/subscription/presentation/utils/color_utils.dart';
+import 'package:cal_ai/features/home/presentation/widgets/home_offer_banner.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -31,6 +34,30 @@ class HomePage extends HookConsumerWidget {
     final mm = g.month.toString().padLeft(2, '0');
     final dd = g.day.toString().padLeft(2, '0');
     return '${g.year}-$mm-$dd';
+  }
+
+  Widget _buildStatusBarOverlay(BuildContext context, WidgetRef ref) {
+    final paddingTop = MediaQuery.of(context).padding.top;
+    if (paddingTop == 0) return const SizedBox.shrink();
+
+    final subscriptionState = ref.watch(subscriptionNotifierProvider);
+    final activeOffer = subscriptionState.activeOffer;
+    if (activeOffer == null || !activeOffer.isCurrentlyValid) {
+      return const SizedBox.shrink();
+    }
+
+    final offerBgColor = parseHexColor(activeOffer.display.backgroundColor);
+
+    return Container(
+      height: paddingTop,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [offerBgColor, darkenColor(offerBgColor)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+    );
   }
 
   @override
@@ -223,6 +250,7 @@ class HomePage extends HookConsumerWidget {
       body: Stack(
         children: [
           _buildTopGradientBackground(context),
+          _buildStatusBarOverlay(context, ref),
           SafeArea(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -240,21 +268,32 @@ class HomePage extends HookConsumerWidget {
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.only(top: 0, bottom: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeader(context, ref),
-                    const SizedBox(height: 16),
-                    _buildDateStrip(context, ref, dateScrollController),
-                    const SizedBox(height: 16),
-                    _buildCaloriesCard(context, ref),
-                    const SizedBox(height: 12),
-                    _buildMacrosRow(context, ref),
-                    const SizedBox(height: 16),
-                    _buildRecentlyEatenPlaceholder(context),
-                    const SizedBox(height: 80),
+                    // Full-width offer banner at the very top
+                    _buildOfferBanner(context, ref),
+                    // Rest of the content with horizontal padding
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          _buildHeader(context, ref),
+                          const SizedBox(height: 12),
+                          _buildDateStrip(context, ref, dateScrollController),
+                          const SizedBox(height: 16),
+                          _buildCaloriesCard(context, ref),
+                          const SizedBox(height: 12),
+                          _buildMacrosRow(context, ref),
+                          const SizedBox(height: 16),
+                          _buildRecentlyEatenPlaceholder(context),
+                          const SizedBox(height: 80),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -582,6 +621,28 @@ class HomePage extends HookConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildOfferBanner(BuildContext context, WidgetRef ref) {
+    final subscriptionState = ref.watch(subscriptionNotifierProvider);
+    final currentUser = ref.watch(currentUserProvider).value;
+
+    // Get the active offer
+    final activeOffer = subscriptionState.activeOffer;
+
+    // If there's no active offer or it's not valid, don't show the banner
+    if (activeOffer == null || !activeOffer.isCurrentlyValid) {
+      return const SizedBox.shrink();
+    }
+
+    return HomeOfferBanner(
+      offer: activeOffer,
+      userCreatedAt: currentUser?.createdAt,
+      onExpired: () {
+        // Refresh subscription data when offer expires
+        ref.read(subscriptionNotifierProvider.notifier).refresh();
+      },
     );
   }
 
