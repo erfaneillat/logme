@@ -802,6 +802,36 @@
             "not_auto_renewing": "Auto-renewal is disabled",
             "already_have_active": "You already have an active subscription",
             "subscription_reactivated": "Your subscription has been reactivated!"
-        }
+        },
+        "testimonials": [
+            {
+                "name": "Mona",
+                "text": "I used to have to type in every single food item with calorie counter apps, it was really exhausting. I installed Loqme, just took a photo and it told me everything. Much more accurate than I thought!"
+            },
+            {
+                "name": "Niloofar",
+                "text": "I always forgot to log my meals and my diet would fall apart. But with Loqme everything is automated. I just take a photo and see my progress every day, that's what keeps me going."
+            },
+            {
+                "name": "Nima",
+                "text": "After a month of using Loqme, seeing my progress on the chart really made me happy. Being able to see your journey is the biggest motivation."
+            },
+            {
+                "name": "Pedram",
+                "text": "The best part of Loqme for me is the advanced chart. I can see exactly how many percent closer I got to my weight goal during the week."
+            },
+            {
+                "name": "Ramin",
+                "text": "I feel like I have a little coach in my pocket! Every time I eat a new food, Loqme analyzes it and guides me on how to eat more balanced."
+            },
+            {
+                "name": "Elnaz",
+                "text": "The fact that it recognizes Iranian food is amazing, Loqme even correctly identified stew and rice 😅 Very accurate and practical."
+            },
+            {
+                "name": "Mitra",
+                "text": "I was always looking for a simple way to understand what I'm eating without calculations and searching. Loqme is exactly that. I feel like finally an app designed for real people!"
+            }
+        ]
     }
 }

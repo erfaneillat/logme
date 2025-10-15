@@ -89,6 +89,7 @@ flutter:
     - assets/translations/
     - assets/fonts/
     - assets/images/
+    - assets/images/comments/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
