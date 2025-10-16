@@ -97,6 +97,23 @@ class ApiConfig {
   static const String subscriptionCancel = '/api/subscription/cancel';
   static const String subscriptionHistory = '/api/subscription/history';
 
+  // Ticket endpoints
+  static const String tickets = '/api/tickets';
+  static const String myTickets = '/api/tickets/my-tickets';
+  static String ticketById(String id) => '/api/tickets/$id';
+  static String ticketMessages(String id) => '/api/tickets/$id/messages';
+
+  // Notification endpoints
+  static const String notifications = '/api/notifications';
+  static const String notificationsUnreadCount = '/api/notifications/unread-count';
+  static String notificationMarkRead(String id) => '/api/notifications/$id/read';
+  static const String notificationsReadAll = '/api/notifications/read-all';
+
+  // FCM endpoints
+  static const String fcmRegister = '/api/fcm/register';
+  static const String fcmRemove = '/api/fcm/remove';
+  static const String fcmTokens = '/api/fcm/tokens';
+
   // Timeouts
   static const Duration connectTimeout = Duration(seconds: 60);
   static const Duration receiveTimeout = Duration(seconds: 60);

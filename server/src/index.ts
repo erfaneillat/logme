@@ -27,7 +27,11 @@ import statisticsRoutes from './routes/statisticsRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import adminLogsRoutes from './routes/adminLogsRoutes';
 import appVersionRoutes from './routes/appVersionRoutes';
+import ticketRoutes from './routes/ticketRoutes';
+import notificationRoutes from './routes/notificationRoutes';
+import fcmRoutes from './routes/fcmRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import firebaseService from './services/firebaseService';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
 import { resetInactiveUserStreaks } from './services/streakService';
@@ -119,6 +123,9 @@ app.use('/api/statistics', statisticsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin/logs', adminLogsRoutes);
 app.use('/api/app-version', appVersionRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/fcm', fcmRoutes);
 
 // Serve static files from the React website build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');
@@ -185,6 +192,9 @@ const startServer = async (): Promise<void> => {
     // Connect to MongoDB
     const dbConnection = DatabaseConnection.getInstance();
     await dbConnection.connect();
+
+    // Initialize Firebase for push notifications
+    firebaseService.initialize();
 
     // Setup cron jobs
     setupCronJobs();

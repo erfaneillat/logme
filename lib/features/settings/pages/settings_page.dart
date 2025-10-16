@@ -481,9 +481,16 @@ class _SupportSection extends StatelessWidget {
               ),
               const _ModernDivider(),
               _ModernSettingsTile(
-                icon: Icons.email_outlined,
-                title: 'settings.support'.tr(),
+                icon: Icons.support_agent_outlined,
+                title: 'settings.support_tickets'.tr(),
                 color: const Color(0xFF06B6D4),
+                onTap: () => context.push('/tickets'),
+              ),
+              const _ModernDivider(),
+              _ModernSettingsTile(
+                icon: Icons.email_outlined,
+                title: 'settings.contact_us'.tr(),
+                color: const Color(0xFF10B981),
                 onTap: () async {
                   final Uri url = Uri.parse('https://loqmeapp.ir/contact');
                   try {

@@ -26,6 +26,9 @@ import '../features/settings/pages/delete_account_page.dart';
 import '../features/settings/pages/language_selection_page.dart';
 import '../features/home/pages/add_exercise_page.dart';
 import '../features/subscription/pages/subscription_page.dart';
+import '../features/tickets/pages/tickets_list_page.dart';
+import '../features/tickets/pages/create_ticket_page.dart';
+import '../features/tickets/pages/ticket_detail_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -204,6 +207,24 @@ class AppRouter {
         path: '/subscription',
         name: 'subscription',
         builder: (context, state) => const SubscriptionPage(),
+      ),
+      GoRoute(
+        path: '/tickets',
+        name: 'tickets',
+        builder: (context, state) => const TicketsListPage(),
+      ),
+      GoRoute(
+        path: '/tickets/create',
+        name: 'create-ticket',
+        builder: (context, state) => const CreateTicketPage(),
+      ),
+      GoRoute(
+        path: '/tickets/:id',
+        name: 'ticket-detail',
+        builder: (context, state) {
+          final ticketId = state.pathParameters['id']!;
+          return TicketDetailPage(ticketId: ticketId);
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

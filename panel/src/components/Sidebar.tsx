@@ -1,5 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import { ticketService } from '../services/ticket.service';
 
 interface NavigationItem {
     name: string;
@@ -10,6 +12,27 @@ interface NavigationItem {
 const Sidebar = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
+    const [unreadTicketCount, setUnreadTicketCount] = useState<number>(0);
+
+    // Fetch unread ticket count
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const response = await ticketService.getUnreadCount();
+                if (response.success && response.data) {
+                    setUnreadTicketCount(response.data.count);
+                }
+            } catch (error) {
+                console.error('Failed to fetch unread ticket count:', error);
+            }
+        };
+
+        fetchUnreadCount();
+        
+        // Refresh count every 30 seconds
+        const interval = setInterval(fetchUnreadCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const navigationItems: NavigationItem[] = [
         {
@@ -124,6 +147,20 @@ const Sidebar = () => {
                 </svg>
             ),
         },
+        {
+            name: 'Tickets',
+            path: '/tickets',
+            icon: (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
+                </svg>
+            ),
+        },
     ];
 
     return (
@@ -158,21 +195,31 @@ const Sidebar = () => {
                 <div className="space-y-1">
                     {navigationItems.map((item) => {
                         const isActive = location.pathname === item.path;
+                        const isTicketsPage = item.path === '/tickets';
+                        const showBadge = isTicketsPage && unreadTicketCount > 0;
+                        
                         return (
-                            <Link
+                            <NavLink
                                 key={item.path}
                                 to={item.path}
-                                className={`group flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${isActive
+                                className={`group flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${isActive
                                     ? 'bg-black text-white shadow-lg shadow-black/20'
                                     : 'text-gray-700 hover:bg-gray-100 hover:text-black active:scale-95'
                                     }`}
                             >
-                                <span className={`transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'
-                                    }`}>
-                                    {item.icon}
-                                </span>
-                                <span>{item.name}</span>
-                            </Link>
+                                <div className="flex items-center space-x-3">
+                                    <span className={`transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'
+                                        }`}>
+                                        {item.icon}
+                                    </span>
+                                    <span>{item.name}</span>
+                                </div>
+                                {showBadge && (
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white animate-pulse">
+                                        {unreadTicketCount > 9 ? '9+' : unreadTicketCount}
+                                    </span>
+                                )}
+                            </NavLink>
                         );
                     })}
                 </div>
