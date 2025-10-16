@@ -470,7 +470,25 @@
         "update_goal_weight_cta": "به‌روزرسانی وزن هدف",
         "update_goal": "به‌روزرسانی هدف",
         "goal_updated": "هدف به‌روزرسانی شد",
-        "weight_saved": "وزن ثبت شد"
+        "weight_saved": "وزن ثبت شد",
+        "carbs_legend": "کربوهیدرات",
+        "protein_legend": "پروتئین",
+        "fats_legend": "چربی"
+    },
+    "bmi": {
+        "title": "BMI",
+        "disclaimer_title": "سلب مسئولیت",
+        "disclaimer_text": "همانند بیشتر معیارهای سلامت، BMI یک آزمون کامل نیست. به عنوان مثال، نتایج می‌تواند تحت تأثیر بارداری یا توده عضلانی بالا قرار گیرد و ممکن است معیار خوبی برای سلامت کودکان یا سالمندان نباشد.",
+        "why_matters_title": "پس چرا BMI مهم است؟",
+        "why_matters_text": "به طور کلی، هرچه BMI شما بالاتر باشد، خطر ابتلا به طیف وسیعی از بیماری‌های مرتبط با اضافه وزن بیشتر است، از جمله:",
+        "condition_diabetes": "دیابت",
+        "condition_arthritis": "آرتریت",
+        "condition_liver_disease": "بیماری کبدی",
+        "condition_cancer": "انواع مختلفی از سرطان (مانند سرطان سینه، روده بزرگ و پروستات)",
+        "condition_hypertension": "فشار خون بالا (پرفشاری خون)",
+        "condition_cholesterol": "کلسترول بالا",
+        "condition_sleep_apnea": "آپنه خواب",
+        "source": "منبع"
     },
     "weight_history": {
         "title": "تاریخچه وزن",

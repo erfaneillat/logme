@@ -29,6 +29,7 @@ import '../features/subscription/pages/subscription_page.dart';
 import '../features/tickets/pages/tickets_list_page.dart';
 import '../features/tickets/pages/create_ticket_page.dart';
 import '../features/tickets/pages/ticket_detail_page.dart';
+import '../features/analytics/pages/bmi_detail_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -225,6 +226,11 @@ class AppRouter {
           final ticketId = state.pathParameters['id']!;
           return TicketDetailPage(ticketId: ticketId);
         },
+      ),
+      GoRoute(
+        path: '/bmi-detail',
+        name: 'bmi-detail',
+        builder: (context, state) => const BmiDetailPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

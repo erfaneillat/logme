@@ -470,7 +470,25 @@
         "update_goal_weight_cta": "Update goal weight",
         "update_goal": "Update goal",
         "goal_updated": "Goal updated",
-        "weight_saved": "Weight logged"
+        "weight_saved": "Weight logged",
+        "carbs_legend": "Carbs",
+        "protein_legend": "Protein",
+        "fats_legend": "Fats"
+    },
+    "bmi": {
+        "title": "BMI",
+        "disclaimer_title": "Disclaimer",
+        "disclaimer_text": "As with most measures of health, BMI is not a perfect test. For example, results can be thrown off by pregnancy or high muscle mass, and it may not be a good measure of health for children or the elderly.",
+        "why_matters_title": "So then, why does BMI matter?",
+        "why_matters_text": "In general, the higher your BMI, the higher the risk of developing a range of conditions linked with excess weight, including:",
+        "condition_diabetes": "diabetes",
+        "condition_arthritis": "arthritis",
+        "condition_liver_disease": "liver disease",
+        "condition_cancer": "several types of cancer (such as those of the breast, colon, and prostate)",
+        "condition_hypertension": "high blood pressure (hypertension)",
+        "condition_cholesterol": "high cholesterol",
+        "condition_sleep_apnea": "sleep apnea",
+        "source": "Source"
     },
     "weight_history": {
         "title": "Weight History",

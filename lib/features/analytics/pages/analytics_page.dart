@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 import 'package:cal_ai/features/additional_info/pages/widgets/custom_weight_ruler.dart';
 import '../presentation/providers/analytics_providers.dart';
 import '../../additional_info/presentation/providers/additional_info_provider.dart';
@@ -153,6 +154,10 @@ class AnalyticsPage extends HookConsumerWidget {
           const SizedBox(height: 16),
         ],
         _NutritionBarChart(index: weekIndex.value, mode: nutritionMode.value),
+        if (nutritionMode.value == 1) ...[
+          const SizedBox(height: 16),
+          _MacrosLegend(),
+        ],
       ],
     );
   }
@@ -457,15 +462,15 @@ class _WeightGoalAndCurrentCard extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'analytics.weight_goal'.tr(),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 22,
-                  color: Colors.black87,
-                ),
-          ),
-          const SizedBox(height: 16),
+          // Text(
+          //   'analytics.weight_goal'.tr(),
+          //   style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          //         fontWeight: FontWeight.w800,
+          //         fontSize: 22,
+          //         color: Colors.black87,
+          //       ),
+          // ),
+          // const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -661,135 +666,138 @@ class _BmiSection extends HookConsumerWidget {
     final clamped = bmi.clamp(min, max);
     final pos = (clamped - min) / (max - min);
 
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'analytics.your_bmi'.tr(),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 22,
-                  color: Colors.black87,
-                ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '${'analytics.weight_status_prefix'.tr()} ${'analytics.healthy'.tr()}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color: Colors.blue.shade700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            bmiAsync.when(
-              data: (v) =>
-                  (v ?? 0).toStringAsFixed(2).toPersianNumbers(context),
-              loading: () => '...'.toString(),
-              error: (_, __) => '--',
+    return GestureDetector(
+      onTap: () => context.push('/bmi-detail'),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+              spreadRadius: 0,
             ),
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 32,
-                  color: Colors.black,
-                ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 32,
-            child: Stack(
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'analytics.your_bmi'.tr(),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                    color: Colors.black87,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            Row(
               children: [
-                // Color scale
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFF2DA8FF), // under
-                          Color(0xFF2ECC71), // healthy
-                          Color(0xFFF1C40F), // over
-                          Color(0xFFE74C3C), // obese
-                        ],
-                      ),
-                    ),
+                Expanded(
+                  child: Text(
+                    '${'analytics.weight_status_prefix'.tr()} ${'analytics.healthy'.tr()}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
                   ),
                 ),
-                // Marker
-                Positioned(
-                  left: pos * (MediaQuery.of(context).size.width - 88),
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.info_outline,
+                    size: 20,
+                    color: Colors.blue.shade700,
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 16,
-            runSpacing: 12,
-            children: [
-              _LegendDot(
-                  color: const Color(0xFF2DA8FF),
-                  label: 'analytics.underweight'.tr()),
-              _LegendDot(
-                  color: const Color(0xFF2ECC71),
-                  label: 'analytics.healthy'.tr()),
-              _LegendDot(
-                  color: const Color(0xFFF1C40F),
-                  label: 'analytics.overweight'.tr()),
-              _LegendDot(
-                  color: const Color(0xFFE74C3C),
-                  label: 'analytics.obese'.tr()),
-            ],
-          )
-        ],
+            const SizedBox(height: 12),
+            Text(
+              bmiAsync.when(
+                data: (v) =>
+                    (v ?? 0).toStringAsFixed(2).toPersianNumbers(context),
+                loading: () => '...'.toString(),
+                error: (_, __) => '--',
+              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 32,
+                    color: Colors.black,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 32,
+              child: Stack(
+                children: [
+                  // Color scale
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFF2DA8FF), // under
+                            Color(0xFF2ECC71), // healthy
+                            Color(0xFFF1C40F), // over
+                            Color(0xFFE74C3C), // obese
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Marker
+                  Positioned(
+                    left: pos * (MediaQuery.of(context).size.width - 88),
+                    top: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 16,
+              runSpacing: 12,
+              children: [
+                _LegendDot(
+                    color: const Color(0xFF2DA8FF),
+                    label: 'analytics.underweight'.tr()),
+                _LegendDot(
+                    color: const Color(0xFF2ECC71),
+                    label: 'analytics.healthy'.tr()),
+                _LegendDot(
+                    color: const Color(0xFFF1C40F),
+                    label: 'analytics.overweight'.tr()),
+                _LegendDot(
+                    color: const Color(0xFFE74C3C),
+                    label: 'analytics.obese'.tr()),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -1397,6 +1405,31 @@ class _StatTile extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MacrosLegend extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 20,
+      runSpacing: 12,
+      alignment: WrapAlignment.center,
+      children: [
+        _LegendDot(
+          color: const Color(0xFF3498DB),
+          label: 'analytics.carbs_legend'.tr(),
+        ),
+        _LegendDot(
+          color: const Color(0xFF27AE60),
+          label: 'analytics.protein_legend'.tr(),
+        ),
+        _LegendDot(
+          color: const Color(0xFFF39C12),
+          label: 'analytics.fats_legend'.tr(),
+        ),
+      ],
     );
   }
 }
