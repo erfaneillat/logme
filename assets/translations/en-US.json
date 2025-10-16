@@ -799,5 +799,11 @@
                 "text": "I was always looking for a simple way to understand what I'm eating without calculations and searching. Loqme is exactly that. I feel like finally an app designed for real people!"
             }
         ]
+    },
+    "update": {
+        "title": "Update Available",
+        "message": "A new version of Loqme is available with improvements and bug fixes. Please update to continue using the app.",
+        "button_update": "Update Now",
+        "button_later": "Later"
     }
 }

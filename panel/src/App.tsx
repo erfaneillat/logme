@@ -9,6 +9,7 @@ import UserDetailPage from './pages/UserDetailPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import LogsPage from './pages/LogsPage';
+import AppVersionsPage from './pages/AppVersionsPage';
 
 const App = () => {
     return (
@@ -25,6 +26,7 @@ const App = () => {
                         <Route path="/users" element={<UsersPage />} />
                         <Route path="/users/:userId" element={<UserDetailPage />} />
                         <Route path="/subscriptions" element={<SubscriptionsPage />} />
+                        <Route path="/app-versions" element={<AppVersionsPage />} />
                     </Routes>
                 </ProtectedRoute>
             </AuthProvider>

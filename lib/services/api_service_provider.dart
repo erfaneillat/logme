@@ -9,6 +9,17 @@ final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorageImpl();
 });
 
+// Provider for Dio instance (for direct API calls without auth)
+final dioProvider = Provider<Dio>((ref) {
+  return Dio(BaseOptions(
+    baseUrl: ApiConfig.baseUrl,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+  ));
+});
+
 // Provider for API Service
 final Provider<ApiService> apiServiceProvider = Provider<ApiService>((ref) {
   final secureStorage = ref.watch(secureStorageProvider);

@@ -25,6 +25,7 @@ import 'package:cal_ai/features/subscription/presentation/providers/subscription
 import 'package:cal_ai/features/subscription/presentation/providers/subscription_provider.dart';
 import 'package:cal_ai/features/subscription/presentation/utils/color_utils.dart';
 import 'package:cal_ai/features/home/presentation/widgets/home_offer_banner.dart';
+import 'package:cal_ai/features/app_version/presentation/widgets/version_check_wrapper.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -80,9 +81,10 @@ class HomePage extends HookConsumerWidget {
       });
       return null;
     }, const []);
-    return Scaffold(
-      extendBody: true,
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    return VersionCheckWrapper(
+      child: Scaffold(
+        extendBody: true,
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final parentContext = context; // preserve a valid context
@@ -300,6 +302,7 @@ class HomePage extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -96,16 +96,44 @@ const Sidebar = () => {
                 </svg>
             ),
         },
+        {
+            name: 'Offers',
+            path: '/offers',
+            icon: (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                </svg>
+            ),
+        },
+        {
+            name: 'App Versions',
+            path: '/app-versions',
+            icon: (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                </svg>
+            ),
+        },
     ];
 
     return (
         <aside className="flex h-screen w-72 flex-col border-r border-gray-200 bg-white">
             {/* Logo Section */}
-            <div className="border-b border-gray-200 px-6 py-8">
-                <div className="flex items-center space-x-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-black shadow-lg">
+            <div className="border-b border-gray-200 px-4 py-3">
+                <div className="flex items-center space-x-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black shadow-sm">
                         <svg
-                            className="h-6 w-6 text-white"
+                            className="h-4 w-4 text-white"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -119,8 +147,8 @@ const Sidebar = () => {
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold tracking-tight text-black">Cal AI</h1>
-                        <p className="text-xs font-medium text-gray-500">Admin Panel</p>
+                        <h1 className="text-base font-bold tracking-tight text-black">Cal AI</h1>
+                        <p className="text-[10px] font-medium text-gray-500 leading-3">Admin Panel</p>
                     </div>
                 </div>
             </div>
@@ -147,26 +175,6 @@ const Sidebar = () => {
                             </Link>
                         );
                     })}
-                </div>
-
-                {/* Quick Actions */}
-                <div className="mt-8 px-2">
-                    <p className="mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                        Quick Actions
-                    </p>
-                    <div className="space-y-2">
-                        <button className="group flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-black">
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                />
-                            </svg>
-                            <span className="text-xs font-medium">Refresh Data</span>
-                        </button>
-                    </div>
                 </div>
             </nav>
 

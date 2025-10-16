@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import '../providers/login_provider.dart';
 import 'verification_page.dart';
+import 'package:cal_ai/features/app_version/presentation/widgets/version_check_wrapper.dart';
 
 class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
@@ -49,9 +50,10 @@ class LoginPage extends HookConsumerWidget {
       }
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return VersionCheckWrapper(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
@@ -159,6 +161,7 @@ class LoginPage extends HookConsumerWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }
