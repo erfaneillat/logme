@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import '../../data/datasources/weight_remote_data_source.dart';
 import '../../data/repositories/weight_repository_impl.dart';
 import '../../domain/entities/weight_entry.dart';
@@ -211,16 +212,169 @@ final weightProgressSeriesProvider =
   final range = _progressRangeIso(index);
   final entries =
       await uc.execute(startIso: range.startIso, endIso: range.endIso);
-  if (entries.isEmpty) return const <double>[];
-  // Sort by date
+  if (entries.isEmpty) {
+    // No points in this range: build a 2-point synthetic series using
+    // global baseline and latest so user still sees progress.
+    final addlLocal = ref.watch(additionalInfoProvider);
+    final addlRemote = await ref.watch(currentAdditionalInfoProvider.future);
+    final double? target = addlRemote?.targetWeight ?? addlLocal.targetWeight;
+    if (target == null) {
+      if (kDebugMode) {
+        print('[progressSeries] target is null -> returning empty');
+      }
+      return const <double>[];
+    }
+
+    // baseline
+    double? startWeight = addlRemote?.weight ?? addlLocal.weight;
+    try {
+      final now = DateTime.now();
+      final earliest = await uc.execute(
+        startIso: _ymd(now.subtract(const Duration(days: 730))),
+        endIso: _ymd(now),
+      );
+      if (earliest.isNotEmpty) {
+        earliest.sort((a, b) => a.date.compareTo(b.date));
+        startWeight = earliest.first.weightKg;
+      }
+    } catch (_) {}
+
+    final latest = await ref.watch(latestWeightProvider.future);
+    final double? current =
+        latest?.weightKg ?? addlRemote?.weight ?? addlLocal.weight;
+    if (startWeight == null || current == null) {
+      if (kDebugMode) {
+        print('[progressSeries] missing start/current -> returning empty (start=$startWeight, current=$current)');
+      }
+      return const <double>[];
+    }
+
+    final startDist = (startWeight - target).abs();
+    if (startDist < 1e-6) {
+      const threshold = 1.0; // kg
+      final startP = (startWeight - target).abs() <= threshold ? 1.0 : 0.0;
+      final currP = (current - target).abs() <= threshold ? 1.0 : 0.0;
+      if (kDebugMode) {
+        print('[progressSeries] synthetic (threshold) start=$startWeight current=$current target=$target -> [$startP,$currP]');
+      }
+      return [startP, currP];
+    }
+    final startP = 0.0; // progress at baseline is zero by definition
+    final currentDist = (current - target).abs();
+    final currP = ((startDist - currentDist) / startDist).clamp(0.0, 1.0);
+    if (kDebugMode) {
+      print('[progressSeries] synthetic start=$startWeight current=$current target=$target -> [$startP,$currP]');
+    }
+    return [startP, currP];
+  }
+
+  // Sort by date and extract weights
   entries.sort((a, b) => a.date.compareTo(b.date));
   final weights = entries.map((e) => e.weightKg).toList();
-  final minW = weights.reduce((a, b) => a < b ? a : b);
-  final maxW = weights.reduce((a, b) => a > b ? a : b);
-  if ((maxW - minW).abs() < 1e-6) {
-    return List<double>.filled(weights.length, 0.5);
+
+  // Determine target weight
+  final addlLocal = ref.watch(additionalInfoProvider);
+  final addlRemote = await ref.watch(currentAdditionalInfoProvider.future);
+  final double? target = addlRemote?.targetWeight ?? addlLocal.targetWeight;
+  if (target == null) {
+    // Without a target weight we cannot compute goal progress; return 0s.
+    if (kDebugMode) {
+      print('[progressSeries] target null -> zeros, len=${weights.length}');
+    }
+    return List<double>.filled(weights.length, 0.0);
   }
-  return weights.map((w) => (w - minW) / (maxW - minW)).toList();
+
+  // Baseline: earliest entry available in the last ~2 years (global),
+  // so progress reflects real journey even if the selected range has few points
+  double? startWeight = addlRemote?.weight ?? addlLocal.weight;
+  try {
+    final now = DateTime.now();
+    final earliest = await uc.execute(
+      startIso: _ymd(now.subtract(const Duration(days: 730))),
+      endIso: _ymd(now),
+    );
+    if (earliest.isNotEmpty) {
+      earliest.sort((a, b) => a.date.compareTo(b.date));
+      startWeight = earliest.first.weightKg;
+    }
+  } catch (_) {}
+  startWeight ??= (weights.isNotEmpty ? weights.first : null);
+  if (startWeight == null) {
+    // No baseline at all; cannot compute progress, return zeros for the series length
+    if (kDebugMode) {
+      print('[progressSeries] startWeight null -> zeros, len=${weights.length}');
+    }
+    return List<double>.filled(weights.length, 0.0);
+  }
+
+  // If there is only a single entry in the selected range, prefer an
+  // alternative baseline from additional info when it is clearly farther from
+  // the target than the single point. This yields a meaningful non-zero
+  // progress when the user just started logging.
+  if (weights.length == 1) {
+    final alt = addlRemote?.weight ?? addlLocal.weight;
+    if (alt != null) {
+      final altDist = (alt - target).abs();
+      final currDist = (weights.first - target).abs();
+      if (altDist > currDist + 0.1) {
+        startWeight = alt;
+      }
+    }
+  }
+
+  final startDist = (startWeight - target).abs();
+  if (startDist < 1e-6) {
+    const threshold = 1.0; // kg
+    final out = weights.map((w) => (w - target).abs() <= threshold ? 1.0 : 0.0).toList();
+    if (kDebugMode) {
+      print('[progressSeries] startDist≈0 start=$startWeight target=$target -> $out');
+    }
+    return out;
+  }
+
+  // If only one value and baseline equals that value, fall back to
+  // "closeness-to-target" so the user sees a meaningful point.
+  if (weights.length == 1 && (startWeight - weights.first).abs() < 1e-6) {
+    final w = weights.first;
+    final denom = [w.abs(), target.abs(), 1.0].reduce((a, b) => a > b ? a : b);
+    final closeness = (1.0 - ((w - target).abs() / denom)).clamp(0.0, 1.0);
+    final out = [0.0, closeness];
+    if (kDebugMode) {
+      print('[progressSeries] single-entry fallback start=$startWeight w=${weights.first} target=$target -> $out');
+    }
+    return out;
+  }
+
+  final out = weights
+      .map((w) {
+        final remaining = (w - target).abs();
+        final p = ((startDist - remaining) / startDist).clamp(0.0, 1.0);
+        return p;
+      })
+      .toList();
+  if (kDebugMode) {
+    print('[progressSeries] computed start=$startWeight target=$target weights=$weights -> $out');
+  }
+  return out;
+});
+
+// Raw weight series (kg) for the selected range
+final weightSeriesKgProvider =
+    FutureProvider.family<List<double>, int>((ref, index) async {
+  final uc = ref.watch(getWeightRangeUseCaseProvider);
+  final range = _progressRangeIso(index);
+  final entries =
+      await uc.execute(startIso: range.startIso, endIso: range.endIso);
+  if (entries.isEmpty) {
+    // Fallback to a single current point so the chart can still render
+    final addlLocal = ref.watch(additionalInfoProvider);
+    final addlRemote = await ref.watch(currentAdditionalInfoProvider.future);
+    final latest = await ref.watch(latestWeightProvider.future);
+    final w = latest?.weightKg ?? addlRemote?.weight ?? addlLocal.weight;
+    return w != null ? <double>[w] : const <double>[];
+  }
+  entries.sort((a, b) => a.date.compareTo(b.date));
+  return entries.map((e) => e.weightKg).toList();
 });
 
 // Goal achieved percent for header chip (0..100)
@@ -229,24 +383,53 @@ final goalAchievedPercentProvider =
     FutureProvider.family<double, int>((ref, _indexUnused) async {
   final addlLocal = ref.watch(additionalInfoProvider);
   final addlRemote = await ref.watch(currentAdditionalInfoProvider.future);
-  final target = addlRemote?.targetWeight ?? addlLocal.targetWeight;
+  
+  // Target weight is required to define the goal direction
+  final double? target = addlRemote?.targetWeight ?? addlLocal.targetWeight;
   if (target == null) {
+    if (kDebugMode) print('[goalPercent] target null -> 0');
     return 0.0;
   }
 
-  // Current weight from latest entry or additional info
-  final latest = await ref.watch(latestWeightProvider.future);
-  final current = latest?.weightKg ?? addlRemote?.weight ?? addlLocal.weight;
+  // Determine current from 2-year range first to avoid null latest
+  double? current;
+  try {
+    final uc = ref.watch(getWeightRangeUseCaseProvider);
+    final now = DateTime.now();
+    final entries = await uc.execute(
+      startIso: _ymd(now.subtract(const Duration(days: 730))),
+      endIso: _ymd(now),
+    );
+    if (entries.isNotEmpty) {
+      entries.sort((a, b) => a.date.compareTo(b.date));
+      current = entries.last.weightKg;
+    }
+  } catch (_) {}
+  current ??= (await ref.watch(latestWeightProvider.future))?.weightKg ??
+      addlRemote?.weight ?? addlLocal.weight;
   if (current == null) {
+    if (kDebugMode) print('[goalPercent] current null -> 0');
     return 0.0;
   }
 
+  // Closeness to target: independent from a baseline, so it works with a
+  // single measurement too.
   final distance = (current - target).abs();
-  final denom = target.abs() < 1e-6 && current.abs() < 1e-6
-      ? 1.0
-      : (target.abs() > current.abs() ? target.abs() : current.abs());
+  final denom = [target.abs(), current.abs(), 1.0].reduce((a, b) => a > b ? a : b);
   final closeness = 1.0 - (distance / denom);
   final pct = (closeness.clamp(0.0, 1.0)) * 100.0;
-
-  return double.parse(pct.toStringAsFixed(1));
+  final res = double.parse(pct.toStringAsFixed(1));
+  if (kDebugMode) {
+    print('[goalPercent] target=$target current=$current -> $res%');
+  }
+  return res;
 });
+
+void refreshWeightAnalytics(WidgetRef ref) {
+  ref.invalidate(latestWeightProvider);
+  for (final i in [0, 1, 2, 3]) {
+    ref.invalidate(weightSeriesKgProvider(i));
+    ref.invalidate(weightProgressSeriesProvider(i));
+    ref.invalidate(goalAchievedPercentProvider(i));
+  }
+}

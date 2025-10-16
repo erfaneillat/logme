@@ -901,7 +901,7 @@ class _ProgressLineChart extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final seriesAsync = ref.watch(weightProgressSeriesProvider(index));
+    final seriesAsync = ref.watch(weightSeriesKgProvider(index));
     if (seriesAsync.isLoading) {
       return _ChartContainer(
           child: const Center(child: CircularProgressIndicator()));
@@ -922,8 +922,24 @@ class _ProgressLineChart extends HookConsumerWidget {
         ? [const FlSpot(0, 0)]
         : [
             for (int i = 0; i < values.length; i++)
-              FlSpot(i.toDouble(), values[i].clamp(0.0, 1.0))
+              FlSpot(i.toDouble(), values[i])
           ];
+
+    // Determine Y-axis bounds and intervals for kg values
+    double minY = 0, maxY = 100, interval = 10;
+    if (values.isNotEmpty) {
+      final minVal = values.reduce((a, b) => a < b ? a : b);
+      final maxVal = values.reduce((a, b) => a > b ? a : b);
+      final range = (maxVal - minVal).abs();
+      if (range < 1e-6) {
+        minY = (minVal - 1).clamp(0, double.infinity);
+        maxY = minVal + 1;
+      } else {
+        minY = (minVal - range * 0.1).clamp(0, double.infinity);
+        maxY = maxVal + range * 0.1;
+      }
+      interval = ((maxY - minY) / 5).clamp(0.5, double.infinity);
+    }
     return _ChartContainer(
       child: LineChart(
         LineChartData(
@@ -935,15 +951,17 @@ class _ProgressLineChart extends HookConsumerWidget {
               color: Colors.grey.shade200,
               strokeWidth: 1,
             ),
+            horizontalInterval: interval,
           ),
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 40,
+                reservedSize: 44,
+                interval: interval,
                 getTitlesWidget: (value, meta) {
                   return Text(
-                    value.toStringAsFixed(1).toPersianNumbers(context),
+                    value.toStringAsFixed(0).toPersianNumbers(context),
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
@@ -988,8 +1006,8 @@ class _ProgressLineChart extends HookConsumerWidget {
               ),
             ),
           ],
-          minY: 0,
-          maxY: 1.2,
+          minY: minY,
+          maxY: maxY,
         ),
       ),
     );
