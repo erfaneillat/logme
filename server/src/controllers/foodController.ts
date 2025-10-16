@@ -6,6 +6,7 @@ import User from '../models/User';
 import { updateStreakIfEligible, updateStreakOnFirstMeal } from '../services/streakService';
 import sharp from 'sharp';
 import path from 'path';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -198,7 +199,7 @@ export class FoodController {
                     await updateStreakIfEligible(String(userId), todayIso);
                 }
             } catch (e) {
-                console.error('Streak update (food) error:', e);
+                errorLogger.error('Streak update (food) error:', e);
             }
 
             // Increment user's cumulative AI cost if available
@@ -240,7 +241,7 @@ export class FoodController {
                 timestamp: new Date()
             });
         } catch (error: any) {
-            console.error('Fix result error:', error);
+            errorLogger.error('Fix result error:', error);
             res.status(500).json({
                 success: false,
                 error: error.message || 'Failed to fix result',
@@ -340,7 +341,7 @@ export class FoodController {
                         await updateStreakIfEligible(String(userId), todayIso);
                     }
                 } catch (e) {
-                    console.error('Streak update (food description) error:', e);
+                    errorLogger.error('Streak update (food description) error:', e);
                 }
 
                 // Increment user's cumulative AI cost if available
@@ -357,7 +358,7 @@ export class FoodController {
                 timestamp: new Date()
             });
         } catch (error: any) {
-            console.error('Analyze description error:', error);
+            errorLogger.error('Analyze description error:', error);
             res.status(500).json({
                 success: false,
                 error: error.message || 'Failed to analyze food description',

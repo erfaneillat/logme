@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import * as Kavenegar from 'kavenegar';
+import { logServiceError } from '../utils/errorLogger';
 
 export interface SMSServiceInterface {
     sendOTP(phone: string, code: string): Promise<boolean>;
@@ -54,17 +55,17 @@ export class KaveNegarSMSService implements SMSServiceInterface {
                         console.log('SMS sent successfully:', response);
                         resolve(response);
                     } else {
-                        console.error('SMS sending failed:', response, 'Status:', status);
-                        console.error('Kave Negar Error Codes:');
-                        console.error('- 411: Insufficient Credit');
-                        console.error('- 400: Invalid Parameters');
-                        console.error('- 401: Authentication Failed');
-                        console.error('- 402: Account Deactivated');
-                        console.error('- 403: Forbidden');
-                        console.error('- 404: Template Not Found');
-                        console.error('- 405: No Template Content');
-                        console.error('- 406: Daily Limit Exceeded');
-                        console.error('- 407: Daily Limit Exceeded for Receptor');
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error(`SMS sending failed with status: ${status}`), { phone, response, status });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('Kave Negar Error Codes:'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 411: Insufficient Credit'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 400: Invalid Parameters'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 401: Authentication Failed'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 402: Account Deactivated'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 403: Forbidden'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 404: Template Not Found'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 405: No Template Content'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 406: Daily Limit Exceeded'), { phone });
+                        logServiceError('KaveNegarSMSService', 'sendOTP', new Error('- 407: Daily Limit Exceeded for Receptor'), { phone });
                         reject(new Error(`SMS sending failed with status: ${status}`));
                     }
                 });
@@ -72,7 +73,7 @@ export class KaveNegarSMSService implements SMSServiceInterface {
 
             return true;
         } catch (error) {
-            console.error('Error sending OTP via Kave Negar:', error);
+            logServiceError('KaveNegarSMSService', 'sendOTP', error as Error, { phone });
 
             // In development mode, don't fail if SMS service is not configured
             if (process.env.NODE_ENV === 'development') {

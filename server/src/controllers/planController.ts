@@ -5,6 +5,7 @@ import { calculateOpenAICostUSD, formatUSD } from '../utils/cost';
 import User from '../models/User';
 import AdditionalInfo from '../models/AdditionalInfo';
 import Plan from '../models/Plan';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -145,7 +146,7 @@ export class PlanController {
                         try {
                             await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: roundedCost } }).exec();
                         } catch (persistErr) {
-                            console.error('Failed to increment user AI cost:', persistErr);
+                            errorLogger.error('Failed to increment user AI cost:', persistErr);
                         }
                     } else {
                         console.log('PlanGeneration estimated cost: pricing not configured for model', model);
@@ -188,7 +189,7 @@ export class PlanController {
 
             res.json({ success: true, data: { plan } });
         } catch (error) {
-            console.error('Generate plan error:', error);
+            errorLogger.error('Generate plan error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -209,7 +210,7 @@ export class PlanController {
 
             res.json({ success: true, data: { plan } });
         } catch (error) {
-            console.error('Get latest plan error:', error);
+            errorLogger.error('Get latest plan error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -259,7 +260,7 @@ export class PlanController {
 
             res.json({ success: true, data: { plan } });
         } catch (error) {
-            console.error('Update plan manual error:', error);
+            errorLogger.error('Update plan manual error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

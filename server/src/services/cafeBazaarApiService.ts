@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { logServiceError } from '../utils/errorLogger';
 
 /**
  * Response from Cafe Bazaar purchase validation API
@@ -208,7 +209,7 @@ export class CafeBazaarApiService {
 
                 // 404 - Purchase not found (could be fraud attempt)
                 if (status === 404) {
-                    console.error('❌ Cafe Bazaar 404 Error:', {
+                    logServiceError('cafeBazaarApiService', 'checkSubscriptionStatus', error as Error, {
                         status,
                         error: errorData?.error,
                         errorDescription: errorData?.error_description,
@@ -374,7 +375,7 @@ export class CafeBazaarApiService {
      */
     static fromEnvironment(): CafeBazaarApiService {
         const accessToken = process.env.CAFEBAZAAR_ACCESS_TOKEN;
-        
+
         if (!accessToken) {
             throw new Error('CAFEBAZAAR_ACCESS_TOKEN environment variable is not set');
         }

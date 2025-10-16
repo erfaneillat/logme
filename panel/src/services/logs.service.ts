@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
+import { errorLogger } from './errorLogger.service';
 
 export interface LogItem {
     _id: string;
@@ -98,7 +99,7 @@ class LogsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching logs:', error);
+            errorLogger.error('Error fetching logs:', error);
             throw error;
         }
     }
@@ -115,7 +116,7 @@ class LogsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching log stats:', error);
+            errorLogger.error('Error fetching log stats:', error);
             throw error;
         }
     }
@@ -143,7 +144,7 @@ class LogsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error searching logs:', error);
+            errorLogger.error('Error searching logs:', error);
             throw error;
         }
     }
@@ -170,7 +171,7 @@ class LogsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching user logs:', error);
+            errorLogger.error('Error fetching user logs:', error);
             throw error;
         }
     }

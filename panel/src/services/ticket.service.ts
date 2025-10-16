@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 import { authService } from './auth.service';
+import { errorLogger } from './errorLogger.service';
 import type { 
   Ticket, 
   PaginatedTickets, 
@@ -29,6 +30,7 @@ class TicketService {
       return response;
     } catch (error) {
       clearTimeout(timeout);
+      errorLogger.error('Fetch timeout error', error as Error, { action: 'fetchWithTimeout', component: 'TicketService', url });
       throw error;
     }
   }
@@ -44,26 +46,36 @@ class TicketService {
     search?: string;
     sort?: string;
   }): Promise<PaginatedTickets> {
-    const query = new URLSearchParams();
-    if (params.page) query.set('page', String(params.page));
-    if (params.limit) query.set('limit', String(params.limit));
-    if (params.status) query.set('status', params.status);
-    if (params.priority) query.set('priority', params.priority);
-    if (params.category) query.set('category', params.category);
-    if (params.userId) query.set('userId', params.userId);
-    if (params.search) query.set('search', params.search);
-    if (params.sort) query.set('sort', params.sort);
+    try {
+      const query = new URLSearchParams();
+      if (params.page) query.set('page', String(params.page));
+      if (params.limit) query.set('limit', String(params.limit));
+      if (params.status) query.set('status', params.status);
+      if (params.priority) query.set('priority', params.priority);
+      if (params.category) query.set('category', params.category);
+      if (params.userId) query.set('userId', params.userId);
+      if (params.search) query.set('search', params.search);
+      if (params.sort) query.set('sort', params.sort);
 
-    const url = `${API_BASE_URL}/api/tickets/admin/list?${query.toString()}`;
-    const res = await this.fetchWithTimeout(url);
-    return res.json();
+      const url = `${API_BASE_URL}/api/tickets/admin/list?${query.toString()}`;
+      const res = await this.fetchWithTimeout(url);
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to list tickets', error as Error, { action: 'list', component: 'TicketService' }, { params });
+      throw error;
+    }
   }
 
   // Get ticket by ID
   async getById(id: string): Promise<{ success: boolean; data?: { ticket: Ticket } }> {
-    const url = `${API_BASE_URL}/api/tickets/${id}`;
-    const res = await this.fetchWithTimeout(url);
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/${id}`;
+      const res = await this.fetchWithTimeout(url);
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to get ticket', error as Error, { action: 'getById', component: 'TicketService' }, { ticketId: id });
+      throw error;
+    }
   }
 
   // Add message to ticket
@@ -71,12 +83,17 @@ class TicketService {
     id: string, 
     message: string
   ): Promise<{ success: boolean; message?: string; data?: { ticket: Ticket } }> {
-    const url = `${API_BASE_URL}/api/tickets/${id}/messages`;
-    const res = await this.fetchWithTimeout(url, {
-      method: 'POST',
-      body: JSON.stringify({ message }),
-    });
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/${id}/messages`;
+      const res = await this.fetchWithTimeout(url, {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+      });
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to add message', error as Error, { action: 'addMessage', component: 'TicketService' }, { ticketId: id });
+      throw error;
+    }
   }
 
   // Update ticket status (admin only)
@@ -85,12 +102,17 @@ class TicketService {
     status: TicketStatus,
     assignedTo?: string
   ): Promise<{ success: boolean; message?: string; data?: { ticket: Ticket } }> {
-    const url = `${API_BASE_URL}/api/tickets/${id}/status`;
-    const res = await this.fetchWithTimeout(url, {
-      method: 'PUT',
-      body: JSON.stringify({ status, assignedTo }),
-    });
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/${id}/status`;
+      const res = await this.fetchWithTimeout(url, {
+        method: 'PUT',
+        body: JSON.stringify({ status, assignedTo }),
+      });
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to update ticket status', error as Error, { action: 'updateStatus', component: 'TicketService' }, { ticketId: id, status });
+      throw error;
+    }
   }
 
   // Update ticket priority (admin only)
@@ -98,35 +120,55 @@ class TicketService {
     id: string, 
     priority: TicketPriority
   ): Promise<{ success: boolean; message?: string; data?: { ticket: Ticket } }> {
-    const url = `${API_BASE_URL}/api/tickets/${id}/priority`;
-    const res = await this.fetchWithTimeout(url, {
-      method: 'PUT',
-      body: JSON.stringify({ priority }),
-    });
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/${id}/priority`;
+      const res = await this.fetchWithTimeout(url, {
+        method: 'PUT',
+        body: JSON.stringify({ priority }),
+      });
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to update ticket priority', error as Error, { action: 'updatePriority', component: 'TicketService' }, { ticketId: id, priority });
+      throw error;
+    }
   }
 
   // Get ticket statistics (admin only)
   async getStatistics(): Promise<{ success: boolean; data?: TicketStatistics }> {
-    const url = `${API_BASE_URL}/api/tickets/admin/statistics`;
-    const res = await this.fetchWithTimeout(url);
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/admin/statistics`;
+      const res = await this.fetchWithTimeout(url);
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to get ticket statistics', error as Error, { action: 'getStatistics', component: 'TicketService' });
+      throw error;
+    }
   }
 
   // Get unread ticket count (admin only)
   async getUnreadCount(): Promise<{ success: boolean; data?: { count: number } }> {
-    const url = `${API_BASE_URL}/api/tickets/admin/unread-count`;
-    const res = await this.fetchWithTimeout(url);
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/admin/unread-count`;
+      const res = await this.fetchWithTimeout(url);
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to get unread count', error as Error, { action: 'getUnreadCount', component: 'TicketService' });
+      throw error;
+    }
   }
 
   // Delete ticket (admin only)
   async delete(id: string): Promise<{ success: boolean; message?: string }> {
-    const url = `${API_BASE_URL}/api/tickets/${id}`;
-    const res = await this.fetchWithTimeout(url, {
-      method: 'DELETE',
-    });
-    return res.json();
+    try {
+      const url = `${API_BASE_URL}/api/tickets/${id}`;
+      const res = await this.fetchWithTimeout(url, {
+        method: 'DELETE',
+      });
+      return res.json();
+    } catch (error) {
+      errorLogger.error('Failed to delete ticket', error as Error, { action: 'delete', component: 'TicketService' }, { ticketId: id });
+      throw error;
+    }
   }
 }
 

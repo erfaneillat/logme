@@ -3,6 +3,7 @@ import Subscription from '../models/Subscription';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { PurchaseVerificationService } from '../services/purchaseVerificationService';
 import { CafeBazaarApiService } from '../services/cafeBazaarApiService';
+import errorLogger from '../services/errorLoggerService';
 
 export class SubscriptionController {
     // Verify purchase from CafeBazaar
@@ -81,7 +82,7 @@ export class SubscriptionController {
                 
                 if (!isSameUser) {
                     // Different user trying to use same token - fraud attempt
-                    console.error('🚨 Fraud attempt: Different user trying to use same token:', {
+                    errorLogger.error('🚨 Fraud attempt: Different user trying to use same token:', {
                         purchaseToken: purchaseToken.substring(0, 10) + '...',
                         existingUserId: existingSubscription.userId,
                         currentUserId: userId,
@@ -215,7 +216,7 @@ export class SubscriptionController {
                 },
             });
         } catch (error) {
-            console.error('Verify purchase error:', error);
+            errorLogger.error('Verify purchase error:', error);
             if (req.user?.userId) {
                 PurchaseVerificationService.recordAttempt(req.user.userId, false);
             }
@@ -323,7 +324,7 @@ export class SubscriptionController {
                 },
             });
         } catch (error) {
-            console.error('Get subscription status error:', error);
+            errorLogger.error('Get subscription status error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -362,7 +363,7 @@ export class SubscriptionController {
                 message: 'Subscription cancelled successfully',
             });
         } catch (error) {
-            console.error('Cancel subscription error:', error);
+            errorLogger.error('Cancel subscription error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -400,7 +401,7 @@ export class SubscriptionController {
                 },
             });
         } catch (error) {
-            console.error('Get subscription history error:', error);
+            errorLogger.error('Get subscription history error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -441,7 +442,7 @@ export class SubscriptionController {
             // Get package name from environment
             const packageName = process.env.CAFEBAZAAR_PACKAGE_NAME;
             if (!packageName) {
-                console.error('CAFEBAZAAR_PACKAGE_NAME not configured');
+                errorLogger.error('CAFEBAZAAR_PACKAGE_NAME not configured');
                 res.status(500).json({
                     success: false,
                     message: 'Server configuration error',
@@ -454,7 +455,7 @@ export class SubscriptionController {
             try {
                 cafeBazaarService = CafeBazaarApiService.fromEnvironment();
             } catch (error) {
-                console.error('Failed to initialize Cafe Bazaar service:', error);
+                errorLogger.error('Failed to initialize Cafe Bazaar service:', error);
                 res.status(500).json({
                     success: false,
                     message: 'Server configuration error',
@@ -545,7 +546,7 @@ export class SubscriptionController {
                         });
                         return;
                     } catch (e) {
-                        console.error('Fallback subscription status check failed:', e);
+                        errorLogger.error('Fallback subscription status check failed:', e);
                         res.status(500).json({
                             success: false,
                             message: 'Internal server error',
@@ -555,7 +556,7 @@ export class SubscriptionController {
                 }
 
                 if (validationResult.error === 'unauthorized') {
-                    console.error('Cafe Bazaar access token is invalid or expired');
+                    errorLogger.error('Cafe Bazaar access token is invalid or expired');
                     res.status(500).json({
                         success: false,
                         message: 'Server authentication error',
@@ -601,7 +602,7 @@ export class SubscriptionController {
             });
 
         } catch (error) {
-            console.error('Validate Cafe Bazaar purchase error:', error);
+            errorLogger.error('Validate Cafe Bazaar purchase error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -642,7 +643,7 @@ export class SubscriptionController {
             // Get package name from environment
             const packageName = process.env.CAFEBAZAAR_PACKAGE_NAME;
             if (!packageName) {
-                console.error('CAFEBAZAAR_PACKAGE_NAME not configured');
+                errorLogger.error('CAFEBAZAAR_PACKAGE_NAME not configured');
                 res.status(500).json({
                     success: false,
                     message: 'Server configuration error',
@@ -655,7 +656,7 @@ export class SubscriptionController {
             try {
                 cafeBazaarService = CafeBazaarApiService.fromEnvironment();
             } catch (error) {
-                console.error('Failed to initialize Cafe Bazaar service:', error);
+                errorLogger.error('Failed to initialize Cafe Bazaar service:', error);
                 res.status(500).json({
                     success: false,
                     message: 'Server configuration error',
@@ -684,7 +685,7 @@ export class SubscriptionController {
                 }
 
                 if (statusResult.error === 'unauthorized') {
-                    console.error('Cafe Bazaar access token is invalid or expired');
+                    errorLogger.error('Cafe Bazaar access token is invalid or expired');
                     res.status(500).json({
                         success: false,
                         message: 'Server authentication error',
@@ -716,7 +717,7 @@ export class SubscriptionController {
             });
 
         } catch (error) {
-            console.error('Check Cafe Bazaar subscription status error:', error);
+            errorLogger.error('Check Cafe Bazaar subscription status error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -829,7 +830,7 @@ export class SubscriptionController {
                 },
             });
         } catch (error) {
-            console.error('List all subscriptions error:', error);
+            errorLogger.error('List all subscriptions error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -862,7 +863,7 @@ export class SubscriptionController {
                 message: 'Subscription cancelled successfully',
             });
         } catch (error) {
-            console.error('Cancel user subscription error:', error);
+            errorLogger.error('Cancel user subscription error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -909,7 +910,7 @@ export class SubscriptionController {
                 },
             });
         } catch (error) {
-            console.error('Extend subscription error:', error);
+            errorLogger.error('Extend subscription error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -1007,7 +1008,7 @@ export class SubscriptionController {
                 },
             });
         } catch (error) {
-            console.error('Activate subscription error:', error);
+            errorLogger.error('Activate subscription error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',

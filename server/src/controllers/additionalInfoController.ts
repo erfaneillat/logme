@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import AdditionalInfo from '../models/AdditionalInfo';
 import User from '../models/User';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -82,7 +83,7 @@ export class AdditionalInfoController {
                 data: { additionalInfo }
             });
         } catch (error) {
-            console.error('Save additional info error:', error);
+            errorLogger.error('Save additional info error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error'
@@ -112,7 +113,7 @@ export class AdditionalInfoController {
                 data: { additionalInfo }
             });
         } catch (error) {
-            console.error('Get additional info error:', error);
+            errorLogger.error('Get additional info error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error'
@@ -170,7 +171,7 @@ export class AdditionalInfoController {
                 message: 'Additional information marked as completed'
             });
         } catch (error) {
-            console.error('Mark additional info completed error:', error);
+            errorLogger.error('Mark additional info completed error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error'

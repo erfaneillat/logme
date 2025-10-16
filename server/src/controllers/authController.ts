@@ -6,6 +6,7 @@ import User from '../models/User';
 import DeletedUser from '../models/DeletedUser';
 import { validationResult } from 'express-validator';
 import { createSMSService } from '../services/smsService';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request {
   user?: any;
@@ -73,7 +74,7 @@ export class AuthController {
         return;
       }
 
-      console.log(`Verification code sent successfully to ${phone}: ${verificationCode}`);
+      errorLogger.info('Verification code sent successfully', req, { phone });
 
       res.json({
         success: true,
@@ -84,7 +85,7 @@ export class AuthController {
         }
       });
     } catch (error) {
-      console.error('Send verification code error:', error);
+      errorLogger.error('Send verification code error', error as Error, req, { phone: req.body.phone });
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -159,7 +160,7 @@ export class AuthController {
         }
       });
     } catch (error) {
-      console.error('Verify phone error:', error);
+      errorLogger.error('Verify phone error', error as Error, req, { phone: req.body.phone });
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -242,7 +243,7 @@ export class AuthController {
         }
       });
     } catch (error) {
-      console.error('Verify admin phone error:', error);
+      errorLogger.error('Verify admin phone error', error as Error, req, { phone: req.body.phone });
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -267,7 +268,7 @@ export class AuthController {
         data: { user }
       });
     } catch (error) {
-      console.error('Get profile error:', error);
+      errorLogger.error('Get profile error', error as Error, req, { userId: req.user?.userId });
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -310,7 +311,7 @@ export class AuthController {
         data: { user }
       });
     } catch (error) {
-      console.error('Update profile error:', error);
+      errorLogger.error('Update profile error', error as Error, req, { userId: req.user?.userId });
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -341,7 +342,7 @@ export class AuthController {
         data: { token: newToken }
       });
     } catch (error) {
-      console.error('Refresh token error:', error);
+      errorLogger.error('Refresh token error', error as Error, req, { userId: req.user?.userId });
       res.status(500).json({
         success: false,
         message: 'Internal server error'
@@ -395,14 +396,14 @@ export class AuthController {
       // Delete the original user
       await User.findByIdAndDelete(userId);
 
-      console.log(`User account deleted and archived: ${user.phone} (${user._id})`);
+      errorLogger.info('User account deleted and archived', req, { userId: user._id, phone: user.phone });
 
       res.json({
         success: true,
         message: 'Account deleted successfully'
       });
     } catch (error) {
-      console.error('Delete account error:', error);
+      errorLogger.error('Delete account error', error as Error, req, { userId: req.user?.userId });
       res.status(500).json({
         success: false,
         message: 'Failed to delete account. Please try again.'

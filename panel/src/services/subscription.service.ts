@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 import { authService } from './auth.service';
+import { errorLogger } from './errorLogger.service';
 import type { Subscription, PaginatedSubscriptionResponse } from '../types/subscription';
 
 class SubscriptionService {

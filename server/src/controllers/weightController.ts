@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import WeightEntry from '../models/WeightEntry';
 import DailyLog from '../models/DailyLog';
 import { updateUserLastActivity } from '../services/streakService';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -53,7 +54,7 @@ export class WeightController {
 
       res.json({ success: true, data: { entry } });
     } catch (error) {
-      console.error('Upsert weight error:', error);
+      errorLogger.error('Upsert weight error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -69,7 +70,7 @@ export class WeightController {
       const latest = await WeightEntry.findOne({ userId }).sort({ date: -1 }).lean();
       res.json({ success: true, data: { latest } });
     } catch (error) {
-      console.error('Get latest weight error:', error);
+      errorLogger.error('Get latest weight error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -99,7 +100,7 @@ export class WeightController {
 
       res.json({ success: true, data: { entries } });
     } catch (error) {
-      console.error('Get weight range error:', error);
+      errorLogger.error('Get weight range error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

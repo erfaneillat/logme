@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import sharp from 'sharp';
 import { calculateOpenAICostUSD, formatUSD, roundTo6 } from '../utils/cost';
+import { logServiceError } from '../utils/errorLogger';
 
 export interface FoodAnalysisMeta {
     model: string | null;

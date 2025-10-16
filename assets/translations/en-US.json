@@ -810,6 +810,7 @@
     },
     "tickets": {
         "my_tickets": "My Tickets",
+        "support_subtitle": "Get help from our support team",
         "create_ticket": "Create Ticket",
         "ticket_details": "Ticket Details",
         "error_loading": "Failed to load tickets",

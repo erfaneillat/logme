@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import LuckyWheelEvent from '../models/LuckyWheelEvent';
 import User from '../models/User';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request {
     user?: {
@@ -80,7 +81,7 @@ export class LuckyWheelController {
             });
 
         } catch (error) {
-            console.error('Error logging lucky wheel view:', error);
+            errorLogger.error('Error logging lucky wheel view:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error'
@@ -133,7 +134,7 @@ export class LuckyWheelController {
             });
 
         } catch (error) {
-            console.error('Error fetching lucky wheel history:', error);
+            errorLogger.error('Error fetching lucky wheel history:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error'
@@ -191,7 +192,7 @@ export class LuckyWheelController {
             });
 
         } catch (error) {
-            console.error('Error fetching lucky wheel stats:', error);
+            errorLogger.error('Error fetching lucky wheel stats:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error'

@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import SubscriptionPlan from '../models/SubscriptionPlan';
 import fs from 'fs';
 import path from 'path';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -28,7 +29,7 @@ export class SubscriptionPlanController {
                 data: { plans },
             });
         } catch (error) {
-            console.error('Get all plans error:', error);
+            errorLogger.error('Get all plans error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -55,7 +56,7 @@ export class SubscriptionPlanController {
                 data: { plan },
             });
         } catch (error) {
-            console.error('Get plan by ID error:', error);
+            errorLogger.error('Get plan by ID error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -123,7 +124,7 @@ export class SubscriptionPlanController {
                 message: 'Plan created successfully',
             });
         } catch (error) {
-            console.error('Create plan error:', error);
+            errorLogger.error('Create plan error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -191,7 +192,7 @@ export class SubscriptionPlanController {
                 message: 'Plan updated successfully',
             });
         } catch (error) {
-            console.error('Update plan error:', error);
+            errorLogger.error('Update plan error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -241,7 +242,7 @@ export class SubscriptionPlanController {
                 message: 'Plan price updated successfully',
             });
         } catch (error) {
-            console.error('Update plan price error:', error);
+            errorLogger.error('Update plan price error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -276,7 +277,7 @@ export class SubscriptionPlanController {
                 message: 'Plan deleted successfully',
             });
         } catch (error) {
-            console.error('Delete plan error:', error);
+            errorLogger.error('Delete plan error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -308,7 +309,7 @@ export class SubscriptionPlanController {
                 message: `Plan ${plan.isActive ? 'activated' : 'deactivated'} successfully`,
             });
         } catch (error) {
-            console.error('Toggle plan status error:', error);
+            errorLogger.error('Toggle plan status error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -337,7 +338,7 @@ export class SubscriptionPlanController {
                 try {
                     fs.unlinkSync(file.path);
                 } catch (err) {
-                    console.error('Error deleting file:', err);
+                    errorLogger.error('Error deleting file:', err);
                 }
                 res.status(404).json({
                     success: false,
@@ -361,7 +362,7 @@ export class SubscriptionPlanController {
                 message: 'Image uploaded successfully',
             });
         } catch (error) {
-            console.error('Upload plan image error:', error);
+            errorLogger.error('Upload plan image error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -405,7 +406,7 @@ export class SubscriptionPlanController {
                 message: 'Image deleted successfully',
             });
         } catch (error) {
-            console.error('Delete plan image error:', error);
+            errorLogger.error('Delete plan image error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -426,7 +427,7 @@ export class SubscriptionPlanController {
                 }
             }
         } catch (err) {
-            console.error('Error deleting image file:', err);
+            errorLogger.error('Error deleting image file:', err);
         }
     }
 

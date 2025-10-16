@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
 import DailyLog from '../models/DailyLog';
+import errorLogger from '../services/errorLoggerService';
 
 interface ListQuery {
   page?: string;
@@ -119,7 +120,7 @@ export class UserController {
         },
       });
     } catch (error) {
-      console.error('List users error:', error);
+      errorLogger.error('List users error', error as Error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -152,7 +153,7 @@ export class UserController {
 
       res.json({ success: true, data: { user: userWithSubscription } });
     } catch (error) {
-      console.error('Get user error:', error);
+      errorLogger.error('Get user error', error as Error, req, { userId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -176,7 +177,7 @@ export class UserController {
 
       res.json({ success: true, message: 'User updated', data: { user } });
     } catch (error) {
-      console.error('Update user error:', error);
+      errorLogger.error('Update user error', error as Error, req, { userId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -199,11 +200,11 @@ export class UserController {
 
       await User.findByIdAndDelete(id);
 
-      console.log(`User deleted by admin: ${user.phone} (${user._id})`);
+      errorLogger.info('User deleted by admin', req, { userId: user._id, phone: user.phone });
 
       res.json({ success: true, message: 'User deleted successfully' });
     } catch (error) {
-      console.error('Delete user error:', error);
+      errorLogger.error('Delete user error', error as Error, req, { userId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

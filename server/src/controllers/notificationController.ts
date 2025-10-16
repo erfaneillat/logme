@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import notificationService from '../services/notificationService';
+import errorLogger from '../services/errorLoggerService';
 
 export class NotificationController {
   // Get user's notifications
@@ -36,7 +37,7 @@ export class NotificationController {
         },
       });
     } catch (error) {
-      console.error('Get notifications error:', error);
+      errorLogger.error('Get notifications error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -55,7 +56,7 @@ export class NotificationController {
 
       res.json({ success: true, data: { count } });
     } catch (error) {
-      console.error('Get unread count error:', error);
+      errorLogger.error('Get unread count error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -95,7 +96,7 @@ export class NotificationController {
         data: { notification },
       });
     } catch (error) {
-      console.error('Mark as read error:', error);
+      errorLogger.error('Mark as read error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -117,7 +118,7 @@ export class NotificationController {
         message: 'All notifications marked as read',
       });
     } catch (error) {
-      console.error('Mark all as read error:', error);
+      errorLogger.error('Mark all as read error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

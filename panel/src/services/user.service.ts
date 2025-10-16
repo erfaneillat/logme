@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_ENDPOINTS, API_TIMEOUT } from '../config/api';
 import { authService } from './auth.service';
+import { errorLogger } from './errorLogger.service';
 import type { User, PaginatedResponse } from '../types/user';
 
 class UserService {

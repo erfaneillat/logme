@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { calculateOpenAICostUSD, formatUSD, roundTo6 } from '../utils/cost';
+import { logServiceError } from '../utils/errorLogger';
 
 export interface ExerciseAnalysisMeta {
     model: string | null;
@@ -128,7 +129,9 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
         } else {
             const content = typeof message?.content === 'string' ? message.content : '';
             if (!content.trim()) {
-                console.error('AI response parsing failed. Empty content with finish reason:', choice?.finish_reason);
+                logServiceError('ExerciseAnalysisService', 'analyzeExercise', 'AI response parsing failed. Empty content', {
+                    finishReason: choice?.finish_reason,
+                });
                 console.warn('Falling back to heuristic exercise analysis result.');
                 parsed = fallbackResult;
             } else {
@@ -136,8 +139,18 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
                     // Try to parse the content directly first
                     parsed = JSON.parse(content);
                 } catch (err) {
-                    console.error('AI response parsing failed. Content:', content);
-                    console.error('Parse error:', err);
+                    logServiceError(
+                        'ExerciseAnalysisService',
+                        'analyzeExercise',
+                        'AI response parsing failed while JSON.parse',
+                        { content }
+                    );
+                    logServiceError(
+                        'ExerciseAnalysisService',
+                        'analyzeExercise',
+                        err,
+                        { note: 'parse error' }
+                    );
 
                     // Try to extract JSON from the content if it's wrapped in other text
                     try {
@@ -149,7 +162,12 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
                             throw new Error('No JSON object found in response');
                         }
                     } catch (extractErr) {
-                        console.error('JSON extraction also failed:', extractErr);
+                        logServiceError(
+                            'ExerciseAnalysisService',
+                            'analyzeExercise',
+                            extractErr,
+                            { note: 'json extraction failed' }
+                        );
                         console.warn('Falling back to heuristic exercise analysis result.');
                         parsed = fallbackResult;
                     }

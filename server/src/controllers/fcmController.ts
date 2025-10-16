@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
+import errorLogger from '../services/errorLoggerService';
 
 export class FcmController {
   /**
@@ -46,7 +47,7 @@ export class FcmController {
         message: 'FCM token registered successfully',
       });
     } catch (error) {
-      console.error('Register FCM token error:', error);
+      errorLogger.error('Register FCM token error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -81,7 +82,7 @@ export class FcmController {
         message: 'FCM token removed successfully',
       });
     } catch (error) {
-      console.error('Remove FCM token error:', error);
+      errorLogger.error('Remove FCM token error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -112,7 +113,7 @@ export class FcmController {
         },
       });
     } catch (error) {
-      console.error('Get FCM tokens error:', error);
+      errorLogger.error('Get FCM tokens error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

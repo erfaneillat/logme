@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import { logServiceError } from '../utils/errorLogger';
 
 class FirebaseService {
   private initialized = false;
@@ -36,7 +37,7 @@ class FirebaseService {
         console.warn('⚠️  Firebase credentials not configured. Push notifications will be disabled.');
       }
     } catch (error) {
-      console.error('❌ Failed to initialize Firebase Admin SDK:', error);
+      logServiceError('firebaseService', 'initialize', error as Error, {});
       console.warn('Push notifications will be disabled.');
     }
   }
@@ -93,12 +94,17 @@ class FirebaseService {
       return true;
     } catch (error: any) {
       if (error.code === 'messaging/invalid-registration-token' ||
-          error.code === 'messaging/registration-token-not-registered') {
+        error.code === 'messaging/registration-token-not-registered') {
         console.warn('⚠️  Invalid or expired FCM token:', token);
         // Token is invalid, should be removed from database
         return false;
       }
-      console.error('❌ Error sending push notification:', error);
+      logServiceError('firebaseService', 'sendToDevice', error as Error, {
+        token,
+        title,
+        body,
+        data,
+      });
       return false;
     }
   }
@@ -148,14 +154,14 @@ class FirebaseService {
       };
 
       const response = await admin.messaging().sendEachForMulticast(message);
-      
+
       // Collect invalid tokens
       const invalidTokens: string[] = [];
       response.responses.forEach((resp: admin.messaging.SendResponse, idx: number) => {
         if (!resp.success && resp.error) {
           const errorCode = resp.error.code;
           if (errorCode === 'messaging/invalid-registration-token' ||
-              errorCode === 'messaging/registration-token-not-registered') {
+            errorCode === 'messaging/registration-token-not-registered') {
             const token = tokens[idx];
             if (token) {
               invalidTokens.push(token);
@@ -175,7 +181,12 @@ class FirebaseService {
         invalidTokens,
       };
     } catch (error) {
-      console.error('❌ Error sending multicast push notifications:', error);
+      logServiceError('firebaseService', 'sendToMultipleDevices', error as Error, {
+        tokens,
+        title,
+        body,
+        data,
+      });
       return { successCount: 0, failureCount: tokens.length, invalidTokens: [] };
     }
   }
@@ -197,7 +208,10 @@ class FirebaseService {
       console.log('✅ Custom push notification sent successfully');
       return true;
     } catch (error) {
-      console.error('❌ Error sending custom push notification:', error);
+      logServiceError('firebaseService', 'sendCustomNotification', error as Error, {
+        token,
+        payload,
+      });
       return false;
     }
   }

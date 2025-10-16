@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 import { SubscriptionPlan, CreatePlanInput, UpdatePlanInput } from '../types/subscriptionPlan';
+import { errorLogger } from './errorLogger.service';
 
 interface ApiResponse<T> {
     success: boolean;
@@ -43,7 +44,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Get all plans error:', error);
+            errorLogger.error('Get all plans error:', error);
             return {
                 success: false,
                 message: 'Failed to fetch plans. Please try again.',
@@ -66,7 +67,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Get plan by ID error:', error);
+            errorLogger.error('Get plan by ID error:', error);
             return {
                 success: false,
                 message: 'Failed to fetch plan. Please try again.',
@@ -90,7 +91,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Create plan error:', error);
+            errorLogger.error('Create plan error:', error);
             return {
                 success: false,
                 message: 'Failed to create plan. Please try again.',
@@ -114,7 +115,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Update plan error:', error);
+            errorLogger.error('Update plan error:', error);
             return {
                 success: false,
                 message: 'Failed to update plan. Please try again.',
@@ -149,7 +150,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Update plan price error:', error);
+            errorLogger.error('Update plan price error:', error);
             return {
                 success: false,
                 message: 'Failed to update price. Please try again.',
@@ -172,7 +173,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Delete plan error:', error);
+            errorLogger.error('Delete plan error:', error);
             return {
                 success: false,
                 message: 'Failed to delete plan. Please try again.',
@@ -195,7 +196,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Toggle plan status error:', error);
+            errorLogger.error('Toggle plan status error:', error);
             return {
                 success: false,
                 message: 'Failed to toggle plan status. Please try again.',
@@ -219,7 +220,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Upload plan image error:', error);
+            errorLogger.error('Upload plan image error:', error);
             return {
                 success: false,
                 message: 'Failed to upload image. Please try again.',
@@ -242,7 +243,7 @@ class SubscriptionPlanService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Delete plan image error:', error);
+            errorLogger.error('Delete plan image error:', error);
             return {
                 success: false,
                 message: 'Failed to delete image. Please try again.',

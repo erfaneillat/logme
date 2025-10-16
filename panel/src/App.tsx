@@ -11,6 +11,8 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import LogsPage from './pages/LogsPage';
 import AppVersionsPage from './pages/AppVersionsPage';
 import TicketsPage from './pages/TicketsPage';
+import TicketDetailPage from './pages/TicketDetailPage';
+import ErrorLogsPage from './pages/ErrorLogsPage';
 
 const App = () => {
     return (
@@ -29,6 +31,8 @@ const App = () => {
                         <Route path="/subscriptions" element={<SubscriptionsPage />} />
                         <Route path="/app-versions" element={<AppVersionsPage />} />
                         <Route path="/tickets" element={<TicketsPage />} />
+                        <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
+                        <Route path="/error-logs" element={<ErrorLogsPage />} />
                     </Routes>
                 </ProtectedRoute>
             </AuthProvider>

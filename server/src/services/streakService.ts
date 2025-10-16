@@ -2,6 +2,7 @@ import Plan from '../models/Plan';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
 import Streak from '../models/Streak';
+import { logServiceError } from '../utils/errorLogger';
 
 /**
  * Update user's last activity timestamp to current time
@@ -13,7 +14,7 @@ export async function updateUserLastActivity(userId: string): Promise<void> {
       $set: { lastActivity: new Date() }
     }).exec();
   } catch (error) {
-    console.error('Error updating user last activity:', error);
+    logServiceError('streakService', 'updateUserLastActivity', error as Error, { userId });
     // Don't throw error as this is not critical functionality
   }
 }
@@ -260,7 +261,7 @@ export async function resetInactiveUserStreaks(inactivityDaysThreshold: number =
     console.log(`Streak reset completed. Reset ${resetCount} user streaks.`);
     return resetCount;
   } catch (error) {
-    console.error('Error resetting inactive user streaks:', error);
+    logServiceError('streakService', 'resetInactiveUserStreaks', error as Error, { days: inactivityDaysThreshold });
     throw error;
   }
 }

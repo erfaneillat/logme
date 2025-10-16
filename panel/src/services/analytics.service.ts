@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
+import { errorLogger } from './errorLogger.service';
 
 export type TimePeriod = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -105,7 +106,7 @@ class AnalyticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching user analytics:', error);
+            errorLogger.error('Error fetching user analytics:', error);
             throw error;
         }
     }
@@ -122,7 +123,7 @@ class AnalyticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching subscription analytics:', error);
+            errorLogger.error('Error fetching subscription analytics:', error);
             throw error;
         }
     }
@@ -139,7 +140,7 @@ class AnalyticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching activity analytics:', error);
+            errorLogger.error('Error fetching activity analytics:', error);
             throw error;
         }
     }
@@ -156,7 +157,7 @@ class AnalyticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching engagement analytics:', error);
+            errorLogger.error('Error fetching engagement analytics:', error);
             throw error;
         }
     }
@@ -173,7 +174,7 @@ class AnalyticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching cost analytics:', error);
+            errorLogger.error('Error fetching cost analytics:', error);
             throw error;
         }
     }

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import User from '../models/User';
 import { updateUserLastActivity } from '../services/streakService';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -28,7 +29,7 @@ export class PreferencesController {
                 }
             });
         } catch (error) {
-            console.error('Get user preferences error:', error);
+            errorLogger.error('Get user preferences error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -84,7 +85,7 @@ export class PreferencesController {
                 }
             });
         } catch (error) {
-            console.error('Update user preferences error:', error);
+            errorLogger.error('Update user preferences error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

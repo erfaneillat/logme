@@ -14,9 +14,11 @@ final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
 final authRepositoryImplProvider = Provider<AuthRepositoryImpl>((ref) {
   final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
   final secureStorage = ref.watch(secureStorageProvider);
+  final apiService = ref.watch(apiServiceProvider);
 
   return AuthRepositoryImpl(
     remoteDataSource: remoteDataSource,
     secureStorage: secureStorage,
+    apiService: apiService,
   );
 });

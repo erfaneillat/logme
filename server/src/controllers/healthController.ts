@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler';
 import DatabaseConnection from '../config/database';
 import mongoose from 'mongoose';
+import errorLogger from '../services/errorLoggerService';
 
 export const getHealthStatus = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const healthCheck: Record<string, any> = {
@@ -25,6 +26,7 @@ export const getHealthStatus = asyncHandler(async (req: Request, res: Response):
       timestamp: new Date(),
     });
   } catch (error) {
+    errorLogger.error('Health check database error', error as Error, req);
     healthCheck['database'] = 'error';
     healthCheck['error'] = error instanceof Error ? error.message : 'Unknown error';
     
@@ -75,6 +77,7 @@ export const getDetailedHealth = asyncHandler(async (req: Request, res: Response
       timestamp: new Date(),
     });
   } catch (error) {
+    errorLogger.error('Detailed health check error', error as Error, req);
     detailedHealth.status = 'unhealthy';
     detailedHealth.database.status = 'error';
     

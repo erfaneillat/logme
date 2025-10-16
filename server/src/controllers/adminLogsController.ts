@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import DailyLog from '../models/DailyLog';
 import User from '../models/User';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -84,7 +85,7 @@ export class AdminLogsController {
                 },
             });
         } catch (error) {
-            console.error('Get all logs error:', error);
+            errorLogger.error('Get all logs error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -135,7 +136,7 @@ export class AdminLogsController {
                 },
             });
         } catch (error) {
-            console.error('Get log stats error:', error);
+            errorLogger.error('Get log stats error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -223,7 +224,7 @@ export class AdminLogsController {
                 },
             });
         } catch (error) {
-            console.error('Search logs error:', error);
+            errorLogger.error('Search logs error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -299,7 +300,7 @@ export class AdminLogsController {
                 },
             });
         } catch (error) {
-            console.error('Get user logs error:', error);
+            errorLogger.error('Get user logs error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

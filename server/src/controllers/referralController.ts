@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import User from '../models/User';
+import errorLogger from '../services/errorLoggerService';
 
 function generateCode(seed: string, attempt: number): string {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -53,7 +54,7 @@ export class ReferralController {
 
       res.json({ success: true, code: user.referralCode });
     } catch (err) {
-      console.error('getMyCode error', err);
+      errorLogger.error('getMyCode error', err);
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }
@@ -65,7 +66,7 @@ export class ReferralController {
       const owner = await User.findOne({ referralCode: code });
       res.json({ success: true, valid: !!owner });
     } catch (err) {
-      console.error('validateCode error', err);
+      errorLogger.error('validateCode error', err);
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }
@@ -119,7 +120,7 @@ export class ReferralController {
 
       res.json({ success: true });
     } catch (err) {
-      console.error('submitCode error', err);
+      errorLogger.error('submitCode error', err);
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }
@@ -140,7 +141,7 @@ export class ReferralController {
         rewardPerReferral: parseInt(process.env.REFERRAL_REWARD_TOMAN || '25000', 10),
       });
     } catch (err) {
-      console.error('getSummary error', err);
+      errorLogger.error('getSummary error', err);
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }
@@ -194,7 +195,7 @@ export class ReferralController {
 
       res.json({ success: true, code: newCode });
     } catch (err) {
-      console.error('updateCode error', err);
+      errorLogger.error('updateCode error', err);
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }

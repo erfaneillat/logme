@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
+import { errorLogger } from './errorLogger.service';
 
 export interface DashboardStatistics {
     overview: {
@@ -100,7 +101,7 @@ class StatisticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching dashboard statistics:', error);
+            errorLogger.error('Error fetching dashboard statistics:', error);
             throw error;
         }
     }
@@ -117,7 +118,7 @@ class StatisticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching user growth:', error);
+            errorLogger.error('Error fetching user growth:', error);
             throw error;
         }
     }
@@ -134,7 +135,7 @@ class StatisticsService {
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error('Error fetching revenue statistics:', error);
+            errorLogger.error('Error fetching revenue statistics:', error);
             throw error;
         }
     }

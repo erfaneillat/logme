@@ -4,6 +4,7 @@ import Offer from '../models/Offer';
 import SubscriptionPlan from '../models/SubscriptionPlan';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -29,7 +30,7 @@ export class OfferController {
                 data: { offers },
             });
         } catch (error) {
-            console.error('Get all offers error:', error);
+            errorLogger.error('Get all offers error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -125,7 +126,7 @@ export class OfferController {
                 data: { offers: applicableOffers },
             });
         } catch (error) {
-            console.error('Get active offers for user error:', error);
+            errorLogger.error('Get active offers for user error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -167,7 +168,7 @@ export class OfferController {
                 data: { offer },
             });
         } catch (error) {
-            console.error('Get offer by ID error:', error);
+            errorLogger.error('Get offer by ID error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -259,7 +260,7 @@ export class OfferController {
                 message: 'Offer created successfully',
             });
         } catch (error) {
-            console.error('Create offer error:', error);
+            errorLogger.error('Create offer error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -331,7 +332,7 @@ export class OfferController {
                 message: 'Offer updated successfully',
             });
         } catch (error) {
-            console.error('Update offer error:', error);
+            errorLogger.error('Update offer error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -361,7 +362,7 @@ export class OfferController {
                 message: 'Offer deleted successfully',
             });
         } catch (error) {
-            console.error('Delete offer error:', error);
+            errorLogger.error('Delete offer error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -393,7 +394,7 @@ export class OfferController {
                 message: `Offer ${offer.isActive ? 'activated' : 'deactivated'} successfully`,
             });
         } catch (error) {
-            console.error('Toggle offer status error:', error);
+            errorLogger.error('Toggle offer status error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',
@@ -425,7 +426,7 @@ export class OfferController {
                 message: 'Usage count incremented',
             });
         } catch (error) {
-            console.error('Increment usage count error:', error);
+            errorLogger.error('Increment usage count error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Internal server error',

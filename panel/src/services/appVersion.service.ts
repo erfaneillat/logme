@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 import { AppVersion, CreateAppVersionRequest, UpdateAppVersionRequest } from '../types/appVersion';
+import { errorLogger } from './errorLogger.service';
 
 interface ApiResponse<T> {
     success: boolean;

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "743552243419",
+    "project_id": "loqme-53f23",
+    "storage_bucket": "loqme-53f23.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743552243419:android:a7ce55a09b64158504defe",
+        "android_client_info": {
+          "package_name": "ir.loqmeapp.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPkr-4sM8BBpVtQqWlj-2_cJJpIbeHVy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

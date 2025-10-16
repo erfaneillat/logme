@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { logServiceError } from '../utils/errorLogger';
 
 interface PurchaseAttempt {
     userId: string;

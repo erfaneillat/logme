@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_ENDPOINTS, API_TIMEOUT } from '../config/api';
+import { errorLogger } from './errorLogger.service';
 
 export interface SendCodeResponse {
     success: boolean;
@@ -44,6 +45,7 @@ class AuthService {
             return response;
         } catch (error) {
             clearTimeout(timeout);
+            errorLogger.error('Fetch timeout error', error as Error, { action: 'fetchWithTimeout', url });
             throw error;
         }
     }
@@ -61,7 +63,7 @@ class AuthService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Send verification code error:', error);
+            errorLogger.error('Send verification code error', error as Error, { action: 'sendVerificationCode', component: 'AuthService' });
             return {
                 success: false,
                 message: 'Failed to send verification code. Please try again.',
@@ -85,7 +87,7 @@ class AuthService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Verify admin phone error:', error);
+            errorLogger.error('Verify admin phone error', error as Error, { action: 'verifyAdminPhone', component: 'AuthService' });
             return {
                 success: false,
                 message: 'Failed to verify phone. Please try again.',
@@ -108,7 +110,7 @@ class AuthService {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Get profile error:', error);
+            errorLogger.error('Get profile error', error as Error, { action: 'getProfile', component: 'AuthService' });
             return {
                 success: false,
             };

@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -30,6 +29,7 @@ import appVersionRoutes from './routes/appVersionRoutes';
 import ticketRoutes from './routes/ticketRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import fcmRoutes from './routes/fcmRoutes';
+import errorLogRoutes from './routes/errorLogRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import firebaseService from './services/firebaseService';
 import { sanitizeInput } from './middleware/validation';
@@ -126,6 +126,7 @@ app.use('/api/app-version', appVersionRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/fcm', fcmRoutes);
+app.use('/api/error-logs', errorLogRoutes);
 
 // Serve static files from the React website build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');

@@ -3,6 +3,7 @@ import Ticket, { TicketStatus, TicketPriority, TicketCategory, ITicketMessage } 
 import User from '../models/User';
 import mongoose from 'mongoose';
 import notificationService from '../services/notificationService';
+import errorLogger from '../services/errorLoggerService';
 
 interface ListQuery {
   page?: string;
@@ -71,7 +72,7 @@ export class TicketController {
         data: { ticket },
       });
     } catch (error) {
-      console.error('Create ticket error:', error);
+      errorLogger.error('Create ticket error', error as Error, req, { userId: (req as any).user?.userId });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -140,7 +141,7 @@ export class TicketController {
         },
       });
     } catch (error) {
-      console.error('List tickets error:', error);
+      errorLogger.error('List tickets error', error as Error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -183,7 +184,7 @@ export class TicketController {
         },
       });
     } catch (error) {
-      console.error('Get user tickets error:', error);
+      errorLogger.error('Get user tickets error', error as Error, req, { userId: (req as any).user?.userId });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -218,7 +219,7 @@ export class TicketController {
 
       res.json({ success: true, data: { ticket } });
     } catch (error) {
-      console.error('Get ticket error:', error);
+      errorLogger.error('Get ticket error', error as Error, req, { ticketId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -283,7 +284,7 @@ export class TicketController {
             user.name || 'Support Team'
           );
         } catch (notifError) {
-          console.error('Error sending notification:', notifError);
+          errorLogger.warning('Error sending notification', notifError as Error, req, { ticketId: String(ticket._id) });
           // Don't fail the request if notification fails
         }
       } else {
@@ -304,7 +305,7 @@ export class TicketController {
         data: { ticket },
       });
     } catch (error) {
-      console.error('Add message error:', error);
+      errorLogger.error('Add message error', error as Error, req, { ticketId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -352,7 +353,7 @@ export class TicketController {
         data: { ticket },
       });
     } catch (error) {
-      console.error('Update ticket error:', error);
+      errorLogger.error('Update ticket error', error as Error, req, { ticketId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -385,7 +386,7 @@ export class TicketController {
         data: { ticket },
       });
     } catch (error) {
-      console.error('Update priority error:', error);
+      errorLogger.error('Update priority error', error as Error, req, { ticketId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -441,7 +442,7 @@ export class TicketController {
         },
       });
     } catch (error) {
-      console.error('Get statistics error:', error);
+      errorLogger.error('Get statistics error', error as Error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -452,7 +453,7 @@ export class TicketController {
       const count = await Ticket.countDocuments({ adminHasUnread: true });
       res.json({ success: true, data: { count } });
     } catch (error) {
-      console.error('Get unread count error:', error);
+      errorLogger.error('Get unread count error', error as Error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -470,7 +471,7 @@ export class TicketController {
 
       res.json({ success: true, message: 'Ticket deleted successfully' });
     } catch (error) {
-      console.error('Delete ticket error:', error);
+      errorLogger.error('Delete ticket error', error as Error, req, { ticketId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

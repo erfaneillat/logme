@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../features/login/presentation/providers/auth_provider.dart';
+import '../../services/fcm_service.dart';
+import '../../services/api_service_provider.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -30,6 +32,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
       if (mounted) {
         if (isAuthenticated) {
+          // Ensure FCM is initialized for already-authenticated sessions
+          try {
+            final apiService = ref.read(apiServiceProvider);
+            await FCMService().initialize(apiService);
+          } catch (_) {}
+
           // Check if user has completed additional information
           final getCurrentUserUseCase = ref.read(getCurrentUserUseCaseProvider);
           final user = await getCurrentUserUseCase.execute();

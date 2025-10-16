@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { formatJalaliDate, formatJalaliTime } from '../utils/date';
 import { ticketService } from '../services/ticket.service';
 import type { Ticket, TicketStatus, TicketPriority, TicketCategory } from '../types/ticket';
 
@@ -357,8 +358,8 @@ const TicketsPage = () => {
                       {/* Last Update */}
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-600">
-                          <p className="font-medium">{new Date(ticket.lastMessageAt).toLocaleDateString()}</p>
-                          <p className="text-xs text-gray-500">{new Date(ticket.lastMessageAt).toLocaleTimeString()}</p>
+                          <p className="font-medium">{formatJalaliDate(ticket.lastMessageAt)}</p>
+                          <p className="text-xs text-gray-500">{formatJalaliTime(ticket.lastMessageAt)}</p>
                         </div>
                       </td>
 

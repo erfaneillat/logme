@@ -284,29 +284,29 @@ const PlatformSection = ({ title, versions, onEdit, onToggleActive, onDelete }: 
 );
 
 const FormModal = ({ isCreating, loading, error, platform, version, buildNumber, minVersion, minBuildNumber, isForceUpdate, isOptionalUpdate, updateTitle, updateMessage, storeUrl, isActive, setPlatform, setVersion, setBuildNumber, setMinVersion, setMinBuildNumber, setIsForceUpdate, setIsOptionalUpdate, setUpdateTitle, setUpdateMessage, setStoreUrl, setIsActive, onClose, onSubmit }: any) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto">
-        <div className="w-full max-w-2xl rounded-3xl border border-gray-200 bg-white p-8 shadow-2xl my-8">
-            <h2 className="mb-6 text-2xl font-bold text-black">{isCreating ? 'Create' : 'Edit'} Version Config</h2>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-3 md:p-6 backdrop-blur-sm overflow-y-auto">
+        <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 md:p-6 shadow-2xl my-4 md:my-6 max-h-[80vh] overflow-y-auto">
+            <h2 className="mb-3 text-xl md:text-2xl font-bold text-black">{isCreating ? 'Create' : 'Edit'} Version Config</h2>
             {error && <div className="mb-4 rounded-xl border-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>}
-            <form onSubmit={onSubmit} className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={onSubmit} className="space-y-4 md:space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div><label className="mb-2 block text-sm font-semibold">Platform</label><select value={platform} onChange={(e) => setPlatform(e.target.value as Platform)} className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" required><option value="android">Android</option><option value="ios">iOS</option></select></div>
                     <div><label className="mb-2 block text-sm font-semibold">Latest Version</label><input type="text" value={version} onChange={(e) => setVersion(e.target.value)} placeholder="1.0.0" className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" required /></div>
                     <div><label className="mb-2 block text-sm font-semibold">Latest Build</label><input type="number" value={buildNumber} onChange={(e) => setBuildNumber(e.target.value)} placeholder="100" className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" required /></div>
                     <div><label className="mb-2 block text-sm font-semibold">Min Version</label><input type="text" value={minVersion} onChange={(e) => setMinVersion(e.target.value)} placeholder="1.0.0" className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" required /></div>
-                    <div className="col-span-2"><label className="mb-2 block text-sm font-semibold">Min Build (Force Update)</label><input type="number" value={minBuildNumber} onChange={(e) => setMinBuildNumber(e.target.value)} placeholder="90" className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" required /></div>
+                    <div className="md:col-span-2"><label className="mb-2 block text-sm font-semibold">Min Build (Force Update)</label><input type="number" value={minBuildNumber} onChange={(e) => setMinBuildNumber(e.target.value)} placeholder="90" className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" required /></div>
                 </div>
-                <div className="space-y-3 rounded-xl bg-gray-50 p-4">
+                <div className="space-y-3 rounded-xl bg-gray-50 p-3 md:p-4">
                     <label className="flex items-center space-x-3"><input type="checkbox" checked={isForceUpdate} onChange={(e) => setIsForceUpdate(e.target.checked)} className="h-5 w-5 rounded" /><div><span className="font-semibold">Force Update</span><p className="text-xs text-gray-600">Block users below min build</p></div></label>
                     <label className="flex items-center space-x-3"><input type="checkbox" checked={isOptionalUpdate} onChange={(e) => setIsOptionalUpdate(e.target.checked)} className="h-5 w-5 rounded" /><div><span className="font-semibold">Optional Update</span><p className="text-xs text-gray-600">Show dialog but allow skip</p></div></label>
                     <label className="flex items-center space-x-3"><input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-5 w-5 rounded" /><div><span className="font-semibold">Active</span><p className="text-xs text-gray-600">One per platform</p></div></label>
                 </div>
                 <div><label className="mb-2 block text-sm font-semibold">Dialog Title</label><input type="text" value={updateTitle} onChange={(e) => setUpdateTitle(e.target.value)} placeholder="Update Available" className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" /></div>
-                <div><label className="mb-2 block text-sm font-semibold">Dialog Message</label><textarea value={updateMessage} onChange={(e) => setUpdateMessage(e.target.value)} placeholder="New version available..." rows={3} className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" /></div>
+                <div><label className="mb-2 block text-sm font-semibold">Dialog Message</label><textarea value={updateMessage} onChange={(e) => setUpdateMessage(e.target.value)} placeholder="New version available..." rows={3} className="w-full rounded-lg border-2 border-gray-200 px-3 md:px-4 py-2 md:py-2.5 focus:border-black focus:outline-none" /></div>
                 <div><label className="mb-2 block text-sm font-semibold">Store URL</label><input type="url" value={storeUrl} onChange={(e) => setStoreUrl(e.target.value)} placeholder="https://..." className="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 focus:border-black focus:outline-none" /></div>
-                <div className="flex gap-3 pt-4">
-                    <button type="button" onClick={onClose} disabled={loading} className="flex-1 rounded-xl border-2 border-gray-200 px-6 py-3 font-semibold">Cancel</button>
-                    <button type="submit" disabled={loading} className="flex-1 rounded-xl bg-black px-6 py-3 font-semibold text-white">{loading ? 'Saving...' : isCreating ? 'Create' : 'Update'}</button>
+                <div className="flex gap-3 pt-2 md:pt-4 sticky bottom-0 bg-white pb-0">
+                    <button type="button" onClick={onClose} disabled={loading} className="flex-1 rounded-xl border-2 border-gray-200 px-4 md:px-6 py-2.5 md:py-3 font-semibold">Cancel</button>
+                    <button type="submit" disabled={loading} className="flex-1 rounded-xl bg-black px-4 md:px-6 py-2.5 md:py-3 font-semibold text-white">{loading ? 'Saving...' : isCreating ? 'Create' : 'Update'}</button>
                 </div>
             </form>
         </div>

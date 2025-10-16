@@ -3,6 +3,7 @@ import User from '../models/User';
 import Subscription from '../models/Subscription';
 import DailyLog from '../models/DailyLog';
 import SubscriptionPlan from '../models/SubscriptionPlan';
+import errorLogger from '../services/errorLoggerService';
 
 /**
  * Get user analytics for specified time period
@@ -121,7 +122,7 @@ export const getUserAnalytics = async (req: Request, res: Response): Promise<voi
             }
         });
     } catch (error) {
-        console.error('Error fetching user analytics:', error);
+        errorLogger.error('Error fetching user analytics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch user analytics',
@@ -278,7 +279,7 @@ export const getSubscriptionAnalytics = async (req: Request, res: Response): Pro
             }
         });
     } catch (error) {
-        console.error('Error fetching subscription analytics:', error);
+        errorLogger.error('Error fetching subscription analytics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch subscription analytics',
@@ -437,7 +438,7 @@ export const getActivityAnalytics = async (req: Request, res: Response): Promise
             }
         });
     } catch (error) {
-        console.error('Error fetching activity analytics:', error);
+        errorLogger.error('Error fetching activity analytics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch activity analytics',
@@ -571,7 +572,7 @@ export const getCostAnalytics = async (req: Request, res: Response): Promise<voi
             }
         });
     } catch (error) {
-        console.error('Error fetching cost analytics:', error);
+        errorLogger.error('Error fetching cost analytics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch cost analytics',
@@ -701,7 +702,7 @@ export const getEngagementAnalytics = async (req: Request, res: Response): Promi
             }
         });
     } catch (error) {
-        console.error('Error fetching engagement analytics:', error);
+        errorLogger.error('Error fetching engagement analytics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch engagement analytics',

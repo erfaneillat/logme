@@ -5,6 +5,7 @@ import User from '../models/User';
 import AdditionalInfo from '../models/AdditionalInfo';
 import { updateStreakIfEligible, updateStreakOnFirstMeal, updateUserLastActivity } from '../services/streakService';
 import { ExerciseAnalysisService } from '../services/exerciseAnalysisService';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -68,7 +69,7 @@ export class LogController {
 
             res.json({ success: true, data: { log } });
         } catch (error) {
-            console.error('Upsert daily log error:', error);
+            errorLogger.error('Upsert daily log error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -107,7 +108,7 @@ export class LogController {
 
             res.json({ success: true, data: { log } });
         } catch (error) {
-            console.error('Get daily log error:', error);
+            errorLogger.error('Get daily log error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -137,7 +138,7 @@ export class LogController {
 
             res.json({ success: true, data: { logs } });
         } catch (error) {
-            console.error('Get logs range error:', error);
+            errorLogger.error('Get logs range error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -171,7 +172,7 @@ export class LogController {
 
             res.json({ success: true, data: { itemId, liked: Boolean(liked) } });
         } catch (error) {
-            console.error('Toggle item like error:', error);
+            errorLogger.error('Toggle item like error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -203,7 +204,7 @@ export class LogController {
 
             res.json({ success: true, data: { itemId, liked: false } });
         } catch (error) {
-            console.error('Remove item from favorites error:', error);
+            errorLogger.error('Remove item from favorites error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -315,7 +316,7 @@ export class LogController {
                     await updateStreakIfEligible(userId, sanitizedDate);
                 }
             } catch (error) {
-                console.error(`Error updating streak for user ${userId}:`, error);
+                errorLogger.error(`Error updating streak for user ${userId}:`, error);
             }
 
             // Update user's last activity
@@ -323,7 +324,7 @@ export class LogController {
 
             res.json({ success: true, data: { item: pushed ?? null } });
         } catch (error) {
-            console.error('Add log item error:', error);
+            errorLogger.error('Add log item error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -386,7 +387,7 @@ export class LogController {
 
             res.json({ success: true, data: { itemId } });
         } catch (error) {
-            console.error('Delete log item error:', error);
+            errorLogger.error('Delete log item error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -515,7 +516,7 @@ export class LogController {
 
             res.json({ success: true, data: { item: updatedItem } });
         } catch (error) {
-            console.error('Update log item error:', error);
+            errorLogger.error('Update log item error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -594,7 +595,7 @@ export class LogController {
                 }
             });
         } catch (error) {
-            console.error('Update burned calories error:', error);
+            errorLogger.error('Update burned calories error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
@@ -658,7 +659,7 @@ export class LogController {
                 meta: analysisResult.meta
             });
         } catch (error) {
-            console.error('Analyze exercise error:', error);
+            errorLogger.error('Analyze exercise error:', error);
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }

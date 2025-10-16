@@ -3,6 +3,7 @@ import User from '../models/User';
 import Subscription from '../models/Subscription';
 import DailyLog from '../models/DailyLog';
 import SubscriptionPlan from '../models/SubscriptionPlan';
+import errorLogger from '../services/errorLoggerService';
 
 /**
  * Get dashboard statistics
@@ -145,7 +146,7 @@ export const getDashboardStatistics = async (req: Request, res: Response): Promi
             }
         });
     } catch (error) {
-        console.error('Error fetching dashboard statistics:', error);
+        errorLogger.error('Error fetching dashboard statistics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch dashboard statistics',
@@ -193,7 +194,7 @@ export const getUserGrowth = async (req: Request, res: Response): Promise<void> 
             }))
         });
     } catch (error) {
-        console.error('Error fetching user growth:', error);
+        errorLogger.error('Error fetching user growth:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch user growth statistics',
@@ -242,7 +243,7 @@ export const getRevenueStatistics = async (req: Request, res: Response): Promise
             }
         });
     } catch (error) {
-        console.error('Error fetching revenue statistics:', error);
+        errorLogger.error('Error fetching revenue statistics:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch revenue statistics',

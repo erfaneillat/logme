@@ -2,8 +2,20 @@ import Notification, { NotificationType, INotification } from '../models/Notific
 import mongoose from 'mongoose';
 import User from '../models/User';
 import firebaseService from './firebaseService';
+import { logServiceError } from '../utils/errorLogger';
 
 class NotificationService {
+  private translateStatus(status: string): string {
+    const map: Record<string, string> = {
+      OPEN: 'باز',
+      IN_PROGRESS: 'در حال رسیدگی',
+      RESOLVED: 'حل شد',
+      CLOSED: 'بسته شد',
+      PENDING: 'در انتظار',
+    };
+    return map[status] ?? status.replace('_', ' ').toLowerCase();
+  }
+
   /**
    * Create a new notification
    */
@@ -25,13 +37,19 @@ class NotificationService {
       });
 
       console.log(`✅ Notification created for user ${userId}: ${title}`);
-      
+
       // Send push notification if Firebase is configured
       await this.sendPushNotification(userId, title, body, data);
 
       return notification;
     } catch (error) {
-      console.error('Error creating notification:', error);
+      logServiceError('notificationService', 'createNotification', error as Error, {
+        userId,
+        type,
+        title,
+        body,
+        data,
+      });
       throw error;
     }
   }
@@ -48,8 +66,8 @@ class NotificationService {
     return this.createNotification(
       userId,
       NotificationType.TICKET_REPLY,
-      'New Reply to Your Ticket',
-      `${replierName} replied to your ticket: "${ticketSubject}"`,
+      'پاسخ جدید به تیکت شما',
+      `پشتیبانی به تیکت شما پاسخ داد: «${ticketSubject}»`,
       {
         ticketId,
         ticketSubject,
@@ -67,12 +85,12 @@ class NotificationService {
     ticketSubject: string,
     newStatus: string
   ): Promise<INotification> {
-    const statusText = newStatus.replace('_', ' ').toUpperCase();
+    const statusText = this.translateStatus(newStatus);
     return this.createNotification(
       userId,
       NotificationType.TICKET_STATUS_CHANGE,
-      'Ticket Status Updated',
-      `Your ticket "${ticketSubject}" status changed to ${statusText}`,
+      'وضعیت تیکت به‌روزرسانی شد',
+      `وضعیت تیکت «${ticketSubject}» به ${statusText} تغییر کرد`,
       {
         ticketId,
         ticketSubject,
@@ -222,7 +240,12 @@ class NotificationService {
         console.log(`🧹 Removed ${result.invalidTokens.length} invalid FCM tokens for user ${userId}`);
       }
     } catch (error) {
-      console.error('Error sending push notification:', error);
+      logServiceError('notificationService', 'sendPushNotification', error as Error, {
+        userId,
+        title,
+        body,
+        data,
+      });
       // Don't throw - we don't want to fail notification creation if push fails
     }
   }

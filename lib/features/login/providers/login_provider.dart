@@ -5,14 +5,18 @@ import '../domain/usecases/verify_phone_usecase.dart';
 import '../domain/entities/user.dart';
 import '../presentation/providers/auth_provider.dart';
 import '../../../../extensions/error_handler.dart';
+import '../../../../services/fcm_service.dart';
+import '../../../../services/api_service_provider.dart';
 
 class LoginNotifier extends StateNotifier<LoginState> {
   final SendVerificationCodeUseCase sendVerificationCodeUseCase;
   final VerifyPhoneUseCase verifyPhoneUseCase;
+  final Ref ref;
 
   LoginNotifier({
     required this.sendVerificationCodeUseCase,
     required this.verifyPhoneUseCase,
+    required this.ref,
   }) : super(const LoginState());
 
   Future<void> sendCode(String phoneNumber) async {
@@ -49,6 +53,9 @@ class LoginNotifier extends StateNotifier<LoginState> {
         isLoggedIn: true,
       );
 
+      // Initialize FCM after successful login
+      _initializeFCM();
+
       return user;
     } catch (e) {
       state = state.copyWith(
@@ -56,6 +63,15 @@ class LoginNotifier extends StateNotifier<LoginState> {
         error: ErrorHandler.getErrorTranslationKey(e),
       );
       return null;
+    }
+  }
+
+  void _initializeFCM() {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      FCMService().initialize(apiService);
+    } catch (e) {
+      print('⚠️  Failed to initialize FCM: $e');
     }
   }
 
@@ -76,5 +92,6 @@ final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>((ref) {
   return LoginNotifier(
     sendVerificationCodeUseCase: sendVerificationCodeUseCase,
     verifyPhoneUseCase: verifyPhoneUseCase,
+    ref: ref,
   );
 });

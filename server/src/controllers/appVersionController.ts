@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import AppVersion, { IAppVersion } from '../models/AppVersion';
+import errorLogger from '../services/errorLoggerService';
 
 /**
  * Check if app update is required
@@ -69,7 +70,7 @@ export const checkAppVersion = async (req: Request, res: Response): Promise<void
       }
     });
   } catch (error) {
-    console.error('Error checking app version:', error);
+    errorLogger.error('Error checking app version:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Error checking app version' 
@@ -91,7 +92,7 @@ export const getAllAppVersions = async (req: Request, res: Response): Promise<vo
       data: versions
     });
   } catch (error) {
-    console.error('Error getting app versions:', error);
+    errorLogger.error('Error getting app versions:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Error retrieving app versions' 
@@ -123,7 +124,7 @@ export const getAppVersionById = async (req: Request, res: Response): Promise<vo
       data: version
     });
   } catch (error) {
-    console.error('Error getting app version:', error);
+    errorLogger.error('Error getting app version:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Error retrieving app version' 
@@ -188,7 +189,7 @@ export const createAppVersion = async (req: Request, res: Response): Promise<voi
       data: newVersion
     });
   } catch (error: any) {
-    console.error('Error creating app version:', error);
+    errorLogger.error('Error creating app version:', error);
     
     if (error.code === 11000) {
       res.status(409).json({ 
@@ -272,7 +273,7 @@ export const updateAppVersion = async (req: Request, res: Response): Promise<voi
       data: updatedVersion
     });
   } catch (error: any) {
-    console.error('Error updating app version:', error);
+    errorLogger.error('Error updating app version:', error);
     
     if (error.code === 11000) {
       res.status(409).json({ 
@@ -313,7 +314,7 @@ export const deleteAppVersion = async (req: Request, res: Response): Promise<voi
       message: 'App version deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting app version:', error);
+    errorLogger.error('Error deleting app version:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Error deleting app version' 
@@ -360,7 +361,7 @@ export const toggleAppVersionActive = async (req: Request, res: Response): Promi
       data: version
     });
   } catch (error: any) {
-    console.error('Error toggling app version active status:', error);
+    errorLogger.error('Error toggling app version active status:', error);
     
     if (error.code === 11000) {
       res.status(409).json({ 

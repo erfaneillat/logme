@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { getCompletedStreakDatesInRange } from '../services/streakService';
+import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -22,7 +23,7 @@ export class StreakController {
       const dates = await getCompletedStreakDatesInRange(userId, start, end);
       res.json({ success: true, data: { dates } });
     } catch (error) {
-      console.error('Get streak completions error:', error);
+      errorLogger.error('Get streak completions error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

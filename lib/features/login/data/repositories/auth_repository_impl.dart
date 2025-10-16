@@ -3,14 +3,18 @@ import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/secure_storage.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../../../../services/fcm_service.dart';
+import '../../../../services/api_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final SecureStorage secureStorage;
+  final ApiService apiService;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
     required this.secureStorage,
+    required this.apiService,
   });
 
   @override
@@ -82,6 +86,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
+    // Unregister FCM token before logout
+    try {
+      await FCMService().unregisterToken(apiService);
+    } catch (e) {
+      print('⚠️  Failed to unregister FCM token: $e');
+    }
+    
     await secureStorage.deleteToken();
     await secureStorage.deleteUserData();
     await secureStorage.deletePhone();
