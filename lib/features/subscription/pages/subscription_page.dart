@@ -6,8 +6,8 @@ import 'package:cal_ai/features/subscription/presentation/widgets/subscription_h
 import 'package:cal_ai/features/subscription/presentation/widgets/subscription_hero_section.dart';
 import 'package:cal_ai/features/subscription/presentation/widgets/subscription_pricing_section.dart';
 import 'package:cal_ai/features/subscription/presentation/widgets/purchase_button.dart';
-import 'package:cal_ai/features/subscription/presentation/widgets/lucky_wheel_dialog.dart';
-import 'package:cal_ai/features/subscription/presentation/utils/lucky_wheel_logging.dart';
+// import 'package:cal_ai/features/subscription/presentation/widgets/lucky_wheel_dialog.dart';
+// import 'package:cal_ai/features/subscription/presentation/utils/lucky_wheel_logging.dart';
 import 'package:cal_ai/services/api_service_provider.dart';
 import 'package:cal_ai/services/payment_service.dart';
 import 'package:flutter/material.dart';
@@ -27,18 +27,17 @@ class SubscriptionPage extends HookConsumerWidget {
     final currentTestimonial = useState(0);
     final currentUser = ref.watch(currentUserProvider).value;
 
-    useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        // Check if lucky wheel has been shown before
-        final secureStorage = ref.read(secureStorageProvider);
-        final hasBeenShown = await secureStorage.hasLuckyWheelBeenShown();
-
-        if (!hasBeenShown && context.mounted) {
-          _showLuckyWheelDialog(context, subscriptionNotifier, ref);
-        }
-      });
-      return null;
-    }, const []);
+    // Lucky wheel disabled
+    // useEffect(() {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //     final secureStorage = ref.read(secureStorageProvider);
+    //     final hasBeenShown = await secureStorage.hasLuckyWheelBeenShown();
+    //     if (!hasBeenShown && context.mounted) {
+    //       _showLuckyWheelDialog(context, subscriptionNotifier, ref);
+    //     }
+    //   });
+    //   return null;
+    // }, const []);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
@@ -83,24 +82,22 @@ class SubscriptionPage extends HookConsumerWidget {
     );
   }
 
-  void _showLuckyWheelDialog(
-      BuildContext context, SubscriptionNotifier notifier, WidgetRef ref) {
-    logLuckyWheelView(context);
-
-    final secureStorage = ref.read(secureStorageProvider);
-    secureStorage.setLuckyWheelShown(true);
-
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return LuckyWheelDialog(
-          onClaim: () {
-            notifier.selectPlan(SubscriptionPlan.yearly);
-            Navigator.of(dialogContext).pop();
-          },
-        );
-      },
-    );
-  }
+  // void _showLuckyWheelDialog(
+  //     BuildContext context, SubscriptionNotifier notifier, WidgetRef ref) {
+  //   logLuckyWheelView(context);
+  //   final secureStorage = ref.read(secureStorageProvider);
+  //   secureStorage.setLuckyWheelShown(true);
+  //   showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (dialogContext) {
+  //       return LuckyWheelDialog(
+  //         onClaim: () {
+  //           notifier.selectPlan(SubscriptionPlan.yearly);
+  //           Navigator.of(dialogContext).pop();
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 }
