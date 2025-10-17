@@ -883,5 +883,11 @@
         "new_reply": "New reply to your ticket",
         "status_changed": "Ticket status updated",
         "error_loading": "Failed to load notifications"
+    },
+    "free_tier_limit": {
+        "title": "Free Tier Limit Reached",
+        "message": "You've reached the free tier image analysis limit. Please upgrade to the premium plan to continue using this feature.",
+        "upgrade_button": "Upgrade Now",
+        "learn_more": "Learn More"
     }
 }

@@ -12,6 +12,7 @@ import '../../../features/streak/presentation/providers/streak_providers.dart';
 import '../../../common/widgets/streak_dialog.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:cal_ai/utils/error_handler.dart';
+import '../data/exceptions/free_tier_exceptions.dart';
 
 class DescribeFoodArgs {
   final String? targetDateIso;
@@ -119,6 +120,16 @@ class DescribeFoodPage extends HookConsumerWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('describe_food.canceled'.tr())),
             );
+          } else if (e is FreeTierLimitExceededException) {
+            // Show snackbar with message and navigate to subscription
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(e.message),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+            // Auto-navigate to subscription screen
+            context.push('/subscription');
           } else {
             final errorMessage = ErrorHandler.getGenericErrorMessage(e);
             ScaffoldMessenger.of(context).showSnackBar(

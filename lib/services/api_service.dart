@@ -103,7 +103,8 @@ class ApiService {
       InterceptorsWrapper(
         onError: (error, handler) async {
           final statusCode = error.response?.statusCode;
-          final isAuthError = statusCode == 401 || statusCode == 403;
+          final isAuthError = statusCode ==
+              401; // Only 401 triggers refresh; 403 flows to caller
           final isRefreshCall =
               error.requestOptions.path == ApiConfig.authRefreshToken;
           final alreadyRetried = error.requestOptions.extra['__ret'] == true;

@@ -366,8 +366,10 @@ User feedback: "${userDescription}"
 
 Return the same JSON keys: title (fa-IR), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, items with name (fa-IR), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)).
 Rules:
+- IMPORTANT: If the current title is inaccurate or vague, REPLACE it with a correct and specific Persian title.
 - Strings Persian (fa-IR). Numbers are integers.
 - Ensure calories ≈ protein*4 + carbs*4 + fat*9 (±20%). Prefer adjusting macros first; then calories if needed.
+- Portions default to 1 if unclear.
 - No explanations, no extra keys.`;
 
         const baseParams = {

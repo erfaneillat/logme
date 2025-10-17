@@ -26,7 +26,7 @@ import 'package:cal_ai/features/subscription/presentation/providers/subscription
 import 'package:cal_ai/features/subscription/presentation/utils/color_utils.dart';
 import 'package:cal_ai/features/home/presentation/widgets/home_offer_banner.dart';
 import 'package:cal_ai/features/app_version/presentation/widgets/version_check_wrapper.dart';
-import 'package:cal_ai/features/home/pages/chat_page.dart';
+import '../../food_recognition/data/exceptions/free_tier_exceptions.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -396,6 +396,16 @@ class HomePage extends HookConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('home.analysis_canceled'.tr())),
           );
+        } else if (e is FreeTierLimitExceededException) {
+          // Show snackbar with message and navigate to subscription
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          // Auto-navigate to subscription screen
+          context.push('/subscription');
         } else {
           // Use centralized error handling (includes non-food image detection)
           final errorMessage = ErrorHandler.getGenericErrorMessage(e);

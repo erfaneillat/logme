@@ -87,6 +87,7 @@ class FoodDetailPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final titleState = useState<String>(args.title);
     final portions = useState<double>(args.portions);
     final liked = useState<bool>(args.initialLiked);
     final itemIdState = useState<String?>(args.id);
@@ -162,14 +163,32 @@ class FoodDetailPage extends HookConsumerWidget {
             try {
               final item =
                   log.items.firstWhere((it) => it.id == itemIdState.value);
-              // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
-              // set directly to avoid unwanted rebuilds if unchanged
-              // but useState handles equality so simple assignment is fine
-              // Only update if different
-              // useState provided setter
               if (item.liked != liked.value) {
                 liked.value = item.liked;
               }
+              // Sync macros, portions, and ingredients from server
+              final double p = item.portions <= 0 ? 1.0 : item.portions;
+              if (p != portions.value) {
+                portions.value = p;
+              }
+              final double divisor = p > 0 ? p : 1.0;
+              caloriesState.value =
+                  (item.calories / divisor).round().clamp(0, 100000);
+              proteinGramsState.value =
+                  (item.proteinGrams / divisor).round().clamp(0, 100000);
+              fatGramsState.value =
+                  (item.fatsGrams / divisor).round().clamp(0, 100000);
+              carbsGramsState.value =
+                  (item.carbsGrams / divisor).round().clamp(0, 100000);
+              ingredientsState.value = item.ingredients
+                  .map((ing) => IngredientItem(
+                        name: ing.name,
+                        calories: ing.calories,
+                        proteinGrams: ing.proteinGrams,
+                        fatGrams: ing.fatGrams,
+                        carbsGrams: ing.carbsGrams,
+                      ))
+                  .toList();
             } catch (_) {
               // Item not found for today; keep existing like state
             }
@@ -180,6 +199,46 @@ class FoodDetailPage extends HookConsumerWidget {
       });
       return null;
     }, const []);
+
+    Future<void> _refreshFromServer() async {
+      try {
+        if (itemIdState.value == null || itemIdState.value!.isEmpty) return;
+        final log = await ref
+            .read(logsRemoteDataSourceProvider)
+            .getDailyLog(args.dateIso);
+        dynamic matched;
+        try {
+          matched = log.items.firstWhere((it) => it.id == itemIdState.value);
+        } catch (_) {
+          matched = null;
+        }
+        if (matched != null) {
+          liked.value = matched.liked;
+          final double p = matched.portions <= 0 ? 1.0 : matched.portions;
+          if (p != portions.value) {
+            portions.value = p;
+          }
+          final double divisor = p > 0 ? p : 1.0;
+          caloriesState.value =
+              (matched.calories / divisor).round().clamp(0, 100000);
+          proteinGramsState.value =
+              (matched.proteinGrams / divisor).round().clamp(0, 100000);
+          fatGramsState.value =
+              (matched.fatsGrams / divisor).round().clamp(0, 100000);
+          carbsGramsState.value =
+              (matched.carbsGrams / divisor).round().clamp(0, 100000);
+          ingredientsState.value = matched.ingredients
+              .map((ing) => IngredientItem(
+                    name: ing.name,
+                    calories: ing.calories,
+                    proteinGrams: ing.proteinGrams,
+                    fatGrams: ing.fatGrams,
+                    carbsGrams: ing.carbsGrams,
+                  ))
+              .toList();
+        }
+      } catch (_) {}
+    }
 
     Future<void> _persist() async {
       try {
@@ -195,7 +254,7 @@ class FoodDetailPage extends HookConsumerWidget {
                 UpdateLogItemParams(
                   dateIso: args.dateIso,
                   itemId: itemIdState.value!,
-                  title: args.title,
+                  title: titleState.value,
                   calories: effectiveCalories,
                   carbsGrams: effectiveCarbs,
                   proteinGrams: effectiveProtein,
@@ -221,7 +280,7 @@ class FoodDetailPage extends HookConsumerWidget {
           final created = await ref.read(addLogItemUseCaseProvider).call(
                 AddLogItemParams(
                   dateIso: args.dateIso,
-                  title: args.title,
+                  title: titleState.value,
                   calories: effectiveCalories,
                   carbsGrams: effectiveCarbs,
                   proteinGrams: effectiveProtein,
@@ -247,6 +306,7 @@ class FoodDetailPage extends HookConsumerWidget {
         }
 
         await ref.read(dailyLogControllerProvider.notifier).refresh();
+        await _refreshFromServer();
       } catch (_) {}
     }
 
@@ -1323,7 +1383,7 @@ class FoodDetailPage extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Text(args.title,
+                    Text(titleState.value,
                         style: theme.textTheme.titleLarge
                             ?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 16),
@@ -1521,7 +1581,7 @@ class FoodDetailPage extends HookConsumerWidget {
                           final fixResultArgs = FixResultArgs(
                             id: args.id,
                             dateIso: args.dateIso,
-                            title: args.title,
+                            title: titleState.value,
                             calories: caloriesState.value,
                             proteinGrams: proteinGramsState.value,
                             fatGrams: fatGramsState.value,
@@ -1541,6 +1601,11 @@ class FoodDetailPage extends HookConsumerWidget {
                             final fixedData =
                                 result['data'] as Map<String, dynamic>?;
                             if (fixedData != null) {
+                              final String? newTitle =
+                                  (fixedData['title'] as String?)?.trim();
+                              if (newTitle != null && newTitle.isNotEmpty) {
+                                titleState.value = newTitle;
+                              }
                               caloriesState.value =
                                   fixedData['calories'] ?? caloriesState.value;
                               proteinGramsState.value =

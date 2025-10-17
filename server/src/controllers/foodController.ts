@@ -7,6 +7,7 @@ import { updateStreakIfEligible, updateStreakOnFirstMeal } from '../services/str
 import sharp from 'sharp';
 import path from 'path';
 import errorLogger from '../services/errorLoggerService';
+import { ImageAnalysisLimitService } from '../services/imageAnalysisLimitService';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -26,6 +27,50 @@ export class FoodController {
         if (!file) {
             res.status(400).json({ success: false, error: 'Image file is required', timestamp: new Date() });
             return;
+        }
+
+        const userId = req.user?.userId;
+
+        // Get today's date in YYYY-MM-DD format
+        const bodyDate = (req.body as any)?.date as string | undefined;
+        let targetDate: string;
+        if (bodyDate && typeof bodyDate === 'string') {
+            targetDate = bodyDate.slice(0, 10);
+        } else {
+            // Local date in server timezone
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            targetDate = `${y}-${m}-${d}`;
+        }
+
+        // Check daily analysis limit for free users
+        if (userId) {
+            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate);
+
+            if (!limitCheck.canAnalyze) {
+                const tomorrowDate = ImageAnalysisLimitService.getTomorrowDateFormatted();
+                // Detect language from Accept-Language header or default to English
+                const lang = req.headers['accept-language']?.includes('fa') ? 'fa' : 'en';
+                const message = lang === 'fa'
+                    ? ImageAnalysisLimitService.getPersianErrorMessage()
+                    : ImageAnalysisLimitService.getEnglishErrorMessage(tomorrowDate);
+
+                res.status(429).json({
+                    success: false,
+                    error: `free_tier_limit_reached`,
+                    message: message,
+                    messageFa: ImageAnalysisLimitService.getPersianErrorMessage(),
+                    messageEn: ImageAnalysisLimitService.getEnglishErrorMessage(tomorrowDate),
+                    needsSubscription: true,
+                    nextResetDate: tomorrowDate,
+                    nextResetDateJalaliFa: require('../utils/jalali_date').getTomorrowJalaliPersian(),
+                    serverTimeFa: require('../utils/jalali_date').getCurrentTimePersian(),
+                    timestamp: new Date()
+                });
+                return;
+            }
         }
 
         // Setup abort handling: if client disconnects, abort downstream work
@@ -117,20 +162,7 @@ export class FoodController {
 
         // Save to daily logs (upsert) using provided date (YYYY-MM-DD),
         // falling back to server local date if not provided
-        const userId = req.user?.userId;
         if (userId) {
-            const bodyDate = (req.body as any)?.date as string | undefined;
-            let targetDate: string;
-            if (bodyDate && typeof bodyDate === 'string') {
-                targetDate = bodyDate.slice(0, 10);
-            } else {
-                // Local date in server timezone
-                const now = new Date();
-                const y = now.getFullYear();
-                const m = String(now.getMonth() + 1).padStart(2, '0');
-                const d = String(now.getDate()).padStart(2, '0');
-                targetDate = `${y}-${m}-${d}`;
-            }
             const todayIso = targetDate;
             const timeIso = new Date().toISOString();
 
@@ -184,6 +216,9 @@ export class FoodController {
                     },
                 }
             );
+
+            // Increment analysis count for the day
+            await ImageAnalysisLimitService.incrementAnalysisCount(userId, todayIso);
 
             // Check if this is the first meal of the day and update streak accordingly
             try {
@@ -262,25 +297,56 @@ export class FoodController {
             return;
         }
 
+        const userId = req.user?.userId;
+
+        // Get today's date in YYYY-MM-DD format
+        const bodyDate = (req.body as any)?.date as string | undefined;
+        let targetDate: string;
+        if (bodyDate && typeof bodyDate === 'string') {
+            targetDate = bodyDate.slice(0, 10);
+        } else {
+            // Local date in server timezone
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            targetDate = `${y}-${m}-${d}`;
+        }
+
+        // Check daily analysis limit for free users
+        if (userId) {
+            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate);
+
+            if (!limitCheck.canAnalyze) {
+                const tomorrowDate = ImageAnalysisLimitService.getTomorrowDateFormatted();
+                // Detect language from Accept-Language header or default to English
+                const lang = req.headers['accept-language']?.includes('fa') ? 'fa' : 'en';
+                const message = lang === 'fa'
+                    ? ImageAnalysisLimitService.getPersianErrorMessage()
+                    : ImageAnalysisLimitService.getEnglishErrorMessage(tomorrowDate);
+
+                res.status(429).json({
+                    success: false,
+                    error: `free_tier_limit_reached`,
+                    message: message,
+                    messageFa: ImageAnalysisLimitService.getPersianErrorMessage(),
+                    messageEn: ImageAnalysisLimitService.getEnglishErrorMessage(tomorrowDate),
+                    needsSubscription: true,
+                    nextResetDate: tomorrowDate,
+                    nextResetDateJalaliFa: require('../utils/jalali_date').getTomorrowJalaliPersian(),
+                    serverTimeFa: require('../utils/jalali_date').getCurrentTimePersian(),
+                    timestamp: new Date()
+                });
+                return;
+            }
+        }
+
         try {
             const analysis = await this.service.analyzeFromDescription(description.trim());
             const analysisData = analysis.data;
 
             // Get the user ID from the authenticated request
-            const userId = req.user?.userId;
             if (userId) {
-                const bodyDate = (req.body as any)?.date as string | undefined;
-                let targetDate: string;
-                if (bodyDate && typeof bodyDate === 'string') {
-                    targetDate = bodyDate.slice(0, 10);
-                } else {
-                    // Local date in server timezone
-                    const now = new Date();
-                    const y = now.getFullYear();
-                    const m = String(now.getMonth() + 1).padStart(2, '0');
-                    const d = String(now.getDate()).padStart(2, '0');
-                    targetDate = `${y}-${m}-${d}`;
-                }
                 const todayIso = targetDate;
                 const timeIso = new Date().toISOString();
 
@@ -326,6 +392,9 @@ export class FoodController {
                         },
                     }
                 );
+
+                // Increment analysis count for the day
+                await ImageAnalysisLimitService.incrementAnalysisCount(userId, todayIso);
 
                 // Check if this is the first meal of the day and update streak accordingly
                 try {

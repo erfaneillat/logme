@@ -241,10 +241,24 @@ export class LogController {
             }
 
             const sanitizedDate = (date as string).slice(0, 10);
-            const cals = Math.max(0, Math.round(Number(calories ?? 0)));
-            const carbs = Math.max(0, Math.round(Number(carbsGrams ?? 0)));
-            const protein = Math.max(0, Math.round(Number(proteinGrams ?? 0)));
-            const fats = Math.max(0, Math.round(Number(fatsGrams ?? 0)));
+            // If ingredients are provided, derive item macros from their sum; otherwise use provided totals
+            const rawIngredients = Array.isArray(ingredients) ? ingredients : [];
+            const summedFromIngredients = rawIngredients.reduce((acc: any, ing: any) => {
+                const c = Math.max(0, Math.round(Number(ing?.calories ?? 0)));
+                const cb = Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0)));
+                const pr = Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0)));
+                const ft = Math.max(0, Math.round(Number(ing?.fatGrams ?? 0)));
+                acc.calories += c;
+                acc.carbsGrams += cb;
+                acc.proteinGrams += pr;
+                acc.fatsGrams += ft;
+                return acc;
+            }, { calories: 0, carbsGrams: 0, proteinGrams: 0, fatsGrams: 0 });
+
+            const cals = Math.max(0, Math.round(Number((summedFromIngredients.calories || 0) || (calories ?? 0))));
+            const carbs = Math.max(0, Math.round(Number((summedFromIngredients.carbsGrams || 0) || (carbsGrams ?? 0))));
+            const protein = Math.max(0, Math.round(Number((summedFromIngredients.proteinGrams || 0) || (proteinGrams ?? 0))));
+            const fats = Math.max(0, Math.round(Number((summedFromIngredients.fatsGrams || 0) || (fatsGrams ?? 0))));
             const hsRaw = Number(healthScore ?? 0);
             const hs = isFinite(hsRaw) ? Math.max(0, Math.min(10, Math.round(hsRaw))) : 0;
             const portionsSanitized = Math.max(1, Math.round(Number(portions ?? 1)));
@@ -454,10 +468,24 @@ export class LogController {
             }
 
             // Sanitize incoming values
-            const cals = Math.max(0, Math.round(Number(calories ?? matchedItem.calories ?? 0)));
-            const carbs = Math.max(0, Math.round(Number(carbsGrams ?? matchedItem.carbsGrams ?? 0)));
-            const protein = Math.max(0, Math.round(Number(proteinGrams ?? matchedItem.proteinGrams ?? 0)));
-            const fats = Math.max(0, Math.round(Number(fatsGrams ?? matchedItem.fatsGrams ?? 0)));
+            // When editing: if ingredients provided, recompute item macros from them; else use provided or fallback to existing
+            const editIngredients = Array.isArray(ingredients) ? ingredients : undefined;
+            const summedFromEditIngredients = (editIngredients ?? []).reduce((acc: any, ing: any) => {
+                const c = Math.max(0, Math.round(Number(ing?.calories ?? 0)));
+                const cb = Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0)));
+                const pr = Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0)));
+                const ft = Math.max(0, Math.round(Number(ing?.fatGrams ?? 0)));
+                acc.calories += c;
+                acc.carbsGrams += cb;
+                acc.proteinGrams += pr;
+                acc.fatsGrams += ft;
+                return acc;
+            }, { calories: 0, carbsGrams: 0, proteinGrams: 0, fatsGrams: 0 });
+
+            const cals = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.calories : (calories ?? matchedItem.calories ?? 0))));
+            const carbs = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.carbsGrams : (carbsGrams ?? matchedItem.carbsGrams ?? 0))));
+            const protein = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.proteinGrams : (proteinGrams ?? matchedItem.proteinGrams ?? 0))));
+            const fats = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.fatsGrams : (fatsGrams ?? matchedItem.fatsGrams ?? 0))));
             const hsRaw = healthScore ?? matchedItem.healthScore;
             const hs = hsRaw == null ? undefined : Math.max(0, Math.min(10, Math.round(Number(hsRaw))));
             const portionsSanitized = portions == null
