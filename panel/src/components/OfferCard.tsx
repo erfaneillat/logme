@@ -1,4 +1,5 @@
 import { Offer } from '../types/offer';
+import { formatJalaliDate } from '../utils/date';
 
 interface OfferCardProps {
     offer: Offer;
@@ -8,20 +9,12 @@ interface OfferCardProps {
 }
 
 const OfferCard = ({ offer, onEdit, onToggleStatus, onDelete }: OfferCardProps) => {
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    };
 
     return (
-        <div 
-            className={`group relative overflow-hidden rounded-2xl border p-6 shadow-sm transition-all duration-300 hover:shadow-xl ${
-                offer.isActive ? 'border-gray-200 bg-gradient-to-br from-white to-red-50/30' : 'border-gray-300 bg-gray-50 opacity-75'
-            }`}
-            style={offer.isActive ? { 
+        <div
+            className={`group relative overflow-hidden rounded-2xl border p-6 shadow-sm transition-all duration-300 hover:shadow-xl ${offer.isActive ? 'border-gray-200 bg-gradient-to-br from-white to-red-50/30' : 'border-gray-300 bg-gray-50 opacity-75'
+                }`}
+            style={offer.isActive ? {
                 borderColor: offer.display.backgroundColor + '40',
                 boxShadow: `0 4px 12px ${offer.display.backgroundColor}20`
             } : {}}
@@ -39,11 +32,11 @@ const OfferCard = ({ offer, onEdit, onToggleStatus, onDelete }: OfferCardProps) 
 
             <div className="relative">
                 {/* Display Preview */}
-                <div 
+                <div
                     className="mb-4 rounded-lg p-4 shadow-inner"
-                    style={{ 
+                    style={{
                         backgroundColor: offer.display.backgroundColor,
-                        color: offer.display.textColor 
+                        color: offer.display.textColor
                     }}
                 >
                     <div className="flex items-start justify-between">
@@ -70,25 +63,24 @@ const OfferCard = ({ offer, onEdit, onToggleStatus, onDelete }: OfferCardProps) 
                 <div className="mb-4 space-y-2 text-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-gray-600">Type:</span>
-                        <span className={`rounded-full px-3 py-1 text-xs font-bold ${
-                            offer.offerType === 'percentage' ? 'bg-green-100 text-green-700' :
+                        <span className={`rounded-full px-3 py-1 text-xs font-bold ${offer.offerType === 'percentage' ? 'bg-green-100 text-green-700' :
                             offer.offerType === 'fixed_amount' ? 'bg-blue-100 text-blue-700' :
-                            'bg-purple-100 text-purple-700'
-                        }`}>
+                                'bg-purple-100 text-purple-700'
+                            }`}>
                             {offer.offerType === 'percentage' && offer.discountPercentage ? `${offer.discountPercentage}% OFF` :
-                             offer.offerType === 'fixed_amount' && offer.discountAmount ? `${offer.discountAmount.toLocaleString()} Toman` :
-                             offer.offerType.toUpperCase()}
+                                offer.offerType === 'fixed_amount' && offer.discountAmount ? `${offer.discountAmount.toLocaleString()} Toman` :
+                                    offer.offerType.toUpperCase()}
                         </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                         <span className="text-gray-600">Target:</span>
                         <span className="font-medium text-gray-900">
                             {offer.targetUserType === 'all' ? 'All Users' :
-                             offer.targetUserType === 'new' ? 'New Users' :
-                             offer.targetUserType === 'old' ? 'Old Users' :
-                             offer.targetUserType === 'expired' ? 'Expired Subs' :
-                             'Active Subs'}
+                                offer.targetUserType === 'new' ? 'New Users' :
+                                    offer.targetUserType === 'old' ? 'Old Users' :
+                                        offer.targetUserType === 'expired' ? 'Expired Subs' :
+                                            'Active Subs'}
                         </span>
                     </div>
 
@@ -97,13 +89,13 @@ const OfferCard = ({ offer, onEdit, onToggleStatus, onDelete }: OfferCardProps) 
                             {offer.startDate && (
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-500">Start:</span>
-                                    <span>{formatDate(offer.startDate)}</span>
+                                    <span>{formatJalaliDate(offer.startDate)}</span>
                                 </div>
                             )}
                             {offer.endDate && (
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-500">End:</span>
-                                    <span>{formatDate(offer.endDate)}</span>
+                                    <span>{formatJalaliDate(offer.endDate)}</span>
                                 </div>
                             )}
                         </div>
@@ -152,11 +144,10 @@ const OfferCard = ({ offer, onEdit, onToggleStatus, onDelete }: OfferCardProps) 
                     </button>
                     <button
                         onClick={onToggleStatus}
-                        className={`rounded-xl px-4 py-3 font-semibold transition-all duration-200 active:scale-95 ${
-                            offer.isActive
-                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className={`rounded-xl px-4 py-3 font-semibold transition-all duration-200 active:scale-95 ${offer.isActive
+                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
                     >
                         {offer.isActive ? '✓' : '✕'}
                     </button>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { userService } from '../services/user.service';
 import type { User } from '../types/user';
+import { formatJalaliDate, formatJalaliTime } from '../utils/date';
 
 const UsersPage = () => {
   const navigate = useNavigate();
@@ -25,10 +26,10 @@ const UsersPage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await userService.list({ 
-          page, 
-          limit, 
-          search: search || undefined, 
+        const res = await userService.list({
+          page,
+          limit,
+          search: search || undefined,
           sort: '-createdAt',
           isAdmin: isAdmin === '' ? undefined : isAdmin === 'true',
           isPhoneVerified: isPhoneVerified === '' ? undefined : isPhoneVerified === 'true',
@@ -64,7 +65,7 @@ const UsersPage = () => {
 
   const handleDelete = async () => {
     if (!deleteModalUser) return;
-    
+
     setDeleting(true);
     try {
       const res = await userService.delete(deleteModalUser._id);
@@ -258,13 +259,12 @@ const UsersPage = () => {
                       {/* User Info */}
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold text-white ${
-                            u.hasActiveSubscription 
-                              ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300' 
-                              : u.isAdmin 
-                                ? 'bg-gradient-to-br from-purple-500 to-purple-600' 
+                          <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold text-white ${u.hasActiveSubscription
+                              ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
+                              : u.isAdmin
+                                ? 'bg-gradient-to-br from-purple-500 to-purple-600'
                                 : 'bg-gradient-to-br from-gray-400 to-gray-500'
-                          }`}>
+                            }`}>
                             {u.name ? u.name.charAt(0).toUpperCase() : u.phone.charAt(0)}
                           </div>
                           <div>
@@ -344,8 +344,8 @@ const UsersPage = () => {
                       {/* Created Date */}
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-600">
-                          <p className="font-medium">{new Date(u.createdAt).toLocaleDateString()}</p>
-                          <p className="text-xs text-gray-500">{new Date(u.createdAt).toLocaleTimeString()}</p>
+                          <p className="font-medium">{formatJalaliDate(u.createdAt)}</p>
+                          <p className="text-xs text-gray-500">{formatJalaliTime(u.createdAt)}</p>
                         </div>
                       </td>
 
@@ -461,11 +461,10 @@ const UsersPage = () => {
               {/* User Info */}
               <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
                 <div className="flex items-center space-x-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold text-white ${
-                    deleteModalUser.hasActiveSubscription 
-                      ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300' 
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold text-white ${deleteModalUser.hasActiveSubscription
+                      ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
                       : 'bg-gradient-to-br from-gray-400 to-gray-500'
-                  }`}>
+                    }`}>
                     {deleteModalUser.name ? deleteModalUser.name.charAt(0).toUpperCase() : deleteModalUser.phone.charAt(0)}
                   </div>
                   <div>

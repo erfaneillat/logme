@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Layout from '../components/Layout';
 import { subscriptionService } from '../services/subscription.service';
 import type { Subscription } from '../types/subscription';
+import { formatJalaliDate } from '../utils/date';
 
 const SubscriptionsPage = () => {
   const [items, setItems] = useState<Subscription[]>([]);
@@ -298,12 +299,12 @@ const SubscriptionsPage = () => {
                           <div className="space-y-1 text-xs">
                             <div>
                               <span className="font-medium text-gray-500">Start:</span>
-                              <span className="ml-1 text-gray-900">{new Date(sub.startDate).toLocaleDateString()}</span>
+                              <span className="ml-1 text-gray-900">{formatJalaliDate(sub.startDate)}</span>
                             </div>
                             <div>
                               <span className="font-medium text-gray-500">Expiry:</span>
                               <span className={`ml-1 font-semibold ${expired ? 'text-red-600' : 'text-gray-900'}`}>
-                                {new Date(sub.expiryDate).toLocaleDateString()}
+                                {formatJalaliDate(sub.expiryDate)}
                               </span>
                             </div>
                           </div>

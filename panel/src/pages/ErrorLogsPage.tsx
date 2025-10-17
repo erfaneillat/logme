@@ -2,6 +2,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { useEffect, useState } from 'react';
 import { errorLogService, ErrorLogItem, ErrorLogStats } from '../services/errorLog.service';
+import { formatJalaliDateTime } from '../utils/date';
 
 const ErrorLogsPage = () => {
     const { token } = useAuth();
@@ -61,15 +62,7 @@ const ErrorLogsPage = () => {
     }, [token, page, filterLevel]);
 
     const formatDate = (isoString: string) => {
-        const date = new Date(isoString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-        });
+        return formatJalaliDateTime(isoString);
     };
 
     const getLevelColor = (level: string) => {
@@ -189,51 +182,46 @@ const ErrorLogsPage = () => {
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={() => { setFilterLevel('all'); setPage(1); }}
-                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                filterLevel === 'all'
+                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterLevel === 'all'
                                     ? 'bg-black text-white shadow-lg'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
+                                }`}
                         >
                             All
                         </button>
                         <button
                             onClick={() => { setFilterLevel('INFO'); setPage(1); }}
-                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                filterLevel === 'INFO'
+                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterLevel === 'INFO'
                                     ? 'bg-blue-600 text-white shadow-lg'
                                     : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                            }`}
+                                }`}
                         >
                             ℹ️ Info
                         </button>
                         <button
                             onClick={() => { setFilterLevel('WARNING'); setPage(1); }}
-                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                filterLevel === 'WARNING'
+                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterLevel === 'WARNING'
                                     ? 'bg-yellow-600 text-white shadow-lg'
                                     : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                            }`}
+                                }`}
                         >
                             ⚠️ Warning
                         </button>
                         <button
                             onClick={() => { setFilterLevel('ERROR'); setPage(1); }}
-                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                filterLevel === 'ERROR'
+                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterLevel === 'ERROR'
                                     ? 'bg-red-600 text-white shadow-lg'
                                     : 'bg-red-100 text-red-700 hover:bg-red-200'
-                            }`}
+                                }`}
                         >
                             ❌ Error
                         </button>
                         <button
                             onClick={() => { setFilterLevel('CRITICAL'); setPage(1); }}
-                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                filterLevel === 'CRITICAL'
+                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterLevel === 'CRITICAL'
                                     ? 'bg-purple-600 text-white shadow-lg'
                                     : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                            }`}
+                                }`}
                         >
                             🔥 Critical
                         </button>

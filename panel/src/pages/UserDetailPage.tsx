@@ -8,6 +8,7 @@ import { referralLogService } from '../services/referralLog.service';
 import { useAuth } from '../contexts/AuthContext';
 import type { User } from '../types/user';
 import type { ReferralLog } from '../types/referralLog';
+import { formatJalaliDate, formatJalaliTime } from '../utils/date';
 
 const UserDetailPage = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -302,14 +303,14 @@ const UserDetailPage = () => {
               <div className="space-y-2 text-sm text-gray-600">
                 <div>
                   <p className="font-semibold text-gray-900">Joined</p>
-                  <p>{new Date(user.createdAt).toLocaleDateString()}</p>
-                  <p className="text-xs">{new Date(user.createdAt).toLocaleTimeString()}</p>
+                  <p>{formatJalaliDate(user.createdAt)}</p>
+                  <p className="text-xs">{formatJalaliTime(user.createdAt)}</p>
                 </div>
                 {user.lastActivity && (
                   <div>
                     <p className="font-semibold text-gray-900">Last Activity</p>
-                    <p>{new Date(user.lastActivity).toLocaleDateString()}</p>
-                    <p className="text-xs">{new Date(user.lastActivity).toLocaleTimeString()}</p>
+                    <p>{formatJalaliDate(user.lastActivity)}</p>
+                    <p className="text-xs">{formatJalaliTime(user.lastActivity)}</p>
                   </div>
                 )}
               </div>
@@ -466,8 +467,8 @@ const UserDetailPage = () => {
                       <tr key={log._id} className="transition-colors hover:bg-gray-50">
                         <td className="px-6 py-4">
                           <div className="text-sm text-gray-600">
-                            <p className="font-medium">{new Date(log.createdAt).toLocaleDateString()}</p>
-                            <p className="text-xs text-gray-500">{new Date(log.createdAt).toLocaleTimeString()}</p>
+                            <p className="font-medium">{formatJalaliDate(log.createdAt)}</p>
+                            <p className="text-xs text-gray-500">{formatJalaliTime(log.createdAt)}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -616,8 +617,8 @@ const UserDetailPage = () => {
                     <tr key={log._id} className="transition-colors hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-600">
-                          <p className="font-medium">{new Date(log.timeIso).toLocaleDateString()}</p>
-                          <p className="text-xs text-gray-500">{new Date(log.timeIso).toLocaleTimeString()}</p>
+                          <p className="font-medium">{formatJalaliDate(log.timeIso)}</p>
+                          <p className="text-xs text-gray-500">{formatJalaliTime(log.timeIso)}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { userService } from '../services/user.service';
 import type { DeletedUser } from '../types/user';
+import { formatJalaliDate, formatJalaliTime } from '../utils/date';
 
 const DeletedUsersPage = () => {
     const navigate = useNavigate();
@@ -253,10 +254,10 @@ const DeletedUsersPage = () => {
                                                     <div className="flex items-center space-x-2">
                                                         <span className="text-xs font-semibold text-gray-700">By:</span>
                                                         <span className={`inline-flex items-center rounded px-2 py-1 text-xs font-bold ${u.deletedBy === 'admin'
-                                                                ? 'bg-orange-100 text-orange-800'
-                                                                : u.deletedBy === 'system'
-                                                                    ? 'bg-blue-100 text-blue-800'
-                                                                    : 'bg-gray-100 text-gray-800'
+                                                            ? 'bg-orange-100 text-orange-800'
+                                                            : u.deletedBy === 'system'
+                                                                ? 'bg-blue-100 text-blue-800'
+                                                                : 'bg-gray-100 text-gray-800'
                                                             }`}>
                                                             {u.deletedBy === 'admin' && '👨‍💼 Admin'}
                                                             {u.deletedBy === 'user' && '👤 User'}
@@ -301,8 +302,8 @@ const DeletedUsersPage = () => {
                                             {/* Deleted Date */}
                                             <td className="px-6 py-4">
                                                 <div className="text-sm text-gray-600">
-                                                    <p className="font-medium">{new Date(u.deletedAt).toLocaleDateString()}</p>
-                                                    <p className="text-xs text-gray-500">{new Date(u.deletedAt).toLocaleTimeString()}</p>
+                                                    <p className="font-medium">{formatJalaliDate(u.deletedAt)}</p>
+                                                    <p className="text-xs text-gray-500">{formatJalaliTime(u.deletedAt)}</p>
                                                 </div>
                                             </td>
                                         </tr>

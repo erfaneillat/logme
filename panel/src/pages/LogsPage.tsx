@@ -2,6 +2,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { useEffect, useState } from 'react';
 import { logsService, LogItem, LogStats } from '../services/logs.service';
+import { formatJalaliDateTime } from '../utils/date';
 
 const LogsPage = () => {
     const { token } = useAuth();
@@ -59,14 +60,7 @@ const LogsPage = () => {
     };
 
     const formatDate = (isoString: string) => {
-        const date = new Date(isoString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        return formatJalaliDateTime(isoString);
     };
 
     const getHealthScoreColor = (score?: number) => {
@@ -169,31 +163,28 @@ const LogsPage = () => {
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => { setFilterType('all'); setPage(1); }}
-                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                    filterType === 'all'
+                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterType === 'all'
                                         ? 'bg-black text-white shadow-lg'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 All
                             </button>
                             <button
                                 onClick={() => { setFilterType('image'); setPage(1); }}
-                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                    filterType === 'image'
+                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterType === 'image'
                                         ? 'bg-black text-white shadow-lg'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Images
                             </button>
                             <button
                                 onClick={() => { setFilterType('text'); setPage(1); }}
-                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                                    filterType === 'text'
+                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterType === 'text'
                                         ? 'bg-black text-white shadow-lg'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Text
                             </button>
@@ -256,9 +247,8 @@ const LogsPage = () => {
                                                     <p className="font-semibold text-black">{log.userName || 'Unknown User'}</p>
                                                     <p className="text-sm text-gray-500">{log.userPhone}</p>
                                                 </div>
-                                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                                    log.type === 'image' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
-                                                }`}>
+                                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${log.type === 'image' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                                                    }`}>
                                                     {log.type === 'image' ? '📷 Image' : '📝 Text'}
                                                 </span>
                                             </div>
