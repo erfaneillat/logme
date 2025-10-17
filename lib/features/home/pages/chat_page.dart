@@ -28,11 +28,11 @@ class ChatPage extends StatelessWidget {
                       ),
                 ),
               ),
-              const SizedBox(height: 32),
+              // const SizedBox(height: 32),
               // Middle section with layered images
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildStackedImages(context),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Image.asset('assets/images/coach.jpg'),
               ),
               const SizedBox(height: 32),
               // Bottom text section

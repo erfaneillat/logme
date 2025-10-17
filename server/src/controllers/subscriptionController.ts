@@ -79,23 +79,58 @@ export class SubscriptionController {
                 // Allow same user to reactivate if subscription is inactive (for testing/renewals)
                 const isSameUser = existingSubscription.userId.toString() === userId.toString();
                 const isInactive = !existingSubscription.isActive;
-                
+                const allowCrossUserTokenReuse = process.env.ALLOW_CROSS_USER_TOKEN_REUSE === 'true';
+
                 if (!isSameUser) {
-                    // Different user trying to use same token - fraud attempt
-                    errorLogger.error('🚨 Fraud attempt: Different user trying to use same token:', {
-                        purchaseToken: purchaseToken.substring(0, 10) + '...',
-                        existingUserId: existingSubscription.userId,
-                        currentUserId: userId,
-                    });
-                    PurchaseVerificationService.recordAttempt(userId, false);
-                    res.status(400).json({
-                        success: false,
-                        message: 'Purchase token already used',
-                    });
-                    return;
+                    if (allowCrossUserTokenReuse) {
+                        // Optionally transfer: deactivate previous owner's active subscription tied to this token
+                        if (!isInactive) {
+                            try {
+                                await Subscription.updateMany(
+                                    { purchaseToken, isActive: true },
+                                    { $set: { isActive: false, autoRenew: false } }
+                                );
+                                console.warn('🛑 Deactivated previous active subscription before cross-user transfer (env enabled):', {
+                                    purchaseToken: purchaseToken.substring(0, 10) + '...',
+                                    previousUserId: existingSubscription.userId,
+                                    newUserId: userId,
+                                });
+                            } catch (deactivateErr) {
+                                errorLogger.error('Failed to deactivate previous active subscription during cross-user transfer:', deactivateErr);
+                                PurchaseVerificationService.recordAttempt(userId, false);
+                                res.status(500).json({
+                                    success: false,
+                                    message: 'Internal server error',
+                                });
+                                return;
+                            }
+                        } else {
+                            console.warn('🔁 Allowing cross-user token reuse for inactive subscription (env enabled):', {
+                                purchaseToken: purchaseToken.substring(0, 10) + '...',
+                                existingUserId: existingSubscription.userId,
+                                currentUserId: userId,
+                            });
+                        }
+                        // proceed and allow creation below
+                    } else {
+                        // Different user trying to use same token - fraud attempt
+                        errorLogger.error('🚨 Fraud attempt: Different user trying to use same token:', {
+                            purchaseToken: purchaseToken.substring(0, 10) + '...',
+                            existingUserId: existingSubscription.userId,
+                            currentUserId: userId,
+                            isInactive,
+                            allowCrossUserTokenReuse,
+                        });
+                        PurchaseVerificationService.recordAttempt(userId, false);
+                        res.status(400).json({
+                            success: false,
+                            message: 'Purchase token already used',
+                        });
+                        return;
+                    }
                 }
-                
-                if (!isInactive) {
+
+                if (isSameUser && !isInactive) {
                     // Same user, but subscription is still active
                     console.warn('⚠️ Purchase token already used for active subscription:', {
                         purchaseToken: purchaseToken.substring(0, 10) + '...',
@@ -110,12 +145,14 @@ export class SubscriptionController {
                     });
                     return;
                 }
-                
-                // Same user, inactive subscription - allow reactivation
-                console.log('♻️ Reactivating subscription for same user:', {
+
+                // Allowed reactivation (same user inactive) or allowed transfer (inactive + env enabled)
+                console.log('♻️ Reactivating subscription:', {
                     purchaseToken: purchaseToken.substring(0, 10) + '...',
                     userId,
+                    previousUserId: existingSubscription.userId,
                     previousExpiryDate: existingSubscription.expiryDate,
+                    crossUser: !isSameUser,
                 });
             }
 
@@ -181,7 +218,7 @@ export class SubscriptionController {
             });
 
             await subscription.save();
-            
+
             if (existingSubscription) {
                 console.log('✅ New subscription created (reactivation):', {
                     subscriptionId: subscription._id,
@@ -771,11 +808,11 @@ export class SubscriptionController {
                             as: 'user',
                         },
                     },
-                    { 
-                        $unwind: { 
+                    {
+                        $unwind: {
                             path: '$user',
-                            preserveNullAndEmptyArrays: true 
-                        } 
+                            preserveNullAndEmptyArrays: true
+                        }
                     },
                     {
                         $match: {
