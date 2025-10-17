@@ -26,6 +26,7 @@ import 'package:cal_ai/features/subscription/presentation/providers/subscription
 import 'package:cal_ai/features/subscription/presentation/utils/color_utils.dart';
 import 'package:cal_ai/features/home/presentation/widgets/home_offer_banner.dart';
 import 'package:cal_ai/features/app_version/presentation/widgets/version_check_wrapper.dart';
+import 'package:cal_ai/features/home/pages/chat_page.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -85,224 +86,241 @@ class HomePage extends HookConsumerWidget {
       child: Scaffold(
         extendBody: true,
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final parentContext = context; // preserve a valid context
-          showModalBottomSheet(
-            context: parentContext,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (sheetContext) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFFF8F9FA),
-                      Color(0xFFFFFFFF),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Drag handle
-                        Container(
-                          width: 40,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 24),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        // Header section
-                        Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.restaurant_menu,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'home.quick_add_title'.tr(),
-                              style: Theme.of(parentContext)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'home.quick_add_subtitle'.tr(),
-                              style: Theme.of(parentContext)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    color: Colors.black54,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-                        // Action buttons grid
-                        GridView.count(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: 1.1,
-                          children: [
-                            _buildActionCard(
-                              context: parentContext,
-                              icon: Icons.camera_alt,
-                              title: 'home.camera'.tr(),
-                              subtitle: 'home.camera_desc'.tr(),
-                              color: const Color(0xFF4CAF50),
-                              onTap: () async {
-                                Navigator.of(sheetContext).pop();
-                                await _pickAndUpload(
-                                    parentContext, ref, ImageSource.camera);
-                              },
-                            ),
-                            _buildActionCard(
-                              context: parentContext,
-                              icon: Icons.photo_library,
-                              title: 'home.gallery'.tr(),
-                              subtitle: 'home.gallery_desc'.tr(),
-                              color: const Color(0xFF2196F3),
-                              onTap: () async {
-                                Navigator.of(sheetContext).pop();
-                                await _pickAndUpload(
-                                    parentContext, ref, ImageSource.gallery);
-                              },
-                            ),
-                            _buildActionCard(
-                              context: parentContext,
-                              icon: Icons.edit_note,
-                              title: 'home.describe_food'.tr(),
-                              subtitle: 'home.describe_food_desc'.tr(),
-                              color: const Color(0xFFFF9800),
-                              onTap: () {
-                                Navigator.of(sheetContext).pop();
-                                parentContext.pushNamed('describe-food');
-                              },
-                            ),
-                            _buildActionCard(
-                              context: parentContext,
-                              icon: Icons.fitness_center,
-                              title: 'home.add_exercise'.tr(),
-                              subtitle: 'home.add_exercise_desc'.tr(),
-                              color: const Color(0xFF9C27B0),
-                              onTap: () {
-                                Navigator.of(sheetContext).pop();
-                                parentContext.pushNamed('add-exercise');
-                              },
-                            ),
-                            _buildActionCard(
-                              context: parentContext,
-                              icon: Icons.favorite,
-                              title: 'home.favorites'.tr(),
-                              subtitle: 'home.favorites_desc'.tr(),
-                              color: const Color(0xFFE91E63),
-                              onTap: () {
-                                Navigator.of(sheetContext).pop();
-                                context.pushNamed('favorites');
-                              },
-                            ),
-                          ],
-                        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final parentContext = context; // preserve a valid context
+            showModalBottomSheet(
+              context: parentContext,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (sheetContext) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFFF8F9FA),
+                        Color(0xFFFFFFFF),
                       ],
                     ),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(24)),
                   ),
-                ),
-              );
-            },
-          );
-        },
-        tooltip: 'home.add'.tr(),
-        backgroundColor: Colors.black,
-        heroTag: 'home_fab',
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      body: Stack(
-        children: [
-          _buildTopGradientBackground(context),
-          _buildStatusBarOverlay(context, ref),
-          SafeArea(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                // Refresh daily logs
-                await ref.read(dailyLogControllerProvider.notifier).refresh();
-                // Refresh remaining calories, current user (streak), and streak completions
-                ref.invalidate(dailyRemainingProvider);
-                ref.invalidate(currentUserProvider);
-                ref.invalidate(streakWeeklyCompletionsProvider);
-                await Future.wait([
-                  ref.read(dailyRemainingProvider.future),
-                  ref.read(currentUserProvider.future),
-                  ref.read(streakWeeklyCompletionsProvider.future),
-                ]);
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(top: 0, bottom: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Full-width offer banner at the very top
-                    _buildOfferBanner(context, ref),
-                    // Rest of the content with horizontal padding
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const SizedBox(height: 12),
-                          _buildHeader(context, ref),
-                          const SizedBox(height: 12),
-                          _buildDateStrip(context, ref, dateScrollController),
-                          const SizedBox(height: 16),
-                          _buildCaloriesCard(context, ref),
-                          const SizedBox(height: 12),
-                          _buildMacrosRow(context, ref),
-                          const SizedBox(height: 16),
-                          _buildRecentlyEatenPlaceholder(context),
-                          const SizedBox(height: 80),
+                          // Drag handle
+                          Container(
+                            width: 40,
+                            height: 4,
+                            margin: const EdgeInsets.only(bottom: 24),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade400,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          // Header section
+                          Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.restaurant_menu,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'home.quick_add_title'.tr(),
+                                style: Theme.of(parentContext)
+                                    .textTheme
+                                    .headlineSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'home.quick_add_subtitle'.tr(),
+                                style: Theme.of(parentContext)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Colors.black54,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
+                          // Action buttons grid
+                          GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                            childAspectRatio: 1.1,
+                            children: [
+                              _buildActionCard(
+                                context: parentContext,
+                                icon: Icons.camera_alt,
+                                title: 'home.camera'.tr(),
+                                subtitle: 'home.camera_desc'.tr(),
+                                color: const Color(0xFF4CAF50),
+                                onTap: () async {
+                                  Navigator.of(sheetContext).pop();
+                                  await _pickAndUpload(
+                                      parentContext, ref, ImageSource.camera);
+                                },
+                              ),
+                              _buildActionCard(
+                                context: parentContext,
+                                icon: Icons.photo_library,
+                                title: 'home.gallery'.tr(),
+                                subtitle: 'home.gallery_desc'.tr(),
+                                color: const Color(0xFF2196F3),
+                                onTap: () async {
+                                  Navigator.of(sheetContext).pop();
+                                  await _pickAndUpload(
+                                      parentContext, ref, ImageSource.gallery);
+                                },
+                              ),
+                              _buildActionCard(
+                                context: parentContext,
+                                icon: Icons.edit_note,
+                                title: 'home.describe_food'.tr(),
+                                subtitle: 'home.describe_food_desc'.tr(),
+                                color: const Color(0xFFFF9800),
+                                onTap: () {
+                                  Navigator.of(sheetContext).pop();
+                                  parentContext.pushNamed('describe-food');
+                                },
+                              ),
+                              _buildActionCard(
+                                context: parentContext,
+                                icon: Icons.fitness_center,
+                                title: 'home.add_exercise'.tr(),
+                                subtitle: 'home.add_exercise_desc'.tr(),
+                                color: const Color(0xFF9C27B0),
+                                onTap: () {
+                                  Navigator.of(sheetContext).pop();
+                                  parentContext.pushNamed('add-exercise');
+                                },
+                              ),
+                              _buildActionCard(
+                                context: parentContext,
+                                icon: Icons.favorite,
+                                title: 'home.favorites'.tr(),
+                                subtitle: 'home.favorites_desc'.tr(),
+                                color: const Color(0xFFE91E63),
+                                onTap: () {
+                                  Navigator.of(sheetContext).pop();
+                                  context.pushNamed('favorites');
+                                },
+                              ),
+                              _buildActionCard(
+                                context: parentContext,
+                                icon: Icons.chat_bubble_outline,
+                                title: 'home.trainer'.tr(),
+                                subtitle: 'home.trainer_subtitle'.tr(),
+                                color: const Color(0xFF673AB7),
+                                onTap: () {
+                                  Navigator.of(sheetContext).pop();
+                                  showModalBottomSheet(
+                                    context: parentContext,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) => const ChatPage(),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
+                );
+              },
+            );
+          },
+          tooltip: 'home.add'.tr(),
+          backgroundColor: Colors.black,
+          heroTag: 'home_fab',
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+        body: Stack(
+          children: [
+            _buildTopGradientBackground(context),
+            _buildStatusBarOverlay(context, ref),
+            SafeArea(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  // Refresh daily logs
+                  await ref.read(dailyLogControllerProvider.notifier).refresh();
+                  // Refresh remaining calories, current user (streak), and streak completions
+                  ref.invalidate(dailyRemainingProvider);
+                  ref.invalidate(currentUserProvider);
+                  ref.invalidate(streakWeeklyCompletionsProvider);
+                  await Future.wait([
+                    ref.read(dailyRemainingProvider.future),
+                    ref.read(currentUserProvider.future),
+                    ref.read(streakWeeklyCompletionsProvider.future),
+                  ]);
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 0, bottom: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Full-width offer banner at the very top
+                      _buildOfferBanner(context, ref),
+                      // Rest of the content with horizontal padding
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 12),
+                            _buildHeader(context, ref),
+                            const SizedBox(height: 12),
+                            _buildDateStrip(context, ref, dateScrollController),
+                            const SizedBox(height: 16),
+                            _buildCaloriesCard(context, ref),
+                            const SizedBox(height: 12),
+                            _buildMacrosRow(context, ref),
+                            const SizedBox(height: 16),
+                            _buildRecentlyEatenPlaceholder(context),
+                            const SizedBox(height: 80),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

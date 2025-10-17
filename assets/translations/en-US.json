@@ -194,7 +194,13 @@
         "please_enter_valid_duration": "Please enter a valid duration in minutes",
         "add_exercise_desc": "Track your workouts and burned calories",
         "subscription": "Subscription",
-        "subscription_desc": "Upgrade to premium"
+        "subscription_desc": "Upgrade to premium",
+        "trainer": "مربی",
+        "trainer_title": "Ask a professional!",
+        "trainer_subtitle": "Real AI trainers will always guide you on your path",
+        "send_message": "Message sent",
+        "send_message_trainer": "Send Message to Trainer",
+        "coming_soon": "Coming Soon"
     },
     "settings": {
         "title": "Settings",
@@ -781,13 +787,13 @@
             "subscription_reactivated": "Your subscription has been reactivated!"
         },
         "header": {
-          "status": "Subscription Status",
-          "loading": "Loading",
-          "none": "No subscription",
-          "active": "Active",
-          "until": " until {}",
-          "until_fa": " until {}",
-          "close": "Close"
+            "status": "Subscription Status",
+            "loading": "Loading",
+            "none": "No subscription",
+            "active": "Active",
+            "until": " until {}",
+            "until_fa": " until {}",
+            "close": "Close"
         },
         "testimonials": [
             {

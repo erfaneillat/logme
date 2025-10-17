@@ -30,6 +30,7 @@ import '../features/tickets/pages/tickets_list_page.dart';
 import '../features/tickets/pages/create_ticket_page.dart';
 import '../features/tickets/pages/ticket_detail_page.dart';
 import '../features/analytics/pages/bmi_detail_page.dart';
+import '../features/home/pages/chat_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -70,6 +71,15 @@ class AppRouter {
                 path: '/analytics',
                 name: 'analytics',
                 builder: (context, state) => const AnalyticsPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/chat',
+                name: 'chat',
+                builder: (context, state) => const ChatPage(),
               ),
             ],
           ),
@@ -280,23 +290,112 @@ class AppShell extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (i) => _goBranch(i, context),
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            label: 'home.title'.tr(),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  context,
+                  index: 0,
+                  icon: Icons.home_rounded,
+                  activeIcon: Icons.home_rounded,
+                  label: 'home.title'.tr(),
+                ),
+                _buildNavItem(
+                  context,
+                  index: 1,
+                  icon: Icons.bar_chart_rounded,
+                  activeIcon: Icons.bar_chart_rounded,
+                  label: 'home.analytics'.tr(),
+                ),
+                _buildNavItem(
+                  context,
+                  index: 2,
+                  icon: Icons.chat_bubble_rounded,
+                  activeIcon: Icons.chat_bubble_rounded,
+                  label: 'home.trainer'.tr(),
+                ),
+                _buildNavItem(
+                  context,
+                  index: 3,
+                  icon: Icons.settings_rounded,
+                  activeIcon: Icons.settings_rounded,
+                  label: 'home.settings'.tr(),
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.bar_chart_outlined),
-            label: 'home.analytics'.tr(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context, {
+    required int index,
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+  }) {
+    final isActive = navigationShell.currentIndex == index;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _goBranch(index, context),
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: isActive ? Colors.black : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.settings_outlined),
-            label: 'home.settings'.tr(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                child: Icon(
+                  isActive ? activeIcon : icon,
+                  color: isActive ? Colors.white : Colors.black54,
+                  size: 24,
+                ),
+              ),
+              // const SizedBox(height: 4),
+              // AnimatedDefaultTextStyle(
+              //   duration: const Duration(milliseconds: 200),
+              //   curve: Curves.easeInOut,
+              //   style: TextStyle(
+              //     fontSize: 11,
+              //     fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+              //     color: isActive ? Colors.white : Colors.black54,
+              //   ),
+              //   child: Text(
+              //     label,
+              //     maxLines: 1,
+              //     overflow: TextOverflow.ellipsis,
+              //   ),
+              // ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -194,7 +194,13 @@
         "please_enter_valid_duration": "لطفاً مدت زمان معتبری به دقیقه وارد کنید",
         "add_exercise_desc": "تمرینات و کالری سوزانده خود را ثبت کنید",
         "subscription": "اشتراک",
-        "subscription_desc": "ارتقا به نسخه پریمیوم"
+        "subscription_desc": "ارتقا به نسخه پریمیوم",
+        "trainer": "مربی",
+        "trainer_title": "از یک حرفه ای پیرسید!",
+        "trainer_subtitle": "مربی های AI واقعی مسیر روبرات هموار می کنند",
+        "send_message": "پیام ارسال شد",
+        "send_message_trainer": "ارسال پیام به مربی",
+        "coming_soon": "این قابلیت به زودی راه‌اندازی می‌شود!"
     },
     "settings": {
         "title": "تنظیمات",

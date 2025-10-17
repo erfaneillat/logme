@@ -1532,8 +1532,8 @@ class FoodDetailPage extends HookConsumerWidget {
                             ingredients: ingredientsState.value,
                           );
 
-                          final result = await GoRouter.of(context).push('/fix-result',
-                              extra: fixResultArgs);
+                          final result = await GoRouter.of(context)
+                              .push('/fix-result', extra: fixResultArgs);
 
                           if (result != null &&
                               result is Map<String, dynamic>) {

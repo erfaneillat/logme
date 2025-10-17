@@ -90,7 +90,6 @@ class SettingsPage extends HookConsumerWidget {
       ),
     );
   }
-
 }
 
 // New component widgets
@@ -1138,8 +1137,8 @@ class _SubscriptionCard extends HookConsumerWidget {
   }
 
   String _toPersianDigits(String input) {
-    const en = ['0','1','2','3','4','5','6','7','8','9'];
-    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    const en = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const fa = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
     var out = input;
     for (var i = 0; i < en.length; i++) {
       out = out.replaceAll(en[i], fa[i]);
@@ -1162,7 +1161,8 @@ class _SubscriptionCard extends HookConsumerWidget {
     return planType ?? '';
   }
 
-  Widget _buildSubscriptionCard(BuildContext context, SubscriptionStatus status) {
+  Widget _buildSubscriptionCard(
+      BuildContext context, SubscriptionStatus status) {
     final expiryDate = status.expiryDate;
     final planType = status.planType ?? '';
     final daysLeft = expiryDate != null
