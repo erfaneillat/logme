@@ -236,22 +236,22 @@ class HomePage extends HookConsumerWidget {
                                   context.pushNamed('favorites');
                                 },
                               ),
-                              _buildActionCard(
-                                context: parentContext,
-                                icon: Icons.chat_bubble_outline,
-                                title: 'home.trainer'.tr(),
-                                subtitle: 'home.trainer_subtitle'.tr(),
-                                color: const Color(0xFF673AB7),
-                                onTap: () {
-                                  Navigator.of(sheetContext).pop();
-                                  showModalBottomSheet(
-                                    context: parentContext,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (context) => const ChatPage(),
-                                  );
-                                },
-                              ),
+                              // _buildActionCard(
+                              //   context: parentContext,
+                              //   icon: Icons.chat_bubble_outline,
+                              //   title: 'home.trainer'.tr(),
+                              //   subtitle: 'home.trainer_subtitle'.tr(),
+                              //   color: const Color(0xFF673AB7),
+                              //   onTap: () {
+                              //     Navigator.of(sheetContext).pop();
+                              //     showModalBottomSheet(
+                              //       context: parentContext,
+                              //       isScrollControlled: true,
+                              //       backgroundColor: Colors.transparent,
+                              //       builder: (context) => const ChatPage(),
+                              //     );
+                              //   },
+                              // ),
                             ],
                           ),
                         ],
