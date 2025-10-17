@@ -12,6 +12,7 @@ export interface User {
   referredBy?: string | null;
   referralSuccessCount?: number;
   referralEarnings?: number;
+  referralRewardCredited?: boolean;
   streakCount?: number;
   lastStreakDate?: string | null;
   lastActivity?: string | null;
@@ -19,6 +20,32 @@ export interface User {
   rolloverCalories?: boolean;
   hasActiveSubscription?: boolean;
   logCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DeletedUser {
+  _id: string;
+  originalUserId: string;
+  phone: string;
+  email?: string;
+  name?: string;
+  isPhoneVerified: boolean;
+  hasCompletedAdditionalInfo: boolean;
+  hasGeneratedPlan: boolean;
+  aiCostUsdTotal?: number;
+  referralCode?: string;
+  referredBy?: string | null;
+  referralSuccessCount?: number;
+  referralEarnings?: number;
+  streakCount?: number;
+  lastStreakDate?: string | null;
+  lastActivity?: string | null;
+  addBurnedCalories?: boolean;
+  rolloverCalories?: boolean;
+  deletionReason?: string;
+  deletedAt: string;
+  deletedBy: 'user' | 'admin' | 'system';
   createdAt: string;
   updatedAt: string;
 }

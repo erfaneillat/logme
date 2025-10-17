@@ -15,6 +15,7 @@ export interface IUser extends Document {
   referredBy?: string | null; // referral code of the referrer
   referralSuccessCount?: number;
   referralEarnings?: number;
+  referralRewardCredited?: boolean; // whether referral reward already credited after first purchase
   // Streak fields
   streakCount?: number; // number of consecutive days completed
   lastStreakDate?: string | null; // YYYY-MM-DD of last completed day
@@ -106,6 +107,10 @@ const userSchema = new Schema<IUser>(
       type: Number,
       default: 0,
       min: 0,
+    },
+    referralRewardCredited: {
+      type: Boolean,
+      default: false,
     },
     streakCount: {
       type: Number,

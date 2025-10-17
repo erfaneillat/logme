@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
 import DailyLog from '../models/DailyLog';
+import ReferralLog from '../models/ReferralLog';
 import errorLogger from '../services/errorLoggerService';
 
 interface ListQuery {
@@ -185,7 +186,7 @@ export class UserController {
   async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params as { id: string };
-      
+
       const user = await User.findById(id);
       if (!user) {
         res.status(404).json({ success: false, message: 'User not found' });
@@ -205,6 +206,131 @@ export class UserController {
       res.json({ success: true, message: 'User deleted successfully' });
     } catch (error) {
       errorLogger.error('Delete user error', error as Error, req, { userId: req.params.id });
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
+
+  // GET /api/users/:userId/referral-logs - Get referral logs for a specific user (admin)
+  async getUserReferralLogs(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const skip = (page - 1) * limit;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+        return;
+      }
+
+      // Get logs where this user is the referrer
+      const total = await ReferralLog.countDocuments({ referrerId: userId });
+      const logs = await ReferralLog.find({ referrerId: userId })
+        .populate('referredUserId', 'name phone email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      res.json({
+        success: true,
+        data: {
+          logs,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+          },
+        },
+      });
+    } catch (error) {
+      errorLogger.error('Get user referral logs error', error as Error, req, { userId: req.params.userId });
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
+
+  // GET /api/users/deleted/list - Get list of deleted users (admin)
+  async listDeleted(req: Request<{}, {}, {}, ListQuery>, res: Response): Promise<void> {
+    try {
+      const DeletedUser = require('../models/DeletedUser').default;
+      const {
+        page = '1',
+        limit = '20',
+        search,
+        dateFrom,
+        dateTo,
+        sort = '-deletedAt',
+      } = req.query;
+
+      const pageNum = Math.max(parseInt(page as string, 10) || 1, 1);
+      const limitNum = Math.min(Math.max(parseInt(limit as string, 10) || 20, 1), 100);
+
+      const filter: any = {};
+
+      if (search) {
+        const s = String(search).trim();
+        filter.$or = [
+          { name: { $regex: s, $options: 'i' } },
+          { phone: { $regex: s, $options: 'i' } },
+          { email: { $regex: s, $options: 'i' } },
+          { referralCode: { $regex: s, $options: 'i' } },
+        ];
+      }
+
+      if (dateFrom || dateTo) {
+        filter.deletedAt = {};
+        if (dateFrom) filter.deletedAt.$gte = new Date(String(dateFrom));
+        if (dateTo) filter.deletedAt.$lte = new Date(String(dateTo));
+      }
+
+      const sortSpec: any = {};
+      const fields = String(sort).split(',').map(s => s.trim()).filter(Boolean);
+      for (const f of fields) {
+        if (f.startsWith('-')) sortSpec[f.substring(1)] = -1; else sortSpec[f] = 1;
+      }
+
+      const [items, total] = await Promise.all([
+        DeletedUser.find(filter)
+          .sort(sortSpec)
+          .skip((pageNum - 1) * limitNum)
+          .limit(limitNum),
+        DeletedUser.countDocuments(filter),
+      ]);
+
+      res.json({
+        success: true,
+        data: {
+          items,
+          pagination: {
+            page: pageNum,
+            limit: limitNum,
+            total,
+            totalPages: Math.ceil(total / limitNum),
+          },
+        },
+      });
+    } catch (error) {
+      errorLogger.error('List deleted users error', error as Error, req);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
+
+  // GET /api/users/deleted/:id - Get a specific deleted user (admin)
+  async getDeletedById(req: Request, res: Response): Promise<void> {
+    try {
+      const DeletedUser = require('../models/DeletedUser').default;
+      const { id } = req.params as { id: string };
+      const deletedUser = await DeletedUser.findById(id);
+      if (!deletedUser) {
+        res.status(404).json({ success: false, message: 'Deleted user not found' });
+        return;
+      }
+
+      res.json({ success: true, data: { user: deletedUser } });
+    } catch (error) {
+      errorLogger.error('Get deleted user error', error as Error, req, { deletedUserId: req.params.id });
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

@@ -1,7 +1,7 @@
 import { API_BASE_URL, API_ENDPOINTS, API_TIMEOUT } from '../config/api';
 import { authService } from './auth.service';
 import { errorLogger } from './errorLogger.service';
-import type { User, PaginatedResponse } from '../types/user';
+import type { User, DeletedUser, PaginatedResponse } from '../types/user';
 
 class UserService {
   private async fetchWithTimeout(url: string, options: RequestInit = {}) {
@@ -52,8 +52,35 @@ class UserService {
     return res.json();
   }
 
+  async listDeleted(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    sort?: string;
+  }): Promise<PaginatedResponse<DeletedUser>> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    if (params.search) query.set('search', params.search);
+    if (params.dateFrom) query.set('dateFrom', params.dateFrom);
+    if (params.dateTo) query.set('dateTo', params.dateTo);
+    if (params.sort) query.set('sort', params.sort);
+
+    const url = `${API_BASE_URL}${API_ENDPOINTS.USERS.BASE}/deleted/list?${query.toString()}`;
+    const res = await this.fetchWithTimeout(url);
+    return res.json();
+  }
+
   async getById(id: string): Promise<{ success: boolean; data?: { user: User } }> {
     const url = `${API_BASE_URL}${API_ENDPOINTS.USERS.BY_ID(id)}`;
+    const res = await this.fetchWithTimeout(url);
+    return res.json();
+  }
+
+  async getDeletedById(id: string): Promise<{ success: boolean; data?: { user: DeletedUser } }> {
+    const url = `${API_BASE_URL}${API_ENDPOINTS.USERS.BASE}/deleted/${id}`;
     const res = await this.fetchWithTimeout(url);
     return res.json();
   }

@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import Subscription from '../models/Subscription';
+import User from '../models/User';
+import ReferralLog from '../models/ReferralLog';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { PurchaseVerificationService } from '../services/purchaseVerificationService';
 import { CafeBazaarApiService } from '../services/cafeBazaarApiService';
@@ -239,6 +241,54 @@ export class SubscriptionController {
 
             // Log successful purchase for audit
             this.logPurchase(userId, productKey, orderId, purchaseToken);
+
+            // After successful activation, handle referral reward if applicable
+            try {
+                const purchasingUser = await User.findById(userId);
+                if (purchasingUser && purchasingUser.referredBy) {
+                    const referrer = await User.findOne({ referralCode: purchasingUser.referredBy });
+                    if (referrer) {
+                        const reward = parseInt(process.env.REFERRAL_REWARD_TOMAN || '25000', 10);
+                        const isFirstPurchase = !purchasingUser.referralRewardCredited;
+
+                        referrer.referralSuccessCount = (referrer.referralSuccessCount || 0) + 1;
+                        referrer.referralEarnings = (referrer.referralEarnings || 0) + reward;
+                        await referrer.save();
+
+                        // Mark reward as credited on first purchase only (for tracking milestone)
+                        if (isFirstPurchase) {
+                            purchasingUser.referralRewardCredited = true;
+                            await purchasingUser.save();
+                        }
+
+                        // Log the referral reward event
+                        try {
+                            const referralLog = new ReferralLog({
+                                referrerId: referrer._id,
+                                referredUserId: purchasingUser._id,
+                                referralCode: purchasingUser.referredBy,
+                                eventType: isFirstPurchase ? 'first_purchase' : 'subscription_purchase',
+                                reward,
+                                subscriptionPlanType: planType,
+                            });
+                            await referralLog.save();
+                        } catch (logErr) {
+                            errorLogger.error('Failed to save referral reward log:', logErr);
+                        }
+
+                        console.log('💰 Referral reward credited:', {
+                            referrerId: referrer._id,
+                            newCount: referrer.referralSuccessCount,
+                            totalEarnings: referrer.referralEarnings,
+                            reward,
+                            purchasingUserId: userId,
+                            eventType: isFirstPurchase ? 'first_purchase' : 'subscription_purchase',
+                        });
+                    }
+                }
+            } catch (referralErr) {
+                errorLogger.error('Post-purchase referral reward error:', referralErr);
+            }
 
             res.json({
                 success: true,

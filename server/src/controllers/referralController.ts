@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import User from '../models/User';
+import ReferralLog from '../models/ReferralLog';
 import errorLogger from '../services/errorLoggerService';
 
 function generateCode(seed: string, attempt: number): string {
@@ -109,14 +110,23 @@ export class ReferralController {
         return;
       }
 
-      // Mark referral and reward referrer
+      // Mark referral only; reward will be applied after first successful subscription purchase
       user.referredBy = code;
       await user.save();
 
-      const reward = parseInt(process.env.REFERRAL_REWARD_TOMAN || '25000', 10);
-      referrer.referralSuccessCount = (referrer.referralSuccessCount || 0) + 1;
-      referrer.referralEarnings = (referrer.referralEarnings || 0) + reward;
-      await referrer.save();
+      // Log the referral code submission
+      try {
+        const referralLog = new ReferralLog({
+          referrerId: referrer._id,
+          referredUserId: user._id,
+          referralCode: code,
+          eventType: 'code_submitted',
+          reward: 0,
+        });
+        await referralLog.save();
+      } catch (logErr) {
+        errorLogger.error('Failed to save referral log:', logErr);
+      }
 
       res.json({ success: true });
     } catch (err) {
@@ -142,6 +152,47 @@ export class ReferralController {
       });
     } catch (err) {
       errorLogger.error('getSummary error', err);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  }
+
+  // GET /api/referral/logs - Get referral logs for current user (as referrer)
+  async getReferralLogs(req: any, res: Response): Promise<void> {
+    try {
+      const userId = req.user.userId;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const skip = (page - 1) * limit;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+        return;
+      }
+
+      // Get logs where this user is the referrer
+      const total = await ReferralLog.countDocuments({ referrerId: userId });
+      const logs = await ReferralLog.find({ referrerId: userId })
+        .populate('referredUserId', 'name phone email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      res.json({
+        success: true,
+        data: {
+          logs,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+          },
+        },
+      });
+    } catch (err) {
+      errorLogger.error('getReferralLogs error', err);
       res.status(500).json({ success: false, message: 'Server error' });
     }
   }

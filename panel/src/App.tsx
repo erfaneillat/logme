@@ -6,6 +6,7 @@ import PlansPage from './pages/PlansPage';
 import OffersPage from './pages/OffersPage';
 import UsersPage from './pages/UsersPage';
 import UserDetailPage from './pages/UserDetailPage';
+import DeletedUsersPage from './pages/DeletedUsersPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import LogsPage from './pages/LogsPage';
@@ -28,6 +29,7 @@ const App = () => {
                         <Route path="/offers" element={<OffersPage />} />
                         <Route path="/users" element={<UsersPage />} />
                         <Route path="/users/:userId" element={<UserDetailPage />} />
+                        <Route path="/deleted-users" element={<DeletedUsersPage />} />
                         <Route path="/subscriptions" element={<SubscriptionsPage />} />
                         <Route path="/app-versions" element={<AppVersionsPage />} />
                         <Route path="/tickets" element={<TicketsPage />} />

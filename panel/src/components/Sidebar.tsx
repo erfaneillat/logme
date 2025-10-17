@@ -28,7 +28,7 @@ const Sidebar = () => {
         };
 
         fetchUnreadCount();
-        
+
         // Refresh count every 30 seconds
         const interval = setInterval(fetchUnreadCount, 30000);
         return () => clearInterval(interval);
@@ -59,6 +59,20 @@ const Sidebar = () => {
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6m-3-6a4 4 0 100-8 4 4 0 000 8z"
+                    />
+                </svg>
+            ),
+        },
+        {
+            name: 'Deleted Accounts',
+            path: '/deleted-users',
+            icon: (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                 </svg>
             ),
@@ -211,7 +225,7 @@ const Sidebar = () => {
                         const isActive = location.pathname === item.path;
                         const isTicketsPage = item.path === '/tickets';
                         const showBadge = isTicketsPage && unreadTicketCount > 0;
-                        
+
                         return (
                             <NavLink
                                 key={item.path}
