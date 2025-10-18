@@ -43,6 +43,7 @@ export interface DeletedUser {
   lastActivity?: string | null;
   addBurnedCalories?: boolean;
   rolloverCalories?: boolean;
+  hasActiveSubscription?: boolean;
   deletionReason?: string;
   deletedAt: string;
   deletedBy: 'user' | 'admin' | 'system';
