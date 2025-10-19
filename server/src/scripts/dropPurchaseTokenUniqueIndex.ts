@@ -12,7 +12,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
  */
 async function dropPurchaseTokenUniqueIndex() {
     try {
-        const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/logme';
+        const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cal_ai';
 
         console.log('🔗 Connecting to MongoDB...');
         await mongoose.connect(mongoUri);
