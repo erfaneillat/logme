@@ -134,18 +134,11 @@ export class SubscriptionController {
 
                 if (isSameUser && !isInactive) {
                     // Same user, but subscription is still active
-                    console.warn('⚠️ Purchase token already used for active subscription:', {
+                    console.log('🔁 Stacking subscription: existing active subscription found for same user. Proceeding to extend duration.', {
                         purchaseToken: purchaseToken.substring(0, 10) + '...',
                         userId,
-                        isActive: existingSubscription.isActive,
-                        expiryDate: existingSubscription.expiryDate,
+                        existingExpiryDate: existingSubscription.expiryDate,
                     });
-                    PurchaseVerificationService.recordAttempt(userId, false);
-                    res.status(400).json({
-                        success: false,
-                        message: 'You already have an active subscription',
-                    });
-                    return;
                 }
 
                 // Allowed reactivation (same user inactive) or allowed transfer (inactive + env enabled)
