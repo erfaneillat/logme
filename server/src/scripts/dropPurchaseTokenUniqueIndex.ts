@@ -13,7 +13,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 async function dropPurchaseTokenUniqueIndex() {
     try {
         const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cal_ai';
-        
+
         console.log('🔗 Connecting to MongoDB...');
         await mongoose.connect(mongoUri);
         console.log('✅ Connected to MongoDB');
@@ -24,16 +24,26 @@ async function dropPurchaseTokenUniqueIndex() {
         }
         const collection = db.collection('subscriptions');
 
-        // Get existing indexes
+        // Get existing indexes (handle missing collection)
         console.log('\n📋 Current indexes:');
-        const indexes = await collection.indexes();
-        indexes.forEach((index: any) => {
-            console.log(`  - ${index.name}:`, index.key);
-        });
+        let indexes: any[] = [];
+        try {
+            indexes = await collection.indexes();
+            indexes.forEach((index: any) => {
+                console.log(`  - ${index.name}:`, index.key);
+            });
+        } catch (err: any) {
+            if (err?.code === 26 || err?.codeName === 'NamespaceNotFound' || /ns does not exist/i.test(err?.errmsg || '')) {
+                console.log('ℹ️  Collection "subscriptions" does not exist. Nothing to drop.');
+                console.log('\n✅ Migration completed successfully!');
+                return;
+            }
+            throw err;
+        }
 
         // Check if purchaseToken_1 index exists
         const purchaseTokenIndex = indexes.find((idx: any) => idx.name === 'purchaseToken_1');
-        
+
         if (purchaseTokenIndex) {
             console.log('\n🗑️  Dropping purchaseToken_1 unique index...');
             await collection.dropIndex('purchaseToken_1');
@@ -51,7 +61,7 @@ async function dropPurchaseTokenUniqueIndex() {
 
         console.log('\n✅ Migration completed successfully!');
         console.log('ℹ️  You can now create multiple subscriptions with the same purchase token');
-        
+
     } catch (error) {
         console.error('❌ Migration failed:', error);
         process.exit(1);
