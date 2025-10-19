@@ -608,13 +608,58 @@ export class SubscriptionController {
                             return;
                         }
 
-                        // If still not found, return 404 as before
+                        // If still not found, allow soft-pass when user already has SAME plan active (avoid blocking re-purchase flow)
                         if (subStatus.error === 'not_found') {
-                            console.warn('⚠️ Purchase not found in Cafe Bazaar (subscription API):', {
+                            console.warn('⚠️ Purchase not found in Cafe Bazaar (subscription API). Checking existing active subscription for soft-pass...', {
                                 productId,
                                 userId,
                                 error: subStatus.errorDescription,
                             });
+
+                            // Determine intended plan type from productId
+                            const pid = (productId as string).toLowerCase();
+                            let intendedPlan: 'monthly' | 'yearly' | 'threeMonth';
+                            if (pid.includes('year') || pid.includes('yearly') || pid.includes('annual')) {
+                                intendedPlan = 'yearly';
+                            } else if (
+                                pid.includes('3month') ||
+                                (pid.includes('3') && pid.includes('month')) ||
+                                pid.includes('three') ||
+                                pid.includes('quarter')
+                            ) {
+                                intendedPlan = 'threeMonth';
+                            } else {
+                                intendedPlan = 'monthly';
+                            }
+
+                            // If user already has an active subscription of the same plan, don't block validation
+                            const now = new Date();
+                            const hasSamePlanActive = await Subscription.findOne({
+                                userId,
+                                planType: intendedPlan,
+                                isActive: true,
+                                expiryDate: { $gt: now },
+                            });
+
+                            if (hasSamePlanActive) {
+                                console.log('✅ Soft-pass CafeBazaar validation due to existing active subscription of same plan', {
+                                    userId,
+                                    intendedPlan,
+                                });
+                                res.json({
+                                    success: true,
+                                    data: {
+                                        valid: true,
+                                        purchaseState: 'purchased',
+                                        consumptionState: 'not_applicable',
+                                        purchaseTime: hasSamePlanActive.startDate?.getTime?.() || undefined,
+                                        developerPayload: undefined,
+                                    },
+                                });
+                                return;
+                            }
+
+                            // Otherwise return not found as before
                             res.status(404).json({
                                 success: false,
                                 message: 'Purchase not found',

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { logServiceError } from '../utils/errorLogger';
+import { logServiceError, logWarning } from '../utils/errorLogger';
 
 /**
  * Response from Cafe Bazaar purchase validation API
@@ -207,9 +207,12 @@ export class CafeBazaarApiService {
                 const status = axiosError.response.status;
                 const errorData = axiosError.response.data;
 
-                // 404 - Purchase not found (could be fraud attempt)
+                // 404 - Purchase not found (common when using subscription SKU against in-app endpoint)
                 if (status === 404) {
-                    logServiceError('cafeBazaarApiService', 'checkSubscriptionStatus', error as Error, {
+                    // Demote to warning and correctly label method to avoid noisy error logs
+                    logWarning('CafeBazaar 404 during validateInAppPurchase (likely subscription SKU or renewal token). Treating as not_found.', undefined, {
+                        service: 'cafeBazaarApiService',
+                        method: 'validateInAppPurchase',
                         status,
                         error: errorData?.error,
                         errorDescription: errorData?.error_description,
