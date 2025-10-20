@@ -5,6 +5,11 @@ export enum NotificationType {
   TICKET_STATUS_CHANGE = 'ticket_status_change',
   SYSTEM = 'system',
   SUBSCRIPTION = 'subscription',
+  DAILY_REMINDER = 'daily_reminder',
+  INACTIVITY = 'inactivity',
+  MOTIVATION = 'motivation',
+  ALERT_CALORIE_OVER = 'alert_calorie_over',
+  ALERT_CALORIE_REMAINING = 'alert_calorie_remaining',
 }
 
 export interface INotification extends Document {

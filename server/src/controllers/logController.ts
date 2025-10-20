@@ -6,6 +6,9 @@ import AdditionalInfo from '../models/AdditionalInfo';
 import { updateStreakIfEligible, updateStreakOnFirstMeal, updateUserLastActivity } from '../services/streakService';
 import { ExerciseAnalysisService } from '../services/exerciseAnalysisService';
 import errorLogger from '../services/errorLoggerService';
+import Plan from '../models/Plan';
+import notificationService from '../services/notificationService';
+import Notification, { NotificationType } from '../models/Notification';
 
 interface AuthRequest extends Request { user?: any }
 
@@ -24,6 +27,51 @@ export class LogController {
             this.exerciseAnalysisService = new ExerciseAnalysisService();
         }
         return this.exerciseAnalysisService;
+    }
+    private async checkCalorieNotifications(userId: string, date: string): Promise<void> {
+        try {
+            const plan = await Plan.findOne({ userId }).sort({ createdAt: -1 }).lean();
+            if (!plan || typeof (plan as any).calories !== 'number') return;
+            const goal = Math.max(0, Number((plan as any).calories));
+            const log = await DailyLog.findOne({ userId, date }).select('caloriesConsumed').lean();
+            const consumed = Math.max(0, Number((log as any)?.caloriesConsumed ?? 0));
+            if (consumed <= 0) return;
+            if (consumed > goal) {
+                const exists = await Notification.findOne({ userId, type: NotificationType.ALERT_CALORIE_OVER, 'data.date': date }).lean();
+                if (!exists) {
+                    await notificationService.createNotification(userId, NotificationType.ALERT_CALORIE_OVER, 'هشدار کالری', 'مراقب باش! توی این وعده بیش از حد مجاز کالری مصرف کردی.', { date });
+                }
+                return;
+            }
+            const remaining = Math.max(0, goal - consumed);
+            if (remaining > 0) {
+                const existsRemain = await Notification.findOne({ userId, type: NotificationType.ALERT_CALORIE_REMAINING, 'data.date': date }).lean();
+                if (!existsRemain) {
+                    const remainPercent = Math.round((remaining / goal) * 100);
+                    const pick = Math.random() < 0.5;
+                    const body = pick
+                        ? `تو هنوز ${remainPercent}% از سهم روزانه کالریت رو داری، یادت نره استفاده کنی!`
+                        : `امروز فقط ${remaining} کالری دیگه اجازه داری`;
+                    await notificationService.createNotification(userId, NotificationType.ALERT_CALORIE_REMAINING, 'یادآوری کالری', body, { date, remainPercent, remaining, goal });
+                }
+            }
+        } catch (error) {
+            errorLogger.error('checkCalorieNotifications error:', error);
+        }
+    }
+    private async checkStreakMilestone(userId: string): Promise<void> {
+        try {
+            const user = await User.findById(userId).select('streakCount').lean();
+            const streak = Math.max(0, Number((user as any)?.streakCount ?? 0));
+            if (streak === 10) {
+                const exists = await Notification.findOne({ userId, type: NotificationType.MOTIVATION, 'data.streak': 10 }).lean();
+                if (!exists) {
+                    await notificationService.createNotification(userId, NotificationType.MOTIVATION, 'تبریک', 'عالیه! شما 10 وعده پشت سر هم ثبت کردید', { streak: 10 });
+                }
+            }
+        } catch (error) {
+            errorLogger.error('checkStreakMilestone error:', error);
+        }
     }
     async upsertDailyLog(req: AuthRequest, res: Response): Promise<void> {
         try {
@@ -66,7 +114,8 @@ export class LogController {
 
             // Update user's last activity
             try { await updateUserLastActivity(userId); } catch (_) { }
-
+            await this.checkCalorieNotifications(userId, sanitizedDate);
+            await this.checkStreakMilestone(userId);
             res.json({ success: true, data: { log } });
         } catch (error) {
             errorLogger.error('Upsert daily log error:', error);
@@ -335,7 +384,8 @@ export class LogController {
 
             // Update user's last activity
             try { await updateUserLastActivity(userId); } catch (_) { }
-
+            await this.checkCalorieNotifications(userId, sanitizedDate);
+            await this.checkStreakMilestone(userId);
             res.json({ success: true, data: { item: pushed ?? null } });
         } catch (error) {
             errorLogger.error('Add log item error:', error);
@@ -398,7 +448,8 @@ export class LogController {
 
             // Update user's last activity
             try { await updateUserLastActivity(userId); } catch (_) { }
-
+            await this.checkCalorieNotifications(userId, sanitizedDate);
+            await this.checkStreakMilestone(userId);
             res.json({ success: true, data: { itemId } });
         } catch (error) {
             errorLogger.error('Delete log item error:', error);
@@ -541,7 +592,8 @@ export class LogController {
 
             // Update user's last activity
             try { await updateUserLastActivity(userId); } catch (_) { }
-
+            await this.checkCalorieNotifications(userId, sanitizedDate);
+            await this.checkStreakMilestone(userId);
             res.json({ success: true, data: { item: updatedItem } });
         } catch (error) {
             errorLogger.error('Update log item error:', error);
@@ -609,6 +661,7 @@ export class LogController {
 
             // Update user's last activity
             try { await updateUserLastActivity(userId); } catch (_) { }
+            await this.checkCalorieNotifications(userId, sanitizedDate);
 
             // Return response indicating preference status for frontend feedback
             const preferenceEnabled = user.addBurnedCalories ?? true;

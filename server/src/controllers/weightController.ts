@@ -3,10 +3,98 @@ import WeightEntry from '../models/WeightEntry';
 import DailyLog from '../models/DailyLog';
 import { updateUserLastActivity } from '../services/streakService';
 import errorLogger from '../services/errorLoggerService';
+import AdditionalInfo from '../models/AdditionalInfo';
+import notificationService from '../services/notificationService';
+import Notification, { NotificationType } from '../models/Notification';
 
 interface AuthRequest extends Request { user?: any }
 
 export class WeightController {
+  private async checkWeightMotivations(userId: string, date: string): Promise<void> {
+    try {
+      const info = await AdditionalInfo.findOne({ userId }).select('targetWeight weightLossSpeed').lean();
+      const target = Number((info as any)?.targetWeight);
+      if (!isFinite(target)) return;
+
+      const current = await WeightEntry.findOne({ userId, date }).lean();
+      if (!current) return;
+      const currentW = Number((current as any).weightKg);
+      if (!isFinite(currentW)) return;
+
+      const start = await WeightEntry.findOne({ userId }).sort({ date: 1 }).lean();
+      const startW = start ? Number((start as any).weightKg) : undefined;
+
+      // 1) Progress percent
+      if (isFinite(startW as number) && Math.abs((startW as number) - target) > 0.0001) {
+        const progress = Math.max(0, Math.min(100, Math.round(Math.abs((startW as number) - currentW) * 100 / Math.abs((startW as number) - target))));
+        const exists = await Notification.findOne({ userId, type: NotificationType.MOTIVATION, 'data.kind': 'progress_percent', 'data.date': date }).lean();
+        if (!exists) {
+          await notificationService.createNotification(
+            userId,
+            NotificationType.MOTIVATION,
+            'پیشرفت عالی',
+            `عالی پیش میری! تا الان ${progress}% از مسیر هدفت رو گذروندی.`,
+            { kind: 'progress_percent', date, progress }
+          );
+        }
+      }
+
+      // 2) Remaining kg to target
+      const remainingKg = Math.max(0, Math.round(Math.abs(currentW - target)));
+      if (remainingKg > 0) {
+        const existsRem = await Notification.findOne({ userId, type: NotificationType.MOTIVATION, 'data.kind': 'remaining_to_target', 'data.date': date }).lean();
+        if (!existsRem) {
+          await notificationService.createNotification(
+            userId,
+            NotificationType.MOTIVATION,
+            'نزدیک به هدف',
+            `تا رسیدن به وزن هدفت فقط ${remainingKg} کیلو باقی مونده`,
+            { kind: 'remaining_to_target', date, remainingKg }
+          );
+        }
+      }
+
+      // 3) 1 kg closer to target since previous entry
+      const prev = await WeightEntry.findOne({ userId, date: { $lt: date } }).sort({ date: -1 }).lean();
+      if (prev) {
+        const prevW = Number((prev as any).weightKg);
+        if (isFinite(prevW)) {
+          const improvement = Math.abs(prevW - target) - Math.abs(currentW - target);
+          if (improvement >= 1.0) {
+            const exists1kg = await Notification.findOne({ userId, type: NotificationType.MOTIVATION, 'data.kind': 'one_kg_closer', 'data.date': date }).lean();
+            if (!exists1kg) {
+              await notificationService.createNotification(
+                userId,
+                NotificationType.MOTIVATION,
+                'تبریک',
+                'عالی! 1 کیلو به هدف نزدیک‌تر شدی، ادامه بده!',
+                { kind: 'one_kg_closer', date, improvementKg: Math.round(improvement) }
+              );
+            }
+          }
+        }
+      }
+
+      // 4) ETA to target date using weightLossSpeed (kg/week)
+      const speed = Number((info as any)?.weightLossSpeed);
+      if (isFinite(speed) && speed > 0 && remainingKg > 0) {
+        const weeks = remainingKg / speed;
+        const eta = new Date();
+        eta.setDate(eta.getDate() + Math.ceil(weeks * 7));
+        const etaStr = eta.toISOString().slice(0, 10);
+        const existsEta = await Notification.findOne({ userId, type: NotificationType.MOTIVATION, 'data.kind': 'eta_to_target', 'data.date': date }).lean();
+        if (!existsEta) {
+          await notificationService.createNotification(
+            userId,
+            NotificationType.MOTIVATION,
+            'پیش‌بینی رسیدن به هدف',
+            `عالیه! با همین سرعت تا تاریخ ${etaStr} می‌تونی به وزن هدفت برسی.`,
+            { kind: 'eta_to_target', date, eta: etaStr, speedKgPerWeek: speed }
+          );
+        }
+      }
+    } catch (_) { }
+  }
   async upsertWeight(req: AuthRequest, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
@@ -51,6 +139,7 @@ export class WeightController {
 
       // Update user's last activity
       try { await updateUserLastActivity(userId); } catch (_) { }
+      await this.checkWeightMotivations(userId, sanitizedDate);
 
       res.json({ success: true, data: { entry } });
     } catch (error) {

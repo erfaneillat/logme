@@ -35,6 +35,7 @@ import firebaseService from './services/firebaseService';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
 import { resetInactiveUserStreaks } from './services/streakService';
+import reminderService from './services/reminderService';
 
 // Load environment variables first
 dotenv.config();
@@ -182,6 +183,26 @@ function setupCronJobs(): void {
     }
   }, {
     timezone: 'UTC' // Use UTC timezone for consistency
+  });
+
+  cron.schedule('0 9 * * *', async () => {
+    try {
+      await reminderService.sendDailyReminders();
+    } catch (error) {
+      console.error('Error in daily reminders cron:', error);
+    }
+  }, {
+    timezone: 'Asia/Tehran'
+  });
+
+  cron.schedule('30 9 * * *', async () => {
+    try {
+      await reminderService.sendInactivityReminders();
+    } catch (error) {
+      console.error('Error in inactivity reminders cron:', error);
+    }
+  }, {
+    timezone: 'Asia/Tehran'
   });
 
   console.log('Cron jobs setup completed');
