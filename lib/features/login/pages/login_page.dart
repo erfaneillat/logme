@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/login_provider.dart';
 import 'verification_page.dart';
 import 'package:cal_ai/features/app_version/presentation/widgets/version_check_wrapper.dart';
@@ -147,14 +148,21 @@ class LoginPage extends HookConsumerWidget {
               ),
               const SizedBox(height: 20),
               // Terms Text
-              Text(
-                'login.terms_text'.tr(),
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                  height: 1.4,
+              GestureDetector(
+                onTap: () async {
+                  final uri = Uri.parse('https://loqmeapp.ir/privacy-policy');
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                },
+                child: Text(
+                  'login.terms_text'.tr(),
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    height: 1.4,
+                    decoration: TextDecoration.underline,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
             ],
