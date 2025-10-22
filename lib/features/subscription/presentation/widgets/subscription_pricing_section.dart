@@ -81,7 +81,7 @@ class SubscriptionPricingSection extends StatelessWidget {
         : (yearlyPrice ?? 69990).toDouble());
     final double yearlyPerMonthDisplay =
         getOfferPriceForPlan(state.yearlyPlanId, 'perMonth') ??
-            (effectiveYearlyPrice / 12);
+            (state.yearlyPricePerMonth ?? (effectiveYearlyPrice / 12));
     final double? threeMonthPerMonthDisplay =
         getOfferPriceForPlan(state.threeMonthPlanId, 'perMonth') ??
             threeMonthPricePerMonth ??

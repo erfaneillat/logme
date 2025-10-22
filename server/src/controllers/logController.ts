@@ -290,9 +290,15 @@ export class LogController {
             }
 
             const sanitizedDate = (date as string).slice(0, 10);
-            // If ingredients are provided, derive item macros from their sum; otherwise use provided totals
+            // Portions: allow fractional > 0
+            const portionsSanitized = (() => {
+                const p = Number(portions ?? 1);
+                return isFinite(p) && p > 0 ? p : 1;
+            })();
+
+            // If ingredients are provided, treat their sum as base-per-portion, then multiply by portions
             const rawIngredients = Array.isArray(ingredients) ? ingredients : [];
-            const summedFromIngredients = rawIngredients.reduce((acc: any, ing: any) => {
+            const baseFromIngredients = rawIngredients.reduce((acc: any, ing: any) => {
                 const c = Math.max(0, Math.round(Number(ing?.calories ?? 0)));
                 const cb = Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0)));
                 const pr = Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0)));
@@ -304,13 +310,13 @@ export class LogController {
                 return acc;
             }, { calories: 0, carbsGrams: 0, proteinGrams: 0, fatsGrams: 0 });
 
-            const cals = Math.max(0, Math.round(Number((summedFromIngredients.calories || 0) || (calories ?? 0))));
-            const carbs = Math.max(0, Math.round(Number((summedFromIngredients.carbsGrams || 0) || (carbsGrams ?? 0))));
-            const protein = Math.max(0, Math.round(Number((summedFromIngredients.proteinGrams || 0) || (proteinGrams ?? 0))));
-            const fats = Math.max(0, Math.round(Number((summedFromIngredients.fatsGrams || 0) || (fatsGrams ?? 0))));
+            // Prefer explicit totals if provided; else use ingredients sum scaled by portions
+            const cals = Math.max(0, Math.round(Number(calories ?? (baseFromIngredients.calories * portionsSanitized))));
+            const carbs = Math.max(0, Math.round(Number(carbsGrams ?? (baseFromIngredients.carbsGrams * portionsSanitized))));
+            const protein = Math.max(0, Math.round(Number(proteinGrams ?? (baseFromIngredients.proteinGrams * portionsSanitized))));
+            const fats = Math.max(0, Math.round(Number(fatsGrams ?? (baseFromIngredients.fatsGrams * portionsSanitized))));
             const hsRaw = Number(healthScore ?? 0);
             const hs = isFinite(hsRaw) ? Math.max(0, Math.min(10, Math.round(hsRaw))) : 0;
-            const portionsSanitized = Math.max(1, Math.round(Number(portions ?? 1)));
             const timeIso = new Date().toISOString();
 
             // Check if this is the first item of the day for streak calculation
@@ -519,9 +525,17 @@ export class LogController {
             }
 
             // Sanitize incoming values
-            // When editing: if ingredients provided, recompute item macros from them; else use provided or fallback to existing
+            // Portions: allow fractional > 0 (no rounding). If omitted, undefined to keep existing.
+            const portionsSanitized = portions == null
+                ? undefined
+                : (() => {
+                    const p = Number(portions);
+                    return isFinite(p) && p > 0 ? p : matchedItem.portions ?? 1;
+                })();
+
+            // When editing: compute new item macros
             const editIngredients = Array.isArray(ingredients) ? ingredients : undefined;
-            const summedFromEditIngredients = (editIngredients ?? []).reduce((acc: any, ing: any) => {
+            const baseFromEditIngredients = (editIngredients ?? []).reduce((acc: any, ing: any) => {
                 const c = Math.max(0, Math.round(Number(ing?.calories ?? 0)));
                 const cb = Math.max(0, Math.round(Number(ing?.carbsGrams ?? 0)));
                 const pr = Math.max(0, Math.round(Number(ing?.proteinGrams ?? 0)));
@@ -533,15 +547,44 @@ export class LogController {
                 return acc;
             }, { calories: 0, carbsGrams: 0, proteinGrams: 0, fatsGrams: 0 });
 
-            const cals = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.calories : (calories ?? matchedItem.calories ?? 0))));
-            const carbs = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.carbsGrams : (carbsGrams ?? matchedItem.carbsGrams ?? 0))));
-            const protein = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.proteinGrams : (proteinGrams ?? matchedItem.proteinGrams ?? 0))));
-            const fats = Math.max(0, Math.round(Number(editIngredients ? summedFromEditIngredients.fatsGrams : (fatsGrams ?? matchedItem.fatsGrams ?? 0))));
+            // Determine target portions for calculation
+            const targetPortions = portionsSanitized ?? matchedItem.portions ?? 1;
+
+            // Helper: scale existing item per-portion if only portions changed and no totals provided
+            const perPortionFromExisting = {
+                calories: Number(matchedItem.calories ?? 0) / Math.max(1e-6, Number(matchedItem.portions ?? 1)),
+                carbsGrams: Number(matchedItem.carbsGrams ?? 0) / Math.max(1e-6, Number(matchedItem.portions ?? 1)),
+                proteinGrams: Number(matchedItem.proteinGrams ?? 0) / Math.max(1e-6, Number(matchedItem.portions ?? 1)),
+                fatsGrams: Number(matchedItem.fatsGrams ?? 0) / Math.max(1e-6, Number(matchedItem.portions ?? 1)),
+            };
+
+            // Priority:
+            // 1) If explicit totals provided, use them directly.
+            // 2) Else if ingredients provided, sum as base-per-portion and multiply by targetPortions.
+            // 3) Else if only portions changed, scale existing per-portion by targetPortions.
+            const computedFromIngredients = editIngredients
+                ? {
+                    calories: baseFromEditIngredients.calories * targetPortions,
+                    carbsGrams: baseFromEditIngredients.carbsGrams * targetPortions,
+                    proteinGrams: baseFromEditIngredients.proteinGrams * targetPortions,
+                    fatsGrams: baseFromEditIngredients.fatsGrams * targetPortions,
+                }
+                : null;
+
+            const cals = Math.max(0, Math.round(Number(
+                calories ?? computedFromIngredients?.calories ?? (portionsSanitized != null ? perPortionFromExisting.calories * targetPortions : matchedItem.calories)
+            )));
+            const carbs = Math.max(0, Math.round(Number(
+                carbsGrams ?? computedFromIngredients?.carbsGrams ?? (portionsSanitized != null ? perPortionFromExisting.carbsGrams * targetPortions : matchedItem.carbsGrams)
+            )));
+            const protein = Math.max(0, Math.round(Number(
+                proteinGrams ?? computedFromIngredients?.proteinGrams ?? (portionsSanitized != null ? perPortionFromExisting.proteinGrams * targetPortions : matchedItem.proteinGrams)
+            )));
+            const fats = Math.max(0, Math.round(Number(
+                fatsGrams ?? computedFromIngredients?.fatsGrams ?? (portionsSanitized != null ? perPortionFromExisting.fatsGrams * targetPortions : matchedItem.fatsGrams)
+            )));
             const hsRaw = healthScore ?? matchedItem.healthScore;
             const hs = hsRaw == null ? undefined : Math.max(0, Math.min(10, Math.round(Number(hsRaw))));
-            const portionsSanitized = portions == null
-                ? undefined
-                : Math.max(1, Math.round(Number(portions)));
 
             const safeIngredients = Array.isArray(ingredients)
                 ? (ingredients as any[]).map((ing) => ({
