@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart' as tr;
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/services.dart';
 import '../providers/login_provider.dart';
 import '../../../../extensions/context.dart';
 
@@ -18,10 +17,8 @@ class VerificationPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pinControllers =
-        List.generate(6, (index) => useTextEditingController());
-    final focusNodes = List.generate(6, (index) => useFocusNode());
-    final currentIndex = useState(0);
+    final autoCode = useState<String?>(null);
+    final focusNode = useFocusNode();
 
     final loginNotifier = ref.read(loginProvider.notifier);
     final loginState = ref.watch(loginProvider);
@@ -33,8 +30,13 @@ class VerificationPage extends HookConsumerWidget {
       };
     }, const []);
 
-    void handleVerifyCode() async {
-      final code = pinControllers.map((controller) => controller.text).join();
+    useEffect(() {
+      Future.microtask(() => focusNode.requestFocus());
+      return null;
+    }, const []);
+
+    void handleVerifyCode([String? provided]) async {
+      final code = provided ?? autoCode.value ?? '';
       if (code.length != 6) return;
 
       try {
@@ -55,16 +57,7 @@ class VerificationPage extends HookConsumerWidget {
     // Note: SMS auto-fill is handled by the SmsAutoFill().listenForCode() call in the first useEffect
     // The manual input fields will work with both manual typing and auto-fill
 
-    // Auto-focus on first input field
-    useEffect(() {
-      Future.microtask(() {
-        if (focusNodes.isNotEmpty) {
-          currentIndex.value = 0;
-          focusNodes[0].requestFocus();
-        }
-      });
-      return null;
-    }, const []);
+    // (No manual focus handling needed with PinFieldAutoFill)
 
     void handleResendCode() async {
       try {
@@ -74,28 +67,7 @@ class VerificationPage extends HookConsumerWidget {
       }
     }
 
-    void onDigitChanged(String value, int index) {
-      // Clear error message when user starts typing
-      if (loginState.error != null && value.length == 1) {
-        loginNotifier.clearError();
-      }
-
-      if (value.length == 1) {
-        // Move to next field
-        if (index < 5) {
-          currentIndex.value = index + 1;
-          focusNodes[index + 1].requestFocus();
-        } else {
-          // Last digit entered, verify code
-          focusNodes[index].unfocus();
-          handleVerifyCode();
-        }
-      } else if (value.isEmpty && index > 0) {
-        // Move to previous field on backspace
-        currentIndex.value = index - 1;
-        focusNodes[index - 1].requestFocus();
-      }
-    }
+    // (Digit change handling replaced by PinFieldAutoFill callbacks)
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -147,67 +119,36 @@ class VerificationPage extends HookConsumerWidget {
                 ],
               ),
               const SizedBox(height: 32),
-              // Manual PIN input fields
+              // PIN auto-fill input field
               Center(
                 child: Directionality(
                   textDirection: TextDirection.ltr,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(6, (index) {
-                      return Container(
-                        width: 45,
-                        height: 55,
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
-                        child: TextFormField(
-                          controller: pinControllers[index],
-                          focusNode: focusNodes[index],
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          maxLength: 1,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: InputDecoration(
-                            counterText: '',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: currentIndex.value == index
-                                    ? context.colorScheme.primary
-                                    : Colors.grey[300]!,
-                                width: 2,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Colors.grey[300]!,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: context.colorScheme.primary,
-                                width: 2,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: currentIndex.value == index
-                                ? context.colorScheme.primary.withOpacity(0.05)
-                                : Colors.grey[50],
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          onChanged: (value) => onDigitChanged(value, index),
-                          onTap: () {
-                            currentIndex.value = index;
-                          },
-                        ),
-                      );
-                    }),
+                  child: PinFieldAutoFill(
+                    focusNode: focusNode,
+                    codeLength: 6,
+                    currentCode: autoCode.value,
+                    keyboardType: TextInputType.number,
+                    decoration: BoxLooseDecoration(
+                      strokeColorBuilder: FixedColorBuilder(Colors.grey[300]!),
+                      bgColorBuilder: FixedColorBuilder(Colors.grey[50]!),
+                      radius: const Radius.circular(8),
+                      strokeWidth: 1,
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onCodeChanged: (val) {
+                      if (loginState.error != null && (val?.isNotEmpty ?? false)) {
+                        loginNotifier.clearError();
+                      }
+                      autoCode.value = val;
+                      if ((val?.length ?? 0) == 6) {
+                        handleVerifyCode(val);
+                      }
+                    },
+                    onCodeSubmitted: (val) => handleVerifyCode(val),
                   ),
                 ),
               ),
