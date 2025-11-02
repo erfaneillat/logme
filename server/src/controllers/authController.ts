@@ -139,8 +139,7 @@ export class AuthController {
       // Generate JWT token
       const token = jwt.sign(
         { userId: user._id, phone: user.phone },
-        process.env.JWT_SECRET || 'your-secret-key',
-        { expiresIn: '7d' }
+        process.env.JWT_SECRET || 'your-secret-key'
       );
 
       res.json({
@@ -223,8 +222,7 @@ export class AuthController {
       // Generate JWT token with admin flag
       const token = jwt.sign(
         { userId: user._id, phone: user.phone, isAdmin: true },
-        process.env.JWT_SECRET || 'your-secret-key',
-        { expiresIn: '7d' }
+        process.env.JWT_SECRET || 'your-secret-key'
       );
 
       res.json({
@@ -333,8 +331,7 @@ export class AuthController {
 
       const newToken = jwt.sign(
         { userId: user._id, phone: user.phone },
-        process.env.JWT_SECRET || 'your-secret-key',
-        { expiresIn: '7d' }
+        process.env.JWT_SECRET || 'your-secret-key'
       );
 
       res.json({
