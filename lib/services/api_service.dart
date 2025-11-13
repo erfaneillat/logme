@@ -103,12 +103,25 @@ class ApiService {
       InterceptorsWrapper(
         onError: (error, handler) async {
           final statusCode = error.response?.statusCode;
-          final isAuthError = statusCode ==
-              401; // Only 401 triggers refresh; 403 flows to caller
+          final responseData = error.response?.data;
+
+          // Check if token is expired or invalid (403 with specific message)
+          final isTokenExpired = _isTokenExpired(statusCode, responseData);
+          final isAuthError = statusCode == 401;
           final isRefreshCall =
               error.requestOptions.path == ApiConfig.authRefreshToken;
           final alreadyRetried = error.requestOptions.extra['__ret'] == true;
 
+          // Handle token expiration - logout immediately
+          if (isTokenExpired) {
+            if (onLogout != null) {
+              await onLogout!();
+            }
+            final errorResponse = _handleError(error);
+            return handler.reject(errorResponse);
+          }
+
+          // Handle 401 with token refresh attempt
           if (isAuthError &&
               !isRefreshCall &&
               !alreadyRetried &&
@@ -135,6 +148,21 @@ class ApiService {
         },
       ),
     );
+  }
+
+  /// Checks if the error indicates token expiration
+  bool _isTokenExpired(int? statusCode, dynamic responseData) {
+    if (statusCode != 403) return false;
+
+    // Check if response contains token expiration message
+    if (responseData is Map<String, dynamic>) {
+      final message = responseData['message']?.toString().toLowerCase() ?? '';
+      return message.contains('expired token') ||
+          message.contains('invalid token') ||
+          message.contains('token expired');
+    }
+
+    return false;
   }
 
   Future<String?> _performTokenRefresh() async {

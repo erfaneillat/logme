@@ -6,6 +6,13 @@ class ErrorHandler {
 
     String errorString = error.toString().toLowerCase();
 
+    // Handle token expiration/invalid token errors
+    if (errorString.contains('expired token') ||
+        errorString.contains('invalid token') ||
+        errorString.contains('token expired')) {
+      return 'common.token_expired';
+    }
+
     // Handle Dio exceptions
     if (errorString.contains('dioexception')) {
       if (errorString.contains('bad response')) {

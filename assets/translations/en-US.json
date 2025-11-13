@@ -77,7 +77,9 @@
         "unexpected_error": "An unexpected error occurred",
         "error_prefix": "Error: {}",
         "success": "Success",
-        "failed": "Failed"
+        "failed": "Failed",
+        "token_expired": "Your session has expired. Please log in again.",
+        "token_invalid": "Your session is invalid. Please log in again."
     },
     "login": {
         "welcome_title": "Welcome to Loqme",
