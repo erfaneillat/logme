@@ -260,10 +260,10 @@ const UsersPage = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
                           <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold text-white ${u.hasActiveSubscription
-                              ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
-                              : u.isAdmin
-                                ? 'bg-gradient-to-br from-purple-500 to-purple-600'
-                                : 'bg-gradient-to-br from-gray-400 to-gray-500'
+                            ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
+                            : u.isAdmin
+                              ? 'bg-gradient-to-br from-purple-500 to-purple-600'
+                              : 'bg-gradient-to-br from-gray-400 to-gray-500'
                             }`}>
                             {u.name ? u.name.charAt(0).toUpperCase() : u.phone.charAt(0)}
                           </div>
@@ -364,6 +364,16 @@ const UsersPage = () => {
                             <span>View</span>
                           </button>
                           <button
+                            onClick={() => navigate(`/users/${u._id}/ai-chat`)}
+                            className="group flex items-center space-x-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 transition-all hover:bg-green-100"
+                            title="View AI nutrition chat"
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h6m-1 8l-4-4H7a4 4 0 01-4-4V7a4 4 0 014-4h10a4 4 0 014 4v5a4 4 0 01-4 4h-2l-4 4z" />
+                            </svg>
+                            <span>AI Chat</span>
+                          </button>
+                          <button
                             onClick={() => setDeleteModalUser(u)}
                             disabled={u.isAdmin}
                             className="group flex items-center space-x-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition-all hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
@@ -462,8 +472,8 @@ const UsersPage = () => {
               <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
                 <div className="flex items-center space-x-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold text-white ${deleteModalUser.hasActiveSubscription
-                      ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
-                      : 'bg-gradient-to-br from-gray-400 to-gray-500'
+                    ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
+                    : 'bg-gradient-to-br from-gray-400 to-gray-500'
                     }`}>
                     {deleteModalUser.name ? deleteModalUser.name.charAt(0).toUpperCase() : deleteModalUser.phone.charAt(0)}
                   </div>

@@ -124,6 +124,19 @@ const UserDetailPage = () => {
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600"></div>
           </div>
         </div>
+
+        {/* Actions below header */}
+        <div className="mb-8 flex justify-end">
+          <button
+            onClick={() => navigate(`/users/${userId}/ai-chat`)}
+            className="inline-flex items-center space-x-2 rounded-xl bg-green-50 px-4 py-2 text-xs font-semibold text-green-700 transition-all hover:bg-green-100"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h6m-1 8l-4-4H7a4 4 0 01-4-4V7a4 4 0 014-4h10a4 4 0 014 4v5a4 4 0 01-4 4h-2l-4 4z" />
+            </svg>
+            <span>View AI Chat</span>
+          </button>
+        </div>
       </Layout>
     );
   }
@@ -147,7 +160,7 @@ const UserDetailPage = () => {
         </button>
 
         {/* User Header Card */}
-        <div className="mb-8 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg">
+        <div className="mb-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg">
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
             <div className="flex items-center space-x-4">
               <div className={`flex h-20 w-20 items-center justify-center rounded-full font-bold text-white ring-4 ring-white ${user.hasActiveSubscription

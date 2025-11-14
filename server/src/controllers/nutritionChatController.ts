@@ -380,6 +380,51 @@ export class NutritionChatController {
         }
     }
 
+    public async adminUserHistory(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req.params as any)?.userId;
+            if (!userId) {
+                res.status(400).json({ success: false, message: 'userId is required' });
+                return;
+            }
+
+            const query = (req.query || {}) as { page?: string; limit?: string };
+            const rawPage = query.page || '1';
+            const rawLimit = query.limit || '50';
+            const pageNum = Math.max(parseInt(rawPage, 10) || 1, 1);
+            const limitNum = Math.min(Math.max(parseInt(rawLimit, 10) || 50, 1), 100);
+
+            const filter: any = { userId };
+
+            const [total, docs] = await Promise.all([
+                NutritionChatMessage.countDocuments(filter),
+                NutritionChatMessage.find(filter)
+                    .sort({ createdAt: 1, _id: 1 })
+                    .skip((pageNum - 1) * limitNum)
+                    .limit(limitNum)
+                    .lean(),
+            ]);
+
+            const totalPages = total > 0 ? Math.ceil(total / limitNum) : 0;
+
+            res.status(200).json({
+                success: true,
+                data: {
+                    items: docs,
+                    pagination: {
+                        page: pageNum,
+                        limit: limitNum,
+                        total,
+                        totalPages,
+                    },
+                },
+            });
+        } catch (error: any) {
+            errorLogger.error('Admin nutrition chat history error:', error, req as any);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
     public async uploadImage(req: AuthRequest, res: Response): Promise<void> {
         try {
             const userId = req.user?.userId;

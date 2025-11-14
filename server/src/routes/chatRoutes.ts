@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { authenticateToken } from '../middleware/authMiddleware';
+import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 import { NutritionChatController } from '../controllers/nutritionChatController';
 
 const router = express.Router();
@@ -42,6 +42,9 @@ const upload = multer({
     },
 });
 
+router.get('/admin/nutrition/user/:userId/history', authenticateToken, authenticateAdmin, (req, res) =>
+    controller.adminUserHistory(req, res)
+);
 router.post('/nutrition', authenticateToken, (req, res) => controller.chat(req, res));
 router.get('/nutrition/history', authenticateToken, (req, res) => controller.history(req, res));
 router.post('/nutrition/image', authenticateToken, upload.single('image'), (req, res) =>
