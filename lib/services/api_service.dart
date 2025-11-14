@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:flutter/foundation.dart';
@@ -208,6 +209,75 @@ class ApiService {
         cancelToken: cancelToken,
       );
       return response.data as T;
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  // Server-Sent Events (SSE) POST helper for streaming responses
+  Future<Stream<String>> postSseDataLines(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final mergedOptions = (options ?? Options()).copyWith(
+        responseType: ResponseType.stream,
+      );
+
+      final response = await _dio.post<ResponseBody>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: mergedOptions,
+        cancelToken: cancelToken,
+      );
+
+      final body = response.data;
+      if (body == null) {
+        return const Stream.empty();
+      }
+
+      final controller = StreamController<String>();
+      var buffer = '';
+
+      // Decode UTF-8 bytes into text and split into SSE lines
+      utf8.decoder.bind(body.stream).listen(
+        (chunk) {
+          buffer += chunk;
+          final lines = buffer.split('\n');
+          buffer = lines.removeLast();
+
+          for (final rawLine in lines) {
+            final line = rawLine.trim();
+            if (line.isEmpty || line.startsWith('event:')) {
+              continue;
+            }
+            if (line.startsWith('data:')) {
+              final dataPart = line.substring(5).trim();
+              if (dataPart.isNotEmpty) {
+                controller.add(dataPart);
+              }
+            }
+          }
+        },
+        onError: (error) {
+          if (!controller.isClosed) {
+            controller.addError(error);
+            controller.close();
+          }
+        },
+        onDone: () {
+          if (!controller.isClosed) {
+            controller.close();
+          }
+        },
+        cancelOnError: true,
+      );
+
+      return controller.stream;
     } on DioException catch (e) {
       throw _handleError(e);
     }

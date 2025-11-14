@@ -30,6 +30,7 @@ import ticketRoutes from './routes/ticketRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import fcmRoutes from './routes/fcmRoutes';
 import errorLogRoutes from './routes/errorLogRoutes';
+import chatRoutes from './routes/chatRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import firebaseService from './services/firebaseService';
 import { sanitizeInput } from './middleware/validation';
@@ -128,6 +129,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/fcm', fcmRoutes);
 app.use('/api/error-logs', errorLogRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Serve static files from the React website build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');

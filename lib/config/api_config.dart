@@ -105,9 +105,16 @@ class ApiConfig {
 
   // Notification endpoints
   static const String notifications = '/api/notifications';
-  static const String notificationsUnreadCount = '/api/notifications/unread-count';
-  static String notificationMarkRead(String id) => '/api/notifications/$id/read';
+  static const String notificationsUnreadCount =
+      '/api/notifications/unread-count';
+  static String notificationMarkRead(String id) =>
+      '/api/notifications/$id/read';
   static const String notificationsReadAll = '/api/notifications/read-all';
+
+  // Chat endpoints
+  static const String nutritionChat = '/api/chat/nutrition';
+  static const String nutritionChatHistory = '/api/chat/nutrition/history';
+  static const String nutritionChatImage = '/api/chat/nutrition/image';
 
   // FCM endpoints
   static const String fcmRegister = '/api/fcm/register';
