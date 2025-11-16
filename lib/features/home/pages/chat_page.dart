@@ -10,6 +10,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import 'package:go_router/go_router.dart';
 import '../data/models/chat_message.dart';
 import '../presentation/providers/chat_provider.dart';
 
@@ -43,6 +44,32 @@ class ChatPage extends HookConsumerWidget {
     final scrollController = useScrollController();
     final focusNode = useFocusNode();
     final attachedImage = useState<XFile?>(null);
+
+    // Handle daily message limit error and navigate to subscription
+    useEffect(() {
+      print('DEBUG: useEffect triggered, chatState.error = ${chatState.error}');
+      if (chatState.error == 'DAILY_MESSAGE_LIMIT_REACHED') {
+        print(
+            'DEBUG: Daily limit error detected in useEffect, showing snackbar and navigating');
+        // Show a snackbar message
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('home.chat_daily_limit_reached'.tr()),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          // Navigate to subscription page after showing message
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (context.mounted) {
+              print('DEBUG: Navigating to subscription page');
+              context.pushNamed('subscription');
+            }
+          });
+        });
+      }
+      return null;
+    }, [chatState.error]);
 
     // Lazy-load older messages when scrolling near the top (maxScrollExtent)
     useEffect(() {
@@ -401,8 +428,6 @@ class ChatPage extends HookConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    const coach = Coach.defaultCoach;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

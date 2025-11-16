@@ -1,8 +1,10 @@
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
+import mongoose from 'mongoose';
 import { calculateOpenAICostUSD, roundTo6, formatUSD } from '../utils/cost';
 import { logServiceError } from '../utils/errorLogger';
+import NutritionChatMessage from '../models/NutritionChatMessage';
 
 export interface NutritionChatMeta {
     model: string | null;
@@ -37,7 +39,7 @@ export interface NutritionChatContext {
 export interface NutritionChatInput {
     userMessage: string;
     context: NutritionChatContext;
-    history?: ChatHistoryTurn[];
+    userId: string | mongoose.Types.ObjectId;
     imageUrl?: string | null;
 }
 
@@ -107,8 +109,32 @@ export class NutritionChatService {
         return raw;
     }
 
+    private async fetchMessageHistory(userId: string | mongoose.Types.ObjectId): Promise<ChatHistoryTurn[]> {
+        try {
+            const messages = await NutritionChatMessage.find({ userId })
+                .sort({ createdAt: -1 })
+                .limit(30) // Fetch 30 messages (15 turns = 15 user + 15 assistant)
+                .lean();
+
+            // Convert to ChatHistoryTurn format and reverse to chronological order
+            const history: ChatHistoryTurn[] = messages
+                .reverse()
+                .map((msg: any) => ({
+                    role: (msg.senderRole === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+                    content: msg.message || '',
+                }))
+                .filter((turn) => turn.content.trim().length > 0);
+
+            // Take only last 15 turns
+            return history.slice(-10);
+        } catch (error) {
+            logServiceError('NutritionChatService', 'fetchMessageHistory', error as Error);
+            return [];
+        }
+    }
+
     public async chat(input: NutritionChatInput): Promise<NutritionChatResponse> {
-        const { userMessage, context, history, imageUrl } = input;
+        const { userMessage, context, userId, imageUrl } = input;
 
         const systemPrompt =
             'Your name is Dorsa (درسا). You are an expert nutrition coach for a Persian fitness & calorie tracking app.' +
@@ -129,13 +155,12 @@ export class NutritionChatService {
             { role: 'system', content: systemPrompt },
         ];
 
-        if (Array.isArray(history) && history.length > 0) {
-            const recentHistory = history.slice(-10); // use only last 10 turns
-            for (const turn of recentHistory) {
-                if (!turn || typeof turn.content !== 'string') continue;
-                if (turn.role !== 'user' && turn.role !== 'assistant' && turn.role !== 'system') continue;
-                messages.push({ role: turn.role, content: turn.content });
-            }
+        // Fetch message history from database
+        const history = await this.fetchMessageHistory(userId);
+        for (const turn of history) {
+            if (!turn || typeof turn.content !== 'string') continue;
+            if (turn.role !== 'user' && turn.role !== 'assistant' && turn.role !== 'system') continue;
+            messages.push({ role: turn.role, content: turn.content });
         }
 
         const rawUser = (userMessage ?? '').trim();
@@ -225,7 +250,7 @@ export class NutritionChatService {
     }
 
     public async chatStream(input: NutritionChatInput): Promise<AsyncIterable<any>> {
-        const { userMessage, context, history, imageUrl } = input;
+        const { userMessage, context, userId, imageUrl } = input;
 
         const systemPrompt =
             'Your name is Dorsa (درسا). You are an expert nutrition coach for a Persian fitness & calorie tracking app.' +
@@ -246,13 +271,12 @@ export class NutritionChatService {
             { role: 'system', content: systemPrompt },
         ];
 
-        if (Array.isArray(history) && history.length > 0) {
-            const recentHistory = history.slice(-10); // use only last 10 turns
-            for (const turn of recentHistory) {
-                if (!turn || typeof turn.content !== 'string') continue;
-                if (turn.role !== 'user' && turn.role !== 'assistant' && turn.role !== 'system') continue;
-                messages.push({ role: turn.role, content: turn.content });
-            }
+        // Fetch message history from database
+        const history = await this.fetchMessageHistory(userId);
+        for (const turn of history) {
+            if (!turn || typeof turn.content !== 'string') continue;
+            if (turn.role !== 'user' && turn.role !== 'assistant' && turn.role !== 'system') continue;
+            messages.push({ role: turn.role, content: turn.content });
         }
 
         const rawUser = (userMessage ?? '').trim();

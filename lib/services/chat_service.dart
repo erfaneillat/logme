@@ -27,12 +27,14 @@ class ChatService {
     required String message,
     String? imageUrl,
   }) async {
+    final data = <String, dynamic>{
+      'message': message,
+      if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
+    };
+
     final response = await _apiService.post<Map<String, dynamic>>(
       ApiConfig.nutritionChat,
-      data: {
-        'message': message,
-        if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
-      },
+      data: data,
     );
 
     if (response['success'] == true) {

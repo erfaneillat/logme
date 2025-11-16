@@ -103,11 +103,52 @@ class ApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, handler) async {
+          // Normalize ResponseBody errors (e.g. SSE with ResponseType.stream) into
+          // regular JSON/String so downstream code can inspect them.
+          dynamic normalizedData = error.response?.data;
+
+          if (normalizedData is ResponseBody) {
+            try {
+              final bodyString = await utf8.decodeStream(normalizedData.stream);
+
+              dynamic parsed;
+              try {
+                parsed = bodyString.isNotEmpty ? jsonDecode(bodyString) : null;
+              } catch (_) {
+                // Not JSON, keep as plain string
+                parsed = bodyString;
+              }
+
+              final original = error.response;
+              final normalizedResponse = Response(
+                requestOptions: error.requestOptions,
+                data: parsed,
+                statusCode: original?.statusCode,
+                statusMessage: original?.statusMessage,
+                headers: original?.headers,
+                isRedirect: original?.isRedirect ?? false,
+                redirects: original?.redirects ?? const [],
+                extra: original?.extra ?? const {},
+              );
+
+              error = DioException(
+                requestOptions: error.requestOptions,
+                response: normalizedResponse,
+                type: error.type,
+                error: error.error,
+                stackTrace: error.stackTrace,
+              );
+
+              normalizedData = parsed;
+            } catch (_) {
+              // If normalization fails, fall back to original error
+            }
+          }
+
           final statusCode = error.response?.statusCode;
-          final responseData = error.response?.data;
 
           // Check if token is expired or invalid (403 with specific message)
-          final isTokenExpired = _isTokenExpired(statusCode, responseData);
+          final isTokenExpired = _isTokenExpired(statusCode, normalizedData);
           final isAuthError = statusCode == 401;
           final isRefreshCall =
               error.requestOptions.path == ApiConfig.authRefreshToken;

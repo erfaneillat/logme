@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:dio/dio.dart';
 import '../../data/models/chat_message.dart';
 import '../../../../services/chat_service.dart';
 
@@ -168,6 +171,67 @@ class ChatNotifier extends StateNotifier<ChatState> {
       );
       await _streamAssistantReplyFromServer(stream);
     } catch (e) {
+      print('DEBUG: Exception caught in sendMessage: $e');
+      print('DEBUG: Exception type: ${e.runtimeType}');
+
+      // Check if it's a daily message limit error
+      if (e is DioException) {
+        final statusCode = e.response?.statusCode;
+        final responseData = e.response?.data;
+
+        print('DEBUG: DioException - statusCode: $statusCode');
+        print(
+            'DEBUG: DioException - responseData type: ${responseData.runtimeType}');
+        print('DEBUG: DioException - responseData: $responseData');
+
+        // Handle both Map and String response data
+        Map<String, dynamic>? dataMap;
+        if (responseData is Map<String, dynamic>) {
+          dataMap = responseData;
+          print('DEBUG: responseData is Map, dataMap: $dataMap');
+        } else if (responseData is String) {
+          try {
+            dataMap = jsonDecode(responseData) as Map<String, dynamic>?;
+            print('DEBUG: Parsed String to Map, dataMap: $dataMap');
+          } catch (parseError) {
+            print('DEBUG: Failed to parse responseData string: $parseError');
+          }
+        } else {
+          print(
+              'DEBUG: responseData is neither Map nor String: ${responseData.runtimeType}');
+        }
+
+        // Check for daily limit error by code or status code + message
+        final code = dataMap?['code'] as String?;
+        final message = dataMap?['message'] as String?;
+        print('DEBUG: Extracted code: $code, message: $message');
+
+        final isDailyLimitError = code == 'DAILY_MESSAGE_LIMIT_REACHED' ||
+            (statusCode == 403 &&
+                (message?.toLowerCase().contains('daily message limit') ==
+                        true ||
+                    message?.toLowerCase().contains('daily limit') == true));
+
+        print('DEBUG: isDailyLimitError: $isDailyLimitError');
+
+        if (isDailyLimitError) {
+          print(
+              'DEBUG: Daily limit error confirmed, removing user message and setting error state');
+          // Remove the user message that was just added
+          final updatedMessages =
+              state.messages.where((msg) => msg != userMessage).toList();
+          state = state.copyWith(
+            messages: updatedMessages,
+            isLoading: false,
+            error:
+                'DAILY_MESSAGE_LIMIT_REACHED', // Special error code for UI handling
+          );
+          print('DEBUG: State updated, error is now: ${state.error}');
+          return;
+        }
+      }
+
+      print('DEBUG: Not a daily limit error, setting generic error');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -187,6 +251,23 @@ class ChatNotifier extends StateNotifier<ChatState> {
       await for (final event in events) {
         if (event.isEmpty) {
           continue;
+        }
+
+        // Check for error in stream (e.g., daily limit reached)
+        final error = event['error'] as String?;
+        final code = event['code'] as String?;
+        if (code == 'DAILY_MESSAGE_LIMIT_REACHED' ||
+            (error != null && error.contains('Daily message limit'))) {
+          // Remove the last user message
+          final userMessage = baseMessages.last;
+          final updatedMessages =
+              baseMessages.where((msg) => msg != userMessage).toList();
+          state = state.copyWith(
+            messages: updatedMessages,
+            isLoading: false,
+            error: 'DAILY_MESSAGE_LIMIT_REACHED',
+          );
+          return;
         }
 
         final token = event['token'] as String?;

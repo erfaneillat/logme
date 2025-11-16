@@ -206,7 +206,8 @@
         "coming_soon": "Coming Soon",
         "chat_coach_name": "Coach Ali",
         "chat_coach_title": "Nutritionist",
-        "chat_welcome": "Hi! I’m your AI nutrition coach. Based on the foods and calories you log, I’ll help you make better choices and reach your goals. Ask me anything to get started 🌱",
+        "chat_welcome": "Hi! I'm your AI nutrition coach. Based on the foods and calories you log, I'll help you make better choices and reach your goals. Ask me anything to get started 🌱",
+        "chat_daily_limit_reached": "You've reached your daily message limit. Upgrade to premium for unlimited messages!",
         "chat_quick_replies": {
             "suggest_food": "What should I eat today?",
             "suggest_food_by_remaining_calories": "What can I eat with my remaining calories?",

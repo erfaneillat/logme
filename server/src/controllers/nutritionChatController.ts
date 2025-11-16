@@ -4,8 +4,9 @@ import User from '../models/User';
 import AdditionalInfo from '../models/AdditionalInfo';
 import Plan from '../models/Plan';
 import NutritionChatMessage from '../models/NutritionChatMessage';
+import Subscription from '../models/Subscription';
 import errorLogger from '../services/errorLoggerService';
-import { NutritionChatService, NutritionChatContext, ChatHistoryTurn } from '../services/nutritionChatService';
+import { NutritionChatService, NutritionChatContext } from '../services/nutritionChatService';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -33,6 +34,56 @@ export class NutritionChatController {
         const { userId, message, imageUrl, chatInput } = params;
 
         try {
+            // Check subscription status and daily message limit for free users
+            const activeSubscription = await Subscription.findOne({
+                userId,
+                isActive: true,
+                expiryDate: { $gt: new Date() },
+            }).sort({ expiryDate: -1 });
+
+            const isSubscribed = !!activeSubscription;
+
+            // For free users, check daily message limit (max 2 messages per day)
+            if (!isSubscribed) {
+                const today = new Date();
+                const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+
+                const todayMessageCount = await NutritionChatMessage.countDocuments({
+                    userId,
+                    senderRole: 'user',
+                    createdAt: {
+                        $gte: startOfToday,
+                        $lte: endOfToday,
+                    },
+                });
+
+                const MAX_FREE_MESSAGES_PER_DAY = 2;
+                if (todayMessageCount >= MAX_FREE_MESSAGES_PER_DAY) {
+                    if (!res.headersSent) {
+                        res.status(403).json({
+                            success: false,
+                            message: 'Daily message limit reached',
+                            code: 'DAILY_MESSAGE_LIMIT_REACHED',
+                            limit: MAX_FREE_MESSAGES_PER_DAY,
+                        });
+                    } else {
+                        try {
+                            const payload = JSON.stringify({
+                                error: 'Daily message limit reached',
+                                code: 'DAILY_MESSAGE_LIMIT_REACHED',
+                                limit: MAX_FREE_MESSAGES_PER_DAY,
+                            });
+                            res.write(`data: ${payload}\n\n`);
+                            res.end();
+                        } catch {
+                            // ignore secondary errors while ending stream
+                        }
+                    }
+                    return;
+                }
+            }
+
             const service = this.getService() as any;
             const stream = await service.chatStream(chatInput);
 
@@ -115,7 +166,6 @@ export class NutritionChatController {
             const body = (req.body || {}) as {
                 message?: string;
                 date?: string;
-                history?: ChatHistoryTurn[];
                 imageUrl?: string;
             };
 
@@ -134,6 +184,41 @@ export class NutritionChatController {
                 today.getDate(),
             ).padStart(2, '0')}`;
             const date = (rawDate || defaultDate).slice(0, 10);
+
+            // Check subscription status and daily message limit for free users
+            const activeSubscription = await Subscription.findOne({
+                userId,
+                isActive: true,
+                expiryDate: { $gt: new Date() },
+            }).sort({ expiryDate: -1 });
+
+            const isSubscribed = !!activeSubscription;
+
+            // For free users, check daily message limit (max 2 messages per day)
+            if (!isSubscribed) {
+                const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+
+                const todayMessageCount = await NutritionChatMessage.countDocuments({
+                    userId,
+                    senderRole: 'user',
+                    createdAt: {
+                        $gte: startOfToday,
+                        $lte: endOfToday,
+                    },
+                });
+
+                const MAX_FREE_MESSAGES_PER_DAY = 2;
+                if (todayMessageCount >= MAX_FREE_MESSAGES_PER_DAY) {
+                    res.status(403).json({
+                        success: false,
+                        message: 'Daily message limit reached',
+                        code: 'DAILY_MESSAGE_LIMIT_REACHED',
+                        limit: MAX_FREE_MESSAGES_PER_DAY,
+                    });
+                    return;
+                }
+            }
 
             const [user, info, todayLog, plan] = await Promise.all([
                 User.findById(userId)
@@ -245,14 +330,11 @@ export class NutritionChatController {
             const chatInput: any = {
                 userMessage: message,
                 context,
+                userId,
             };
 
             if (imageUrl) {
                 chatInput.imageUrl = imageUrl;
-            }
-
-            if (Array.isArray(body.history)) {
-                chatInput.history = body.history;
             }
 
             const streamFlag = String(((req.query as any)?.stream ?? (body as any)?.stream ?? '') || '').toLowerCase();
