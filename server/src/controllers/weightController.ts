@@ -103,14 +103,16 @@ export class WeightController {
         return;
       }
 
-      const { date, weightKg } = req.body || {};
-      if (!date || typeof date !== 'string' || typeof weightKg !== 'number') {
-        res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) and weightKg (number) are required' });
+      const date = typeof req.body?.date === 'string' ? req.body.date.trim() : undefined;
+      const rawWeight = (req.body as any)?.weightKg;
+      const parsedWeight = Number(rawWeight);
+      if (!date || !Number.isFinite(parsedWeight)) {
+        res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) and weightKg are required' });
         return;
       }
 
       const sanitizedDate = date.slice(0, 10);
-      const weight = Math.max(20, Math.min(400, Number(weightKg)));
+      const weight = Math.max(20, Math.min(400, parsedWeight));
 
       const entry = await WeightEntry.findOneAndUpdate(
         { userId, date: sanitizedDate },
@@ -143,7 +145,7 @@ export class WeightController {
 
       res.json({ success: true, data: { entry } });
     } catch (error) {
-      errorLogger.error('Upsert weight error:', error);
+      errorLogger.error('Upsert weight error:', error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -159,7 +161,7 @@ export class WeightController {
       const latest = await WeightEntry.findOne({ userId }).sort({ date: -1 }).lean();
       res.json({ success: true, data: { latest } });
     } catch (error) {
-      errorLogger.error('Get latest weight error:', error);
+      errorLogger.error('Get latest weight error:', error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
@@ -189,7 +191,7 @@ export class WeightController {
 
       res.json({ success: true, data: { entries } });
     } catch (error) {
-      errorLogger.error('Get weight range error:', error);
+      errorLogger.error('Get weight range error:', error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
