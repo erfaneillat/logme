@@ -146,6 +146,23 @@ export class AdditionalInfoController {
                 return;
             }
 
+            // Auto-fix: Map activityLevel from workoutFrequency if missing
+            if (!additionalInfo.activityLevel && additionalInfo.workoutFrequency) {
+                const activityMap: Record<string, string> = {
+                    '0-2': 'lightly_active',
+                    '3-5': 'moderately_active',
+                    '6+': 'very_active'
+                };
+                additionalInfo.activityLevel = activityMap[additionalInfo.workoutFrequency] || 'lightly_active';
+                await additionalInfo.save();
+            }
+
+            // Auto-fix: Set targetWeight if missing and goal is maintain_weight
+            if (!additionalInfo.targetWeight && additionalInfo.weightGoal === 'maintain_weight' && additionalInfo.weight) {
+                additionalInfo.targetWeight = additionalInfo.weight;
+                await additionalInfo.save();
+            }
+
             // Check if all required fields are filled
             const baseComplete = !!(additionalInfo.gender && additionalInfo.birthDate && additionalInfo.weight &&
                 additionalInfo.height && additionalInfo.activityLevel && additionalInfo.weightGoal &&
@@ -157,7 +174,20 @@ export class AdditionalInfoController {
             if (!baseComplete || (requiresSpeed && !hasSpeed)) {
                 res.status(400).json({
                     success: false,
-                    message: 'Additional information is incomplete'
+                    message: 'Additional information is incomplete',
+                    missing: {
+                        gender: !additionalInfo.gender,
+                        birthDate: !additionalInfo.birthDate,
+                        weight: !additionalInfo.weight,
+                        height: !additionalInfo.height,
+                        activityLevel: !additionalInfo.activityLevel,
+                        weightGoal: !additionalInfo.weightGoal,
+                        workoutFrequency: !additionalInfo.workoutFrequency,
+                        targetWeight: !additionalInfo.targetWeight,
+                        diet: !additionalInfo.diet,
+                        accomplishment: !additionalInfo.accomplishment,
+                        speed: requiresSpeed && !hasSpeed
+                    }
                 });
                 return;
             }
