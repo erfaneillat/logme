@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="flex items-center gap-1">
                     <div className="relative w-10 h-10">
                         <Image
-                            src="/loqme_logo.png"
+                            src="/app/loqme_logo.png"
                             alt="لقمه"
                             fill
                             className="object-contain drop-shadow-sm"

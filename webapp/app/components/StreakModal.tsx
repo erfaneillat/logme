@@ -99,7 +99,7 @@ const StreakModal: React.FC<StreakModalProps> = ({
                                 <div className="flex items-center gap-2">
                                     <div className="relative w-8 h-8">
                                         <Image
-                                            src="/loqme_logo.png"
+                                            src="/app/loqme_logo.png"
                                             alt="لقمه"
                                             fill
                                             className="object-contain"

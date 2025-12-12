@@ -74,21 +74,21 @@ const NutritionOverlay = () => {
 const PAGES: OnboardingData[] = [
     {
         id: 0,
-        image: '/images/man-onboarding.jpg',
+        image: '/app/images/man-onboarding.jpg',
         title: 'بدنت را متحول کن',
         subtitle: 'امروز بهترین زمان برای شروع به کار برای رسیدن به بدن رویایی خود است',
         Overlay: WeightGoalOverlay
     },
     {
         id: 1,
-        image: '/images/food-onboarding.jpg',
+        image: '/app/images/food-onboarding.jpg',
         title: 'ردیابی کالری آسان شد',
         subtitle: 'فقط یک عکس سریع از وعده غذایی خود بگیرید و ما بقیه کارها را انجام خواهیم داد',
         Overlay: CameraOverlay
     },
     {
         id: 2,
-        image: '/images/food-onboarding.jpg',
+        image: '/app/images/food-onboarding.jpg',
         title: 'تجزیه و تحلیل عمیق تغذیه',
         subtitle: 'ما شما را در مورد انتخاب های غذایی و محتوای غذایی آنها مطلع خواهیم کرد',
         Overlay: NutritionOverlay

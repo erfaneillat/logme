@@ -47,7 +47,7 @@ export default function Splash({ onFinish }: SplashProps) {
                         }}
                     />
                     <Image
-                        src="/images/loqme_logo.png"
+                        src="/app/images/loqme_logo.png"
                         alt="Loqme Logo"
                         fill
                         className="object-contain"
