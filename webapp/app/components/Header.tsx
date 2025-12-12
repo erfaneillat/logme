@@ -23,6 +23,12 @@ const FireIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
     </svg>
 );
 
+// Helper to convert English numbers to Persian/Farsi numerals
+const toPersianNumbers = (num: number | string): string => {
+    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+};
+
 const Header: React.FC<HeaderProps> = ({
     streakCount = 0,
     isSubscribed = false,
@@ -119,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({
 
                         {/* Streak Count */}
                         <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors duration-200">
-                            {streakCount} روز
+                            {toPersianNumbers(streakCount)} روز
                         </span>
                     </button>
                 </div>

@@ -35,6 +35,7 @@ jobs:
           server/package-lock.json
           website/package-lock.json
           panel/package-lock.json
+          webapp/package-lock.json
 
     - name: 📦 Install Server Dependencies
       run: |
@@ -127,6 +128,32 @@ jobs:
         fi
         
         echo "✅ Admin panel built successfully"
+        cd ..
+
+    - name: 📦 Install Webapp Dependencies
+      run: |
+        echo "📦 Installing webapp dependencies..."
+        cd webapp && npm ci && cd ..
+
+    - name: 🔨 Build Next.js Webapp
+      run: |
+        echo "🔨 Building Next.js webapp..."
+        cd webapp
+        
+        # Build webapp with environment variables (static export)
+        if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+          NODE_ENV=development npm run build
+        else
+          NODE_ENV=production npm run build
+        fi
+        
+        # Verify build was successful (static export creates 'out' directory)
+        if [ ! -d "out" ]; then
+          echo "❌ Error: Webapp build failed - out directory not found"
+          exit 1
+        fi
+        
+        echo "✅ Next.js webapp built successfully"
         cd ..
 
     # ✅ Deploy backend code
@@ -239,6 +266,33 @@ jobs:
           fi
           
           echo "✅ Admin panel built successfully"
+          
+          # Build Next.js Webapp
+          echo "🔨 Building Next.js webapp..."
+          cd ../webapp
+          
+          # Install webapp dependencies if needed
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            echo "⚠️ No package-lock.json found, using npm install..."
+            npm install
+          fi
+          
+          # Build webapp (static export)
+          if [ "${{ steps.env.outputs.environment }}" == "development" ]; then
+            NODE_ENV=development npm run build
+          else
+            NODE_ENV=production npm run build
+          fi
+          
+          # Verify webapp build was successful (static export creates 'out' directory)
+          if [ ! -d "out" ]; then
+            echo "❌ Error: Webapp build failed - out directory not found"
+            exit 1
+          fi
+          
+          echo "✅ Next.js webapp built successfully"
 
     # ✅ Restart PM2
     - name: ✅ Restart PM2

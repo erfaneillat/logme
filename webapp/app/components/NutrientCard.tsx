@@ -3,6 +3,12 @@
 import React from 'react';
 import CircularProgress from './CircularProgress';
 
+// Helper to convert English numbers to Persian/Farsi numerals
+const toPersianNumbers = (num: number | string): string => {
+    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+};
+
 interface NutrientCardProps {
     label: string;
     value: number;
@@ -32,7 +38,7 @@ const NutrientCard: React.FC<NutrientCardProps> = ({ label, value, total, unit, 
 
             <div className="text-center w-full mb-1">
                 <div className="text-xl font-black text-gray-800 flex items-center justify-center gap-1">
-                    <span>{remaining}</span>
+                    <span>{toPersianNumbers(remaining)}</span>
                     <span className="text-[10px] font-medium text-gray-400">{unit}</span>
                 </div>
                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -44,3 +50,4 @@ const NutrientCard: React.FC<NutrientCardProps> = ({ label, value, total, unit, 
 };
 
 export default NutrientCard;
+

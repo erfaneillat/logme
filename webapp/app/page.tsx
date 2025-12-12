@@ -14,50 +14,9 @@ import Verification from './components/Verification';
 import AdditionalInfo from './components/AdditionalInfo';
 import PlanGeneration from './components/PlanGeneration';
 import PlanSummary from './components/PlanSummary';
-import { FoodItem, DailyGoals } from './types';
+import { FoodItem } from './types';
 import { FoodAnalysisResult } from './services/geminiService';
 import { apiService, User } from './services/apiService';
-
-// Initial Mock Data
-const INITIAL_GOALS: DailyGoals = {
-  calories: 2200,
-  protein: 150,
-  carbs: 250,
-  fat: 70,
-};
-
-const MOCK_FOODS: FoodItem[] = [
-  {
-    id: '1',
-    name: '۸ عدد بال مرغ با سس گوجه',
-    calories: 1250,
-    protein: 68,
-    carbs: 56,
-    fat: 84,
-    timestamp: new Date(new Date().setHours(11, 10)),
-    imageUrl: 'https://images.unsplash.com/photo-1527477396000-64ca9c001733?q=80&w=200&auto=format&fit=crop'
-  },
-  {
-    id: '2',
-    name: 'سینی غذا با همبرگر، استیک و میوه',
-    calories: 1132,
-    protein: 62,
-    carbs: 104,
-    fat: 52,
-    timestamp: new Date(new Date().setHours(11, 8)),
-    imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=200&auto=format&fit=crop'
-  },
-  {
-    id: '3',
-    name: 'صبحانه با تخم‌مرغ، نان سبوس‌دار و گردو',
-    calories: 328,
-    protein: 20,
-    carbs: 35,
-    fat: 12,
-    timestamp: new Date(new Date().setHours(10, 57)),
-    imageUrl: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?q=80&w=200&auto=format&fit=crop'
-  }
-];
 
 type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings';
 type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL_INFO' | 'PLAN_GENERATION' | 'PLAN_SUMMARY' | 'MAIN';
@@ -65,24 +24,14 @@ type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('SPLASH');
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
-  const [goals] = useState<DailyGoals>(INITIAL_GOALS);
-  const [foods, setFoods] = useState<FoodItem[]>(MOCK_FOODS);
 
   // Auth State
   const [phoneNumber, setPhoneNumber] = useState('');
 
   // State for Food Detail Modal
-  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
+  const [selectedFood, setSelectedFood] = useState<any>(null);
 
-  // Calculate initial consumed from mock data
-  const initialConsumed = MOCK_FOODS.reduce((acc, food) => ({
-    calories: acc.calories + food.calories,
-    protein: acc.protein + food.protein,
-    carbs: acc.carbs + food.carbs,
-    fat: acc.fat + food.fat
-  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
-
-  const [consumed, setConsumed] = useState(initialConsumed);
+  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSplashFinish = () => {
@@ -138,33 +87,24 @@ export default function Home() {
   const handlePlanSummaryComplete = async () => {
     try {
       await apiService.markAdditionalInfoCompleted();
-    } catch (error) {
+      localStorage.setItem('hasCompletedAdditionalInfo', 'true');
+      localStorage.setItem('hasGeneratedPlan', 'true');
+      setAppState('MAIN');
+    } catch (error: any) {
       console.error('Failed to mark additional info as completed:', error);
+      if (error.message && error.message.includes('incomplete')) {
+        alert('اطلاعات شما کامل نیست. لطفاً مجدداً تلاش کنید.');
+        setAppState('ADDITIONAL_INFO');
+      } else {
+        alert('خطا در ذخیره وضعیت. لطفاً مجدداً تلاش کنید.');
+      }
     }
-    localStorage.setItem('hasCompletedAdditionalInfo', 'true');
-    localStorage.setItem('hasGeneratedPlan', 'true');
-    setAppState('MAIN');
   };
 
   const handleAddFood = (analysis: FoodAnalysisResult, image?: string) => {
-    const newFood: FoodItem = {
-      id: Date.now().toString(),
-      name: analysis.foodName,
-      calories: analysis.estimatedCalories,
-      protein: analysis.proteinGrams,
-      carbs: analysis.carbsGrams,
-      fat: analysis.fatGrams,
-      timestamp: new Date(),
-      imageUrl: image,
-    };
-
-    setFoods(prev => [newFood, ...prev]);
-    setConsumed(prev => ({
-      calories: prev.calories + newFood.calories,
-      protein: prev.protein + newFood.protein,
-      carbs: prev.carbs + newFood.carbs,
-      fat: prev.fat + newFood.fat,
-    }));
+    // The Dashboard component now handles its own data fetching
+    // After adding food, it will refresh automatically
+    console.log('Food added:', analysis.foodName);
   };
 
   const handleLogout = () => {
@@ -213,9 +153,6 @@ export default function Home() {
 
       {currentView === 'dashboard' && (
         <Dashboard
-          goals={goals}
-          consumed={consumed}
-          foods={foods}
           setIsModalOpen={setIsModalOpen}
           onFoodClick={setSelectedFood}
         />

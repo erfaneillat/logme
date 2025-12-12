@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiService } from '../services/apiService';
+import { newDate } from 'date-fns-jalali';
+import { differenceInYears } from 'date-fns';
 
 // --- Types ---
 type Gender = 'male' | 'female' | 'other';
@@ -34,7 +36,7 @@ const Icons = {
     Female: () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" /><path d="M12 17v-6M9 14l3 3 3-3" /></svg>,
     Person: () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>,
     Check: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"></polyline></svg>,
-    ChevronLeft: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="15 18 9 12 15 6"></polyline></svg>,
+    ChevronLeft: ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`w-5 h-5 ${className || ''}`}><polyline points="15 18 9 12 15 6"></polyline></svg>,
     HeaderPerson: () => <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-10 h-10"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
 };
 
@@ -1450,7 +1452,21 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState<AdditionalInfoData>({
         dietType: 'standard', // Default
-    });
+        val: { day: 26, month: 2, year: 1380 }, // birthDate Default
+        weight: 70, // Default
+        height: 170, // Default
+    } as any);
+
+    // Fix: properly structure the initial state
+    useEffect(() => {
+        setFormData(prev => ({
+            ...prev,
+            birthDate: prev.birthDate || { day: 26, month: 2, year: 1380 },
+            weight: prev.weight || 70,
+            height: prev.height || 170,
+        }));
+    }, []);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -1490,11 +1506,11 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
             case 'gender':
                 return <GenderSelection value={formData.gender} onChange={(v) => updateData('gender', v)} />;
             case 'birth':
-                return <BirthDateSelection value={formData.birthDate} onChange={(v: any) => updateData('birthDate', v)} />;
+                return <BirthDateSelection value={formData.birthDate || { day: 26, month: 2, year: 1380 }} onChange={(v: any) => updateData('birthDate', v)} />;
             case 'workout':
                 return <WorkoutFrequency value={formData.workoutFrequency} onChange={(v: any) => updateData('workoutFrequency', v)} />;
             case 'measurements':
-                return <WeightHeight weight={formData.weight} height={formData.height} onChange={(k: string, v: any) => updateData(k, v)} />;
+                return <WeightHeight weight={formData.weight || 70} height={formData.height || 170} onChange={(k: string, v: any) => updateData(k, v)} />;
             case 'goal':
                 return <GoalSelection value={formData.weightGoal} onChange={(v: any) => updateData('weightGoal', v)} />;
             case 'longterm':
@@ -1525,21 +1541,21 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
     const isStepValid = () => {
         switch (currentStepId) {
             case 'gender': return !!formData.gender;
-            case 'birth': return true; // defaults set
+            case 'birth': return !!formData.birthDate;
             case 'workout': return !!formData.workoutFrequency;
             case 'measurements': return !!formData.weight && !!formData.height;
             case 'goal': return !!formData.weightGoal;
             case 'longterm': return true; // informational step, always valid
             case 'target': {
+                if (formData.weightGoal === 'maintain_weight') return true;
                 if (!formData.targetWeight || !formData.weight) return false;
                 if (formData.weightGoal === 'lose_weight') return formData.targetWeight < formData.weight;
                 if (formData.weightGoal === 'gain_weight') return formData.targetWeight > formData.weight;
-                if (formData.weightGoal === 'maintain_weight') return formData.targetWeight === formData.weight;
                 return false;
             }
             case 'motivational': return true; // informational step, always valid
             case 'speed': return !!formData.weightLossSpeed;
-            case 'barriers': return true; // optional
+            case 'barriers': return formData.barriers && formData.barriers.length > 0;
             case 'diet': return !!formData.dietType;
             case 'accomplishment': return !!formData.accomplishment;
             case 'transition': return true;
@@ -1557,12 +1573,12 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
                 // Calculate age
                 let age = formData.age;
                 if (!age && formData.birthDate) {
+                    // Create a standard Date object from Jalali input
+                    // date-fns-jalali's newDate takes (year, monthIndex, day) in Jalali and returns standard Date
+                    const birthDateGeo = newDate(formData.birthDate.year, formData.birthDate.month - 1, formData.birthDate.day);
                     const today = new Date();
-                    age = today.getFullYear() - formData.birthDate.year;
-                    const m = today.getMonth() + 1 - formData.birthDate.month;
-                    if (m < 0 || (m === 0 && today.getDate() < formData.birthDate.day)) {
-                        age--;
-                    }
+
+                    age = differenceInYears(today, birthDateGeo);
                 }
 
                 // Map speed

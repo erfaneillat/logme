@@ -17,10 +17,38 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
     const [error, setError] = useState<string | null>(null);
     const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
+    // Resend Timer Logic
+    const [countdown, setCountdown] = useState(60);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (countdown > 0) {
+            timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [countdown]);
+
     useEffect(() => {
         // Focus first input on mount
         inputs.current[0]?.focus();
     }, []);
+
+    const handleResend = async () => {
+        if (countdown > 0) return;
+        setIsLoading(true);
+        setError(null);
+        try {
+            await apiService.sendCode(phoneNumber);
+            setCountdown(60);
+            alert('کد جدید ارسال شد.');
+        } catch (err: any) {
+            setError(err.message || 'خطا در ارسال مجدد کد');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleChange = (index: number, value: string) => {
         if (error) setError(null);
@@ -86,8 +114,12 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
             const user = await apiService.verifyCode(phoneNumber, otp);
             onVerify(user);
         } catch (err: any) {
-            setError(err.message || 'کد وارد شده صحیح نمی‌باشد');
-            // Clear code on error? Maybe not all of it.
+            const msg = err.message || '';
+            if (msg.includes('Invalid') || msg.includes('expired')) {
+                setError('کد وارد شده صحیح نمی‌باشد یا منقضی شده است');
+            } else {
+                setError('خطایی رخ داد. لطفا مجددا تلاش کنید');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -147,6 +179,12 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
                     ))}
                 </div>
 
+                {error && (
+                    <div className="w-full text-center text-red-500 text-sm font-bold mb-6">
+                        {error}
+                    </div>
+                )}
+
                 {/* Verify Button */}
                 <button
                     onClick={() => handleVerify(code.join(''))}
@@ -163,8 +201,12 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
                 {/* Resend Link */}
                 <div className="w-full flex justify-center items-center gap-2 text-sm">
                     <span className="text-gray-500">کد را دریافت نکردید؟</span>
-                    <button className="font-bold text-[var(--color-secondary)] hover:underline">
-                        ارسال مجدد کد
+                    <button
+                        onClick={handleResend}
+                        disabled={countdown > 0}
+                        className={`font-bold ${countdown > 0 ? 'text-gray-400' : 'text-[var(--color-secondary)] hover:underline'}`}
+                    >
+                        {countdown > 0 ? `ارسال مجدد در ${countdown} ثانیه` : 'ارسال مجدد کد'}
                     </button>
                 </div>
 
