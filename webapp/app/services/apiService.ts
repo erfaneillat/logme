@@ -69,6 +69,26 @@ export interface UserProfile {
     createdAt?: string;
 }
 
+export interface FoodIngredient {
+    name: string;
+    calories: number;
+    proteinGrams: number;
+    fatGrams: number;
+    carbsGrams: number;
+}
+
+export interface FoodAnalysisResponse {
+    title: string;
+    calories: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatGrams: number;
+    healthScore?: number;
+    ingredients?: FoodIngredient[];
+    isFood?: boolean;
+    error?: string;
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -339,5 +359,110 @@ export const apiService = {
         } catch (error: any) {
             throw new Error(error.message || 'Network error');
         }
-    }
+    },
+
+    // Food Analysis APIs (matching Flutter implementation)
+    analyzeFoodImage: async (imageFile: File, date?: string): Promise<FoodAnalysisResponse> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+            if (date) {
+                formData.append('date', date);
+            }
+
+            const response = await fetch(`${BASE_URL}/api/food/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'Accept-Language': 'fa',
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Handle free tier limit
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                }
+                throw new Error(data.error || data.message || 'خطا در تحلیل تصویر');
+            }
+
+            return data.data;
+        } catch (error: any) {
+            console.error('analyzeFoodImage error:', error);
+            throw error;
+        }
+    },
+
+    analyzeFoodText: async (description: string, date?: string): Promise<FoodAnalysisResponse> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const body: { description: string; date?: string } = { description };
+            if (date) {
+                body.date = date;
+            }
+
+            const response = await fetch(`${BASE_URL}/api/food/analyze-description`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'Accept-Language': 'fa',
+                },
+                body: JSON.stringify(body),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Handle free tier limit
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                }
+                throw new Error(data.error || data.message || 'خطا در تحلیل متن');
+            }
+
+            return data.data;
+        } catch (error: any) {
+            console.error('analyzeFoodText error:', error);
+            throw error;
+        }
+    },
+
+    updateLogItem: async (itemId: string, data: any): Promise<DailyLogItem> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/item/${itemId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.message || responseData.error || 'Failed to update item');
+            }
+
+            return responseData.data;
+        } catch (error: any) {
+            console.error('updateLogItem error:', error);
+            throw error;
+        }
+    },
 };

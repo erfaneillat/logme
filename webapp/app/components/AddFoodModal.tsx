@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { analyzeFoodImage, analyzeFoodText, FoodAnalysisResult } from '../services/geminiService';
+import { apiService, FoodAnalysisResponse } from '../services/apiService';
 
 interface AddFoodModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddFood: (food: FoodAnalysisResult, image?: string) => void;
+    onAddFood: (food: FoodAnalysisResponse, image?: string) => void;
 }
 
 type ModalView = 'menu' | 'preview' | 'text' | 'analyzing' | 'result';
@@ -14,8 +14,9 @@ type ModalView = 'menu' | 'preview' | 'text' | 'analyzing' | 'result';
 const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood }) => {
     const [view, setView] = useState<ModalView>('menu');
     const [image, setImage] = useState<string | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [textInput, setTextInput] = useState('');
-    const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
+    const [analysis, setAnalysis] = useState<FoodAnalysisResponse | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -23,6 +24,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
 
     const resetAndClose = () => {
         setImage(null);
+        setImageFile(null);
         setTextInput('');
         setAnalysis(null);
         setView('menu');
@@ -32,6 +34,9 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Store the file for backend upload
+            setImageFile(file);
+            // Also create preview
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImage(reader.result as string);
@@ -44,18 +49,25 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
     const handleAnalyze = async () => {
         setView('analyzing');
         try {
-            let result: FoodAnalysisResult;
-            if (image) {
-                result = await analyzeFoodImage(image);
+            let result: FoodAnalysisResponse;
+            // Get today's date for the backend
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            if (imageFile) {
+                // Use backend API for image analysis (like Flutter does)
+                result = await apiService.analyzeFoodImage(imageFile, dateStr);
             } else if (textInput) {
-                result = await analyzeFoodText(textInput);
+                // Use backend API for text analysis (like Flutter does)
+                result = await apiService.analyzeFoodText(textInput, dateStr);
             } else {
                 throw new Error("No input provided");
             }
             setAnalysis(result);
             setView('result');
-        } catch (error) {
-            alert("خطا در تحلیل. لطفا مجدد تلاش کنید.");
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'خطا در تحلیل. لطفا مجدد تلاش کنید.';
+            alert(errorMessage);
             setView(image ? 'preview' : 'text');
         }
     };
@@ -180,7 +192,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
                     value={textInput}
                     onChange={(e) => setTextInput(e.target.value)}
                     placeholder="مثال: یک سیخ کباب کوبیده با برنج و گوجه..."
-                    className="w-full bg-transparent border-none focus:ring-0 text-gray-800 text-right min-h-[160px] resize-none placeholder-gray-400 text-lg leading-relaxed"
+                    className="w-full bg-transparent border-none focus:ring-0 outline-none text-gray-800 text-right min-h-[160px] resize-none placeholder-gray-400 text-lg leading-relaxed"
                     autoFocus
                 />
             </div>
@@ -214,16 +226,18 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
             {analysis && (
                 <>
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-green-100">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            <span>{analysis.confidence} اطمینان</span>
-                        </div>
-                        <h3 className="text-3xl font-black text-gray-800 leading-tight">{analysis.foodName}</h3>
+                        {analysis.healthScore !== undefined && (
+                            <div className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-green-100">
+                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                <span>امتیاز سلامت: {analysis.healthScore}/10</span>
+                            </div>
+                        )}
+                        <h3 className="text-3xl font-black text-gray-800 leading-tight">{analysis.title}</h3>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className="bg-gray-50 p-6 rounded-[24px] text-center border border-gray-100 flex flex-col justify-center items-center">
-                            <div className="text-4xl font-black text-gray-900 mb-1">{analysis.estimatedCalories}</div>
+                            <div className="text-4xl font-black text-gray-900 mb-1">{analysis.calories}</div>
                             <div className="text-xs text-gray-400 font-bold uppercase tracking-wide">کالری</div>
                         </div>
                         <div className="space-y-2.5">

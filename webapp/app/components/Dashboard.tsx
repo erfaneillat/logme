@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from './Header';
 import CircularProgress from './CircularProgress';
 import NutrientCard from './NutrientCard';
@@ -36,6 +36,7 @@ const generateDateRange = (): Date[] => {
 interface DashboardProps {
     setIsModalOpen: (isOpen: boolean) => void;
     onFoodClick: (food: any) => void;
+    refreshTrigger?: number;
 }
 
 // Icons
@@ -75,44 +76,62 @@ const MacroPill = ({ label, value, color, bg }: { label: string, value: string, 
     </div>
 );
 
-// Skeleton Loading Components
+// Skeleton Loading Components with Shimmer Effect
+const ShimmerBox = ({ className }: { className: string }) => (
+    <div className={`${className} relative overflow-hidden`}>
+        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+    </div>
+);
+
 const CaloriesCardSkeleton = () => (
-    <div className="bg-white rounded-[32px] p-6 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center justify-between mb-6 relative overflow-hidden animate-pulse">
+    <div className="bg-white rounded-[32px] p-6 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center justify-between mb-6 relative overflow-hidden">
         <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-            <div className="h-12 bg-gray-200 rounded w-32 mb-4"></div>
-            <div className="h-6 bg-gray-200 rounded-full w-28"></div>
+            <ShimmerBox className="h-4 bg-gray-200 rounded w-24 mb-2" />
+            <ShimmerBox className="h-12 bg-gray-200 rounded w-32 mb-4" />
+            <ShimmerBox className="h-6 bg-gray-200 rounded-full w-28" />
         </div>
-        <div className="w-[130px] h-[130px] bg-gray-200 rounded-full"></div>
+        <ShimmerBox className="w-[130px] h-[130px] bg-gray-200 rounded-full" />
     </div>
 );
 
 const NutrientCardSkeleton = () => (
-    <div className="bg-white rounded-[24px] p-4 shadow-sm border border-gray-100/50 h-[180px] animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-12 mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-16 mb-4"></div>
-        <div className="w-16 h-16 bg-gray-200 rounded-full mt-auto"></div>
+    <div className="bg-white rounded-[24px] p-4 shadow-sm border border-gray-100/50 h-[180px] flex flex-col">
+        <ShimmerBox className="h-6 bg-gray-200 rounded w-12 mb-2" />
+        <ShimmerBox className="h-4 bg-gray-200 rounded w-16 mb-4" />
+        <div className="flex-1" />
+        <ShimmerBox className="w-16 h-16 bg-gray-200 rounded-full self-center" />
     </div>
 );
 
 const FoodItemSkeleton = () => (
-    <div className="bg-white p-4 rounded-[28px] shadow-sm border border-gray-100/50 animate-pulse">
+    <div className="bg-white p-4 rounded-[28px] shadow-sm border border-gray-100/50">
         <div className="flex gap-4">
-            <div className="w-24 h-24 bg-gray-200 rounded-[22px]"></div>
-            <div className="flex-1">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded w-20 mb-2"></div>
+            <ShimmerBox className="w-24 h-24 bg-gray-200 rounded-[22px]" />
+            <div className="flex-1 flex flex-col justify-center">
+                <ShimmerBox className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <ShimmerBox className="h-6 bg-gray-200 rounded w-20 mb-2" />
                 <div className="flex gap-2">
-                    <div className="h-6 bg-gray-200 rounded-full w-14"></div>
-                    <div className="h-6 bg-gray-200 rounded-full w-14"></div>
-                    <div className="h-6 bg-gray-200 rounded-full w-14"></div>
+                    <ShimmerBox className="h-6 bg-gray-200 rounded-full w-14" />
+                    <ShimmerBox className="h-6 bg-gray-200 rounded-full w-14" />
+                    <ShimmerBox className="h-6 bg-gray-200 rounded-full w-14" />
                 </div>
             </div>
         </div>
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick }) => {
+const DateStripSkeleton = () => (
+    <div className="flex justify-between items-center">
+        {[...Array(7)].map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5">
+                <ShimmerBox className="w-11 h-11 bg-gray-200 rounded-full" />
+                <ShimmerBox className="w-6 h-3 bg-gray-200 rounded" />
+            </div>
+        ))}
+    </div>
+);
+
+const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick, refreshTrigger = 0 }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [dateRange] = useState<Date[]>(() => generateDateRange());
     const [visibleDates, setVisibleDates] = useState<Date[]>([]);
@@ -127,6 +146,12 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick }) =>
     // Streak Modal State
     const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
     const [streakCompletions, setStreakCompletions] = useState<string[]>([]);
+
+    // Pull-to-refresh state
+    const [pullDistance, setPullDistance] = useState(0);
+    const [isPulling, setIsPulling] = useState(false);
+    const startY = useRef(0);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // Calculate visible dates (7 days centered on TODAY - not selected date)
     // This runs only once on mount to keep dates fixed
@@ -169,6 +194,13 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick }) =>
         fetchData();
     }, [fetchData]);
 
+    // Refresh when triggered by parent
+    useEffect(() => {
+        if (refreshTrigger > 0) {
+            fetchData(false);
+        }
+    }, [refreshTrigger, fetchData]);
+
     // Refresh on pull-to-refresh or manual refresh
     const handleRefresh = () => {
         fetchData(false);
@@ -205,9 +237,11 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick }) =>
         fat: item.fatsGrams,
         timestamp: new Date(item.timeIso),
         imageUrl: item.imageUrl,
-        portions: item.portions,
+        portions: item.portions || 1,
+        healthScore: item.healthScore,
         ingredients: item.ingredients,
         liked: item.liked,
+        date: formatDate(selectedDate), // YYYY-MM-DD for API
     })) || [];
 
     const isToday = (date: Date) => formatDate(date) === formatDate(new Date());
@@ -223,6 +257,41 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick }) =>
         setIsStreakModalOpen(true);
     };
 
+    // Pull-to-refresh handlers
+    const PULL_THRESHOLD = 50; // Lower threshold for easier triggering
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (containerRef.current && containerRef.current.scrollTop === 0) {
+            startY.current = e.touches[0].clientY;
+            setIsPulling(true);
+        }
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!isPulling || isRefreshing) return;
+
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY.current;
+
+        if (diff > 0 && containerRef.current?.scrollTop === 0) {
+            // Higher sensitivity for easier pull
+            const resistance = 0.7;
+            setPullDistance(Math.min(diff * resistance, PULL_THRESHOLD * 2));
+        }
+    };
+
+    const handleTouchEnd = async () => {
+        if (!isPulling) return;
+
+        if (pullDistance >= PULL_THRESHOLD && !isRefreshing) {
+            // Trigger refresh
+            await fetchData(false);
+        }
+
+        setPullDistance(0);
+        setIsPulling(false);
+    };
+
     return (
         <>
             {/* Streak Modal */}
@@ -233,7 +302,57 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick }) =>
                 completedDates={streakCompletions}
             />
 
-            <div className="pb-4">
+            <div
+                ref={containerRef}
+                className="pb-4 h-full overflow-y-auto"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                {/* Pull-to-refresh indicator */}
+                <div
+                    className="flex justify-center items-center overflow-hidden transition-all duration-300"
+                    style={{
+                        height: pullDistance > 0 || isRefreshing ? Math.max(pullDistance, isRefreshing ? 70 : 0) : 0,
+                        opacity: pullDistance > 0 || isRefreshing ? 1 : 0
+                    }}
+                >
+                    <div className="flex flex-col items-center gap-2">
+                        {/* Pizza Animation */}
+                        <div
+                            className={`text-4xl transition-transform duration-200 ${isRefreshing ? 'animate-pizza-spin' : ''}`}
+                            style={{
+                                transform: !isRefreshing ? `rotate(${pullDistance * 4}deg) scale(${0.8 + (pullDistance / 200)})` : undefined,
+                            }}
+                        >
+                            🍕
+                        </div>
+                        <span className="text-xs text-gray-400 font-medium">
+                            {isRefreshing ? 'در حال بروزرسانی...' : pullDistance >= 50 ? 'رها کنید' : 'بکشید برای بروزرسانی'}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Animation keyframes */}
+                <style>{`
+                    @keyframes pizza-spin {
+                        0% { transform: rotate(0deg) scale(1); }
+                        25% { transform: rotate(90deg) scale(1.1); }
+                        50% { transform: rotate(180deg) scale(1); }
+                        75% { transform: rotate(270deg) scale(1.1); }
+                        100% { transform: rotate(360deg) scale(1); }
+                    }
+                    .animate-pizza-spin {
+                        animation: pizza-spin 1s ease-in-out infinite;
+                    }
+                    @keyframes shimmer {
+                        100% { transform: translateX(100%); }
+                    }
+                    .animate-shimmer {
+                        animation: shimmer 1.5s infinite;
+                    }
+                `}</style>
+
                 {/* Header Component */}
                 <Header
                     streakCount={userProfile?.streakCount || 0}

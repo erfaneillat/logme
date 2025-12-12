@@ -15,8 +15,7 @@ import AdditionalInfo from './components/AdditionalInfo';
 import PlanGeneration from './components/PlanGeneration';
 import PlanSummary from './components/PlanSummary';
 import { FoodItem } from './types';
-import { FoodAnalysisResult } from './services/geminiService';
-import { apiService, User } from './services/apiService';
+import { apiService, User, FoodAnalysisResponse } from './services/apiService';
 
 type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings';
 type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL_INFO' | 'PLAN_GENERATION' | 'PLAN_SUMMARY' | 'MAIN';
@@ -33,6 +32,9 @@ export default function Home() {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // State for dashboard refresh
+  const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
 
   const handleSplashFinish = () => {
     const hasOnboarded = localStorage.getItem('hasOnboarded');
@@ -101,10 +103,10 @@ export default function Home() {
     }
   };
 
-  const handleAddFood = (analysis: FoodAnalysisResult, image?: string) => {
-    // The Dashboard component now handles its own data fetching
-    // After adding food, it will refresh automatically
-    console.log('Food added:', analysis.foodName);
+  const handleAddFood = (analysis: FoodAnalysisResponse, image?: string) => {
+    // Trigger dashboard refresh
+    setDashboardRefreshTrigger(prev => prev + 1);
+    console.log('Food added:', analysis.title);
   };
 
   const handleLogout = () => {
@@ -155,6 +157,7 @@ export default function Home() {
         <Dashboard
           setIsModalOpen={setIsModalOpen}
           onFoodClick={setSelectedFood}
+          refreshTrigger={dashboardRefreshTrigger}
         />
       )}
 
@@ -178,7 +181,11 @@ export default function Home() {
 
       <FoodDetailModal
         food={selectedFood}
-        onClose={() => setSelectedFood(null)}
+        onClose={() => {
+          setSelectedFood(null);
+          // Refresh dashboard data in background
+          setDashboardRefreshTrigger(prev => prev + 1);
+        }}
       />
 
       {/* Modern Floating Navigation - Hidden when in Chat view */}
