@@ -1,0 +1,343 @@
+export const BASE_URL = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:9000'
+    : 'https://loqmeapp.ir';
+
+interface ApiResponse<T = any> {
+    success: boolean;
+    message: string;
+    data: T;
+    errors?: Record<string, any>;
+}
+
+export interface User {
+    id: string;
+    phone: string;
+    name?: string;
+    hasCompletedAdditionalInfo?: boolean;
+    token?: string;
+    [key: string]: any;
+}
+
+// Types for Home Page data
+export interface DailyLogItem {
+    _id: string;
+    title: string;
+    calories: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatsGrams: number;
+    portions: number;
+    healthScore?: number;
+    timeIso: string;
+    imageUrl?: string;
+    ingredients?: Array<{
+        name: string;
+        calories: number;
+        proteinGrams: number;
+        fatGrams: number;
+        carbsGrams: number;
+    }>;
+    liked?: boolean;
+}
+
+export interface DailyLog {
+    userId: string;
+    date: string;
+    caloriesConsumed: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatsGrams: number;
+    burnedCalories: number;
+    items: DailyLogItem[];
+}
+
+export interface Plan {
+    calories: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatsGrams: number;
+    healthScore?: number;
+    dailyGoal?: string;
+}
+
+export interface UserProfile {
+    id: string;
+    phone: string;
+    name?: string;
+    streakCount: number;
+    hasCompletedAdditionalInfo?: boolean;
+    createdAt?: string;
+}
+
+export const apiService = {
+    // Home Page APIs
+    getDailyLog: async (date: string): Promise<DailyLog> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs?date=${date}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch daily log');
+            }
+
+            const log = data.data?.log || data.log || {
+                userId: '',
+                date: date,
+                caloriesConsumed: 0,
+                carbsGrams: 0,
+                proteinGrams: 0,
+                fatsGrams: 0,
+                burnedCalories: 0,
+                items: [],
+            };
+
+            return log;
+        } catch (error: any) {
+            console.error('getDailyLog error:', error);
+            // Return empty log on error
+            return {
+                userId: '',
+                date: date,
+                caloriesConsumed: 0,
+                carbsGrams: 0,
+                proteinGrams: 0,
+                fatsGrams: 0,
+                burnedCalories: 0,
+                items: [],
+            };
+        }
+    },
+
+    getLatestPlan: async (): Promise<Plan> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/plan/latest`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch plan');
+            }
+
+            const plan = data.data || data;
+            return {
+                calories: plan.calories || 2200,
+                carbsGrams: plan.carbsGrams || 250,
+                proteinGrams: plan.proteinGrams || 150,
+                fatsGrams: plan.fatsGrams || 70,
+                healthScore: plan.healthScore,
+                dailyGoal: plan.dailyGoal,
+            };
+        } catch (error: any) {
+            console.error('getLatestPlan error:', error);
+            // Return default plan on error
+            return {
+                calories: 2200,
+                carbsGrams: 250,
+                proteinGrams: 150,
+                fatsGrams: 70,
+            };
+        }
+    },
+
+    getUserProfile: async (): Promise<UserProfile | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch profile');
+            }
+
+            const user = data.data?.user || data.user || data.data || data;
+            return {
+                id: user._id || user.id || '',
+                phone: user.phone || '',
+                name: user.name,
+                streakCount: user.streakCount || 0,
+                hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
+                createdAt: user.createdAt,
+            };
+        } catch (error: any) {
+            console.error('getUserProfile error:', error);
+            return null;
+        }
+    },
+
+    getStreakCompletions: async (): Promise<string[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            // Calculate last 7 days range
+            const today = new Date();
+            const endDate = new Date(today);
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - 6); // 7 days including today
+
+            const formatDate = (d: Date) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            const start = formatDate(startDate);
+            const end = formatDate(endDate);
+
+            const response = await fetch(`${BASE_URL}/api/streak/completions?start=${start}&end=${end}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch streak completions');
+            }
+
+            // Return array of YYYY-MM-DD dates
+            return data.data?.dates || data.dates || [];
+        } catch (error: any) {
+            console.error('getStreakCompletions error:', error);
+            return [];
+        }
+    },
+
+    sendCode: async (phone: string): Promise<ApiResponse> => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/auth/send-code`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ phone }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to send code');
+            }
+            return data;
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
+    verifyCode: async (phone: string, verificationCode: string): Promise<User> => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/auth/verify-phone`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ phone, verificationCode }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Verification failed');
+            }
+
+            const userData = data.data.user;
+            const token = data.data.token;
+
+            // Save token
+            if (typeof window !== 'undefined' && token) {
+                localStorage.setItem('auth_token', token);
+            }
+
+            return { ...userData, token };
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
+    saveAdditionalInfo: async (data: any): Promise<ApiResponse> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/user/additional-info`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            });
+
+            const responseData = await response.json();
+            if (!response.ok) {
+                let errorMessage = responseData.message || responseData.error || 'Failed to save info';
+                if (responseData.errors && Array.isArray(responseData.errors)) {
+                    const fields = responseData.errors.map((e: any) => e.path || e.param).join(', ');
+                    errorMessage += `: ${fields}`;
+                }
+                throw new Error(errorMessage);
+            }
+            return responseData;
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
+    markAdditionalInfoCompleted: async (): Promise<ApiResponse> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/user/mark-additional-info-completed`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const responseData = await response.json();
+            if (!response.ok) {
+                throw new Error(responseData.message || responseData.error || 'Failed to mark completion');
+            }
+            return responseData;
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    }
+};
