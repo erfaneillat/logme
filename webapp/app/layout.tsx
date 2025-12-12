@@ -12,6 +12,10 @@ const vazirmatn = Vazirmatn({
 export const metadata: Metadata = {
   title: "لقمه",
   description: "یک ردیاب کالری و ماکرو هوشمند که از هوش مصنوعی برای تحلیل عکس غذا و پیگیری اهداف تغذیه روزانه شما استفاده می‌کند.",
+  icons: {
+    icon: '/app/loqme_logo.png',
+    apple: '/app/loqme_logo.png',
+  },
 };
 
 export default function RootLayout({
