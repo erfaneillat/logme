@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface StreakModalProps {
     isOpen: boolean;
@@ -96,11 +97,14 @@ const StreakModal: React.FC<StreakModalProps> = ({
                             {/* Header */}
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-2">
-                                    <img
-                                        src="/loqme_logo.png"
-                                        alt="لقمه"
-                                        className="w-8 h-8 object-contain"
-                                    />
+                                    <div className="relative w-8 h-8">
+                                        <Image
+                                            src="/loqme_logo.png"
+                                            alt="لقمه"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
                                     <span className="text-base font-bold text-gray-800">لقمه</span>
                                 </div>
                                 <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">

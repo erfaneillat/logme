@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface HeaderProps {
     streakCount?: number;
@@ -56,11 +57,12 @@ const Header: React.FC<HeaderProps> = ({
             <div className="relative flex items-center justify-between">
                 {/* Right side - Logo and App Name */}
                 <div className="flex items-center gap-1">
-                    <div className="relative">
-                        <img
+                    <div className="relative w-10 h-10">
+                        <Image
                             src="/loqme_logo.png"
                             alt="لقمه"
-                            className="w-10 h-10 object-contain drop-shadow-sm"
+                            fill
+                            className="object-contain drop-shadow-sm"
                         />
                         {/* Subtle glow effect behind logo */}
                         <div className="absolute inset-0 w-10 h-10 bg-gradient-to-br from-orange-400/20 to-amber-400/20 rounded-full blur-md -z-10" />
