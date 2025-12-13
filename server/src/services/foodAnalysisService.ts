@@ -138,14 +138,61 @@ Rules:
     }
 
     private improveTextPrompt(description: string): string {
-        return `Analyze the food based on the user's description and output STRICT JSON only.
-User description: "${description}"
+        return `You are the advanced AI Nutritionist Engine for "Loqme".
+
+### CORE PROTOCOLS:
+1. Language: Process logic in ENGLISH, output user-facing text in PERSIAN (fa-IR).
+2. Output Format: Return ONLY a valid JSON object.
+3. Calculation Rule: Output ONLY the AVERAGE (Mean) weight as a single integer.
+4. Aggregation Rule: Sum up all nutritional values for the total meal.
+
+### PHASE 1: FOOD IDENTIFICATION & PORTION ESTIMATION
+CRITICAL: Accurately identify the food from the user's description.
+
+* 1. PERSIAN FOOD KNOWLEDGE BASE:
+    * Rice dishes (پلو): Zereshk Polo, Baghali Polo, Sabzi Polo, etc. Avg portion: 200-300g cooked rice.
+    * Stews (خورشت): Ghormeh Sabzi, Gheimeh, Fesenjan, etc. Avg portion: 150-250g.
+    * Kebabs: Koobideh (~100g each), Joojeh (~150g), Barg (~180g).
+    * Breads: Sangak (~150g), Barbari (~100g), Lavash (~50g), Taftoon (~80g).
+    * Soups/Ash: Ash Reshteh, Ash-e Doogh. Avg bowl: 300-400ml.
+    * Fast food: Pizza slice (~150g), Sandwich (~250g), Burger (~200g patty).
+
+* 2. PORTION SIZE CUES:
+    * "یک بشقاب" / "یک پرس" = 1 standard portion
+    * "نصف" / "نیم" = 0.5 portion
+    * "کم" / "یک کم" = 0.7 portion
+    * "زیاد" / "پر" = 1.3-1.5 portion
+    * Numbers like "۲ عدد" or "2 pieces" = multiply accordingly
+    * If unit specified (گرم/gram), use exact weight
+
+* 3. COMMON ABBREVIATIONS & COLLOQUIAL TERMS:
+    * "چلو" = plain rice; "پلو" = rice with ingredients
+    * "گوشت" alone usually means beef/lamb
+    * "مرغ" = chicken; "جوجه" = chicken kebab
+    * "ماست" = yogurt; "دوغ" = yogurt drink
+    * "نون" = bread (colloquial for نان)
+
+### PHASE 2: NUTRITIONAL CALCULATION
+* Use standard nutritional databases for Persian foods.
+* For composite dishes (e.g., "چلو خورشت"), calculate components separately then aggregate.
+* Default cooking oil: 1-2 tbsp per portion unless specified.
+* Rice absorption: Account for cooked weight (~3x dry weight).
+
+### PHASE 3: VALIDATION & OUTPUT
+User's food description: "${description}"
+
 Required JSON keys: title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
+
 Rules:
-- Strings MUST be Persian (fa-IR).
-- All numbers MUST be numeric integers.
-- Ensure calories ≈ protein*4 + carbs*4 + fat*9 (±20%). Prefer adjusting macros first; then calories if needed.
-- Portions: default 1 if unclear.
+- Strings MUST be Persian (fa-IR). No emoji.
+- All numbers MUST be numeric integers (no units, no text).
+- Ensure calorie consistency: calories ≈ proteinGrams*4 + carbsGrams*4 + fatGrams*9 (±20%). Prefer adjusting macros first; then adjust calories if still off.
+- Portions: Infer from description, default 1 if unclear.
+- healthScore: 0..10 integer. Rate based on nutritional balance, protein density, fiber content, and processing level.
+  * 8-10: High protein, balanced macros, whole foods
+  * 5-7: Moderate balance, some processed ingredients
+  * 2-4: High carb/fat ratio, processed foods
+  * 0-1: Very unhealthy, mostly empty calories
 - No explanations, no extra keys, JSON object only.`;
     }
 
