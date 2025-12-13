@@ -38,7 +38,51 @@ interface DashboardProps {
     setIsExerciseModalOpen: (isOpen: boolean) => void;
     onFoodClick: (food: any) => void;
     refreshTrigger?: number;
+    pendingAnalyses?: {
+        id: string;
+        image?: string;
+        type: 'image' | 'text';
+        startTime: number;
+    }[];
 }
+
+const PendingFoodItem = ({ item }: { item: NonNullable<DashboardProps['pendingAnalyses']>[number] }) => (
+    <div className="bg-white p-4 rounded-[28px] shadow-sm border border-orange-100 relative overflow-hidden animate-slide-up-item group">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-50/30 to-transparent animate-shimmer" style={{ animationDuration: '2s' }}></div>
+        <div className="flex gap-4 items-center relative z-10">
+            <div className="w-24 h-24 rounded-[22px] bg-gray-100 overflow-hidden shrink-0 shadow-inner border border-gray-100 relative">
+                {item.image ? (
+                    <img src={item.image} alt="Analyzing" className="w-full h-full object-cover opacity-80" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl">
+                        {item.type === 'image' ? '📸' : '📝'}
+                    </div>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div className="w-8 h-8 border-4 border-white border-t-orange-500 rounded-full animate-spin"></div>
+                </div>
+            </div>
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-2">
+                <div className="h-4 w-3/4 bg-gray-50 rounded animate-pulse"></div>
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-orange-600 animate-pulse">
+                        هوش مصنوعی لقمه در حال تحلیل...
+                    </span>
+                    <img
+                        src="/app/images/loqme_logo.png"
+                        alt="Loqme Logo"
+                        className="w-8 h-8 object-contain animate-bounce"
+                    />
+                </div>
+                <div className="flex gap-2 mt-1">
+                    <div className="h-6 w-12 bg-gray-50 rounded-lg animate-pulse"></div>
+                    <div className="h-6 w-12 bg-gray-50 rounded-lg animate-pulse delay-75"></div>
+                    <div className="h-6 w-12 bg-gray-50 rounded-lg animate-pulse delay-150"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
 
 // Icons
 const FireIcon = () => (
@@ -132,7 +176,7 @@ const DateStripSkeleton = () => (
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0 }) => {
+const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [] }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [dateRange] = useState<Date[]>(() => generateDateRange());
     const [visibleDates, setVisibleDates] = useState<Date[]>([]);
@@ -520,7 +564,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             <FoodItemSkeleton />
                             <FoodItemSkeleton />
                         </div>
-                    ) : foods.length === 0 ? (
+                    ) : foods.length === 0 && pendingAnalyses.length === 0 ? (
                         <div className="bg-white rounded-[24px] p-8 text-center border-2 border-dashed border-gray-100 hover:border-orange-100 transition-colors cursor-pointer group" onClick={() => setIsModalOpen(true)}>
                             <div className="w-16 h-16 bg-gray-50 group-hover:bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors">
                                 <span className="text-3xl grayscale group-hover:grayscale-0 transition-all duration-300">📸</span>
@@ -532,6 +576,11 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                         </div>
                     ) : (
                         <div className="space-y-4">
+                            {/* Pending Analyses */}
+                            {pendingAnalyses.map((item) => (
+                                <PendingFoodItem key={item.id} item={item} />
+                            ))}
+
                             {foods.map((food, index) => (
                                 <div
                                     key={food.id}

@@ -111,6 +111,31 @@ export interface ExerciseAnalysisResponse {
     tips: string[];
 }
 
+export interface WeightEntry {
+    _id?: string;
+    userId: string;
+    date: string;
+    weightKg: number;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface AdditionalInfo {
+    userId: string;
+    gender?: string;
+    birthDate?: string;
+    age?: number;
+    weight?: number;
+    height?: number;
+    activityLevel?: string;
+    weightGoal?: string;
+    workoutFrequency?: string;
+    targetWeight?: number;
+    weightLossSpeed?: number;
+    diet?: string;
+    accomplishment?: string;
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -651,6 +676,167 @@ export const apiService = {
             };
         } catch (error: any) {
             console.error('updateBurnedCalories error:', error);
+            throw error;
+        }
+    },
+
+    // Weight Tracking APIs
+    getLatestWeight: async (): Promise<WeightEntry | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/weight/latest`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch latest weight');
+            }
+
+            return data.data?.latest || null;
+        } catch (error: any) {
+            console.error('getLatestWeight error:', error);
+            return null;
+        }
+    },
+
+    getWeightRange: async (start: string, end: string): Promise<WeightEntry[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/weight/range?start=${start}&end=${end}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch weight range');
+            }
+
+            return data.data?.entries || [];
+        } catch (error: any) {
+            console.error('getWeightRange error:', error);
+            return [];
+        }
+    },
+
+    upsertWeight: async (date: string, weightKg: number): Promise<WeightEntry | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/weight`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ date, weightKg }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to save weight');
+            }
+
+            return data.data?.entry || null;
+        } catch (error: any) {
+            console.error('upsertWeight error:', error);
+            throw error;
+        }
+    },
+
+    // Logs Range API (for weekly/monthly nutrition data)
+    getLogsRange: async (start: string, end: string): Promise<DailyLog[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/range?start=${start}&end=${end}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch logs range');
+            }
+
+            return data.data?.logs || [];
+        } catch (error: any) {
+            console.error('getLogsRange error:', error);
+            return [];
+        }
+    },
+
+    // Additional Info API (for target weight, height, etc.)
+    getAdditionalInfo: async (): Promise<AdditionalInfo | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/user/additional-info`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch additional info');
+            }
+
+            return data.data?.additionalInfo || null;
+        } catch (error: any) {
+            console.error('getAdditionalInfo error:', error);
+            return null;
+        }
+    },
+
+    updateAdditionalInfo: async (updates: Partial<AdditionalInfo>): Promise<AdditionalInfo | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/user/additional-info`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(updates),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to update additional info');
+            }
+
+            return data.data?.additionalInfo || null;
+        } catch (error: any) {
+            console.error('updateAdditionalInfo error:', error);
             throw error;
         }
     },

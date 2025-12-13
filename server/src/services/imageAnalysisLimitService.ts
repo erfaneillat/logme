@@ -3,7 +3,8 @@ import DailyAnalysisLimit from '../models/DailyAnalysisLimit';
 import { getTomorrowJalaliPersian, getCurrentTimePersian } from '../utils/jalali_date';
 
 // Maximum daily analyses allowed for free users
-const FREE_USER_DAILY_LIMIT = 2;
+// Maximum daily analyses allowed for free users
+const FREE_USER_DAILY_LIMIT = process.env.NODE_ENV === 'production' ? 2 : 100;
 
 export class ImageAnalysisLimitService {
     /**

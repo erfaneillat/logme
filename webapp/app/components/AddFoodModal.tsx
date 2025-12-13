@@ -7,6 +7,7 @@ interface AddFoodModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAddFood: (food: FoodAnalysisResponse, image?: string) => void;
+    onStartAnalysis?: (imageFile: File | null, textInput: string | null, previewImage: string | null) => Promise<void>;
 }
 
 type ModalView = 'menu' | 'preview' | 'text' | 'analyzing' | 'result' | 'favorites';
@@ -17,7 +18,7 @@ const toPersianNumbers = (num: number | string): string => {
     return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
 };
 
-const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood }) => {
+const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood, onStartAnalysis }) => {
     const [view, setView] = useState<ModalView>('menu');
     const [image, setImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -57,6 +58,14 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
     };
 
     const handleAnalyze = async () => {
+        if (onStartAnalysis) {
+            // Background analysis flow
+            onStartAnalysis(imageFile, textInput, image);
+            resetAndClose();
+            return;
+        }
+
+        // Legacy flow (blocking)
         setView('analyzing');
         try {
             let result: FoodAnalysisResponse;

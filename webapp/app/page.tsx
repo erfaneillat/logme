@@ -111,6 +111,50 @@ export default function Home() {
     console.log('Food added:', analysis.title);
   };
 
+  // Pending Analysis State
+  const [pendingAnalyses, setPendingAnalyses] = useState<{
+    id: string;
+    image?: string;
+    type: 'image' | 'text';
+    startTime: number;
+  }[]>([]);
+
+  const handleStartAnalysis = async (imageFile: File | null, textInput: string | null, previewImage: string | null) => {
+    const tempId = Date.now().toString();
+
+    // 1. Add to pending list
+    setPendingAnalyses(prev => [{
+      id: tempId,
+      image: previewImage || undefined,
+      type: imageFile ? 'image' : 'text',
+      startTime: Date.now()
+    }, ...prev]);
+
+    // 2. Perform Analysis & Add in Background
+    try {
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+      // A. Analyze (Backend automatically adds the item)
+      if (imageFile) {
+        await apiService.analyzeFoodImage(imageFile, dateStr);
+      } else if (textInput) {
+        await apiService.analyzeFoodText(textInput, dateStr);
+      } else {
+        throw new Error("No input");
+      }
+
+      // B. Refresh & Remove Pending
+      setDashboardRefreshTrigger(prev => prev + 1);
+      setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));
+
+    } catch (error) {
+      console.error("Background analysis failed:", error);
+      alert("متاسفانه تحلیل غذا با خطا مواجه شد.");
+      setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));
+    }
+  };
+
   const handleAddExercise = (calories: number) => {
     // Trigger dashboard refresh
     setDashboardRefreshTrigger(prev => prev + 1);
@@ -167,6 +211,7 @@ export default function Home() {
           setIsExerciseModalOpen={setIsExerciseModalOpen}
           onFoodClick={setSelectedFood}
           refreshTrigger={dashboardRefreshTrigger}
+          pendingAnalyses={pendingAnalyses}
         />
       )}
 
@@ -186,6 +231,7 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddFood={handleAddFood}
+        onStartAnalysis={handleStartAnalysis}
       />
 
       <AddExerciseModal
@@ -235,18 +281,16 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Center FAB */}
-          <div className="w-16 relative flex justify-center items-end h-full">
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(17,24,39,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 border-[6px] border-[#F8F9FB] group"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </button>
-            </div>
+          {/* Center FAB - integrated in navbar */}
+          <div className="flex-1 flex justify-center items-center">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center shadow-lg shadow-gray-900/20 hover:scale-105 active:scale-95 transition-all duration-300 group"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </button>
           </div>
 
           <div className="flex-1 flex justify-center">
