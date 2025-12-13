@@ -103,6 +103,14 @@ export interface LikedFood {
     date: string;
 }
 
+export interface ExerciseAnalysisResponse {
+    activityName: string;
+    caloriesBurned: number;
+    duration: number;
+    intensity: string;
+    tips: string[];
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -584,6 +592,65 @@ export const apiService = {
             return responseData.data;
         } catch (error: any) {
             console.error('fixResult error:', error);
+            throw error;
+        }
+    },
+
+    // Exercise APIs
+    analyzeExercise: async (exercise: string, duration: number): Promise<ExerciseAnalysisResponse> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/analyze-exercise`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ exercise, duration }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'خطا در تحلیل ورزش');
+            }
+
+            return data.data;
+        } catch (error: any) {
+            console.error('analyzeExercise error:', error);
+            throw error;
+        }
+    },
+
+    updateBurnedCalories: async (date: string, burnedCalories: number): Promise<{ preferenceEnabled: boolean }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/burned-calories`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ date, burnedCalories }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'خطا در ثبت کالری سوزانده شده');
+            }
+
+            return {
+                preferenceEnabled: data.data?.preferenceEnabled ?? true,
+            };
+        } catch (error: any) {
+            console.error('updateBurnedCalories error:', error);
             throw error;
         }
     },

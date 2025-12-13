@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import AnalysisPage from './components/AnalysisPage';
 import AddFoodModal from './components/AddFoodModal';
+import AddExerciseModal from './components/AddExerciseModal';
 import FoodDetailModal from './components/FoodDetailModal';
 import ChatPage from './components/ChatPage';
 import SettingPage from './components/SettingPage';
@@ -30,8 +31,9 @@ export default function Home() {
   // State for Food Detail Modal
   const [selectedFood, setSelectedFood] = useState<any>(null);
 
-  // Modal state
+  // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
 
   // State for dashboard refresh
   const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
@@ -109,6 +111,12 @@ export default function Home() {
     console.log('Food added:', analysis.title);
   };
 
+  const handleAddExercise = (calories: number) => {
+    // Trigger dashboard refresh
+    setDashboardRefreshTrigger(prev => prev + 1);
+    console.log('Exercise added:', calories, 'calories burned');
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     // localStorage.removeItem('hasOnboarded'); // Keep onboarding status
@@ -156,6 +164,7 @@ export default function Home() {
       {currentView === 'dashboard' && (
         <Dashboard
           setIsModalOpen={setIsModalOpen}
+          setIsExerciseModalOpen={setIsExerciseModalOpen}
           onFoodClick={setSelectedFood}
           refreshTrigger={dashboardRefreshTrigger}
         />
@@ -177,6 +186,12 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddFood={handleAddFood}
+      />
+
+      <AddExerciseModal
+        isOpen={isExerciseModalOpen}
+        onClose={() => setIsExerciseModalOpen(false)}
+        onAddExercise={handleAddExercise}
       />
 
       <FoodDetailModal

@@ -35,6 +35,7 @@ const generateDateRange = (): Date[] => {
 
 interface DashboardProps {
     setIsModalOpen: (isOpen: boolean) => void;
+    setIsExerciseModalOpen: (isOpen: boolean) => void;
     onFoodClick: (food: any) => void;
     refreshTrigger?: number;
 }
@@ -131,7 +132,7 @@ const DateStripSkeleton = () => (
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick, refreshTrigger = 0 }) => {
+const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0 }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [dateRange] = useState<Date[]>(() => generateDateRange());
     const [visibleDates, setVisibleDates] = useState<Date[]>([]);
@@ -423,13 +424,29 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, onFoodClick, refr
                                 <div className="px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-bold border border-orange-100">
                                     {toPersianNumbers(percentConsumed)}٪ مصرف شده
                                 </div>
-                                {dailyLog && dailyLog.burnedCalories > 0 && (
-                                    <div className="px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-100 flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                {dailyLog && dailyLog.burnedCalories > 0 ? (
+                                    <button
+                                        onClick={() => setIsExerciseModalOpen(true)}
+                                        className="px-3 py-1 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 text-xs font-bold border border-green-200 flex items-center gap-1.5 hover:from-green-100 hover:to-emerald-100 transition-all active:scale-95"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                                         </svg>
-                                        {toPersianNumbers(dailyLog.burnedCalories)} سوزانده شده
-                                    </div>
+                                        <span>{toPersianNumbers(dailyLog.burnedCalories)} سوزانده</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => setIsExerciseModalOpen(true)}
+                                        className="px-3 py-1.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-green-200 hover:from-green-600 hover:to-emerald-600 transition-all active:scale-95"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>ورزش</span>
+                                    </button>
                                 )}
                             </div>
                         </div>
