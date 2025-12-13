@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { apiService, FoodAnalysisResponse } from '../services/apiService';
+import React, { useState, useRef, useEffect } from 'react';
+import { apiService, FoodAnalysisResponse, LikedFood } from '../services/apiService';
 
 interface AddFoodModalProps {
     isOpen: boolean;
@@ -9,7 +9,13 @@ interface AddFoodModalProps {
     onAddFood: (food: FoodAnalysisResponse, image?: string) => void;
 }
 
-type ModalView = 'menu' | 'preview' | 'text' | 'analyzing' | 'result';
+type ModalView = 'menu' | 'preview' | 'text' | 'analyzing' | 'result' | 'favorites';
+
+// Helper to convert English numbers to Persian/Farsi numerals
+const toPersianNumbers = (num: number | string): string => {
+    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+};
 
 const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood }) => {
     const [view, setView] = useState<ModalView>('menu');
@@ -19,6 +25,10 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
     const [analysis, setAnalysis] = useState<FoodAnalysisResponse | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
+
+    // Liked foods state
+    const [likedFoods, setLikedFoods] = useState<LikedFood[]>([]);
+    const [isLoadingLiked, setIsLoadingLiked] = useState(false);
 
     if (!isOpen) return null;
 
@@ -72,10 +82,86 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
         }
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (analysis) {
-            onAddFood(analysis, image || undefined);
+            try {
+                // Get today's date for storage
+                const today = new Date();
+                const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+                // Add to database
+                await apiService.addItem({
+                    date: dateStr,
+                    title: analysis.title,
+                    calories: analysis.calories,
+                    carbsGrams: analysis.carbsGrams,
+                    proteinGrams: analysis.proteinGrams,
+                    fatsGrams: analysis.fatGrams,
+                    portions: 1,
+                    healthScore: analysis.healthScore,
+                    imageUrl: image,
+                    ingredients: analysis.ingredients
+                });
+
+                onAddFood(analysis, image || undefined);
+                resetAndClose();
+            } catch (error) {
+                console.error("Failed to add food:", error);
+                alert("خطا در ثبت وعده. لطفا مجدد تلاش کنید.");
+            }
+        }
+    };
+
+    const handleOpenFavorites = async () => {
+        setView('favorites');
+        setIsLoadingLiked(true);
+        try {
+            const foods = await apiService.getLikedFoods();
+            setLikedFoods(foods);
+        } catch (error) {
+            console.error('Failed to load liked foods:', error);
+            setLikedFoods([]);
+        } finally {
+            setIsLoadingLiked(false);
+        }
+    };
+
+    const handleSelectLikedFood = async (food: LikedFood) => {
+        try {
+            // Get today's date for storage
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            // Add to database
+            await apiService.addItem({
+                date: dateStr,
+                title: food.title,
+                calories: food.calories,
+                carbsGrams: food.carbsGrams,
+                proteinGrams: food.proteinGrams,
+                fatsGrams: food.fatsGrams,
+                portions: food.portions, // Use original portions
+                healthScore: food.healthScore,
+                imageUrl: food.imageUrl,
+                ingredients: food.ingredients,
+                liked: true // Maintain liked status
+            });
+
+            // Convert LikedFood to FoodAnalysisResponse format for callback (refresh)
+            const analysisFormat: FoodAnalysisResponse = {
+                title: food.title,
+                calories: food.calories,
+                carbsGrams: food.carbsGrams,
+                proteinGrams: food.proteinGrams,
+                fatGrams: food.fatsGrams,
+                healthScore: food.healthScore,
+                ingredients: food.ingredients,
+            };
+            onAddFood(analysisFormat, food.imageUrl);
             resetAndClose();
+        } catch (error) {
+            console.error("Failed to add liked food:", error);
+            alert("خطا در ثبت وعده. لطفا مجدد تلاش کنید.");
         }
     };
 
@@ -132,10 +218,10 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
                     <span className="text-[10px] text-gray-400">تایپ دستی</span>
                 </button>
 
-                {/* Favorites (Placeholder) */}
+                {/* Favorites */}
                 <button
-                    className="bg-gray-50 p-5 rounded-[24px] border border-gray-100 flex flex-col items-center text-center hover:bg-white hover:shadow-lg hover:shadow-gray-200/50 hover:scale-[1.02] active:scale-95 transition-all duration-300 group opacity-60"
-                    onClick={() => alert('به زودی!')}
+                    className="bg-gradient-to-br from-pink-50 to-red-50 p-5 rounded-[24px] border border-pink-100 flex flex-col items-center text-center hover:from-pink-100 hover:to-red-100 hover:shadow-lg hover:shadow-pink-200/50 hover:scale-[1.02] active:scale-95 transition-all duration-300 group"
+                    onClick={handleOpenFavorites}
                 >
                     <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-3 shadow-sm group-hover:shadow-md transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
@@ -146,6 +232,88 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
                     <span className="text-[10px] text-gray-400">وعده‌های رایج</span>
                 </button>
             </div>
+        </div>
+    );
+
+    const renderFavorites = () => (
+        <div className="space-y-4 animate-slide-up">
+            <div className="flex justify-between items-center">
+                <button onClick={() => setView('menu')} className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </button>
+                <h2 className="text-xl font-bold text-gray-800">محبوب‌ها</h2>
+                <div className="w-8"></div>
+            </div>
+
+            {isLoadingLiked ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                    <div className="w-12 h-12 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin mb-4"></div>
+                    <p className="text-gray-400 text-sm">در حال بارگذاری...</p>
+                </div>
+            ) : likedFoods.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                    <h3 className="font-bold text-gray-700 mb-2">هنوز غذای محبوبی ندارید</h3>
+                    <p className="text-sm text-gray-400 max-w-[250px]">
+                        با زدن دکمه ❤️ روی غذاها، آن‌ها را به لیست محبوب‌ها اضافه کنید
+                    </p>
+                </div>
+            ) : (
+                <div className="space-y-3 max-h-[50vh] overflow-y-auto no-scrollbar pb-4">
+                    {likedFoods.map((food, index) => (
+                        <button
+                            key={`${food.title}-${index}`}
+                            onClick={() => handleSelectLikedFood(food)}
+                            className="w-full bg-white p-4 rounded-[20px] border border-gray-100 shadow-sm hover:shadow-lg hover:border-pink-200 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center gap-4 text-right"
+                        >
+                            {/* Food Image or Icon */}
+                            <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                                {food.imageUrl ? (
+                                    <img
+                                        src={food.imageUrl}
+                                        alt={food.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-2xl">🍽️</span>
+                                )}
+                            </div>
+
+                            {/* Food Info */}
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-gray-800 text-sm truncate mb-1">
+                                    {food.title}
+                                </h4>
+                                <div className="flex items-center gap-3 text-xs text-gray-400">
+                                    <span className="font-bold text-gray-600">{toPersianNumbers(food.calories)} کالری</span>
+                                    <span className="bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded font-medium">
+                                        P {toPersianNumbers(food.proteinGrams)}
+                                    </span>
+                                    <span className="bg-yellow-50 text-yellow-600 px-1.5 py-0.5 rounded font-medium">
+                                        C {toPersianNumbers(food.carbsGrams)}
+                                    </span>
+                                    <span className="bg-purple-50 text-purple-500 px-1.5 py-0.5 rounded font-medium">
+                                        F {toPersianNumbers(food.fatsGrams)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="shrink-0 text-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 
@@ -306,6 +474,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
 
                 {/* Views */}
                 {view === 'menu' && renderMenu()}
+                {view === 'favorites' && renderFavorites()}
                 {view === 'preview' && renderPreview()}
                 {view === 'text' && renderTextInput()}
                 {view === 'analyzing' && renderAnalyzing()}
@@ -334,3 +503,4 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood 
 };
 
 export default AddFoodModal;
+

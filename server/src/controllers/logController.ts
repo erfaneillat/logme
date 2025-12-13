@@ -192,6 +192,79 @@ export class LogController {
         }
     }
 
+    /**
+     * Get all liked foods for the user, deduplicated by title
+     * Returns unique food items that the user has previously liked
+     */
+    async getLikedFoods(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            // Aggregate all logs for this user and extract liked items
+            const logs = await DailyLog.find({ userId }).lean();
+
+            // Collect all liked items with their dates
+            const likedItems: Array<{
+                title: string;
+                calories: number;
+                carbsGrams: number;
+                proteinGrams: number;
+                fatsGrams: number;
+                portions: number;
+                healthScore: number | undefined;
+                imageUrl: string | undefined;
+                ingredients: any[] | undefined;
+                timeIso: string;
+                date: string;
+            }> = [];
+
+            for (const log of logs) {
+                if (!Array.isArray(log.items)) continue;
+                for (const item of log.items) {
+                    if (item.liked) {
+                        likedItems.push({
+                            title: item.title,
+                            calories: item.calories,
+                            carbsGrams: item.carbsGrams,
+                            proteinGrams: item.proteinGrams,
+                            fatsGrams: item.fatsGrams,
+                            portions: item.portions ?? 1,
+                            healthScore: item.healthScore,
+                            imageUrl: item.imageUrl,
+                            ingredients: item.ingredients,
+                            timeIso: item.timeIso,
+                            date: log.date,
+                        });
+                    }
+                }
+            }
+
+            // Deduplicate by title (normalized), keeping the most recent entry
+            const titleMap = new Map<string, typeof likedItems[0]>();
+            // Sort by timeIso descending first so we can keep the most recent
+            likedItems.sort((a, b) => new Date(b.timeIso).getTime() - new Date(a.timeIso).getTime());
+
+            for (const item of likedItems) {
+                const normalizedTitle = item.title.trim().toLowerCase();
+                if (!titleMap.has(normalizedTitle)) {
+                    titleMap.set(normalizedTitle, item);
+                }
+            }
+
+            // Convert map values to array and return
+            const uniqueLikedItems = Array.from(titleMap.values());
+
+            res.json({ success: true, data: { items: uniqueLikedItems } });
+        } catch (error) {
+            errorLogger.error('Get liked foods error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
     async toggleItemLike(req: AuthRequest, res: Response): Promise<void> {
         try {
             const userId = req.user?.userId;

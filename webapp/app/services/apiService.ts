@@ -89,6 +89,20 @@ export interface FoodAnalysisResponse {
     error?: string;
 }
 
+export interface LikedFood {
+    title: string;
+    calories: number;
+    carbsGrams: number;
+    proteinGrams: number;
+    fatsGrams: number;
+    portions: number;
+    healthScore?: number;
+    imageUrl?: string;
+    ingredients?: FoodIngredient[];
+    timeIso: string;
+    date: string;
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -462,6 +476,114 @@ export const apiService = {
             return responseData.data;
         } catch (error: any) {
             console.error('updateLogItem error:', error);
+            throw error;
+        }
+    },
+
+    deleteLogItem: async (itemId: string, date: string): Promise<void> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/item/${itemId}?date=${date}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.message || responseData.error || 'Failed to delete item');
+            }
+        } catch (error: any) {
+            console.error('deleteLogItem error:', error);
+            throw error;
+        }
+    },
+
+    addItem: async (item: any): Promise<DailyLogItem> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/item`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(item),
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.message || responseData.error || 'Failed to add item');
+            }
+
+            return responseData.data?.item || responseData.data;
+        } catch (error: any) {
+            console.error('addItem error:', error);
+            throw error;
+        }
+    },
+
+    getLikedFoods: async (): Promise<LikedFood[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/logs/liked`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch liked foods');
+            }
+
+            return data.data?.items || [];
+        } catch (error: any) {
+            console.error('getLikedFoods error:', error);
+            return [];
+        }
+    },
+
+    fixResult: async (originalData: any, userDescription: string): Promise<any> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/food/fix-result`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ originalData, userDescription }),
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.message || responseData.error || 'Failed to fix result');
+            }
+
+            return responseData.data;
+        } catch (error: any) {
+            console.error('fixResult error:', error);
             throw error;
         }
     },

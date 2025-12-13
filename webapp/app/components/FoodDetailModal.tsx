@@ -28,6 +28,9 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
     const [baseFat, setBaseFat] = useState(0);
     const [baseCarbs, setBaseCarbs] = useState(0);
 
+    // Editable ingredients
+    const [editableIngredients, setEditableIngredients] = useState<Ingredient[]>([]);
+
     // Edit dialog state
     const [editDialog, setEditDialog] = useState<{
         isOpen: boolean;
@@ -35,6 +38,25 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
         value: number;
         onSave: (value: number) => void;
     } | null>(null);
+
+    // Ingredient dialog state
+    const [ingredientDialog, setIngredientDialog] = useState<{
+        isOpen: boolean;
+        mode: 'add' | 'edit';
+        index?: number;
+        ingredient: Ingredient;
+    } | null>(null);
+
+    // Fix result dialog state
+    const [fixResultDialog, setFixResultDialog] = useState<{
+        isOpen: boolean;
+        isLoading: boolean;
+    }>({ isOpen: false, isLoading: false });
+
+    // Ref to store description (survives re-renders)
+    const fixResultDescriptionRef = useRef('');
+    const fixResultTextareaRef = useRef<HTMLTextAreaElement>(null);
+    const [fixResultIsEmpty, setFixResultIsEmpty] = useState(true);
 
     // Track first render to avoid initial save
     const isFirstRender = useRef(true);
@@ -57,6 +79,9 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
             setBaseProtein(Math.round(food.protein / portions));
             setBaseFat(Math.round(food.fat / portions));
             setBaseCarbs(Math.round(food.carbs / portions));
+
+            // Initialize editable ingredients
+            setEditableIngredients(food.ingredients ? [...food.ingredients] : []);
 
             isFirstRender.current = true; // Reset on new food open
             if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -85,7 +110,8 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
             carbsGrams: newCarbs,
             portions: quantity,
             liked: isFavorite,
-            healthScore: food.healthScore
+            healthScore: food.healthScore,
+            ingredients: editableIngredients, // Include edited ingredients
         };
 
         try {
@@ -93,6 +119,118 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
             console.log('Saved changes for', food.name);
         } catch (error) {
             console.error('Failed to save changes:', error);
+        }
+    };
+
+    // Recalculate base values from ingredients sum
+    const recalculateTotalsFromIngredients = (ingredients: Ingredient[]) => {
+        if (ingredients.length === 0) return;
+
+        const totals = ingredients.reduce((acc, ing) => ({
+            calories: acc.calories + (ing.calories || 0),
+            protein: acc.protein + (ing.proteinGrams || 0),
+            fat: acc.fat + (ing.fatGrams || 0),
+            carbs: acc.carbs + (ing.carbsGrams || 0),
+        }), { calories: 0, protein: 0, fat: 0, carbs: 0 });
+
+        setBaseCalories(totals.calories);
+        setBaseProtein(totals.protein);
+        setBaseFat(totals.fat);
+        setBaseCarbs(totals.carbs);
+    };
+
+    // Ingredient management functions
+    const handleDeleteIngredient = (index: number) => {
+        const newIngredients = editableIngredients.filter((_, i) => i !== index);
+        setEditableIngredients(newIngredients);
+        recalculateTotalsFromIngredients(newIngredients);
+    };
+
+    const handleEditIngredient = (index: number) => {
+        setIngredientDialog({
+            isOpen: true,
+            mode: 'edit',
+            index,
+            ingredient: { ...editableIngredients[index] }
+        });
+    };
+
+    const handleAddIngredient = () => {
+        setIngredientDialog({
+            isOpen: true,
+            mode: 'add',
+            ingredient: { name: '', calories: 0, proteinGrams: 0, fatGrams: 0, carbsGrams: 0 }
+        });
+    };
+
+    const handleSaveIngredient = (ingredient: Ingredient) => {
+        let newIngredients: Ingredient[];
+        if (ingredientDialog?.mode === 'edit' && ingredientDialog.index !== undefined) {
+            newIngredients = [...editableIngredients];
+            newIngredients[ingredientDialog.index!] = ingredient;
+        } else {
+            newIngredients = [...editableIngredients, ingredient];
+        }
+        setEditableIngredients(newIngredients);
+        recalculateTotalsFromIngredients(newIngredients);
+        setIngredientDialog(null);
+    };
+
+    // Handle fix result with AI
+    const handleFixResultWithDescription = async (description: string) => {
+        if (!description.trim() || !food) return;
+
+        setFixResultDialog(prev => ({ ...prev, isLoading: true }));
+
+        try {
+            // Calculate effective values inline
+            const currentCalories = Math.round(baseCalories * quantity);
+            const currentProtein = Math.round(baseProtein * quantity);
+            const currentFat = Math.round(baseFat * quantity);
+            const currentCarbs = Math.round(baseCarbs * quantity);
+
+            const originalData = {
+                title: food.name,
+                calories: currentCalories,
+                proteinGrams: currentProtein,
+                fatGrams: currentFat,
+                carbsGrams: currentCarbs,
+                healthScore: food.healthScore || 0,
+                portions: quantity,
+                ingredients: editableIngredients.map(ing => ({
+                    name: ing.name,
+                    calories: ing.calories,
+                    proteinGrams: ing.proteinGrams,
+                    fatGrams: ing.fatGrams,
+                    carbsGrams: ing.carbsGrams,
+                })),
+                imageUrl: food.imageUrl,
+            };
+
+            const fixedData = await apiService.fixResult(originalData, description);
+
+            // Update state with fixed data
+            if (fixedData) {
+                if (fixedData.calories) setBaseCalories(Math.round(fixedData.calories / quantity));
+                if (fixedData.proteinGrams) setBaseProtein(Math.round(fixedData.proteinGrams / quantity));
+                if (fixedData.fatGrams) setBaseFat(Math.round(fixedData.fatGrams / quantity));
+                if (fixedData.carbsGrams) setBaseCarbs(Math.round(fixedData.carbsGrams / quantity));
+
+                if (fixedData.ingredients && Array.isArray(fixedData.ingredients)) {
+                    setEditableIngredients(fixedData.ingredients.map((ing: any) => ({
+                        name: ing.name || '',
+                        calories: ing.calories || 0,
+                        proteinGrams: ing.proteinGrams || 0,
+                        fatGrams: ing.fatGrams || 0,
+                        carbsGrams: ing.carbsGrams || 0,
+                    })));
+                }
+            }
+
+            setFixResultDialog({ isOpen: false, isLoading: false });
+        } catch (error) {
+            console.error('Fix result error:', error);
+            setFixResultDialog(prev => ({ ...prev, isLoading: false }));
         }
     };
 
@@ -111,7 +249,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
         return () => {
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
         };
-    }, [quantity, isFavorite, baseCalories, baseProtein, baseFat, baseCarbs]);
+    }, [quantity, isFavorite, baseCalories, baseProtein, baseFat, baseCarbs, editableIngredients]);
 
     if (!food && !isOpen) return null;
 
@@ -130,8 +268,6 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
         liked: false,
     };
 
-    // Use real ingredients from API, or empty array if none
-    const ingredients: Ingredient[] = displayFood.ingredients || [];
 
     // Calculate health score - use from API if available, otherwise compute fallback
     const computeHealthScore = (): number => {
@@ -163,7 +299,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
         const proteinPer100 = calories > 0 ? (protein / (calories / 100)) : 0;
         const proteinBonus = Math.min(1.5, Math.max(0, (proteinPer100 - 2) * 0.5));
-        const varietyBonus = Math.min(0.5, ingredients.length * 0.1);
+        const varietyBonus = Math.min(0.5, editableIngredients.length * 0.1);
 
         const raw = macroScore + kcalScore + proteinBonus + varietyBonus;
         return Math.round(Math.min(10, Math.max(0, raw)));
@@ -311,11 +447,259 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
         );
     };
 
+    // Ingredient Dialog Component
+    const IngredientDialog = () => {
+        // Use strings for form fields to allow empty values
+        const [formData, setFormData] = useState({
+            name: '',
+            calories: '',
+            proteinGrams: '',
+            fatGrams: '',
+            carbsGrams: '',
+        });
+
+        useEffect(() => {
+            if (ingredientDialog?.isOpen) {
+                const ing = ingredientDialog.ingredient;
+                setFormData({
+                    name: ing.name || '',
+                    calories: ing.calories ? String(ing.calories) : '',
+                    proteinGrams: ing.proteinGrams ? String(ing.proteinGrams) : '',
+                    fatGrams: ing.fatGrams ? String(ing.fatGrams) : '',
+                    carbsGrams: ing.carbsGrams ? String(ing.carbsGrams) : '',
+                });
+            }
+        }, [ingredientDialog?.isOpen]);
+
+        if (!ingredientDialog?.isOpen) return null;
+
+        // Convert form data to Ingredient on save
+        const handleSave = () => {
+            const ingredient: Ingredient = {
+                name: formData.name,
+                calories: parseInt(formData.calories) || 0,
+                proteinGrams: parseInt(formData.proteinGrams) || 0,
+                fatGrams: parseInt(formData.fatGrams) || 0,
+                carbsGrams: parseInt(formData.carbsGrams) || 0,
+            };
+            handleSaveIngredient(ingredient);
+        };
+
+        return (
+            <div className="fixed inset-0 z-[100] flex items-end justify-center">
+                {/* Backdrop */}
+                <div
+                    className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                    onClick={() => setIngredientDialog(null)}
+                />
+
+                {/* Dialog */}
+                <div className="relative w-full max-w-md bg-white rounded-t-[32px] p-6 pb-10 animate-slide-up shadow-2xl max-h-[85vh] overflow-y-auto">
+                    {/* Handle bar */}
+                    <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" />
+
+                    {/* Title */}
+                    <h3 className="text-xl font-black text-center text-gray-800 mb-6">
+                        {ingredientDialog.mode === 'add' ? 'افزودن ماده اولیه' : 'ویرایش ماده اولیه'}
+                    </h3>
+
+                    {/* Form */}
+                    <div className="space-y-4">
+                        {/* Name */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-500 mb-2">نام</label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 text-right font-bold text-gray-800 focus:border-orange-400 focus:outline-none"
+                                placeholder="نام ماده اولیه"
+                            />
+                        </div>
+
+                        {/* Calories */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-500 mb-2">کالری</label>
+                            <input
+                                type="number"
+                                value={formData.calories}
+                                onChange={(e) => setFormData(prev => ({ ...prev, calories: e.target.value }))}
+                                className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 text-center font-bold text-gray-800 focus:border-orange-400 focus:outline-none"
+                                placeholder="۰"
+                            />
+                        </div>
+
+                        {/* Macros Grid */}
+                        <div className="grid grid-cols-3 gap-3">
+                            {/* Protein */}
+                            <div>
+                                <label className="block text-xs font-bold text-blue-500 mb-2 text-center">پروتئین (گرم)</label>
+                                <input
+                                    type="number"
+                                    value={formData.proteinGrams}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, proteinGrams: e.target.value }))}
+                                    className="w-full p-3 bg-blue-50 rounded-xl border border-blue-200 text-center font-bold text-blue-600 focus:border-blue-400 focus:outline-none"
+                                    placeholder="۰"
+                                />
+                            </div>
+
+                            {/* Fat */}
+                            <div>
+                                <label className="block text-xs font-bold text-purple-500 mb-2 text-center">چربی (گرم)</label>
+                                <input
+                                    type="number"
+                                    value={formData.fatGrams}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, fatGrams: e.target.value }))}
+                                    className="w-full p-3 bg-purple-50 rounded-xl border border-purple-200 text-center font-bold text-purple-600 focus:border-purple-400 focus:outline-none"
+                                    placeholder="۰"
+                                />
+                            </div>
+
+                            {/* Carbs */}
+                            <div>
+                                <label className="block text-xs font-bold text-yellow-600 mb-2 text-center">کربو (گرم)</label>
+                                <input
+                                    type="number"
+                                    value={formData.carbsGrams}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, carbsGrams: e.target.value }))}
+                                    className="w-full p-3 bg-yellow-50 rounded-xl border border-yellow-200 text-center font-bold text-yellow-600 focus:border-yellow-400 focus:outline-none"
+                                    placeholder="۰"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex gap-3 mt-6">
+                        <button
+                            onClick={() => setIngredientDialog(null)}
+                            className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors"
+                        >
+                            انصراف
+                        </button>
+                        <button
+                            onClick={handleSave}
+                            disabled={!formData.name.trim()}
+                            className="flex-[2] py-4 rounded-2xl bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            ذخیره
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const handleDelete = async () => {
+        if (!food?.id) return;
+        if (confirm('آیا از حذف این وعده اطمینان دارید؟')) {
+            // Cancel any pending save
+            if (debounceTimer.current) {
+                clearTimeout(debounceTimer.current);
+                debounceTimer.current = undefined;
+            }
+            try {
+                // food.date is typically YYYY-MM-DD from the API
+                const dateParam = food.date || new Date().toISOString().slice(0, 10);
+                await apiService.deleteLogItem(food.id, dateParam);
+                setIsOpen(false);
+                setTimeout(onClose, 500);
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('خطا در حذف وعده');
+            }
+        }
+    };
+
     return (
         <div className={`fixed inset-0 z-[60] bg-[#F8F9FB] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}>
 
             {/* Edit Dialog */}
             <EditNumberDialog />
+
+            {/* Ingredient Dialog */}
+            <IngredientDialog />
+
+            {/* Fix Result Dialog - Inline to prevent re-mount issues */}
+            {fixResultDialog.isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-end justify-center">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        onClick={() => !fixResultDialog.isLoading && setFixResultDialog({ isOpen: false, isLoading: false })}
+                    />
+
+                    {/* Dialog */}
+                    <div className="relative w-full max-w-md bg-white rounded-t-[32px] p-6 pb-10 animate-slide-up shadow-2xl">
+                        {/* Handle bar */}
+                        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" />
+
+                        {/* Title with magic icon */}
+                        <div className="flex items-center justify-center gap-3 mb-6">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-black text-gray-800">اصلاح با هوش مصنوعی</h3>
+                        </div>
+
+                        {/* Input area */}
+                        <div className="mb-4">
+                            <textarea
+                                ref={fixResultTextareaRef}
+                                onChange={(e) => setFixResultIsEmpty(!e.target.value.trim())}
+                                placeholder="مشکل غذا را شرح دهید...&#10;مثلاً: این غذا دو برابر بیشتر بود یا فقط نصف غذا خوردم"
+                                className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 text-right font-medium text-gray-800 focus:border-purple-400 focus:outline-none resize-none h-32"
+                                disabled={fixResultDialog.isLoading}
+                                dir="rtl"
+                            />
+                        </div>
+
+                        {/* Info box */}
+                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 mb-6 border border-purple-100">
+                            <p className="text-sm text-gray-600 text-right leading-relaxed">
+                                🤖 هوش مصنوعی تغییرات شما را بررسی کرده و کالری و مواد مغذی را اصلاح می‌کند
+                            </p>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setFixResultDialog({ isOpen: false, isLoading: false })}
+                                disabled={fixResultDialog.isLoading}
+                                className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors disabled:opacity-50"
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const description = fixResultTextareaRef.current?.value || '';
+                                    if (description.trim()) {
+                                        handleFixResultWithDescription(description);
+                                    }
+                                }}
+                                disabled={fixResultIsEmpty || fixResultDialog.isLoading}
+                                className="flex-[2] py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {fixResultDialog.isLoading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        <span>در حال اصلاح...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>اصلاح کن</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Scrollable Container */}
             <div
@@ -352,9 +736,22 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                         boxShadow: headerBgOpacity > 0.9 ? '0 4px 20px -5px rgba(0,0,0,0.05)' : 'none',
                     }}
                 >
+                    {/* Centered Title (Absolute Layer) */}
+                    <div
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300"
+                        style={{ opacity: isScrolled ? 1 : 0 }}
+                    >
+                        <div className="px-28 w-full text-center">
+                            <h3 className="font-black text-gray-800 text-sm truncate">
+                                {displayFood.name}
+                            </h3>
+                        </div>
+                    </div>
+
+                    {/* Back Button */}
                     <button
                         onClick={handleClose}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isScrolled
+                        className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isScrolled
                             ? 'bg-gray-100 text-gray-800 shadow-sm'
                             : 'bg-white/20 backdrop-blur-md text-white border border-white/10'
                             }`}
@@ -364,23 +761,27 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                         </svg>
                     </button>
 
-                    {/* Collapsed Title */}
-                    <div
-                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-gray-800 text-sm transition-all duration-300 pointer-events-none"
-                        style={{
-                            opacity: isScrolled ? 1 : 0,
-                            transform: isScrolled ? 'translate(-50%, -50%) translateY(0)' : 'translate(-50%, -50%) translateY(10px)'
-                        }}
-                    >
-                        {displayFood.name.split(' ').slice(0, 3).join(' ')}...
-                    </div>
+                    {/* Actions */}
+                    <div className="relative z-10 flex gap-2">
+                        {/* Delete Button */}
+                        <button
+                            onClick={handleDelete}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isScrolled
+                                ? 'bg-red-50 text-red-500 shadow-sm hover:bg-red-100'
+                                : 'bg-white/20 backdrop-blur-md text-white border border-white/10 hover:bg-red-500/20'
+                                }`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                        </button>
 
-                    <div className="flex gap-3">
+                        {/* Favorite Button */}
                         <button
                             onClick={() => setIsFavorite(!isFavorite)}
                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isScrolled
-                                ? 'bg-gray-100 shadow-sm'
-                                : 'bg-white/20 backdrop-blur-md border border-white/10'
+                                ? 'bg-gray-100 shadow-sm hover:bg-gray-200'
+                                : 'bg-white/20 backdrop-blur-md border border-white/10 hover:bg-white/30'
                                 } ${isFavorite ? 'text-red-500' : (isScrolled ? 'text-gray-600' : 'text-white')}`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -506,25 +907,31 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             </div>
 
                             {/* Fix Button */}
-                            <button className="w-full py-4 bg-gray-900 text-white rounded-[20px] font-bold text-lg shadow-xl shadow-gray-300 hover:bg-gray-800 active:scale-95 transition-all mb-10 flex items-center justify-center gap-2">
+                            <button
+                                onClick={() => { fixResultDescriptionRef.current = ''; setFixResultDialog({ isOpen: true, isLoading: false }); }}
+                                className="w-full py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-[length:200%_100%] text-white rounded-[20px] font-bold text-lg shadow-xl shadow-purple-200 hover:shadow-purple-300 active:scale-95 transition-all mb-10 flex items-center justify-center gap-3 animate-gradient"
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                                    <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
                                 </svg>
-                                اصلاح نتیجه
+                                <span>اصلاح با هوش مصنوعی</span>
                             </button>
 
                             {/* Ingredients Header */}
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-black text-xl text-gray-800">مواد اولیه</h3>
-                                <button className="text-xs font-bold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-xl hover:bg-orange-100 transition-colors">
+                                <button
+                                    onClick={handleAddIngredient}
+                                    className="text-xs font-bold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-xl hover:bg-orange-100 transition-colors"
+                                >
                                     + افزودن
                                 </button>
                             </div>
 
-                            {/* Ingredients List - Real data from API */}
+                            {/* Ingredients List */}
                             <div className="space-y-4 pb-20">
-                                {ingredients.length > 0 ? (
-                                    ingredients.map((item, idx) => (
+                                {editableIngredients.length > 0 ? (
+                                    editableIngredients.map((item, idx) => (
                                         <div
                                             key={`${item.name}-${idx}`}
                                             className="bg-white rounded-[24px] p-4 shadow-sm border border-gray-100 flex flex-col gap-3 animate-slide-up"
@@ -551,12 +958,18 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                                 </div>
 
                                                 <div className="flex gap-2">
-                                                    <button className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-colors">
+                                                    <button
+                                                        onClick={() => handleEditIngredient(idx)}
+                                                        className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-colors"
+                                                    >
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                         </svg>
                                                     </button>
-                                                    <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                                                    <button
+                                                        onClick={() => handleDeleteIngredient(idx)}
+                                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                                                    >
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
@@ -575,7 +988,10 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                     </div>
                                 )}
 
-                                <button className="w-full py-3 border-2 border-dashed border-gray-200 text-gray-400 rounded-[24px] font-bold text-sm hover:border-orange-200 hover:text-orange-500 hover:bg-orange-50 transition-all flex items-center justify-center gap-2">
+                                <button
+                                    onClick={handleAddIngredient}
+                                    className="w-full py-3 border-2 border-dashed border-gray-200 text-gray-400 rounded-[24px] font-bold text-sm hover:border-orange-200 hover:text-orange-500 hover:bg-orange-50 transition-all flex items-center justify-center gap-2"
+                                >
                                     <span>+</span>
                                     <span>افزودن ماده اولیه</span>
                                 </button>

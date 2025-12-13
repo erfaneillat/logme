@@ -78,3 +78,21 @@
   animation: slide-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   opacity: 0;
 }
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}

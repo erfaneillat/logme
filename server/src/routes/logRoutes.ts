@@ -14,6 +14,9 @@ router.get('/', authenticateToken, (req, res) => controller.getDailyLog(req, res
 // Get logs in a date range [start, end]
 router.get('/range', authenticateToken, (req, res) => controller.getLogsRange(req, res));
 
+// Get all liked/favorite foods for the user
+router.get('/liked', authenticateToken, (req, res) => controller.getLikedFoods(req, res));
+
 // Toggle like on a specific item inside a daily log
 router.patch('/item/like', authenticateToken, (req, res) => controller.toggleItemLike(req, res));
 
