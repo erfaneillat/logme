@@ -69,6 +69,39 @@ export interface UserProfile {
     createdAt?: string;
 }
 
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TicketCategory = 'technical' | 'billing' | 'feature_request' | 'bug_report' | 'general' | 'other';
+
+export interface TicketMessage {
+    _id?: string;
+    senderId: string;
+    senderName: string;
+    senderRole: 'user' | 'admin';
+    message: string;
+    attachments?: string[];
+    createdAt: string;
+}
+
+export interface Ticket {
+    _id: string;
+    userId: string;
+    userName: string;
+    userPhone: string;
+    subject: string;
+    category: TicketCategory;
+    priority: TicketPriority;
+    status: TicketStatus;
+    messages: TicketMessage[];
+    assignedTo?: string;
+    assignedToName?: string;
+    lastMessageAt: string;
+    resolvedAt?: string;
+    closedAt?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface FoodIngredient {
     name: string;
     calories: number;
@@ -204,7 +237,7 @@ export const apiService = {
                 throw new Error(data.message || data.error || 'Failed to fetch plan');
             }
 
-            const plan = data.data || data;
+            const plan = data.data?.plan || data.plan || data.data || data;
             return {
                 calories: plan.calories || 2200,
                 carbsGrams: plan.carbsGrams || 250,
@@ -222,6 +255,79 @@ export const apiService = {
                 proteinGrams: 150,
                 fatsGrams: 70,
             };
+        }
+    },
+
+    updatePlanManual: async (macros: { calories?: number; proteinGrams?: number; carbsGrams?: number; fatsGrams?: number }): Promise<Plan | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/plan/manual`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(macros),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to update plan');
+            }
+
+            const plan = data.data?.plan || data.plan || data.data;
+            return {
+                calories: plan.calories || 2200,
+                carbsGrams: plan.carbsGrams || 250,
+                proteinGrams: plan.proteinGrams || 150,
+                fatsGrams: plan.fatsGrams || 70,
+                healthScore: plan.healthScore,
+                dailyGoal: plan.dailyGoal,
+            };
+        } catch (error: any) {
+            console.error('updatePlanManual error:', error);
+            throw error;
+        }
+    },
+
+    generatePlan: async (): Promise<Plan | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/plan/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                // Check for free tier limit error
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                }
+                throw new Error(data.message || data.error || 'Failed to generate plan');
+            }
+
+            const plan = data.data?.plan || data.plan || data.data;
+            return {
+                calories: plan.calories || 2200,
+                carbsGrams: plan.carbsGrams || 250,
+                proteinGrams: plan.proteinGrams || 150,
+                fatsGrams: plan.fatsGrams || 70,
+                healthScore: plan.healthScore,
+                dailyGoal: plan.dailyGoal,
+            };
+        } catch (error: any) {
+            console.error('generatePlan error:', error);
+            throw error;
         }
     },
 
@@ -837,6 +943,489 @@ export const apiService = {
             return data.data?.additionalInfo || null;
         } catch (error: any) {
             console.error('updateAdditionalInfo error:', error);
+            throw error;
+        }
+    },
+
+    // Chat APIs (matching Flutter implementation)
+    sendChatMessage: async (message: string, imageUrl?: string): Promise<string> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const body: { message: string; imageUrl?: string } = { message };
+            if (imageUrl) {
+                body.imageUrl = imageUrl;
+            }
+
+            const response = await fetch(`${BASE_URL}/api/chat/nutrition`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(body),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 403 && data.code === 'DAILY_MESSAGE_LIMIT_REACHED') {
+                    throw new Error('DAILY_MESSAGE_LIMIT_REACHED');
+                }
+                throw new Error(data.message || data.error || 'Failed to send chat message');
+            }
+
+            return data.data?.reply || '';
+        } catch (error: any) {
+            console.error('sendChatMessage error:', error);
+            throw error;
+        }
+    },
+
+    streamChatMessage: async (
+        message: string,
+        imageUrl?: string,
+        onToken?: (token: string) => void,
+        onComplete?: (fullText: string) => void,
+        onError?: (error: string) => void
+    ): Promise<void> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const body: { message: string; stream: boolean; imageUrl?: string } = {
+                message,
+                stream: true,
+            };
+            if (imageUrl) {
+                body.imageUrl = imageUrl;
+            }
+
+            const response = await fetch(`${BASE_URL}/api/chat/nutrition?stream=1`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'text/event-stream',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                if (response.status === 403 && errorData.code === 'DAILY_MESSAGE_LIMIT_REACHED') {
+                    onError?.('DAILY_MESSAGE_LIMIT_REACHED');
+                    return;
+                }
+                throw new Error(errorData.message || errorData.error || 'Failed to stream chat message');
+            }
+
+            const reader = response.body?.getReader();
+            if (!reader) {
+                throw new Error('No response body reader available');
+            }
+
+            const decoder = new TextDecoder();
+            let fullText = '';
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const jsonStr = line.slice(6);
+                        if (!jsonStr.trim()) continue;
+
+                        try {
+                            const event = JSON.parse(jsonStr);
+
+                            // Check for errors in stream
+                            if (event.error || event.code === 'DAILY_MESSAGE_LIMIT_REACHED') {
+                                onError?.(event.code || event.error || 'Stream error');
+                                return;
+                            }
+
+                            // Handle token streaming
+                            if (event.token) {
+                                fullText += event.token;
+                                onToken?.(event.token);
+                            }
+
+                            // Handle completion
+                            if (event.done) {
+                                const finalText = event.full || fullText;
+                                onComplete?.(finalText);
+                                return;
+                            }
+                        } catch (e) {
+                            // Ignore malformed JSON lines
+                            console.warn('Failed to parse SSE line:', jsonStr);
+                        }
+                    }
+                }
+            }
+
+            // If we exit the loop without done event, call onComplete with what we have
+            if (fullText) {
+                onComplete?.(fullText);
+            }
+        } catch (error: any) {
+            console.error('streamChatMessage error:', error);
+            onError?.(error.message || 'Stream error');
+            throw error;
+        }
+    },
+
+    uploadChatImage: async (imageFile: File): Promise<string> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            const response = await fetch(`${BASE_URL}/api/chat/nutrition/image`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to upload chat image');
+            }
+
+            return data.data?.imageUrl || '';
+        } catch (error: any) {
+            console.error('uploadChatImage error:', error);
+            throw error;
+        }
+    },
+
+    getNutritionChatHistory: async (before?: string, limit: number = 30): Promise<{
+        items: Array<{
+            _id: string;
+            message: string;
+            senderRole: 'user' | 'assistant';
+            createdAt: string;
+            imageUrl?: string;
+        }>;
+        hasMore: boolean;
+        nextCursor: string | null;
+    }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            let url = `${BASE_URL}/api/chat/nutrition/history?limit=${limit}`;
+            if (before) {
+                url += `&before=${before}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch chat history');
+            }
+
+            const items = data.data?.items || [];
+            const pagination = data.data?.pagination || {};
+
+            return {
+                items,
+                hasMore: pagination.hasMore ?? false,
+                nextCursor: pagination.nextCursor ?? null,
+            };
+        } catch (error: any) {
+            console.error('getNutritionChatHistory error:', error);
+            return { items: [], hasMore: false, nextCursor: null };
+        }
+    },
+
+    // Profile Update API
+    updateProfile: async (name?: string, email?: string): Promise<UserProfile | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const body: { name?: string; email?: string } = {};
+            if (name !== undefined) body.name = name;
+            if (email !== undefined) body.email = email;
+
+            const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(body),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to update profile');
+            }
+
+            const user = data.data?.user || data.user || data.data || data;
+            return {
+                id: user._id || user.id || '',
+                phone: user.phone || '',
+                name: user.name,
+                streakCount: user.streakCount || 0,
+                hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
+                createdAt: user.createdAt,
+            };
+        } catch (error: any) {
+            console.error('updateProfile error:', error);
+            throw error;
+        }
+    },
+
+    // User Preferences APIs
+    getPreferences: async (): Promise<{ addBurnedCalories: boolean; rolloverCalories: boolean }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/preferences`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch preferences');
+            }
+
+            return {
+                addBurnedCalories: data.data?.addBurnedCalories ?? true,
+                rolloverCalories: data.data?.rolloverCalories ?? true,
+            };
+        } catch (error: any) {
+            console.error('getPreferences error:', error);
+            return { addBurnedCalories: true, rolloverCalories: true };
+        }
+    },
+
+    deleteAccount: async (reason?: string): Promise<boolean> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/auth/account`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ reason }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to delete account');
+            }
+
+            return true;
+        } catch (error: any) {
+            console.error('deleteAccount error:', error);
+            throw error;
+        }
+    },
+
+    updatePreferences: async (preferences: { addBurnedCalories?: boolean; rolloverCalories?: boolean }): Promise<{ addBurnedCalories: boolean; rolloverCalories: boolean }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/preferences`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(preferences),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to update preferences');
+            }
+
+            return {
+                addBurnedCalories: data.data?.addBurnedCalories ?? true,
+                rolloverCalories: data.data?.rolloverCalories ?? true,
+            };
+        } catch (error: any) {
+            console.error('updatePreferences error:', error);
+            throw error;
+        }
+    },
+
+    // Support Ticket APIs
+    uploadTicketImage: async (file: File): Promise<string> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch(`${BASE_URL}/api/tickets/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to upload image');
+            }
+
+            return data.data?.url || data.url;
+        } catch (error: any) {
+            console.error('uploadTicketImage error:', error);
+            throw error;
+        }
+    },
+
+    createTicket: async (subject: string, message: string, category: TicketCategory = 'general', priority: TicketPriority = 'medium', attachments: string[] = []): Promise<Ticket> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/tickets`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ subject, message, category, priority, attachments }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to create ticket');
+            }
+
+            return data.data?.ticket || data.ticket || data.data;
+        } catch (error: any) {
+            console.error('createTicket error:', error);
+            throw error;
+        }
+    },
+
+    getMyTickets: async (page: number = 1, limit: number = 20, status?: TicketStatus): Promise<Ticket[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString(),
+            });
+            if (status) params.append('status', status);
+
+            const response = await fetch(`${BASE_URL}/api/tickets/my-tickets?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch tickets');
+            }
+
+            return data.data?.items || [];
+        } catch (error: any) {
+            console.error('getMyTickets error:', error);
+            return [];
+        }
+    },
+
+    getTicketById: async (ticketId: string): Promise<Ticket> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/tickets/${ticketId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch ticket');
+            }
+
+            return data.data?.ticket || data.ticket || data.data;
+        } catch (error: any) {
+            console.error('getTicketById error:', error);
+            throw error;
+        }
+    },
+
+    replyToTicket: async (ticketId: string, message: string, attachments: string[] = []): Promise<Ticket> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/tickets/${ticketId}/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ message, attachments }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to reply to ticket');
+            }
+
+            return data.data?.ticket || data.ticket || data.data;
+        } catch (error: any) {
+            console.error('replyToTicket error:', error);
             throw error;
         }
     },

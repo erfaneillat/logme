@@ -41,4 +41,6 @@ export interface ChatMessage {
     text: string;
     isUser: boolean;
     timestamp: Date;
+    imageUrl?: string;
+    isSending?: boolean;
 }

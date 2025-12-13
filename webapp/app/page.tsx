@@ -8,6 +8,7 @@ import AddExerciseModal from './components/AddExerciseModal';
 import FoodDetailModal from './components/FoodDetailModal';
 import ChatPage from './components/ChatPage';
 import SettingPage from './components/SettingPage';
+import SubscriptionPage from './components/SubscriptionPage';
 import Splash from './components/Splash';
 import Onboarding from './components/Onboarding';
 import Login from './components/Login';
@@ -18,7 +19,7 @@ import PlanSummary from './components/PlanSummary';
 import { FoodItem } from './types';
 import { apiService, User, FoodAnalysisResponse } from './services/apiService';
 
-type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings';
+type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings' | 'subscription';
 type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL_INFO' | 'PLAN_GENERATION' | 'PLAN_SUMMARY' | 'MAIN';
 
 export default function Home() {
@@ -37,6 +38,14 @@ export default function Home() {
 
   // State for dashboard refresh
   const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
+
+  // Global Notification (Snackbar)
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 5000);
+  };
 
   const handleSplashFinish = () => {
     const hasOnboarded = localStorage.getItem('hasOnboarded');
@@ -148,9 +157,19 @@ export default function Home() {
       setDashboardRefreshTrigger(prev => prev + 1);
       setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Background analysis failed:", error);
-      alert("متاسفانه تحلیل غذا با خطا مواجه شد.");
+
+      const errorMessage = error.message || "";
+
+      // Check if error is related to limits
+      if (errorMessage.includes('محدودیت') || errorMessage.includes('limit') || errorMessage.includes('اشتراک') || errorMessage.includes('رایگان')) {
+        showNotification(errorMessage, 'error');
+        setCurrentView('subscription');
+      } else {
+        alert("متاسفانه تحلیل غذا با خطا مواجه شد.");
+      }
+
       setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));
     }
   };
@@ -220,7 +239,14 @@ export default function Home() {
       )}
 
       {currentView === 'chat' && (
-        <ChatPage onBack={() => setCurrentView('dashboard')} />
+        <ChatPage
+          onBack={() => setCurrentView('dashboard')}
+          onSubscriptionClick={() => setCurrentView('subscription')}
+        />
+      )}
+
+      {currentView === 'subscription' && (
+        <SubscriptionPage onBack={() => setCurrentView('dashboard')} />
       )}
 
       {currentView === 'settings' && (
@@ -319,6 +345,22 @@ export default function Home() {
               {currentView === 'settings' && <span className="text-[10px] font-bold text-purple-500 mt-1 animate-fade-in">پروفایل</span>}
             </button>
           </div>
+        </div>
+      )}
+      {notification && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-gray-900/95 backdrop-blur-sm text-white px-4 py-3 rounded-2xl shadow-2xl z-[100] animate-fade-in flex items-start gap-3 border border-gray-700/50">
+          <div className={`mt-0.5 ${notification.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+            {notification.type === 'error' ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            )}
+          </div>
+          <p className="text-xs font-medium leading-relaxed opacity-90">{notification.message}</p>
         </div>
       )}
     </div>

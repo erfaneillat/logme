@@ -59,7 +59,7 @@ export class TicketController {
         category: category || TicketCategory.GENERAL,
         priority: priority || TicketPriority.MEDIUM,
         status: TicketStatus.OPEN,
-        messages: [initialMessage],
+        messages: [{ ...initialMessage, attachments: req.body.attachments || [] }],
         lastMessageAt: new Date(),
         lastMessageBy: 'user',
         userHasUnread: false,
@@ -262,6 +262,7 @@ export class TicketController {
         senderName: user.name || (isAdmin ? 'Admin' : 'User'),
         senderRole: isAdmin ? 'admin' : 'user',
         message: String(message).trim(),
+        attachments: req.body.attachments || [],
         createdAt: new Date(),
       };
 
@@ -274,7 +275,7 @@ export class TicketController {
       if (isAdmin) {
         ticket.userHasUnread = true;
         ticket.adminHasUnread = false;
-        
+
         // Send notification to user
         try {
           await notificationService.notifyTicketReply(
@@ -472,6 +473,30 @@ export class TicketController {
       res.json({ success: true, message: 'Ticket deleted successfully' });
     } catch (error) {
       errorLogger.error('Delete ticket error', error as Error, req, { ticketId: req.params.id });
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
+
+  // Upload image
+  async uploadImage(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.file) {
+        res.status(400).json({ success: false, message: 'No image uploaded' });
+        return;
+      }
+
+      const host = req.get('host');
+      const protocol = req.protocol;
+      const baseUrl = `${protocol}://${host}`;
+      const imageUrl = `${baseUrl}/api/tickets/images/${req.file.filename}`;
+
+      res.json({
+        success: true,
+        message: 'Image uploaded successfully',
+        data: { url: imageUrl },
+      });
+    } catch (error) {
+      errorLogger.error('Upload ticket image error', error as Error, req);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }

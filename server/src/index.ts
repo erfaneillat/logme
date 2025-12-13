@@ -55,6 +55,7 @@ const HOST = process.env.HOST || '0.0.0.0'; // Changed from 'localhost' to '0.0.
 app.use(helmet({
   // Sends the origin for cross-origin requests while keeping strong privacy defaults
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 
 // CORS configuration
