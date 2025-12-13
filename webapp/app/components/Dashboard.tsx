@@ -44,6 +44,7 @@ interface DashboardProps {
         type: 'image' | 'text';
         startTime: number;
     }[];
+    onSubscriptionClick: () => void;
 }
 
 const PendingFoodItem = ({ item }: { item: NonNullable<DashboardProps['pendingAnalyses']>[number] }) => (
@@ -176,7 +177,7 @@ const DateStripSkeleton = () => (
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [] }) => {
+const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [], onSubscriptionClick }) => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [dateRange] = useState<Date[]>(() => generateDateRange());
     const [visibleDates, setVisibleDates] = useState<Date[]>([]);
@@ -185,6 +186,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
     const [dailyLog, setDailyLog] = useState<DailyLog | null>(null);
     const [plan, setPlan] = useState<Plan | null>(null);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [isSubscribed, setIsSubscribed] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -217,15 +219,17 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
             const dateStr = formatDate(selectedDate);
 
             // Fetch all data in parallel
-            const [logData, planData, profileData] = await Promise.all([
+            const [logData, planData, profileData, subStatus] = await Promise.all([
                 apiService.getDailyLog(dateStr),
                 apiService.getLatestPlan(),
                 apiService.getUserProfile(),
+                apiService.getSubscriptionStatus(),
             ]);
 
             setDailyLog(logData);
             setPlan(planData);
             setUserProfile(profileData);
+            setIsSubscribed(subStatus?.isActive || false);
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
         } finally {
@@ -401,8 +405,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                 {/* Header Component */}
                 <Header
                     streakCount={userProfile?.streakCount || 0}
-                    isSubscribed={false}
-                    onSubscriptionClick={() => { }}
+                    isSubscribed={isSubscribed}
+                    onSubscriptionClick={onSubscriptionClick}
                     onStreakClick={handleStreakClick}
                 />
 

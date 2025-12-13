@@ -169,6 +169,31 @@ export interface AdditionalInfo {
     accomplishment?: string;
 }
 
+export interface SubscriptionPlan {
+    _id: string;
+    name: string;
+    title?: string;
+    duration: 'monthly' | '3month' | 'yearly';
+    price: number;
+    originalPrice?: number;
+    discountPercentage?: number;
+    pricePerMonth?: number;
+    cafebazaarProductKey?: string;
+    imageUrl?: string;
+    isActive: boolean;
+    features: string[];
+    sortOrder: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface SubscriptionStatus {
+    isActive: boolean;
+    planType?: 'monthly' | 'yearly' | 'threeMonth' | null;
+    expiryDate?: string | null;
+    startDate?: string | null;
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -1427,6 +1452,55 @@ export const apiService = {
         } catch (error: any) {
             console.error('replyToTicket error:', error);
             throw error;
+        }
+    },
+
+    // Subscription Plan APIs
+    getSubscriptionPlans: async (): Promise<SubscriptionPlan[]> => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/subscription-plans?activeOnly=true`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch subscription plans');
+            }
+
+            return data.data?.plans || [];
+        } catch (error: any) {
+            console.error('getSubscriptionPlans error:', error);
+            return [];
+        }
+    },
+
+    getSubscriptionStatus: async (): Promise<SubscriptionStatus | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/subscription/status`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch subscription status');
+            }
+
+            return data.data || null;
+        } catch (error: any) {
+            console.error('getSubscriptionStatus error:', error);
+            return null;
         }
     },
 };

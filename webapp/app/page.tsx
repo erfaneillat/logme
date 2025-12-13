@@ -231,6 +231,7 @@ export default function Home() {
           onFoodClick={setSelectedFood}
           refreshTrigger={dashboardRefreshTrigger}
           pendingAnalyses={pendingAnalyses}
+          onSubscriptionClick={() => setCurrentView('subscription')}
         />
       )}
 

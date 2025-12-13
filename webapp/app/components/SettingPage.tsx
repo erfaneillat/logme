@@ -29,6 +29,7 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     // API Data States
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [preferences, setPreferences] = useState({ addBurnedCalories: true, rolloverCalories: true });
+    const [subscriptionStatus, setSubscriptionStatus] = useState<{ isActive: boolean; expiryDate?: string | null; startDate?: string | null } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     // Edit Name States
@@ -36,7 +37,6 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const [newName, setNewName] = useState('');
     const [isUpdatingName, setIsUpdatingName] = useState(false);
 
-    // Logout Modal
     // Logout Modal
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -53,9 +53,10 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const [profile, prefs] = await Promise.all([
+            const [profile, prefs, subStatus] = await Promise.all([
                 apiService.getUserProfile(),
-                apiService.getPreferences()
+                apiService.getPreferences(),
+                apiService.getSubscriptionStatus()
             ]);
 
             if (profile) {
@@ -64,6 +65,9 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             }
             if (prefs) {
                 setPreferences(prefs);
+            }
+            if (subStatus) {
+                setSubscriptionStatus(subStatus);
             }
         } catch (error) {
             console.error('Failed to fetch settings data:', error);
@@ -98,13 +102,10 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             }
         } catch (error) {
             console.error('Failed to update name:', error);
-            alert('خطا در ویرایش نام');
         } finally {
             setIsUpdatingName(false);
         }
     };
-
-
 
     const handleDeleteAccount = async () => {
         try {
@@ -120,57 +121,66 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         }
     };
 
-    const handleCloseModal = () => {
+    const onSubscriptionBack = () => {
         setCurrentView('main');
+        fetchData(); // Refresh data when coming back from subscription page to check if status changed
     };
 
+    const handleCloseModal = () => setCurrentView('main');
+
     if (currentView === 'subscription') {
-        return <SubscriptionPage onBack={handleCloseModal} />;
+        return <SubscriptionPage onBack={onSubscriptionBack} />;
     }
 
     return (
-        <>
-            <div className="px-5 pt-6 pb-32 space-y-5 overflow-y-auto h-full no-scrollbar relative z-0">
+        <div className="bg-[#F5F7FA] min-h-screen pb-safe-bottom">
+            {/* Header with gradient background */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 pb-16 pt-safe-top px-6 rounded-b-[40px] shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none"></div>
 
-                {/* Profile Header */}
-                <div className={`bg-gray-900 rounded-[32px] p-6 text-white shadow-xl shadow-gray-200 flex justify-between items-center transition-all duration-700 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                    <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-[20px] border-2 border-white/20 overflow-hidden shadow-inner bg-gray-800 shrink-0">
-                            <div className="w-full h-full flex items-center justify-center text-gray-500 bg-gray-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="flex items-center gap-2 mb-1">
-                                <h2 className="text-xl font-black">
-                                    {isLoading ? '...' : (userProfile?.name || 'کاربر')}
-                                </h2>
-                                <button
-                                    onClick={() => {
-                                        setNewName(userProfile?.name || '');
-                                        setShowEditNameModal(true);
-                                    }}
-                                    className="p-1 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <p className="text-gray-400 text-sm font-medium tracking-wider" dir="ltr">
-                                {isLoading ? '...' : (userProfile?.phone || '')}
-                            </p>
-                        </div>
-                    </div>
+                <div className="flex justify-between items-center mb-8 relative z-10 pt-4">
+                    <h1 className="text-2xl font-black text-white">تنظیمات</h1>
+                    <button className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </button>
                 </div>
 
+                <div className={`bg-white/10 backdrop-blur-lg rounded-[28px] p-5 border border-white/10 flex items-center gap-4 relative overflow-hidden transition-all duration-700 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-indigo-500 p-0.5 shadow-lg shadow-purple-500/20 flex-shrink-0">
+                        <div className="w-full h-full bg-gray-800 rounded-[14px] flex items-center justify-center overflow-hidden relative">
+                            {/* Avatar generic if no image */}
+                            <span className="text-2xl text-white font-bold">{userProfile?.name?.charAt(0) || '👤'}</span>
+                        </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                            <h2 className="text-xl font-black text-white truncate">{userProfile?.name || 'کاربر عزیز'}</h2>
+                            <button
+                                onClick={() => {
+                                    setNewName(userProfile?.name || '');
+                                    setShowEditNameModal(true);
+                                }}
+                                className="p-1 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p className="text-gray-400 text-sm font-medium tracking-wider" dir="ltr">
+                            {isLoading ? '...' : (userProfile?.phone || '')}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="px-6 -mt-8 space-y-4">
                 {/* Subscription Card */}
                 {(() => {
-                    // Currently assuming no subscription is active as per user request (no trial, no sub)
-                    // TODO: Integrate with real backend subscription status when available
-                    const isSubscribed = false;
+                    const isSubscribed = subscriptionStatus?.isActive || false;
 
                     if (!isSubscribed) {
                         return (
@@ -212,10 +222,24 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                         );
                     }
 
-                    // Active Subscription View (Placeholder for future use)
-                    const endDate = new Date();
-                    const daysLeft = 30;
-                    const progressPercent = 100;
+                    // Active Subscription View
+                    let endDate = new Date();
+                    if (subscriptionStatus?.expiryDate) {
+                        endDate = new Date(subscriptionStatus.expiryDate);
+                    }
+
+                    // Safe calculation for progress
+                    let progressPercent = 100;
+                    if (subscriptionStatus?.startDate && subscriptionStatus?.expiryDate) {
+                        const start = new Date(subscriptionStatus.startDate).getTime();
+                        const end = new Date(subscriptionStatus.expiryDate).getTime();
+                        const now = new Date().getTime();
+                        const total = end - start;
+                        const elapsed = now - start;
+                        if (total > 0) {
+                            progressPercent = Math.min(100, Math.max(0, (elapsed / total) * 100));
+                        }
+                    }
 
                     return (
                         <div
@@ -622,7 +646,7 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </>
+        </div>
     );
 };
 
