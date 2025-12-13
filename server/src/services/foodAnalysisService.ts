@@ -110,8 +110,7 @@ export class FoodAnalysisService {
 ### CORE PROTOCOLS:
 1. Language: Process logic in ENGLISH, output user-facing text in PERSIAN.
 2. Output Format: Return ONLY a valid JSON object.
-3. Calculation Rule: Output ONLY the AVERAGE (Mean) weight as a single integer.
-4. Aggregation Rule: Sum up all nutritional values for the total meal.
+3. Aggregation Rule: Sum up all nutritional values for the total meal.
 
 ### PHASE 1: PHYSICS & TEXTURE ENGINE (The Tie-Breaker)
 CRITICAL: Use "Gravity Physics" to distinguish Sangak from Taftoon/Lavash.
@@ -143,8 +142,7 @@ Rules:
 ### CORE PROTOCOLS:
 1. Language: Process logic in ENGLISH, output user-facing text in PERSIAN (fa-IR).
 2. Output Format: Return ONLY a valid JSON object.
-3. Calculation Rule: Output ONLY the AVERAGE (Mean) weight as a single integer.
-4. Aggregation Rule: Sum up all nutritional values for the total meal.
+3. Aggregation Rule: Sum up all nutritional values for the total meal.
 
 ### PHASE 1: FOOD IDENTIFICATION & PORTION ESTIMATION
 CRITICAL: Accurately identify the food from the user's description.
@@ -244,6 +242,9 @@ Rules:
     }
 
     private sanitizeResult(raw: any): FoodAnalysisResult {
+        if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+            throw new Error('Invalid AI response structure');
+        }
         // Check if this is a non-food image response
         if (raw?.isFood === false) {
             return {
