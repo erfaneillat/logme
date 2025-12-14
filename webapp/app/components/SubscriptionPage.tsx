@@ -100,6 +100,54 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
     const [loading, setLoading] = useState(true);
     const [isPurchasing, setIsPurchasing] = useState(false);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+    // Testimonials data (Persian user reviews)
+    const testimonials = [
+        {
+            name: 'مونا',
+            text: 'فقط با عکس گرفتن از غذاهام، ۱۵ کیلو کم کردم! یکی از بهترین اتفاقات زندگیم. مررررسی لقمه.',
+            avatar: '👩‍🦰'
+        },
+        {
+            name: 'نیلوفر',
+            text: 'همیشه یادم می‌رفت غذاهام رو وارد کنم و رژیمم نصفه می‌موند. ولی با لقمه همه‌چی خودکار انجام می‌شه. فقط عکس می‌گیرم و پیشرفتم رو هر روز می‌بینم، همین باعث شده ادامه بدم.',
+            avatar: '👩'
+        },
+        {
+            name: 'نیما',
+            text: 'بعد از یه ماه استفاده از لقمه، دیدن پیشرفتم روی نمودار واقعاً خوشحالم کرد. اینکه بتونی مسیرت رو ببینی، خودش بزرگ‌ترین انگیزه‌ست.',
+            avatar: '👨'
+        },
+        {
+            name: 'پدرام',
+            text: 'بهترین بخش لقمه برای من نمودار پیشرفته‌ست. می‌فهمم دقیقاً توی هفته چند درصد به هدف وزنیم نزدیک‌تر شدم.',
+            avatar: '👨‍💼'
+        },
+        {
+            name: 'رامین',
+            text: 'احساس می‌کنم یه مربی کوچیک توی جیبمه! هر بار یه غذای جدید می‌خورم، لقمه آنالیزش می‌کنه و راهنمایی می‌ده چطور متعادل‌تر بخورم.',
+            avatar: '🧑'
+        },
+        {
+            name: 'الناز',
+            text: 'اینکه غذاهای ایرانی رو میشناسه فوق العاده س، لقمه حتی خورشت و برنج رو هم درست تشخیص داد 😅 خیلی دقیق و کاربردیه.',
+            avatar: '👩‍🦱'
+        },
+        {
+            name: 'میترا',
+            text: 'همیشه دنبال یه راه ساده بودم که بفهمم چی می‌خورم بدون محاسبه و سرچ کردن. لقمه دقیقاً همونه. حس می‌کنم بالاخره یه اپ طراحی شده برای آدمای واقعی!',
+            avatar: '👩‍💻'
+        }
+    ];
+
+    // Auto-rotate testimonials every 5 seconds
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [testimonials.length]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -304,86 +352,165 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto pb-24">
-                <div className="max-w-md mx-auto w-full p-6 space-y-6">
+                <div className="max-w-md mx-auto w-full">
 
-                    {/* Hero Text */}
-                    <div className="text-center space-y-2 mb-8">
-                        <h2 className="text-2xl font-black text-gray-900 leading-tight">
-                            به جمع کاربران <span className="text-blue-500">ویژه</span> بپیوندید
-                        </h2>
-                        <p className="text-gray-500 text-sm leading-relaxed px-4">
-                            با اشتراک ویژه، بدون محدودیت از تمام امکانات هوشمند کالری‌شمار و تحلیلگر استفاده کنید.
-                        </p>
-                    </div>
-
-                    {/* Features List */}
-                    <div className="grid grid-cols-2 gap-3 mb-8">
-                        {[
-                            { text: 'تحلیل نامحدود غذا', icon: '📸' },
-                            { text: 'برنامه غذایی اختصاصی', icon: '🥗' },
-                            { text: 'چت هوشمند نامحدود', icon: '💬' },
-                            { text: 'حذف تبلیغات', icon: '🚫' },
-                        ].map((feature, idx) => (
-                            <div key={idx} className="flex items-center gap-2 bg-white p-3 rounded-2xl shadow-sm">
-                                <span className="text-xl">{feature.icon}</span>
-                                <span className="text-xs font-bold text-gray-700">{feature.text}</span>
+                    {/* Hero Image & Testimonials Section */}
+                    <div className="bg-white px-6 pb-6 pt-5">
+                        {/* Hero Image */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="relative rounded-3xl overflow-hidden shadow-xl mb-6"
+                        >
+                            <img
+                                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop&q=80"
+                                alt="Healthy Food"
+                                className="w-full h-52 object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                            <div className="absolute bottom-4 right-4 left-4">
+                                <h3 className="text-white font-black text-xl drop-shadow-lg">
+                                    🍽️ تغذیه هوشمند با لقمه
+                                </h3>
                             </div>
-                        ))}
-                    </div>
+                        </motion.div>
 
-                    {/* Pricing Section */}
-                    <div className="space-y-4">
-
-                        {/* Offer Banner + Yearly Plan Wrapper */}
-                        {isOfferValid && activeOffer && yearlyPlan ? (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="relative rounded-[24px] overflow-hidden shadow-xl"
-                                style={{
-                                    background: `linear-gradient(135deg, ${activeOffer.display.backgroundColor} 0%, ${darkenColor(activeOffer.display.backgroundColor)} 100%)`
-                                }}
-                            >
-                                {/* Decorative elements */}
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                                <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none"></div>
-
-                                <div className="p-5 pb-6">
-                                    {/* Banner Header */}
-                                    <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 mb-6">
-                                        {/* Timer */}
-                                        {effectiveEndDate && (
-                                            <CountdownTimer
-                                                endDate={effectiveEndDate}
-                                                bgColor={activeOffer.display.backgroundColor}
-                                                textColor="white"
-                                            />
-                                        )}
-
-                                        {/* Text */}
-                                        <div className="text-center sm:text-right flex-1">
-                                            <h3 className="text-white font-black text-lg sm:text-xl leading-tight">
-                                                {activeOffer.display.bannerText}
-                                            </h3>
-                                            {activeOffer.display.bannerSubtext && (
-                                                <p className="text-white/90 text-xs sm:text-sm mt-1 font-medium">
-                                                    {activeOffer.display.bannerSubtext}
-                                                </p>
-                                            )}
+                        {/* Testimonials Carousel */}
+                        <div className="relative h-48 mb-5">
+                            {testimonials.map((testimonial, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, x: 100 }}
+                                    animate={{
+                                        opacity: currentTestimonial === index ? 1 : 0,
+                                        x: currentTestimonial === index ? 0 : currentTestimonial > index ? -100 : 100,
+                                        zIndex: currentTestimonial === index ? 10 : 0
+                                    }}
+                                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                                    className="absolute inset-0 bg-white rounded-2xl p-4 shadow-lg border border-gray-100"
+                                    onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
+                                >
+                                    {/* User Info */}
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-2xl shadow-md">
+                                            {testimonial.avatar}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-gray-800 text-base">{testimonial.name}</h4>
+                                            <div className="flex gap-0.5 mt-1">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <svg key={i} className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* The Yearly Plan Card Nested Inside */}
-                                    {renderPlanCard(yearlyPlan, selectedPlanId === yearlyPlan._id, true)}
-                                </div>
-                            </motion.div>
-                        ) : (
-                            // Fallback if no offer or no yearly plan
-                            yearlyPlan && renderPlanCard(yearlyPlan, selectedPlanId === yearlyPlan._id)
-                        )}
+                                    {/* Testimonial Text */}
+                                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-4">
+                                        {testimonial.text}
+                                    </p>
+                                </motion.div>
+                            ))}
+                        </div>
 
-                        {/* Other Plans */}
-                        {otherPlans.map(plan => renderPlanCard(plan, selectedPlanId === plan._id))}
+                        {/* Testimonial Indicators */}
+                        <div className="flex justify-center gap-2">
+                            {testimonials.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentTestimonial(index)}
+                                    className={`h-2 rounded-full transition-all duration-300 ${currentTestimonial === index
+                                        ? 'w-8 bg-gray-800'
+                                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                                        }`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="px-6 space-y-6">
+                        {/* Hero Text */}
+                        <div className="text-center space-y-2 mb-8 pt-6">
+                            <h2 className="text-2xl font-black text-gray-900 leading-tight">
+                                به جمع کاربران <span className="text-blue-500">ویژه</span> بپیوندید
+                            </h2>
+                            <p className="text-gray-500 text-sm leading-relaxed px-4">
+                                با اشتراک ویژه، بدون محدودیت از تمام امکانات هوشمند کالری‌شمار و تحلیلگر استفاده کنید.
+                            </p>
+                        </div>
+
+                        {/* Features List */}
+                        <div className="grid grid-cols-2 gap-3 mb-8">
+                            {[
+                                { text: 'تحلیل نامحدود غذا', icon: '📸' },
+                                { text: 'برنامه غذایی اختصاصی', icon: '🥗' },
+                                { text: 'چت هوشمند نامحدود', icon: '💬' },
+                                { text: 'حذف تبلیغات', icon: '🚫' },
+                            ].map((feature, idx) => (
+                                <div key={idx} className="flex items-center gap-2 bg-white p-3 rounded-2xl shadow-sm">
+                                    <span className="text-xl">{feature.icon}</span>
+                                    <span className="text-xs font-bold text-gray-700">{feature.text}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Pricing Section */}
+                        <div className="space-y-4">
+
+                            {/* Offer Banner + Yearly Plan Wrapper */}
+                            {isOfferValid && activeOffer && yearlyPlan ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="relative rounded-[24px] overflow-hidden shadow-xl"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${activeOffer.display.backgroundColor} 0%, ${darkenColor(activeOffer.display.backgroundColor)} 100%)`
+                                    }}
+                                >
+                                    {/* Decorative elements */}
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none"></div>
+
+                                    <div className="p-5 pb-6">
+                                        {/* Banner Header */}
+                                        <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 mb-6">
+                                            {/* Timer */}
+                                            {effectiveEndDate && (
+                                                <CountdownTimer
+                                                    endDate={effectiveEndDate}
+                                                    bgColor={activeOffer.display.backgroundColor}
+                                                    textColor="white"
+                                                />
+                                            )}
+
+                                            {/* Text */}
+                                            <div className="text-center sm:text-right flex-1">
+                                                <h3 className="text-white font-black text-lg sm:text-xl leading-tight">
+                                                    {activeOffer.display.bannerText}
+                                                </h3>
+                                                {activeOffer.display.bannerSubtext && (
+                                                    <p className="text-white/90 text-xs sm:text-sm mt-1 font-medium">
+                                                        {activeOffer.display.bannerSubtext}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* The Yearly Plan Card Nested Inside */}
+                                        {renderPlanCard(yearlyPlan, selectedPlanId === yearlyPlan._id, true)}
+                                    </div>
+                                </motion.div>
+                            ) : (
+                                // Fallback if no offer or no yearly plan
+                                yearlyPlan && renderPlanCard(yearlyPlan, selectedPlanId === yearlyPlan._id)
+                            )}
+
+                            {/* Other Plans */}
+                            {otherPlans.map(plan => renderPlanCard(plan, selectedPlanId === plan._id))}
+                        </div>
                     </div>
                 </div>
             </div>
