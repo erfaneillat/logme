@@ -29,6 +29,29 @@ const getApiBaseUrl = (): string => {
 // BASE_URL is evaluated once at module load - may not have injected values yet
 export const getBaseUrl = getApiBaseUrl;
 
+// Helper to fix image URLs (handle localhost vs 10.0.2.2 for Android Emulator)
+export const fixImageUrl = (url?: string): string | undefined => {
+    if (!url) return undefined;
+
+    // If running in browser or no specific handling needed
+    if (typeof window === 'undefined') return url;
+
+    // Get current correct base URL (detects Android)
+    const baseUrl = getApiBaseUrl();
+
+    // If URL is from localhost:9000 but we need to use 10.0.2.2 (or whatever getBaseUrl returned)
+    if (url.includes('localhost:9000') && !baseUrl.includes('localhost')) {
+        return url.replace(/http:\/\/localhost:9000/g, baseUrl).replace(/https:\/\/localhost:9000/g, baseUrl);
+    }
+
+    // Handle relative URLs just in case
+    if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+    }
+
+    return url;
+};
+
 // Initial value - will be stale if injection happens later
 export const BASE_URL = getApiBaseUrl();
 

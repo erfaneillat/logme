@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatMessage } from '../types';
-import { apiService, BASE_URL } from '../services/apiService';
+import { apiService, BASE_URL, fixImageUrl } from '../services/apiService';
 import ReactMarkdown from 'react-markdown';
 
 interface ChatPageProps {
@@ -288,12 +288,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
         return currentDate !== prevDate;
     };
 
-    // Get full image URL
-    const getImageUrl = (url?: string): string | undefined => {
-        if (!url) return undefined;
-        if (url.startsWith('http') || url.startsWith('data:')) return url;
-        return `${BASE_URL}${url}`;
-    };
 
     return (
         <div className="flex flex-col h-screen bg-[#F8F9FB] fixed inset-0 z-50 overflow-hidden">
@@ -415,7 +409,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                                     {msg.imageUrl && (
                                         <div className={`mb-2 overflow-hidden rounded-xl ${msg.isUser ? 'rounded-br-md' : 'rounded-bl-md'}`}>
                                             <img
-                                                src={getImageUrl(msg.imageUrl)}
+                                                src={fixImageUrl(msg.imageUrl)}
                                                 alt="Attached"
                                                 className="max-w-[200px] max-h-[200px] object-cover"
                                             />

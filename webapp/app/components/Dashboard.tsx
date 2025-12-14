@@ -6,7 +6,7 @@ import CircularProgress from './CircularProgress';
 import NutrientCard from './NutrientCard';
 import StreakModal from './StreakModal';
 import OfferBanner from './OfferBanner';
-import { apiService, DailyLog, DailyLogItem, Plan, UserProfile, Offer } from '../services/apiService';
+import { apiService, DailyLog, DailyLogItem, Plan, UserProfile, Offer, getBaseUrl, fixImageUrl } from '../services/apiService';
 
 // Helper to format date as YYYY-MM-DD
 const formatDate = (date: Date): string => {
@@ -295,7 +295,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
         carbs: item.carbsGrams,
         fat: item.fatsGrams,
         timestamp: new Date(item.timeIso),
-        imageUrl: item.imageUrl,
+        imageUrl: fixImageUrl(item.imageUrl),
         portions: item.portions || 1,
         healthScore: item.healthScore,
         ingredients: item.ingredients,

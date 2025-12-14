@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { apiService, FoodAnalysisResponse, LikedFood } from '../services/apiService';
+import { apiService, FoodAnalysisResponse, LikedFood, fixImageUrl } from '../services/apiService';
 import { useToast } from '../context/ToastContext';
 
 interface AddFoodModalProps {
@@ -287,7 +287,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                             <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
                                 {food.imageUrl ? (
                                     <img
-                                        src={food.imageUrl}
+                                        src={fixImageUrl(food.imageUrl)}
                                         alt={food.title}
                                         className="w-full h-full object-cover"
                                     />
