@@ -1583,4 +1583,136 @@ export const apiService = {
             return [];
         }
     },
+
+    // Zarinpal Payment APIs
+    createZarinpalPayment: async (planId: string, offerId?: string): Promise<{
+        success: boolean;
+        authority?: string;
+        paymentUrl?: string;
+        amount?: number;
+        expiresAt?: string;
+        message?: string;
+        code?: number;
+    }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/payment/zarinpal/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ planId, offerId }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                return {
+                    success: false,
+                    message: data.message || 'خطا در ایجاد پرداخت',
+                    code: data.code,
+                };
+            }
+
+            return {
+                success: true,
+                authority: data.data?.authority,
+                paymentUrl: data.data?.paymentUrl,
+                amount: data.data?.amount,
+                expiresAt: data.data?.expiresAt,
+            };
+        } catch (error: any) {
+            console.error('createZarinpalPayment error:', error);
+            return {
+                success: false,
+                message: error.message || 'خطای شبکه',
+            };
+        }
+    },
+
+    verifyZarinpalPayment: async (authority: string): Promise<{
+        success: boolean;
+        status?: string;
+        refId?: string;
+        amount?: number;
+        verifiedAt?: string;
+        planId?: string;
+        message?: string;
+    }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/payment/zarinpal/verify`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ authority }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                return {
+                    success: false,
+                    message: data.message || 'خطا در بررسی پرداخت',
+                };
+            }
+
+            return {
+                success: true,
+                status: data.data?.status,
+                refId: data.data?.refId,
+                amount: data.data?.amount,
+                verifiedAt: data.data?.verifiedAt,
+                planId: data.data?.planId,
+            };
+        } catch (error: any) {
+            console.error('verifyZarinpalPayment error:', error);
+            return {
+                success: false,
+                message: error.message || 'خطای شبکه',
+            };
+        }
+    },
+
+    getPaymentHistory: async (): Promise<Array<{
+        authority: string;
+        amount: number;
+        status: string;
+        refId?: string;
+        cardPan?: string;
+        plan?: any;
+        verifiedAt?: string;
+        createdAt: string;
+    }>> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${BASE_URL}/api/payment/history`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch payment history');
+            }
+
+            return data.data?.payments || [];
+        } catch (error: any) {
+            console.error('getPaymentHistory error:', error);
+            return [];
+        }
+    },
 };

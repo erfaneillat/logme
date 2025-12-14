@@ -4,6 +4,7 @@ import Offer from '../models/Offer';
 import SubscriptionPlan from '../models/SubscriptionPlan';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
+import Payment from '../models/Payment';
 import errorLogger from '../services/errorLoggerService';
 
 interface AuthRequest extends Request {
@@ -100,21 +101,37 @@ export class OfferController {
 
             // Build set of product keys already purchased by the user (to hide such offers)
             let purchasedKeys = new Set<string>();
+            // Build set of offer IDs already used by the user (via successful payments)
+            let usedOfferIds = new Set<string>();
             if (userId) {
                 try {
                     const keys = await Subscription.distinct('productKey', { userId });
                     purchasedKeys = new Set((keys as string[]).filter(Boolean));
-                } catch (_) {}
+                } catch (_) { }
+
+                // Get offer IDs from successful payments
+                try {
+                    const usedOffers = await Payment.distinct('offerId', {
+                        userId,
+                        status: 'success',
+                        offerId: { $exists: true, $ne: null }
+                    });
+                    usedOfferIds = new Set(usedOffers.map((id: any) => id.toString()));
+                } catch (_) { }
             }
 
-            // Filter offers that apply to this user and are not previously purchased
+            // Filter offers that apply to this user and are not previously purchased/used
             const applicableOffers = allOffers.filter((offer: any) => {
                 // Check usage limit
                 if (offer.maxUsageLimit && offer.usageCount >= offer.maxUsageLimit) {
                     return false;
                 }
-                // Exclude if the user has already purchased this offer's product key
+                // Exclude if the user has already purchased this offer's product key (Cafebazaar)
                 if (offer.cafebazaarProductKey && purchasedKeys.has(offer.cafebazaarProductKey)) {
+                    return false;
+                }
+                // Exclude if the user has already used this offer via web payment
+                if (usedOfferIds.has(offer._id.toString())) {
                     return false;
                 }
 

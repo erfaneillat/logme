@@ -412,7 +412,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                     }
                 `}</style>
 
-                {/* Offer Banner */}
+                {/* Offer Banner - Server filters out used offers */}
                 {activeOffer && (
                     <OfferBanner
                         offer={activeOffer}

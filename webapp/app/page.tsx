@@ -16,6 +16,7 @@ import Verification from './components/Verification';
 import AdditionalInfo from './components/AdditionalInfo';
 import PlanGeneration from './components/PlanGeneration';
 import PlanSummary from './components/PlanSummary';
+import PaymentResultModal from './components/PaymentResultModal';
 import { FoodItem } from './types';
 import { apiService, User, FoodAnalysisResponse } from './services/apiService';
 
@@ -25,6 +26,24 @@ type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('SPLASH');
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+
+  // Move skip-splash logic to useEffect to avoid hydration mismatch
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+      const hasPayment = searchParams.get('payment') || hashParams.get('payment');
+
+      if (hasPayment) {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const hasCompletedInfo = localStorage.getItem('hasCompletedAdditionalInfo') === 'true';
+        if (isLoggedIn) {
+          setAppState(hasCompletedInfo ? 'MAIN' : 'ADDITIONAL_INFO');
+        }
+      }
+    }
+  }, []);
 
   // Navigation history management
   const navigateToView = useCallback((view: ViewState) => {
@@ -61,8 +80,9 @@ export default function Home() {
 
     // Initialize: Push initial state to prevent immediate back-close
     if (typeof window !== 'undefined') {
-      // Replace current state with our app state
-      window.history.replaceState({ view: 'dashboard' }, '', window.location.pathname);
+      // Replace current state with our app state - PRESERVE search params and hash!
+      const fullUrl = window.location.pathname + window.location.search + window.location.hash;
+      window.history.replaceState({ view: 'dashboard' }, '', fullUrl);
     }
 
     window.addEventListener('popstate', handlePopState);
@@ -85,6 +105,14 @@ export default function Home() {
   // State for dashboard refresh
   const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
 
+  // Payment result modal state
+  const [paymentResult, setPaymentResult] = useState<{
+    isOpen: boolean;
+    status: 'success' | 'failed' | 'cancelled' | 'error';
+    refId?: string;
+    errorCode?: string;
+  }>({ isOpen: false, status: 'success' });
+
   // Global Notification (Snackbar)
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -92,6 +120,67 @@ export default function Home() {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000);
   };
+
+  // Handle payment callback from Zarinpal
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Try reading from Query Params first, then Hash Fragment
+    let urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.get('payment') && window.location.hash) {
+      // Parse hash (remove # first)
+      urlParams = new URLSearchParams(window.location.hash.substring(1));
+    }
+
+    const paymentStatus = urlParams.get('payment');
+    const refId = urlParams.get('refId');
+    const errorCode = urlParams.get('code');
+
+    console.log('🔗 Full URL:', window.location.href);
+    console.log('🔗 Search string:', window.location.search);
+    console.log('� Hash fragment:', window.location.hash);
+    console.log('�🔍 Payment callback check:', { paymentStatus, refId, errorCode, appState });
+
+    if (paymentStatus) {
+      console.log('✅ Payment param detected, showing modal...');
+
+      if (paymentStatus === 'success') {
+        setPaymentResult({
+          isOpen: true,
+          status: 'success',
+          refId: refId || undefined,
+        });
+        // Navigate to dashboard
+        setCurrentView('dashboard');
+      } else if (paymentStatus === 'cancelled') {
+        setPaymentResult({
+          isOpen: true,
+          status: 'cancelled',
+        });
+        setCurrentView('subscription');
+      } else if (paymentStatus === 'failed') {
+        setPaymentResult({
+          isOpen: true,
+          status: 'failed',
+          errorCode: errorCode || undefined,
+        });
+        setCurrentView('subscription');
+      } else if (paymentStatus === 'error') {
+        setPaymentResult({
+          isOpen: true,
+          status: 'error',
+        });
+        setCurrentView('subscription');
+      }
+
+      // Delay URL cleanup to ensure state updates complete
+      setTimeout(() => {
+        console.log('🧹 Cleaning up URL parameters...');
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }, 2000);
+    }
+  }, []);
 
   const handleSplashFinish = () => {
     const hasOnboarded = localStorage.getItem('hasOnboarded');
@@ -287,17 +376,20 @@ export default function Home() {
 
       {currentView === 'chat' && (
         <ChatPage
-          onBack={() => window.history.back()}
+          onBack={() => setCurrentView('dashboard')}
           onSubscriptionClick={() => navigateToView('subscription')}
         />
       )}
 
       {currentView === 'subscription' && (
-        <SubscriptionPage onBack={() => window.history.back()} />
+        <SubscriptionPage onBack={() => setCurrentView('dashboard')} />
       )}
 
       {currentView === 'settings' && (
-        <SettingPage onLogout={handleLogout} />
+        <SettingPage
+          onLogout={handleLogout}
+          onSubscriptionClick={() => navigateToView('subscription')}
+        />
       )}
 
       <AddFoodModal
@@ -320,6 +412,14 @@ export default function Home() {
           // Refresh dashboard data in background
           setDashboardRefreshTrigger(prev => prev + 1);
         }}
+      />
+
+      <PaymentResultModal
+        isOpen={paymentResult.isOpen}
+        onClose={() => setPaymentResult(prev => ({ ...prev, isOpen: false }))}
+        status={paymentResult.status}
+        refId={paymentResult.refId}
+        errorCode={paymentResult.errorCode}
       />
 
       {/* Modern Floating Navigation - Hidden when in Chat or Subscription view */}

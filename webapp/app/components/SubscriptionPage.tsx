@@ -306,50 +306,56 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
         return { finalPrice, originalPrice, hasDiscount, discountPercent, pricePerMonth };
     };
 
-    const handlePurchase = () => {
+    const handlePurchase = async () => {
         if (!selectedPlanId) return;
 
         setIsPurchasing(true);
 
-        // Find the selected plan
-        const selectedPlan = plans.find(p => p._id === selectedPlanId);
-        if (!selectedPlan) {
-            setIsPurchasing(false);
-            alert('پلن انتخاب نشده است');
-            return;
-        }
-
-        // Get the plan's product key
-        let productKey = selectedPlan.cafebazaarProductKey;
-
-        // Check if there's an applicable offer with its own product key
-        if (activeOffer) {
-            const planIdStr = String(selectedPlan._id);
-            const applicablePlanIds = activeOffer.applicablePlans.map(p =>
-                typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
-            );
-            const offerApplies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
-
-            if (offerApplies && activeOffer.cafebazaarProductKey) {
-                // Use offer's product key instead of plan's key
-                productKey = activeOffer.cafebazaarProductKey;
+        try {
+            // Find the selected plan
+            const selectedPlan = plans.find(p => p._id === selectedPlanId);
+            if (!selectedPlan) {
+                setIsPurchasing(false);
+                alert('پلن انتخاب نشده است');
+                return;
             }
-        }
 
-        if (!productKey) {
+            console.log('Creating Zarinpal payment for plan:', selectedPlan._id);
+
+            // Get offer ID if applicable
+            let offerId: string | undefined = undefined;
+            if (activeOffer) {
+                const planIdStr = String(selectedPlan._id);
+                const applicablePlanIds = activeOffer.applicablePlans.map(p =>
+                    typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
+                );
+                const offerApplies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
+
+                if (offerApplies) {
+                    offerId = activeOffer._id;
+                }
+            }
+
+            // Create payment with Zarinpal
+            const paymentResult = await apiService.createZarinpalPayment(selectedPlan._id, offerId);
+
+            if (!paymentResult.success || !paymentResult.paymentUrl) {
+                setIsPurchasing(false);
+                alert(paymentResult.message || 'خطا در ایجاد پرداخت');
+                return;
+            }
+
+            console.log('Payment created, redirecting to:', paymentResult.paymentUrl);
+
+            // Redirect to Zarinpal payment gateway
+            // Using replace() instead of href to prevent Zarinpal from appearing in back history
+            window.location.replace(paymentResult.paymentUrl);
+
+        } catch (error: any) {
+            console.error('Payment error:', error);
             setIsPurchasing(false);
-            alert('کلید محصول یافت نشد');
-            return;
+            alert('خطا در برقراری ارتباط با درگاه پرداخت');
         }
-
-        console.log('Purchase with product key:', productKey);
-
-        // TODO: Integrate with actual payment gateway
-        // For now, show the product key being used
-        setTimeout(() => {
-            alert(`اتصال به درگاه پرداخت با کلید: ${productKey}`);
-            setIsPurchasing(false);
-        }, 1500);
     };
 
     const renderPlanCard = (plan: SubscriptionPlan, isSelected: boolean, isOfferTarget: boolean = false) => {

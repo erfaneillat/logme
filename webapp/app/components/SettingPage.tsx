@@ -6,7 +6,6 @@ import { apiService, UserProfile } from '../services/apiService';
 import PersonalDetailsPage from './PersonalDetailsPage';
 import AdjustMacrosPage from './AdjustMacrosPage';
 import WeightHistoryPage from './WeightHistoryPage';
-import SubscriptionPage from './SubscriptionPage';
 import SupportTicketsPage from './SupportTicketsPage';
 
 const Toggle = ({ active, onChange, activeColor = 'bg-orange-400' }: { active: boolean; onChange: () => void; activeColor?: string }) => (
@@ -20,9 +19,14 @@ const Toggle = ({ active, onChange, activeColor = 'bg-orange-400' }: { active: b
     </button>
 );
 
-type SettingView = 'main' | 'personal_details' | 'adjust_macros' | 'weight_history' | 'subscription' | 'tickets';
+type SettingView = 'main' | 'personal_details' | 'adjust_macros' | 'weight_history' | 'tickets';
 
-const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+interface SettingPageProps {
+    onLogout: () => void;
+    onSubscriptionClick: () => void;
+}
+
+const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick }) => {
     const [currentView, setCurrentView] = useState<SettingView>('main');
     const [animate, setAnimate] = useState(false);
 
@@ -121,16 +125,7 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         }
     };
 
-    const onSubscriptionBack = () => {
-        setCurrentView('main');
-        fetchData(); // Refresh data when coming back from subscription page to check if status changed
-    };
-
     const handleCloseModal = () => setCurrentView('main');
-
-    if (currentView === 'subscription') {
-        return <SubscriptionPage onBack={onSubscriptionBack} />;
-    }
 
     return (
         <div className="bg-[#F5F7FA] min-h-screen pb-safe-bottom">
@@ -185,7 +180,7 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     if (!isSubscribed) {
                         return (
                             <div
-                                onClick={() => setCurrentView('subscription')}
+                                onClick={onSubscriptionClick}
                                 className={`bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] rounded-[32px] p-6 text-white shadow-lg shadow-purple-200 relative overflow-hidden transition-all duration-700 delay-100 transform cursor-pointer active:scale-95 group ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                             >
                                 {/* Animated background elements */}
@@ -243,7 +238,7 @@ const SettingPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
                     return (
                         <div
-                            onClick={() => setCurrentView('subscription')}
+                            onClick={onSubscriptionClick}
                             className={`bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] rounded-[32px] p-6 text-white shadow-lg shadow-purple-200 relative overflow-hidden transition-all duration-700 delay-100 transform cursor-pointer active:scale-95 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
