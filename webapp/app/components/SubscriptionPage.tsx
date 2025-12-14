@@ -101,53 +101,82 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
     const [isPurchasing, setIsPurchasing] = useState(false);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
 
     // Testimonials data (Persian user reviews)
     const testimonials = [
         {
             name: 'مونا',
             text: 'فقط با عکس گرفتن از غذاهام، ۱۵ کیلو کم کردم! یکی از بهترین اتفاقات زندگیم. مررررسی لقمه.',
-            avatar: '👩‍🦰'
+            image: '/images/comments/mona.jpg'
         },
         {
             name: 'نیلوفر',
             text: 'همیشه یادم می‌رفت غذاهام رو وارد کنم و رژیمم نصفه می‌موند. ولی با لقمه همه‌چی خودکار انجام می‌شه. فقط عکس می‌گیرم و پیشرفتم رو هر روز می‌بینم، همین باعث شده ادامه بدم.',
-            avatar: '👩'
+            image: '/images/comments/niloofar.jpg'
         },
         {
             name: 'نیما',
             text: 'بعد از یه ماه استفاده از لقمه، دیدن پیشرفتم روی نمودار واقعاً خوشحالم کرد. اینکه بتونی مسیرت رو ببینی، خودش بزرگ‌ترین انگیزه‌ست.',
-            avatar: '👨'
+            image: '/images/comments/nima.jpg'
         },
         {
             name: 'پدرام',
             text: 'بهترین بخش لقمه برای من نمودار پیشرفته‌ست. می‌فهمم دقیقاً توی هفته چند درصد به هدف وزنیم نزدیک‌تر شدم.',
-            avatar: '👨‍💼'
+            image: '/images/comments/pedram.jpg'
         },
         {
             name: 'رامین',
             text: 'احساس می‌کنم یه مربی کوچیک توی جیبمه! هر بار یه غذای جدید می‌خورم، لقمه آنالیزش می‌کنه و راهنمایی می‌ده چطور متعادل‌تر بخورم.',
-            avatar: '🧑'
+            image: '/images/comments/ramin.jpg'
         },
         {
             name: 'الناز',
             text: 'اینکه غذاهای ایرانی رو میشناسه فوق العاده س، لقمه حتی خورشت و برنج رو هم درست تشخیص داد 😅 خیلی دقیق و کاربردیه.',
-            avatar: '👩‍🦱'
+            image: '/images/comments/elnaz.jpg'
         },
         {
             name: 'میترا',
             text: 'همیشه دنبال یه راه ساده بودم که بفهمم چی می‌خورم بدون محاسبه و سرچ کردن. لقمه دقیقاً همونه. حس می‌کنم بالاخره یه اپ طراحی شده برای آدمای واقعی!',
-            avatar: '👩‍💻'
+            image: '/images/comments/mitra.jpg'
         }
     ];
 
-    // Auto-rotate testimonials every 5 seconds
+    // Auto-rotate testimonials
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
         }, 5000);
         return () => clearInterval(timer);
     }, [testimonials.length]);
+
+    // Handle Swipe
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > 50;
+        const isRightSwipe = distance < -50;
+
+        if (isLeftSwipe) {
+            setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+        }
+        if (isRightSwipe) {
+            setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+        }
+
+        setTouchStart(0);
+        setTouchEnd(0);
+    };
 
     useEffect(() => {
         const loadData = async () => {
@@ -354,7 +383,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
     const isOfferValid = activeOffer && (!effectiveEndDate || new Date() < effectiveEndDate);
 
     return (
-        <div className="min-h-screen bg-[#F5F7FA] pb-safe-bottom flex flex-col font-sans">
+        <div className="min-h-screen bg-[#F5F7FA] pb-safe-bottom flex flex-col font-sans overflow-x-hidden">
             {/* Header */}
             <div className="bg-white px-6 pt-safe-top pb-4 shadow-sm flex items-center justify-between z-10 sticky top-0">
                 <button
@@ -400,7 +429,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
                         </motion.div>
 
                         {/* Testimonials Carousel */}
-                        <div className="relative h-48 mb-5">
+                        <div
+                            className="relative h-48 mb-5 overflow-hidden"
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleTouchEnd}
+                        >
                             {testimonials.map((testimonial, index) => (
                                 <motion.div
                                     key={index}
@@ -416,8 +450,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
                                 >
                                     {/* User Info */}
                                     <div className="flex items-center gap-3 mb-3">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-2xl shadow-md">
-                                            {testimonial.avatar}
+                                        <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-green-500">
+                                            <img
+                                                src={testimonial.image}
+                                                alt={testimonial.name}
+                                                className="w-full h-full object-cover"
+                                            />
                                         </div>
                                         <div className="flex-1">
                                             <h4 className="font-bold text-gray-800 text-base">{testimonial.name}</h4>

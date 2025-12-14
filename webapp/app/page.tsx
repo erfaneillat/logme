@@ -276,8 +276,8 @@ export default function Home() {
         }}
       />
 
-      {/* Modern Floating Navigation - Hidden when in Chat view */}
-      {currentView !== 'chat' && (
+      {/* Modern Floating Navigation - Hidden when in Chat or Subscription view */}
+      {currentView !== 'chat' && currentView !== 'subscription' && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 max-w-md w-[calc(100%-3rem)] bg-white h-20 rounded-[32px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] flex items-center justify-between px-2 z-30">
 
           <div className="flex-1 flex justify-center">
