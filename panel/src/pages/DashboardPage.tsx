@@ -89,19 +89,19 @@ const DashboardPage = () => {
 
                                     {/* Platform Breakdown */}
                                     <div className="mt-4 flex items-center gap-2">
-                                        {statistics.overview.platformDistribution.android > 0 && (
+                                        {(statistics.overview.platformDistribution?.android ?? 0) > 0 && (
                                             <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                🤖 {statistics.overview.platformDistribution.android}
+                                                🤖 {statistics.overview.platformDistribution?.android}
                                             </span>
                                         )}
-                                        {statistics.overview.platformDistribution.ios > 0 && (
+                                        {(statistics.overview.platformDistribution?.ios ?? 0) > 0 && (
                                             <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                                                🍎 {statistics.overview.platformDistribution.ios}
+                                                🍎 {statistics.overview.platformDistribution?.ios}
                                             </span>
                                         )}
-                                        {statistics.overview.platformDistribution.web > 0 && (
+                                        {(statistics.overview.platformDistribution?.web ?? 0) > 0 && (
                                             <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                🌐 {statistics.overview.platformDistribution.web}
+                                                🌐 {statistics.overview.platformDistribution?.web}
                                             </span>
                                         )}
                                     </div>

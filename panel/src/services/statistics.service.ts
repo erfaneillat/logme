@@ -16,7 +16,7 @@ export interface DashboardStatistics {
         totalImageAnalyses: number;
         totalTextAnalyses: number;
         totalTrainingSessions: number;
-        platformDistribution: {
+        platformDistribution?: {
             web: number;
             android: number;
             ios: number;
