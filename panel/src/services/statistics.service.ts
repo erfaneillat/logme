@@ -16,6 +16,12 @@ export interface DashboardStatistics {
         totalImageAnalyses: number;
         totalTextAnalyses: number;
         totalTrainingSessions: number;
+        platformDistribution: {
+            web: number;
+            android: number;
+            ios: number;
+            unknown: number;
+        };
     };
     subscriptions: {
         monthly: number;

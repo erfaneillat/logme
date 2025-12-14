@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "./context/ToastContext";
+import ServiceWorkerManager from "./components/ServiceWorkerManager";
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
@@ -13,6 +14,7 @@ const vazirmatn = Vazirmatn({
 export const metadata: Metadata = {
   title: "لقمه",
   description: "یک ردیاب کالری و ماکرو هوشمند که از هوش مصنوعی برای تحلیل عکس غذا و پیگیری اهداف تغذیه روزانه شما استفاده می‌کند.",
+  manifest: "/app/manifest.json",
   icons: {
     icon: '/app/loqme_logo.png',
     apple: '/app/loqme_logo.png',
@@ -37,6 +39,7 @@ export default function RootLayout({
         style={{ fontFamily: "'Vazirmatn', sans-serif" }}
       >
         <ToastProvider>
+          <ServiceWorkerManager />
           {children}
         </ToastProvider>
       </body>

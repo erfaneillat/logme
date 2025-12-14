@@ -20,6 +20,7 @@ export interface IUser extends Document {
   streakCount?: number; // number of consecutive days completed
   lastStreakDate?: string | null; // YYYY-MM-DD of last completed day
   lastActivity?: Date; // timestamp of last user activity
+  lastPlatform?: 'web' | 'ios' | 'android' | 'unknown'; // Platform of last activity
   // User preferences
   addBurnedCalories?: boolean; // whether to add burned calories to daily goal
   rolloverCalories?: boolean; // whether to rollover remaining calories
@@ -146,6 +147,11 @@ const userSchema = new Schema<IUser>(
     verificationCodeExpires: {
       type: Date,
       required: false,
+    },
+    lastPlatform: {
+      type: String,
+      enum: ['web', 'ios', 'android', 'unknown'],
+      default: 'unknown',
     },
   },
   {

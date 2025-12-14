@@ -13,7 +13,7 @@ const DashboardPage = () => {
     useEffect(() => {
         const fetchStatistics = async () => {
             if (!token) return;
-            
+
             try {
                 setLoading(true);
                 const data = await statisticsService.getDashboardStatistics(token);
@@ -86,6 +86,25 @@ const DashboardPage = () => {
                                     <h3 className="text-sm font-medium text-gray-600">Total Users</h3>
                                     <p className="mt-2 text-3xl font-bold text-black">{statistics.overview.totalUsers.toLocaleString()}</p>
                                     <p className="mt-1 text-sm text-green-600">+{statistics.overview.newUsersLast30Days} last 30 days</p>
+
+                                    {/* Platform Breakdown */}
+                                    <div className="mt-4 flex items-center gap-2">
+                                        {statistics.overview.platformDistribution.android > 0 && (
+                                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                🤖 {statistics.overview.platformDistribution.android}
+                                            </span>
+                                        )}
+                                        {statistics.overview.platformDistribution.ios > 0 && (
+                                            <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                                                🍎 {statistics.overview.platformDistribution.ios}
+                                            </span>
+                                        )}
+                                        {statistics.overview.platformDistribution.web > 0 && (
+                                            <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                🌐 {statistics.overview.platformDistribution.web}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Active Subscriptions */}
@@ -226,75 +245,75 @@ const DashboardPage = () => {
 
                             {/* User Info Card */}
                             <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-blue-50/30 p-6 shadow-sm">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
-                            <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
-                        </div>
-                        <h3 className="text-xl font-bold text-black">Your Profile</h3>
-                        <dl className="mt-4 space-y-3">
-                            <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2">
-                                <dt className="text-sm font-medium text-gray-600">Phone</dt>
-                                <dd className="text-sm font-mono font-semibold text-black">{user?.phone}</dd>
-                            </div>
-                            {user?.email && (
-                                <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2">
-                                    <dt className="text-sm font-medium text-gray-600">Email</dt>
-                                    <dd className="text-sm font-semibold text-black">{user.email}</dd>
+                                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+                                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                        />
+                                    </svg>
                                 </div>
-                            )}
-                            <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2">
-                                <dt className="text-sm font-medium text-gray-600">Status</dt>
-                                <dd>
-                                    <span className="inline-flex items-center space-x-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-green-600"></span>
-                                        <span>Admin</span>
-                                    </span>
-                                </dd>
-                            </div>
-                        </dl>
+                                <h3 className="text-xl font-bold text-black">Your Profile</h3>
+                                <dl className="mt-4 space-y-3">
+                                    <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2">
+                                        <dt className="text-sm font-medium text-gray-600">Phone</dt>
+                                        <dd className="text-sm font-mono font-semibold text-black">{user?.phone}</dd>
+                                    </div>
+                                    {user?.email && (
+                                        <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2">
+                                            <dt className="text-sm font-medium text-gray-600">Email</dt>
+                                            <dd className="text-sm font-semibold text-black">{user.email}</dd>
+                                        </div>
+                                    )}
+                                    <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2">
+                                        <dt className="text-sm font-medium text-gray-600">Status</dt>
+                                        <dd>
+                                            <span className="inline-flex items-center space-x-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-green-600"></span>
+                                                <span>Admin</span>
+                                            </span>
+                                        </dd>
+                                    </div>
+                                </dl>
                             </div>
 
                             {/* System Status */}
                             <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-green-50/30 p-6 shadow-sm">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/30">
-                            <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                                />
-                            </svg>
-                        </div>
-                        <h3 className="text-xl font-bold text-black">System Status</h3>
-                        <div className="mt-4 space-y-3">
-                            <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2.5">
-                                <span className="text-sm font-medium text-gray-700">API Server</span>
-                                <span className="flex items-center space-x-2 text-sm font-semibold text-green-600">
-                                    <span className="flex h-2 w-2">
-                                        <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-                                    </span>
-                                    <span>Online</span>
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2.5">
-                                <span className="text-sm font-medium text-gray-700">Database</span>
-                                <span className="flex items-center space-x-2 text-sm font-semibold text-green-600">
-                                    <span className="flex h-2 w-2">
-                                        <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-                                    </span>
-                                    <span>Connected</span>
-                                </span>
-                            </div>
-                        </div>
+                                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/30">
+                                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                </div>
+                                <h3 className="text-xl font-bold text-black">System Status</h3>
+                                <div className="mt-4 space-y-3">
+                                    <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2.5">
+                                        <span className="text-sm font-medium text-gray-700">API Server</span>
+                                        <span className="flex items-center space-x-2 text-sm font-semibold text-green-600">
+                                            <span className="flex h-2 w-2">
+                                                <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
+                                                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+                                            </span>
+                                            <span>Online</span>
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between rounded-lg bg-white/60 px-3 py-2.5">
+                                        <span className="text-sm font-medium text-gray-700">Database</span>
+                                        <span className="flex items-center space-x-2 text-sm font-semibold text-green-600">
+                                            <span className="flex h-2 w-2">
+                                                <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
+                                                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+                                            </span>
+                                            <span>Connected</span>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </>

@@ -42,6 +42,27 @@ export default function Home() {
           setAppState(hasCompletedInfo ? 'MAIN' : 'ADDITIONAL_INFO');
         }
       }
+
+      // Track App Open
+      const trackOpen = async () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        if (isLoggedIn) {
+          const ua = navigator.userAgent;
+          let platform: 'web' | 'android' | 'ios' = 'web';
+
+          if (ua.includes('Loqme Flutter WebView')) {
+            if (/iPhone|iPad|iPod/i.test(ua)) {
+              platform = 'ios';
+            } else {
+              platform = 'android';
+            }
+          }
+
+          await apiService.trackAppOpen(platform);
+        }
+      };
+
+      trackOpen();
     }
   }, []);
 

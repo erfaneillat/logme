@@ -23,7 +23,31 @@ export class AuthController {
     this.getProfile = this.getProfile.bind(this);
     this.updateProfile = this.updateProfile.bind(this);
     this.refreshToken = this.refreshToken.bind(this);
+    this.refreshToken = this.refreshToken.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
+    this.trackAppOpen = this.trackAppOpen.bind(this);
+  }
+
+  // Track app open
+  async trackAppOpen(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { platform } = req.body;
+
+      if (!['web', 'ios', 'android'].includes(platform)) {
+        res.status(400).json({ success: false, message: 'Invalid platform' });
+        return;
+      }
+
+      await User.findByIdAndUpdate(req.user.userId, {
+        lastActivity: new Date(),
+        lastPlatform: platform
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      errorLogger.error('Track app open error', error as Error, req, { userId: req.user?.userId });
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
   }
 
   // Send verification code to phone number

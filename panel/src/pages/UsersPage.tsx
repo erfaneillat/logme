@@ -223,6 +223,7 @@ const UsersPage = () => {
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Contact</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Activity</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Platform</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Joined</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Actions</th>
                 </tr>
@@ -230,7 +231,7 @@ const UsersPage = () => {
               <tbody className="divide-y divide-gray-100 bg-white">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-16">
+                    <td colSpan={7} className="px-6 py-16">
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600"></div>
                         <p className="text-sm font-medium text-gray-500">Loading users...</p>
@@ -239,7 +240,7 @@ const UsersPage = () => {
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-16">
+                    <td colSpan={7} className="px-6 py-16">
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                           <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -339,6 +340,20 @@ const UsersPage = () => {
                             📊 {u.logCount || 0} logs
                           </span>
                         </div>
+                      </td>
+
+                      {/* Platform */}
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                          ${u.lastPlatform === 'android' ? 'bg-green-100 text-green-800' :
+                            u.lastPlatform === 'ios' ? 'bg-gray-100 text-gray-800' :
+                              u.lastPlatform === 'web' ? 'bg-blue-100 text-blue-800' :
+                                'text-gray-500'}`}>
+                          {u.lastPlatform === 'android' ? '🤖 Android' :
+                            u.lastPlatform === 'ios' ? '🍎 iOS' :
+                              u.lastPlatform === 'web' ? '🌐 Web' :
+                                '-'}
+                        </span>
                       </td>
 
                       {/* Created Date */}

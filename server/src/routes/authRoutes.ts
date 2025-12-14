@@ -32,6 +32,7 @@ router.post('/admin/verify-phone', verificationCodeValidation, authController.ve
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, authController.updateProfile);
 router.post('/refresh-token', authenticateTokenAllowExpired, authController.refreshToken);
+router.post('/track-open', authenticateToken, authController.trackAppOpen);
 router.delete('/account', authenticateToken, deleteAccountValidation, authController.deleteAccount);
 
 export default router;

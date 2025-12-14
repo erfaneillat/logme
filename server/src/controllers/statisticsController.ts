@@ -20,6 +20,23 @@ export const getDashboardStatistics = async (req: Request, res: Response): Promi
             createdAt: { $gte: thirtyDaysAgo }
         });
 
+        // Get platform distribution
+        const platformDistribution = await User.aggregate([
+            {
+                $group: {
+                    _id: '$lastPlatform',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const platforms = {
+            web: platformDistribution.find(p => p._id === 'web')?.count || 0,
+            android: platformDistribution.find(p => p._id === 'android')?.count || 0,
+            ios: platformDistribution.find(p => p._id === 'ios')?.count || 0,
+            unknown: platformDistribution.find(p => p._id !== 'web' && p._id !== 'android' && p._id !== 'ios')?.count || 0
+        };
+
         // Get active subscribers (subscriptions that haven't expired)
         const now = new Date();
         const activeSubscriptions = await Subscription.countDocuments({
@@ -73,12 +90,14 @@ export const getDashboardStatistics = async (req: Request, res: Response): Promi
         // Count total text analyses (items without imageUrl)
         const textAnalysisResult = await DailyLog.aggregate([
             { $unwind: '$items' },
-            { $match: { 
-                $or: [
-                    { 'items.imageUrl': { $eq: null } },
-                    { 'items.imageUrl': { $exists: false } }
-                ]
-            } },
+            {
+                $match: {
+                    $or: [
+                        { 'items.imageUrl': { $eq: null } },
+                        { 'items.imageUrl': { $exists: false } }
+                    ]
+                }
+            },
             { $count: 'total' }
         ]);
         const totalTextAnalyses = textAnalysisResult[0]?.total || 0;
@@ -113,8 +132,8 @@ export const getDashboardStatistics = async (req: Request, res: Response): Promi
         });
 
         // Calculate conversion rate (users with subscriptions / total users)
-        const conversionRate = totalUsers > 0 
-            ? ((activeSubscriptions / totalUsers) * 100).toFixed(2) 
+        const conversionRate = totalUsers > 0
+            ? ((activeSubscriptions / totalUsers) * 100).toFixed(2)
             : '0';
 
         res.status(200).json({
@@ -133,7 +152,8 @@ export const getDashboardStatistics = async (req: Request, res: Response): Promi
                     conversionRate: Number(conversionRate),
                     totalImageAnalyses,
                     totalTextAnalyses,
-                    totalTrainingSessions
+                    totalTrainingSessions,
+                    platformDistribution: platforms
                 },
                 subscriptions: {
                     monthly: monthlySubscribers,

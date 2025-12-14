@@ -22,6 +22,7 @@ export interface User {
   logCount?: number;
   createdAt: string;
   updatedAt: string;
+  lastPlatform?: 'web' | 'android' | 'ios' | 'unknown';
 }
 
 export interface DeletedUser {

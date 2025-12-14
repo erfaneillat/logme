@@ -618,6 +618,24 @@ export const apiService = {
         }
     },
 
+    trackAppOpen: async (platform: 'web' | 'ios' | 'android'): Promise<void> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) return; // Silent fail if not logged in
+
+            await fetch(`${getBaseUrl()}/api/auth/track-open`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ platform }),
+            });
+        } catch (error) {
+            console.error('trackAppOpen error:', error);
+        }
+    },
+
     // Food Analysis APIs (matching Flutter implementation)
     analyzeFoodImage: async (imageFile: File, date?: string): Promise<FoodAnalysisResponse> => {
         try {
