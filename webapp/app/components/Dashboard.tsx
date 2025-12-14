@@ -5,7 +5,8 @@ import Header from './Header';
 import CircularProgress from './CircularProgress';
 import NutrientCard from './NutrientCard';
 import StreakModal from './StreakModal';
-import { apiService, DailyLog, DailyLogItem, Plan, UserProfile } from '../services/apiService';
+import OfferBanner from './OfferBanner';
+import { apiService, DailyLog, DailyLogItem, Plan, UserProfile, Offer } from '../services/apiService';
 
 // Helper to format date as YYYY-MM-DD
 const formatDate = (date: Date): string => {
@@ -189,6 +190,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
 
     // Streak Modal State
     const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
@@ -219,17 +221,25 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
             const dateStr = formatDate(selectedDate);
 
             // Fetch all data in parallel
-            const [logData, planData, profileData, subStatus] = await Promise.all([
+            const [logData, planData, profileData, subStatus, offers] = await Promise.all([
                 apiService.getDailyLog(dateStr),
                 apiService.getLatestPlan(),
                 apiService.getUserProfile(),
                 apiService.getSubscriptionStatus(),
+                apiService.getActiveOffers(),
             ]);
 
             setDailyLog(logData);
             setPlan(planData);
             setUserProfile(profileData);
             setIsSubscribed(subStatus?.isActive || false);
+
+            // Set highest priority offer (first one)
+            if (offers && offers.length > 0) {
+                setActiveOffer(offers[0]);
+            } else {
+                setActiveOffer(null);
+            }
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
         } finally {
@@ -401,6 +411,16 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                         animation: shimmer 1.5s infinite;
                     }
                 `}</style>
+
+                {/* Offer Banner */}
+                {activeOffer && (
+                    <OfferBanner
+                        offer={activeOffer}
+                        userCreatedAt={userProfile?.createdAt}
+                        onExpired={() => setActiveOffer(null)}
+                        onClick={onSubscriptionClick}
+                    />
+                )}
 
                 {/* Header Component */}
                 <Header

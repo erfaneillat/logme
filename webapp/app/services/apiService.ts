@@ -194,6 +194,48 @@ export interface SubscriptionStatus {
     startDate?: string | null;
 }
 
+export interface OfferDisplay {
+    bannerText: string;
+    bannerSubtext?: string;
+    backgroundColor: string;
+    textColor: string;
+    badgeText?: string;
+    icon?: string;
+}
+
+export interface OfferConditions {
+    userRegisteredWithinDays?: number;
+    userRegisteredAfterDays?: number;
+    hasActiveSubscription?: boolean;
+    hasExpiredSubscription?: boolean;
+    minPurchaseAmount?: number;
+}
+
+export interface Offer {
+    _id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    display: OfferDisplay;
+    offerType: 'percentage' | 'fixed_amount' | 'fixed_price';
+    discountPercentage?: number;
+    discountAmount?: number;
+    cafebazaarProductKey?: string;
+    startDate?: string;
+    endDate?: string;
+    isTimeLimited: boolean;
+    targetUserType: 'all' | 'new' | 'returning';
+    conditions?: OfferConditions;
+    applicablePlans: string[];
+    applyToAllPlans: boolean;
+    priority: number;
+    isActive: boolean;
+    usageCount: number;
+    maxUsageLimit?: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -1501,6 +1543,37 @@ export const apiService = {
         } catch (error: any) {
             console.error('getSubscriptionStatus error:', error);
             return null;
+        }
+    },
+
+    // Offer APIs
+    getActiveOffers: async (): Promise<Offer[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`${BASE_URL}/api/offers/active`, {
+                method: 'GET',
+                headers,
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to fetch active offers');
+            }
+
+            return data.data?.offers || [];
+        } catch (error: any) {
+            console.error('getActiveOffers error:', error);
+            return [];
         }
     },
 };
