@@ -10,12 +10,28 @@ interface ChatPageProps {
     onSubscriptionClick?: () => void;
 }
 
-const SUGGESTIONS = [
+// Two rows of quick reply suggestions matching Flutter implementation
+const QUICK_REPLIES_ROW_1 = [
     "چند تا گزینه غذایی بده",
     "امروز چی بخورم بهتره؟",
-    "یه غذای سالم",
+    "یه غذای سالم پیشنهاد بده",
+    "غذای کم کالری چی بخورم؟",
+    "صبحانه سالم چی بخورم؟",
+    "با کالری باقیمانده چی بخورم؟",
+    "شام سبک پیشنهاد بده",
+    "میان وعده سالم چی بخورم؟",
+    "غذای پرپروتئین پیشنهاد بده",
+];
+
+const QUICK_REPLIES_ROW_2 = [
     "یه پلن هفتگی سبک و سالم بده",
-    "بر اساس هدف کالری روزانه برام"
+    "بر اساس هدف کالری روزانه برام برنامه بنویس",
+    "لیست خرید هفتگی بده",
+    "برنامه غذایی برای لاغری",
+    "رژیم عضله سازی بده",
+    "برنامه غذایی کم هزینه",
+    "غذاهای سریع و سالم",
+    "میوه‌های مفید برای رژیم",
 ];
 
 const WELCOME_MESSAGE = 'سلام! 👋 من درسا هستم، مربی تغذیه شما. هر سوالی درباره رژیم غذایی، تغذیه یا کالری‌هاتون دارید، بپرسید. من اینجام که کمکتون کنم! 🥗';
@@ -476,18 +492,34 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
 
             {/* Footer Area */}
             <div className="bg-white border-t border-gray-100 pt-3 pb-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-20">
-                {/* Chips */}
-                <div className="flex overflow-x-auto px-4 pb-3 space-x-2 space-x-reverse no-scrollbar mb-1">
-                    {SUGGESTIONS.map((suggestion, index) => (
-                        <button
-                            key={index}
-                            onClick={() => handleSend(suggestion)}
-                            disabled={isTyping}
-                            className={`flex-shrink-0 bg-gray-50 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 border border-gray-200 text-gray-600 text-xs font-bold px-4 py-2.5 rounded-[16px] transition-all duration-200 active:scale-95 ${isTyping ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                            {suggestion}
-                        </button>
-                    ))}
+                {/* Quick Reply Chips - Two Rows */}
+                <div className="flex flex-col gap-2 px-4 pb-3 mb-1">
+                    {/* Row 1 */}
+                    <div className="flex overflow-x-auto space-x-2 space-x-reverse no-scrollbar">
+                        {QUICK_REPLIES_ROW_1.map((suggestion, index) => (
+                            <button
+                                key={`row1-${index}`}
+                                onClick={() => handleSend(suggestion)}
+                                disabled={isTyping}
+                                className={`flex-shrink-0 bg-white hover:bg-gray-100 border border-gray-300 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 active:scale-95 ${isTyping ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {suggestion}
+                            </button>
+                        ))}
+                    </div>
+                    {/* Row 2 */}
+                    <div className="flex overflow-x-auto space-x-2 space-x-reverse no-scrollbar">
+                        {QUICK_REPLIES_ROW_2.map((suggestion, index) => (
+                            <button
+                                key={`row2-${index}`}
+                                onClick={() => handleSend(suggestion)}
+                                disabled={isTyping}
+                                className={`flex-shrink-0 bg-white hover:bg-gray-100 border border-gray-300 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 active:scale-95 ${isTyping ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {suggestion}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Attached Image Preview */}

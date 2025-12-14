@@ -19,6 +19,113 @@ const Toggle = ({ active, onChange, activeColor = 'bg-orange-400' }: { active: b
     </button>
 );
 
+// Shimmer loading component
+const Shimmer = ({ className }: { className?: string }) => (
+    <div className={`relative overflow-hidden bg-white/20 ${className}`}>
+        <div
+            className="absolute inset-0 -translate-x-full animate-shimmer"
+            style={{
+                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+            }}
+        />
+    </div>
+);
+
+// Shimmer skeleton for profile section (dark mode variant)
+const ProfileSkeleton = () => (
+    <div className="flex items-center gap-4">
+        {/* Avatar skeleton */}
+        <div className="w-16 h-16 rounded-2xl bg-white/10 relative overflow-hidden flex-shrink-0">
+            <div
+                className="absolute inset-0 -translate-x-full animate-shimmer"
+                style={{
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                }}
+            />
+        </div>
+        <div className="flex-1 min-w-0 space-y-3">
+            {/* Name skeleton */}
+            <div className="h-6 w-28 bg-white/10 rounded-lg relative overflow-hidden">
+                <div
+                    className="absolute inset-0 -translate-x-full animate-shimmer"
+                    style={{
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                    }}
+                />
+            </div>
+            {/* Phone skeleton */}
+            <div className="h-4 w-24 bg-white/10 rounded-md relative overflow-hidden">
+                <div
+                    className="absolute inset-0 -translate-x-full animate-shimmer"
+                    style={{
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                    }}
+                />
+            </div>
+        </div>
+    </div>
+);
+
+// Subscription card skeleton
+const SubscriptionSkeleton = () => (
+    <div className="bg-gradient-to-br from-gray-300 to-gray-400 rounded-[32px] p-6 shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+        <div className="flex justify-between items-start mb-6 relative z-10">
+            <div className="flex items-start gap-4">
+                {/* Icon skeleton */}
+                <div className="w-12 h-12 rounded-2xl bg-white/20 relative overflow-hidden">
+                    <div
+                        className="absolute inset-0 -translate-x-full animate-shimmer"
+                        style={{
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                        }}
+                    />
+                </div>
+                <div className="space-y-2 pt-1">
+                    {/* Title skeleton */}
+                    <div className="h-5 w-24 bg-white/20 rounded-lg relative overflow-hidden">
+                        <div
+                            className="absolute inset-0 -translate-x-full animate-shimmer"
+                            style={{
+                                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                            }}
+                        />
+                    </div>
+                    {/* Subtitle skeleton */}
+                    <div className="h-3 w-32 bg-white/20 rounded-md relative overflow-hidden">
+                        <div
+                            className="absolute inset-0 -translate-x-full animate-shimmer"
+                            style={{
+                                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div className="bg-white/10 rounded-[20px] p-4 backdrop-blur-sm relative z-10">
+            <div className="flex items-center justify-between">
+                <div className="h-4 w-20 bg-white/20 rounded-md relative overflow-hidden">
+                    <div
+                        className="absolute inset-0 -translate-x-full animate-shimmer"
+                        style={{
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                        }}
+                    />
+                </div>
+                <div className="w-8 h-8 bg-white/20 rounded-full relative overflow-hidden">
+                    <div
+                        className="absolute inset-0 -translate-x-full animate-shimmer"
+                        style={{
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
 type SettingView = 'main' | 'personal_details' | 'adjust_macros' | 'weight_history' | 'tickets';
 
 interface SettingPageProps {
@@ -144,37 +251,52 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                 </div>
 
                 <div className={`bg-white/10 backdrop-blur-lg rounded-[28px] p-5 border border-white/10 flex items-center gap-4 relative overflow-hidden transition-all duration-700 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-indigo-500 p-0.5 shadow-lg shadow-purple-500/20 flex-shrink-0">
-                        <div className="w-full h-full bg-gray-800 rounded-[14px] flex items-center justify-center overflow-hidden relative">
-                            {/* Avatar generic if no image */}
-                            <span className="text-2xl text-white font-bold">{userProfile?.name?.charAt(0) || '👤'}</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <h2 className="text-xl font-black text-white truncate">{userProfile?.name || 'کاربر عزیز'}</h2>
-                            <button
-                                onClick={() => {
-                                    setNewName(userProfile?.name || '');
-                                    setShowEditNameModal(true);
-                                }}
-                                className="p-1 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                </svg>
-                            </button>
-                        </div>
-                        <p className="text-gray-400 text-sm font-medium tracking-wider" dir="ltr">
-                            {isLoading ? '...' : (userProfile?.phone || '')}
-                        </p>
-                    </div>
+                    {isLoading ? (
+                        <ProfileSkeleton />
+                    ) : (
+                        <>
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-indigo-500 p-0.5 shadow-lg shadow-purple-500/20 flex-shrink-0">
+                                <div className="w-full h-full bg-gray-800 rounded-[14px] flex items-center justify-center overflow-hidden relative">
+                                    {/* Avatar generic if no image */}
+                                    <span className="text-2xl text-white font-bold">{userProfile?.name?.charAt(0) || '👤'}</span>
+                                </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h2 className="text-xl font-black text-white truncate">{userProfile?.name || 'کاربر عزیز'}</h2>
+                                    <button
+                                        onClick={() => {
+                                            setNewName(userProfile?.name || '');
+                                            setShowEditNameModal(true);
+                                        }}
+                                        className="p-1 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p className="text-gray-400 text-sm font-medium tracking-wider" dir="ltr">
+                                    {userProfile?.phone || ''}
+                                </p>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
             <div className="px-6 -mt-8 space-y-4">
                 {/* Subscription Card */}
                 {(() => {
+                    // Show skeleton while loading
+                    if (isLoading) {
+                        return (
+                            <div className={`transition-all duration-700 delay-100 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                                <SubscriptionSkeleton />
+                            </div>
+                        );
+                    }
+
                     const isSubscribed = subscriptionStatus?.isActive || false;
 
                     if (!isSubscribed) {
