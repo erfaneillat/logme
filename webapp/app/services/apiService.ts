@@ -273,6 +273,18 @@ export interface Offer {
     updatedAt: string;
 }
 
+export interface AppVersionCheck {
+    isForceUpdate: boolean;
+    isOptionalUpdate: boolean;
+    updateTitle?: string;
+    updateMessage?: string;
+    storeUrl?: string;
+    latestVersion?: string;
+    latestBuildNumber?: number;
+    minVersion?: string;
+    minBuildNumber?: number;
+}
+
 export const apiService = {
     // Home Page APIs
     getDailyLog: async (date: string): Promise<DailyLog> => {
@@ -1761,6 +1773,36 @@ export const apiService = {
         } catch (error: any) {
             console.error('getPaymentHistory error:', error);
             return [];
+        }
+    },
+
+    // App Version APIs
+    checkAppVersion: async (platform: string, buildNumber: number): Promise<AppVersionCheck> => {
+        try {
+            const response = await fetch(`${getBaseUrl()}/api/app-version/check?platform=${platform}&buildNumber=${buildNumber}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                // If version not found or other error, return no update needed
+                return {
+                    isForceUpdate: false,
+                    isOptionalUpdate: false,
+                };
+            }
+
+            return data.data;
+        } catch (error: any) {
+            console.error('checkAppVersion error:', error);
+            return {
+                isForceUpdate: false,
+                isOptionalUpdate: false,
+            };
         }
     },
 };

@@ -10,6 +10,7 @@ import 'package:cal_ai/services/payment_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
 import 'dart:convert';
+import 'package:package_info_plus/package_info_plus.dart';
 
 /// A page that displays the webapp in a WebView
 /// Supports: File uploads, Camera access, Payment redirects, External links, CafeBazaar payments
@@ -43,7 +44,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       // return 'http://localhost:3000/app/'; // iOS simulator
       // return 'http://192.168.1.X:3000/app/'; // Physical device (replace with your IP)
     }
-    return 'https://api.loqme.app/app/';
+    return 'https://loqmeapp.ir/app/';
   }
 
   // Payment gateway domains that should open in external browser
@@ -334,12 +335,19 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
   /// Injects a Flutter bridge for native features communication
   Future<void> _injectFlutterBridge() async {
     try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final version = packageInfo.version;
+      final buildNumber = packageInfo.buildNumber;
+      final platform = Platform.isAndroid ? 'android' : 'ios';
+
       await _controller.runJavaScript('''
         (function() {
           // Flutter bridge for native features
           window.FlutterBridge = {
             isFlutterWebView: true,
-            version: '1.0.0',
+            version: '$version',
+            buildNumber: '$buildNumber',
+            platform: '$platform',
             
             // Called when webapp needs to share content
             share: function(text, url) {
@@ -368,7 +376,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             }
           };
           
-          console.log('FlutterBridge initialized with CafeBazaar payment support');
+          console.log('FlutterBridge initialized with CafeBazaar payment support. Version: $version+$buildNumber');
         })();
       ''');
     } catch (e) {

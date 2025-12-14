@@ -4,6 +4,7 @@ import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "./context/ToastContext";
 import ServiceWorkerManager from "./components/ServiceWorkerManager";
+import { VersionCheckWrapper } from "./components/VersionCheckWrapper";
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
@@ -40,7 +41,9 @@ export default function RootLayout({
       >
         <ToastProvider>
           <ServiceWorkerManager />
-          {children}
+          <VersionCheckWrapper>
+            {children}
+          </VersionCheckWrapper>
         </ToastProvider>
       </body>
     </html>
