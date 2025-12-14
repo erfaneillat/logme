@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "./context/ToastContext";
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
@@ -35,7 +36,9 @@ export default function RootLayout({
         className={`antialiased bg-[#F0F2F5] text-gray-900`}
         style={{ fontFamily: "'Vazirmatn', sans-serif" }}
       >
-        {children}
+        <ToastProvider>
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

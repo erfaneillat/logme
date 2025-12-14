@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { apiService, FoodAnalysisResponse, LikedFood } from '../services/apiService';
+import { useToast } from '../context/ToastContext';
 
 interface AddFoodModalProps {
     isOpen: boolean;
@@ -26,6 +27,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
     const [analysis, setAnalysis] = useState<FoodAnalysisResponse | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
+    const { showToast } = useToast();
 
     // Liked foods state
     const [likedFoods, setLikedFoods] = useState<LikedFood[]>([]);
@@ -86,7 +88,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
             setView('result');
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'خطا در تحلیل. لطفا مجدد تلاش کنید.';
-            alert(errorMessage);
+            showToast(errorMessage, 'error');
             setView(image ? 'preview' : 'text');
         }
     };
@@ -116,7 +118,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                 resetAndClose();
             } catch (error) {
                 console.error("Failed to add food:", error);
-                alert("خطا در ثبت وعده. لطفا مجدد تلاش کنید.");
+                showToast("خطا در ثبت وعده. لطفا مجدد تلاش کنید.", 'error');
             }
         }
     };
@@ -170,7 +172,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
             resetAndClose();
         } catch (error) {
             console.error("Failed to add liked food:", error);
-            alert("خطا در ثبت وعده. لطفا مجدد تلاش کنید.");
+            showToast("خطا در ثبت وعده. لطفا مجدد تلاش کنید.", 'error');
         }
     };
 

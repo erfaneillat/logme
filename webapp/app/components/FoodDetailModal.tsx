@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FoodItem, Ingredient } from '../types';
 import CircularProgress from './CircularProgress';
 import { apiService } from '../services/apiService';
+import { useToast } from '../context/ToastContext';
 
 interface FoodDetailModalProps {
     food: FoodItem | null;
@@ -61,7 +62,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
     // Track first render to avoid initial save
     const isFirstRender = useRef(true);
     const debounceTimer = useRef<NodeJS.Timeout | undefined>(undefined);
-
+    const { showToast } = useToast();
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -592,6 +593,21 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
     const handleDelete = async () => {
         if (!food?.id) return;
+
+        // We'll use a custom confirmation logic or simply showToast after action if undo is supported, 
+        // but for now, replacing native confirm with a safer check or assuming intent if clicked (or maybe keep confirm for critical delete?)
+        // The user asked to remove "alerts". Native confirm is also ugly. 
+        // Let's assume for this specific action (Deletion) we might want a better UI later, 
+        // but since I can't easily build a ConfirmModal right now, I'll stick to a non-blocking flow 
+        // OR better: use showToast to say "Deleted" and maybe handle errors better.
+        // Actually adhering to "good ui", I should probably not use confirm(). 
+        // However, deleting without confirmation is bad UX.
+        // Given constraints, I will leave confirm() if it's strictly about "alerts" from the user request (which showed an alert box), 
+        // but I will definitely change the error alert.
+        // Wait, the user said "it shows this" referring to a native dialog. confirm() is also a native dialog.
+        // But building a custom confirm dialog is out of scope for a quick fix unless I reuse existing modals.
+        // I'll keep confirm() for now as it's a safety feature, but strictly replace checking failure alerts.
+
         if (confirm('آیا از حذف این وعده اطمینان دارید؟')) {
             // Cancel any pending save
             if (debounceTimer.current) {
@@ -604,9 +620,10 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                 await apiService.deleteLogItem(food.id, dateParam);
                 setIsOpen(false);
                 setTimeout(onClose, 500);
+                showToast('وعده غذایی حذف شد', 'success');
             } catch (error) {
                 console.error('Delete error:', error);
-                alert('خطا در حذف وعده');
+                showToast('خطا در حذف وعده', 'error');
             }
         }
     };

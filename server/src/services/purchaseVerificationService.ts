@@ -109,9 +109,8 @@ export class PurchaseVerificationService {
             return false;
         }
 
-        // Product key should be alphanumeric with underscores/hyphens
-        const validPattern = /^[a-zA-Z0-9_\-]+$/;
-        return validPattern.test(productKey) && productKey.length >= 3 && productKey.length <= 100;
+        // Relaxed validation: Allow any non-empty string with reasonable length
+        return productKey.length >= 1 && productKey.length <= 100;
     }
 
     /**
@@ -122,14 +121,8 @@ export class PurchaseVerificationService {
             return false;
         }
 
-        // CafeBazaar tokens are typically long alphanumeric strings
-        if (token.length < 16 || token.length > 500) {
-            return false;
-        }
-
-        // Token should only contain valid characters
-        const validPattern = /^[a-zA-Z0-9\-_.=+]+$/;
-        return validPattern.test(token);
+        // Relaxed validation to prevent rejection of valid tokens with unexpected chars
+        return token.length >= 10 && token.length <= 1000;
     }
 
     /**
@@ -140,9 +133,8 @@ export class PurchaseVerificationService {
             return false;
         }
 
-        // Order ID should be alphanumeric
-        const validPattern = /^[a-zA-Z0-9\-_.]+$/;
-        return validPattern.test(orderId) && orderId.length >= 5 && orderId.length <= 100;
+        // Relaxed validation: Allow widely
+        return orderId.length >= 1 && orderId.length <= 200;
     }
 
     /**
@@ -155,11 +147,12 @@ export class PurchaseVerificationService {
         const timestamp = parseInt(payload, 10);
         if (isNaN(timestamp)) return false;
 
-        // Check if timestamp is within acceptable range (last 24 hours)
         const now = Date.now();
+        // Allow 5 minutes future drift to account for client/server clock skew
+        const futureBuffer = now + (5 * 60 * 1000);
         const oneDayAgo = now - (24 * 60 * 60 * 1000);
 
-        return timestamp >= oneDayAgo && timestamp <= now;
+        return timestamp >= oneDayAgo && timestamp <= futureBuffer;
     }
 
     /**
@@ -203,24 +196,32 @@ export class PurchaseVerificationService {
     /**
      * Validate subscription dates
      */
+    /**
+     * Validate subscription dates
+     */
     static validateSubscriptionDates(startDate: Date, expiryDate: Date): boolean {
         const now = new Date();
+        // Allow 1 minute future drift for start date
+        const futureBuffer = new Date(now.getTime() + 60 * 1000);
 
-        // Start date should not be in the future
-        if (startDate > now) {
+        // Start date should not be significantly in the future
+        if (startDate > futureBuffer) {
+            console.warn('⚠️ Subscription validation failed: Start date in future', { startDate, now });
             return false;
         }
 
         // Expiry date should be after start date
         if (expiryDate <= startDate) {
+            console.warn('⚠️ Subscription validation failed: Expiry before start', { startDate, expiryDate });
             return false;
         }
 
-        // Expiry date should not be more than 2 years in the future
-        const twoYearsFromNow = new Date();
-        twoYearsFromNow.setFullYear(twoYearsFromNow.getFullYear() + 2);
+        // Expiry date limit: 20 years (relaxed from 2 years to allow stacking)
+        const maxFuture = new Date();
+        maxFuture.setFullYear(maxFuture.getFullYear() + 20);
 
-        if (expiryDate > twoYearsFromNow) {
+        if (expiryDate > maxFuture) {
+            console.warn('⚠️ Subscription validation failed: Expiry too far in future', { expiryDate, maxFuture });
             return false;
         }
 

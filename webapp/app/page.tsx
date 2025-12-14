@@ -295,14 +295,14 @@ export default function Home() {
     } catch (error: any) {
       console.error("Background analysis failed:", error);
 
-      const errorMessage = error.message || "";
+      const errorMessage = error.message || "متاسفانه تحلیل غذا با خطا مواجه شد.";
 
-      // Check if error is related to limits
+      // Show notification for all errors
+      showNotification(errorMessage, 'error');
+
+      // Check if error is related to subscription limits - navigate to subscription page
       if (errorMessage.includes('محدودیت') || errorMessage.includes('limit') || errorMessage.includes('اشتراک') || errorMessage.includes('رایگان')) {
-        showNotification(errorMessage, 'error');
         navigateToView('subscription');
-      } else {
-        alert("متاسفانه تحلیل غذا با خطا مواجه شد.");
       }
 
       setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));

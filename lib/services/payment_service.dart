@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_poolakey/flutter_poolakey.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 import 'api_service.dart';
 import 'api_service_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,26 +28,48 @@ class PaymentService {
   }
 
   Future<void> _initializePayment() async {
+    if (_isInitialized) return;
+
+    final completer = Completer<bool>();
+
     try {
       // Initialize Poolakey with CafeBazaar RSA key
-      await FlutterPoolakey.connect(
+      // We don't await connect() directly because it might hang in some cases
+      // Instead we rely on the callbacks to complete our local completer
+      FlutterPoolakey.connect(
         _rsaPublicKey,
         onSucceed: () {
           debugPrint('Connected to CafeBazaar successfully');
           _isInitialized = true;
+          if (!completer.isCompleted) completer.complete(true);
         },
         onFailed: () {
           debugPrint('Failed to connect to CafeBazaar');
           _isInitialized = false;
+          if (!completer.isCompleted) completer.complete(false);
         },
         onDisconnected: () {
-          debugPrint('Disconnected from CafeBazaar, reconnecting...');
+          debugPrint('Disconnected from CafeBazaar');
           _isInitialized = false;
-          _initializePayment();
+          // Avoid immediate recursion to prevent potential loops;
+          // let the next purchase attempt re-initialize if needed.
         },
-      );
-      _isInitialized = true;
-      debugPrint('Payment service initialized successfully');
+      ).catchError((e) {
+        debugPrint('FlutterPoolakey.connect error: $e');
+        if (!completer.isCompleted) completer.complete(false);
+      });
+
+      // Wait for callback or timeout (5 seconds)
+      try {
+        await completer.future.timeout(const Duration(seconds: 5));
+        debugPrint('Payment initialization sequence finished');
+      } on TimeoutException {
+        debugPrint('Payment initialization timed out waiting for callback');
+        // If timed out, we assume failure unless _isInitialized became true somehow
+        if (!_isInitialized) {
+          debugPrint('Payment initialization considered failed due to timeout');
+        }
+      }
     } on PlatformException catch (e) {
       debugPrint('Failed to initialize payment service: ${e.message}');
       _isInitialized = false;
@@ -66,8 +90,10 @@ class PaymentService {
   Future<PurchaseResult> purchaseSubscription(String productKey) async {
     try {
       if (!_isInitialized) {
+        debugPrint('Payment service not initialized, initializing...');
         await _initializePayment();
         if (!_isInitialized) {
+          debugPrint('Payment service failed to initialize');
           return PurchaseResult(
             success: false,
             message: 'Payment service not initialized',
@@ -79,10 +105,29 @@ class PaymentService {
       // Use unique payload for tracking
       final payload = DateTime.now().millisecondsSinceEpoch.toString();
 
-      final purchaseInfo = await FlutterPoolakey.subscribe(
-        productKey,
-        payload: payload,
-      );
+      debugPrint(
+          'Calling FlutterPoolakey.subscribe for $productKey with payload $payload');
+
+      PurchaseInfo purchaseInfo;
+      try {
+        purchaseInfo = await FlutterPoolakey.subscribe(
+          productKey,
+          payload: payload,
+        ).timeout(const Duration(seconds: 30)); // 30s timeout for native call
+
+        debugPrint(
+            'FlutterPoolakey.subscribe completed: orderId=${purchaseInfo.orderId}');
+      } catch (e) {
+        debugPrint('FlutterPoolakey.subscribe failed or timed out: $e');
+        if (e is TimeoutException) {
+          return PurchaseResult(
+            success: false,
+            message:
+                'CafeBazaar app did not respond. Please ensure it is installed and updated.',
+          );
+        }
+        rethrow;
+      }
 
       // Step 1: Validate with Cafe Bazaar API (fraud detection)
       debugPrint('Validating purchase with Cafe Bazaar...');
@@ -95,13 +140,15 @@ class PaymentService {
         debugPrint('Cafe Bazaar validation failed');
         return PurchaseResult(
           success: false,
-          message: 'Purchase validation failed. Please contact support if you were charged.',
+          message:
+              'Purchase validation failed. Please contact support if you were charged.',
         );
       }
 
       // Step 2: Verify with backend (creates subscription in database)
       debugPrint('Verifying purchase with backend...');
-      debugPrint('Purchase info: productKey=$productKey, orderId=${purchaseInfo.orderId}, payload=${purchaseInfo.payload}');
+      debugPrint(
+          'Purchase info: productKey=$productKey, orderId=${purchaseInfo.orderId}, payload=${purchaseInfo.payload}');
       final verificationResult = await _verifyPurchaseWithBackend(
         productKey: productKey,
         purchaseToken: purchaseInfo.purchaseToken,
@@ -109,7 +156,7 @@ class PaymentService {
         payload: purchaseInfo.payload,
       );
 
-      if (verificationResult) {
+      if (verificationResult['success'] == true) {
         // Trigger subscription status refresh by incrementing the trigger
         _ref.read(subscriptionRefreshTriggerProvider.notifier).state++;
         return PurchaseResult(
@@ -121,7 +168,8 @@ class PaymentService {
       } else {
         return PurchaseResult(
           success: false,
-          message: 'Purchase verification failed',
+          message: verificationResult['message'] as String? ??
+              'Purchase verification failed',
         );
       }
     } on PlatformException catch (e) {
@@ -168,7 +216,7 @@ class PaymentService {
         payload: purchaseInfo.payload,
       );
 
-      if (verificationResult) {
+      if (verificationResult['success'] == true) {
         // Trigger subscription status refresh by incrementing the trigger
         _ref.read(subscriptionRefreshTriggerProvider.notifier).state++;
         // Consume the purchase for regular products
@@ -183,7 +231,8 @@ class PaymentService {
       } else {
         return PurchaseResult(
           success: false,
-          message: 'Purchase verification failed',
+          message: verificationResult['message'] as String? ??
+              'Purchase verification failed',
         );
       }
     } on PlatformException catch (e) {
@@ -222,7 +271,7 @@ class PaymentService {
         final isValid = data['valid'] == true;
         final isPurchased = data['purchaseState'] == 'purchased';
         final isNotRefunded = data['purchaseState'] != 'refunded';
-        
+
         return isValid && isPurchased && isNotRefunded;
       }
       return false;
@@ -267,14 +316,15 @@ class PaymentService {
   }
 
   /// Verify purchase with backend
-  Future<bool> _verifyPurchaseWithBackend({
+  Future<Map<String, dynamic>> _verifyPurchaseWithBackend({
     required String productKey,
     required String purchaseToken,
     required String orderId,
     required String payload,
   }) async {
     try {
-      debugPrint('Sending to backend: productKey=$productKey, orderId=$orderId, payload=$payload');
+      debugPrint(
+          'Sending to backend: productKey=$productKey, orderId=$orderId, payload=$payload');
       final response = await _apiService.post(
         '/api/subscription/verify-purchase',
         data: {
@@ -285,11 +335,30 @@ class PaymentService {
         },
       );
 
-      debugPrint('Backend response: ${response['success']}, message: ${response['message']}');
-      return response['success'] == true;
+      debugPrint(
+          'Backend response: ${response['success']}, message: ${response['message']}');
+      return {
+        'success': response['success'] == true,
+        'message': response['message'] as String?,
+      };
     } catch (e) {
       debugPrint('Backend verification error: $e');
-      return false;
+      String errorMessage = 'Connection error during verification: $e';
+
+      if (e is DioException) {
+        // If it's a DioException, checks if the error property contains our clean message from ErrorHandler
+        // or effectively from the server due to our ErrorHandler fix
+        if (e.error is String) {
+          errorMessage = e.error as String;
+        } else if (e.message != null) {
+          errorMessage = e.message!;
+        }
+      }
+
+      return {
+        'success': false,
+        'message': errorMessage,
+      };
     }
   }
 
@@ -508,8 +577,9 @@ class CafeBazaarSubscriptionStatus {
     this.linkedSubscriptionToken,
   });
 
-  bool get isExpired => expiryTime != null && expiryTime!.isBefore(DateTime.now());
-  
+  bool get isExpired =>
+      expiryTime != null && expiryTime!.isBefore(DateTime.now());
+
   String get statusText {
     if (!valid) return 'Invalid';
     if (!active) return 'Expired';

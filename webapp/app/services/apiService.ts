@@ -1,6 +1,36 @@
-export const BASE_URL = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:9000'
-    : 'https://loqmeapp.ir';
+// Dynamic API Base URL getter
+// Checks for injected API_BASE_URL (from WebView), detects Android, or falls back to defaults
+const getApiBaseUrl = (): string => {
+    // Production mode - always use production URL
+    if (process.env.NODE_ENV !== 'development') {
+        return 'https://loqmeapp.ir';
+    }
+
+    // Server-side rendering
+    if (typeof window === 'undefined') {
+        return 'http://localhost:9000';
+    }
+
+    // Check if API_BASE_URL was injected (e.g., from Flutter WebView)
+    if ((window as any).API_BASE_URL) {
+        console.log('[API] Using injected API_BASE_URL:', (window as any).API_BASE_URL);
+        return (window as any).API_BASE_URL;
+    }
+
+    // Check if running on Android (WebView uses Android user agent)
+    if (/Android/i.test(navigator.userAgent)) {
+        return 'http://10.0.2.2:9000';
+    }
+
+    return 'http://localhost:9000';
+};
+
+// For backwards compatibility, export BASE_URL but Note: use getBaseUrl() for dynamic access
+// BASE_URL is evaluated once at module load - may not have injected values yet
+export const getBaseUrl = getApiBaseUrl;
+
+// Initial value - will be stale if injection happens later
+export const BASE_URL = getApiBaseUrl();
 
 interface ApiResponse<T = any> {
     success: boolean;
@@ -250,7 +280,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs?date=${date}`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs?date=${date}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -297,7 +327,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/plan/latest`, {
+            const response = await fetch(`${getBaseUrl()}/api/plan/latest`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -337,7 +367,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/plan/manual`, {
+            const response = await fetch(`${getBaseUrl()}/api/plan/manual`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -372,7 +402,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/plan/generate`, {
+            const response = await fetch(`${getBaseUrl()}/api/plan/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -410,7 +440,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+            const response = await fetch(`${getBaseUrl()}/api/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -460,7 +490,7 @@ export const apiService = {
             const start = formatDate(startDate);
             const end = formatDate(endDate);
 
-            const response = await fetch(`${BASE_URL}/api/streak/completions?start=${start}&end=${end}`, {
+            const response = await fetch(`${getBaseUrl()}/api/streak/completions?start=${start}&end=${end}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -484,7 +514,7 @@ export const apiService = {
 
     sendCode: async (phone: string): Promise<ApiResponse> => {
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/send-code`, {
+            const response = await fetch(`${getBaseUrl()}/api/auth/send-code`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -505,7 +535,7 @@ export const apiService = {
 
     verifyCode: async (phone: string, verificationCode: string): Promise<User> => {
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/verify-phone`, {
+            const response = await fetch(`${getBaseUrl()}/api/auth/verify-phone`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -539,7 +569,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/user/additional-info`, {
+            const response = await fetch(`${getBaseUrl()}/api/user/additional-info`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -569,7 +599,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/user/mark-additional-info-completed`, {
+            const response = await fetch(`${getBaseUrl()}/api/user/mark-additional-info-completed`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -600,7 +630,7 @@ export const apiService = {
                 formData.append('date', date);
             }
 
-            const response = await fetch(`${BASE_URL}/api/food/analyze`, {
+            const response = await fetch(`${getBaseUrl()}/api/food/analyze`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -637,7 +667,7 @@ export const apiService = {
                 body.date = date;
             }
 
-            const response = await fetch(`${BASE_URL}/api/food/analyze-description`, {
+            const response = await fetch(`${getBaseUrl()}/api/food/analyze-description`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -670,7 +700,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/item/${itemId}`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/item/${itemId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -698,7 +728,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/item/${itemId}?date=${date}`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/item/${itemId}?date=${date}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -723,7 +753,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/item`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/item`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -751,7 +781,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/liked`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/liked`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -778,7 +808,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/food/fix-result`, {
+            const response = await fetch(`${getBaseUrl()}/api/food/fix-result`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -807,7 +837,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/analyze-exercise`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/analyze-exercise`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -835,7 +865,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/burned-calories`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/burned-calories`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -866,7 +896,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/weight/latest`, {
+            const response = await fetch(`${getBaseUrl()}/api/weight/latest`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -892,7 +922,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/weight/range?start=${start}&end=${end}`, {
+            const response = await fetch(`${getBaseUrl()}/api/weight/range?start=${start}&end=${end}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -918,7 +948,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/weight`, {
+            const response = await fetch(`${getBaseUrl()}/api/weight`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -946,7 +976,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/logs/range?start=${start}&end=${end}`, {
+            const response = await fetch(`${getBaseUrl()}/api/logs/range?start=${start}&end=${end}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -973,7 +1003,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/user/additional-info`, {
+            const response = await fetch(`${getBaseUrl()}/api/user/additional-info`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -999,7 +1029,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/user/additional-info`, {
+            const response = await fetch(`${getBaseUrl()}/api/user/additional-info`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1032,7 +1062,7 @@ export const apiService = {
                 body.imageUrl = imageUrl;
             }
 
-            const response = await fetch(`${BASE_URL}/api/chat/nutrition`, {
+            const response = await fetch(`${getBaseUrl()}/api/chat/nutrition`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1077,7 +1107,7 @@ export const apiService = {
                 body.imageUrl = imageUrl;
             }
 
-            const response = await fetch(`${BASE_URL}/api/chat/nutrition?stream=1`, {
+            const response = await fetch(`${getBaseUrl()}/api/chat/nutrition?stream=1`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1166,7 +1196,7 @@ export const apiService = {
             const formData = new FormData();
             formData.append('image', imageFile);
 
-            const response = await fetch(`${BASE_URL}/api/chat/nutrition/image`, {
+            const response = await fetch(`${getBaseUrl()}/api/chat/nutrition/image`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -1203,7 +1233,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            let url = `${BASE_URL}/api/chat/nutrition/history?limit=${limit}`;
+            let url = `${getBaseUrl()}/api/chat/nutrition/history?limit=${limit}`;
             if (before) {
                 url += `&before=${before}`;
             }
@@ -1247,7 +1277,7 @@ export const apiService = {
             if (name !== undefined) body.name = name;
             if (email !== undefined) body.email = email;
 
-            const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+            const response = await fetch(`${getBaseUrl()}/api/auth/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1283,7 +1313,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/preferences`, {
+            const response = await fetch(`${getBaseUrl()}/api/preferences`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1312,7 +1342,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/auth/account`, {
+            const response = await fetch(`${getBaseUrl()}/api/auth/account`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1338,7 +1368,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/preferences`, {
+            const response = await fetch(`${getBaseUrl()}/api/preferences`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1372,7 +1402,7 @@ export const apiService = {
             const formData = new FormData();
             formData.append('image', file);
 
-            const response = await fetch(`${BASE_URL}/api/tickets/upload`, {
+            const response = await fetch(`${getBaseUrl()}/api/tickets/upload`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -1397,7 +1427,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/tickets`, {
+            const response = await fetch(`${getBaseUrl()}/api/tickets`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1430,7 +1460,7 @@ export const apiService = {
             });
             if (status) params.append('status', status);
 
-            const response = await fetch(`${BASE_URL}/api/tickets/my-tickets?${params.toString()}`, {
+            const response = await fetch(`${getBaseUrl()}/api/tickets/my-tickets?${params.toString()}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1456,7 +1486,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/tickets/${ticketId}`, {
+            const response = await fetch(`${getBaseUrl()}/api/tickets/${ticketId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1482,7 +1512,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/tickets/${ticketId}/messages`, {
+            const response = await fetch(`${getBaseUrl()}/api/tickets/${ticketId}/messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1507,7 +1537,7 @@ export const apiService = {
     // Subscription Plan APIs
     getSubscriptionPlans: async (): Promise<SubscriptionPlan[]> => {
         try {
-            const response = await fetch(`${BASE_URL}/api/subscription-plans?activeOnly=true`, {
+            const response = await fetch(`${getBaseUrl()}/api/subscription-plans?activeOnly=true`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1532,7 +1562,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/subscription/status`, {
+            const response = await fetch(`${getBaseUrl()}/api/subscription/status`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1567,7 +1597,7 @@ export const apiService = {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`${BASE_URL}/api/offers/active`, {
+            const response = await fetch(`${getBaseUrl()}/api/offers/active`, {
                 method: 'GET',
                 headers,
             });
@@ -1598,7 +1628,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/payment/zarinpal/create`, {
+            const response = await fetch(`${getBaseUrl()}/api/payment/zarinpal/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1646,7 +1676,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/payment/zarinpal/verify`, {
+            const response = await fetch(`${getBaseUrl()}/api/payment/zarinpal/verify`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1695,7 +1725,7 @@ export const apiService = {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
 
-            const response = await fetch(`${BASE_URL}/api/payment/history`, {
+            const response = await fetch(`${getBaseUrl()}/api/payment/history`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

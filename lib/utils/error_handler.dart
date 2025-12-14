@@ -31,6 +31,10 @@ class ErrorHandler {
                   serverError.contains('not contain food')) {
                 return 'home.not_food_image'.tr();
               }
+              // Return specific server message if available
+              if (data['message'] != null) {
+                return data['message'].toString();
+              }
             }
             return 'common.bad_request'.tr();
           case 401:

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService, SubscriptionPlan, Offer, UserProfile, BASE_URL } from '../services/apiService';
+import { useToast } from '../context/ToastContext';
 
 // --- Utility Functions ---
 
@@ -102,7 +103,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
     const [touchStart, setTouchStart] = useState(0);
+
     const [touchEnd, setTouchEnd] = useState(0);
+    const { showToast } = useToast();
 
     // Testimonials data (Persian user reviews)
     const testimonials = [
@@ -316,10 +319,68 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
             const selectedPlan = plans.find(p => p._id === selectedPlanId);
             if (!selectedPlan) {
                 setIsPurchasing(false);
-                alert('پلن انتخاب نشده است');
+                showToast('پلن انتخاب نشده است', 'error');
                 return;
             }
 
+            // Check if we're in Flutter WebView - use CafeBazaar
+            const isFlutterWebView = typeof window !== 'undefined' &&
+                (window as any).FlutterBridge?.isFlutterWebView === true;
+
+            if (isFlutterWebView) {
+                // Use CafeBazaar payment via Flutter bridge
+                console.log('Using CafeBazaar payment via FlutterBridge');
+
+                // Determine the product key to use
+                let productKey: string | undefined;
+
+                // Check if there's an active offer with a CafeBazaar product key
+                if (activeOffer) {
+                    const planIdStr = String(selectedPlan._id);
+                    const applicablePlanIds = activeOffer.applicablePlans.map(p =>
+                        typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
+                    );
+                    const offerApplies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
+
+                    if (offerApplies && activeOffer.cafebazaarProductKey) {
+                        productKey = activeOffer.cafebazaarProductKey;
+                    }
+                }
+
+                // Fall back to plan's CafeBazaar product key
+                if (!productKey) {
+                    productKey = selectedPlan.cafebazaarProductKey;
+                }
+
+                if (!productKey) {
+                    setIsPurchasing(false);
+                    showToast('این پلن برای خرید از کافه‌بازار پیکربندی نشده است', 'error');
+                    return;
+                }
+
+                console.log('Calling FlutterBridge.purchaseCafeBazaar with productKey:', productKey);
+
+                try {
+                    const result = await (window as any).FlutterBridge.purchaseCafeBazaar(productKey);
+                    console.log('CafeBazaar purchase result:', result);
+
+                    if (result.success) {
+                        // Payment successful - show success message and go back
+                        showToast('اشتراک شما با موفقیت فعال شد!', 'success');
+                        onBack();
+                    } else {
+                        showToast(result.message || 'خطا در پرداخت', 'error');
+                    }
+                } catch (purchaseError: any) {
+                    console.error('CafeBazaar purchase error:', purchaseError);
+                    showToast(purchaseError.message || 'خطا در پرداخت از کافه‌بازار', 'error');
+                }
+
+                setIsPurchasing(false);
+                return;
+            }
+
+            // Regular web payment via Zarinpal
             console.log('Creating Zarinpal payment for plan:', selectedPlan._id);
 
             // Get offer ID if applicable
@@ -341,7 +402,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
 
             if (!paymentResult.success || !paymentResult.paymentUrl) {
                 setIsPurchasing(false);
-                alert(paymentResult.message || 'خطا در ایجاد پرداخت');
+                showToast(paymentResult.message || 'خطا در ایجاد پرداخت', 'error');
                 return;
             }
 
@@ -354,7 +415,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
         } catch (error: any) {
             console.error('Payment error:', error);
             setIsPurchasing(false);
-            alert('خطا در برقراری ارتباط با درگاه پرداخت');
+            showToast('خطا در برقراری ارتباط با درگاه پرداخت', 'error');
         }
     };
 
