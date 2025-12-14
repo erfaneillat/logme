@@ -109,6 +109,89 @@ const LogWeightModal: React.FC<LogWeightModalProps> = ({ isOpen, mode, onClose, 
 
 // --- Link Main Component ---
 
+const AnalysisSkeleton = () => (
+    <div className="px-5 pt-8 pb-32 space-y-6 overflow-y-auto h-full no-scrollbar">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+            <div className="h-9 w-40 bg-gray-200 rounded-lg animate-pulse" />
+            <div className="h-7 w-24 bg-gray-200 rounded-full animate-pulse" />
+        </div>
+
+        {/* Weight Goal Summary */}
+        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-start mb-4">
+                <div className="space-y-2">
+                    <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="h-8 w-24 bg-gray-200 rounded-xl animate-pulse" />
+            </div>
+
+            <div className="mb-6 flex items-center justify-between">
+                <div className="space-y-2">
+                    <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-3 w-8 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                    <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-3 w-8 bg-gray-200 rounded animate-pulse" />
+                </div>
+            </div>
+
+            <div className="w-full h-4 bg-gray-100 rounded-full mb-6 overflow-hidden">
+                <div className="h-full bg-gray-200 rounded-full animate-pulse w-1/2" />
+            </div>
+
+            <div className="w-full h-14 bg-gray-200 rounded-[20px] animate-pulse" />
+        </div>
+
+        {/* Weight Chart Card */}
+        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+                <div className="h-6 w-24 bg-gray-200 rounded animate-pulse" />
+                <div className="h-8 w-32 bg-gray-200 rounded-xl animate-pulse" />
+            </div>
+            <div className="h-[180px] bg-gray-50 rounded-2xl animate-pulse flex items-center justify-center">
+                {/* Optional: Add some internal simple shape to mimic chart area if needed */}
+            </div>
+        </div>
+
+        {/* BMI Card */}
+        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+                <div className="h-6 w-24 bg-gray-200 rounded animate-pulse" />
+                <div className="h-10 w-20 bg-gray-200 rounded-2xl animate-pulse" />
+            </div>
+
+            <div className="flex justify-center mb-8 relative">
+                <div className="h-16 w-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+
+            <div className="h-4 w-full bg-gray-200 rounded-full mb-6 animate-pulse" />
+            <div className="flex justify-between">
+                {[1, 2, 3, 4].map(i => <div key={i} className="h-3 w-10 bg-gray-200 rounded animate-pulse" />)}
+            </div>
+        </div>
+
+        {/* Nutrition Chart */}
+        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+            <div className="mb-6">
+                <div className="h-6 w-48 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="flex items-end justify-between h-48 px-2 space-x-2 space-x-reverse">
+                {[1, 2, 3, 4, 5, 6, 7].map(i => (
+                    <div key={i} className="flex flex-col items-center flex-1 space-y-3">
+                        <div className="relative w-full flex items-end justify-center h-40 bg-gray-50 rounded-[14px] overflow-hidden border border-gray-50 animate-pulse">
+                            <div className="w-full mx-1 rounded-t-[10px] bg-gray-200" style={{ height: '40%' }}></div>
+                        </div>
+                        <div className="h-3 w-4 bg-gray-200 rounded animate-pulse" />
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
 const AnalysisPage: React.FC = () => {
     // State
     const [loading, setLoading] = useState(true);
@@ -321,12 +404,7 @@ const AnalysisPage: React.FC = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
-                <div className="w-10 h-10 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
-                <p className="text-gray-400 font-medium animate-pulse">در حال دریافت اطلاعات...</p>
-            </div>
-        );
+        return <AnalysisSkeleton />;
     }
 
     return (
