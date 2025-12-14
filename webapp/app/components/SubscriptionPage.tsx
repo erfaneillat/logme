@@ -360,7 +360,9 @@ const SubscriptionPage = ({ onBack }: { onBack: () => void }) => {
                     apiService.getUserProfile()
                 ]);
 
-                setUserCreatedAt(userProfile.createdAt);
+                if (userProfile) {
+                    setUserCreatedAt(userProfile.createdAt);
+                }
 
                 const sortedPlans = plansData.sort((a, b) => a.sortOrder - b.sortOrder);
                 setPlans(sortedPlans);
