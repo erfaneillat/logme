@@ -211,6 +211,12 @@ export interface OfferConditions {
     minPurchaseAmount?: number;
 }
 
+export interface OfferPlanPricing {
+    planId: string;
+    discountedPrice?: number;
+    discountedPricePerMonth?: number;
+}
+
 export interface Offer {
     _id: string;
     name: string;
@@ -220,6 +226,7 @@ export interface Offer {
     offerType: 'percentage' | 'fixed_amount' | 'fixed_price';
     discountPercentage?: number;
     discountAmount?: number;
+    planPricing?: OfferPlanPricing[];
     cafebazaarProductKey?: string;
     startDate?: string;
     endDate?: string;

@@ -109,37 +109,37 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
         {
             name: 'مونا',
             text: 'فقط با عکس گرفتن از غذاهام، ۱۵ کیلو کم کردم! یکی از بهترین اتفاقات زندگیم. مررررسی لقمه.',
-            image: '/images/comments/mona.jpg'
+            image: '/app/images/comments/mona.jpg'
         },
         {
             name: 'نیلوفر',
             text: 'همیشه یادم می‌رفت غذاهام رو وارد کنم و رژیمم نصفه می‌موند. ولی با لقمه همه‌چی خودکار انجام می‌شه. فقط عکس می‌گیرم و پیشرفتم رو هر روز می‌بینم، همین باعث شده ادامه بدم.',
-            image: '/images/comments/niloofar.jpg'
+            image: '/app/images/comments/niloofar.jpg'
         },
         {
             name: 'نیما',
             text: 'بعد از یه ماه استفاده از لقمه، دیدن پیشرفتم روی نمودار واقعاً خوشحالم کرد. اینکه بتونی مسیرت رو ببینی، خودش بزرگ‌ترین انگیزه‌ست.',
-            image: '/images/comments/nima.jpg'
+            image: '/app/images/comments/nima.jpg'
         },
         {
             name: 'پدرام',
             text: 'بهترین بخش لقمه برای من نمودار پیشرفته‌ست. می‌فهمم دقیقاً توی هفته چند درصد به هدف وزنیم نزدیک‌تر شدم.',
-            image: '/images/comments/pedram.jpg'
+            image: '/app/images/comments/pedram.jpg'
         },
         {
             name: 'رامین',
             text: 'احساس می‌کنم یه مربی کوچیک توی جیبمه! هر بار یه غذای جدید می‌خورم، لقمه آنالیزش می‌کنه و راهنمایی می‌ده چطور متعادل‌تر بخورم.',
-            image: '/images/comments/ramin.jpg'
+            image: '/app/images/comments/ramin.jpg'
         },
         {
             name: 'الناز',
             text: 'اینکه غذاهای ایرانی رو میشناسه فوق العاده س، لقمه حتی خورشت و برنج رو هم درست تشخیص داد 😅 خیلی دقیق و کاربردیه.',
-            image: '/images/comments/elnaz.jpg'
+            image: '/app/images/comments/elnaz.jpg'
         },
         {
             name: 'میترا',
             text: 'همیشه دنبال یه راه ساده بودم که بفهمم چی می‌خورم بدون محاسبه و سرچ کردن. لقمه دقیقاً همونه. حس می‌کنم بالاخره یه اپ طراحی شده برای آدمای واقعی!',
-            image: '/images/comments/mitra.jpg'
+            image: '/app/images/comments/mitra.jpg'
         }
     ];
 
@@ -229,48 +229,131 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
         return null;
     };
 
-    const calculatePrice = (plan: SubscriptionPlan): { finalPrice: number, originalPrice: number, hasDiscount: boolean, discountPercent: number } => {
-        // Base logic
-        let finalPrice = plan.price;
+    const calculatePrice = (plan: SubscriptionPlan): { finalPrice: number, originalPrice: number, hasDiscount: boolean, discountPercent: number, pricePerMonth?: number } => {
+        // Start with plan's base price and original price
+        const basePlanPrice = plan.price;
         let originalPrice = plan.originalPrice || plan.price;
-        let hasDiscount = (plan.originalPrice && plan.originalPrice > plan.price) || false;
-        let discountPercent = plan.discountPercentage || 0;
+        let finalPrice = basePlanPrice;
+        let hasDiscount = false;
+        let discountPercent = 0;
+        let pricePerMonth: number | undefined = undefined;
 
-        // Offer logic
+        // Check if plan itself has a discount (no offer)
+        if (plan.originalPrice && plan.originalPrice > plan.price) {
+            hasDiscount = true;
+            discountPercent = plan.discountPercentage || Math.round(((plan.originalPrice - plan.price) / plan.originalPrice) * 100);
+        }
+
+        // Apply offer discount if active and applicable
         if (activeOffer) {
-            const applies = activeOffer.applyToAllPlans || activeOffer.applicablePlans.includes(plan._id);
+            // Check if offer applies to this plan
+            const planIdStr = String(plan._id);
+            const applicablePlanIds = activeOffer.applicablePlans.map(p =>
+                typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
+            );
+            const applies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
+
             if (applies) {
-                const base = plan.price;
+                // Check if there's a plan-specific override in the offer
+                // Handle case where planId might be an object with _id or a string
+                const planPricing = activeOffer.planPricing?.find(pp => {
+                    const ppPlanId = typeof pp.planId === 'object' && pp.planId !== null
+                        ? String((pp.planId as any)._id || pp.planId)
+                        : String(pp.planId);
+                    return ppPlanId === planIdStr;
+                });
 
-                let offerPrice = base;
-                if (activeOffer.offerType === 'percentage' && activeOffer.discountPercentage) {
-                    offerPrice = base * (1 - activeOffer.discountPercentage / 100);
-                } else if (activeOffer.offerType === 'fixed_amount' && activeOffer.discountAmount) {
-                    offerPrice = Math.max(0, base - activeOffer.discountAmount);
-                }
 
-                if (offerPrice < finalPrice) {
-                    finalPrice = offerPrice;
+                if (planPricing && planPricing.discountedPrice !== undefined) {
+                    // Use the specific discounted price from the offer (this is pre-calculated)
+                    finalPrice = planPricing.discountedPrice;
+                    // Use the discountedPricePerMonth if available
+                    if (planPricing.discountedPricePerMonth !== undefined) {
+                        pricePerMonth = planPricing.discountedPricePerMonth;
+                    }
+                    // Original price should be the plan's originalPrice or basePlanPrice
+                    originalPrice = plan.originalPrice || basePlanPrice;
                     hasDiscount = true;
-                    discountPercent = Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
+                    // Use offer's discount percentage if available, otherwise calculate
+                    if (activeOffer.discountPercentage) {
+                        discountPercent = Math.round(activeOffer.discountPercentage);
+                    } else {
+                        discountPercent = Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
+                    }
+                } else {
+                    // Calculate based on offer type (fallback)
+                    const offerBase = basePlanPrice;
+                    if (activeOffer.offerType === 'percentage' && activeOffer.discountPercentage) {
+                        finalPrice = offerBase * (1 - activeOffer.discountPercentage / 100);
+                    } else if (activeOffer.offerType === 'fixed_amount' && activeOffer.discountAmount) {
+                        finalPrice = Math.max(0, offerBase - activeOffer.discountAmount);
+                    }
+
+                    // When offer is active, always show discount
+                    if (finalPrice < offerBase) {
+                        originalPrice = plan.originalPrice || basePlanPrice;
+                        hasDiscount = true;
+                        if (activeOffer.discountPercentage) {
+                            discountPercent = Math.round(activeOffer.discountPercentage);
+                        } else {
+                            discountPercent = Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
+                        }
+                    }
                 }
             }
         }
 
-        return { finalPrice, originalPrice, hasDiscount, discountPercent };
+        return { finalPrice, originalPrice, hasDiscount, discountPercent, pricePerMonth };
     };
 
     const handlePurchase = () => {
+        if (!selectedPlanId) return;
+
         setIsPurchasing(true);
-        // Simulate Purchase API call
+
+        // Find the selected plan
+        const selectedPlan = plans.find(p => p._id === selectedPlanId);
+        if (!selectedPlan) {
+            setIsPurchasing(false);
+            alert('پلن انتخاب نشده است');
+            return;
+        }
+
+        // Get the plan's product key
+        let productKey = selectedPlan.cafebazaarProductKey;
+
+        // Check if there's an applicable offer with its own product key
+        if (activeOffer) {
+            const planIdStr = String(selectedPlan._id);
+            const applicablePlanIds = activeOffer.applicablePlans.map(p =>
+                typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
+            );
+            const offerApplies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
+
+            if (offerApplies && activeOffer.cafebazaarProductKey) {
+                // Use offer's product key instead of plan's key
+                productKey = activeOffer.cafebazaarProductKey;
+            }
+        }
+
+        if (!productKey) {
+            setIsPurchasing(false);
+            alert('کلید محصول یافت نشد');
+            return;
+        }
+
+        console.log('Purchase with product key:', productKey);
+
+        // TODO: Integrate with actual payment gateway
+        // For now, show the product key being used
         setTimeout(() => {
-            alert('اتصال به درگاه پرداخت...');
+            alert(`اتصال به درگاه پرداخت با کلید: ${productKey}`);
             setIsPurchasing(false);
         }, 1500);
     };
 
     const renderPlanCard = (plan: SubscriptionPlan, isSelected: boolean, isOfferTarget: boolean = false) => {
-        const { finalPrice, originalPrice, hasDiscount, discountPercent } = calculatePrice(plan);
+        const { finalPrice, originalPrice, hasDiscount, discountPercent, pricePerMonth } = calculatePrice(plan);
 
         let accentColor = '#64748B'; // Default slate
         if (plan.duration === 'yearly') accentColor = '#E53935';
@@ -284,6 +367,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
 
         const borderColor = isSelected ? accentColor : 'transparent';
         const bgColor = '#FFFFFF';
+
+        // Calculate monthly price priority:
+        // 1. pricePerMonth from offer's planPricing.discountedPricePerMonth
+        // 2. plan.pricePerMonth from the plan database
+        // 3. calculate from finalPrice / months
+        const monthDivisor = plan.duration === 'yearly' ? 12 : plan.duration === '3month' ? 3 : 1;
+        const displayPricePerMonth = pricePerMonth !== undefined
+            ? pricePerMonth
+            : (plan.pricePerMonth !== undefined ? plan.pricePerMonth : Math.round(finalPrice / monthDivisor));
 
         return (
             <div
@@ -328,7 +420,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
                     <div className="text-left rtl:text-right border-r-2 border-gray-100 pr-4 mr-2">
                         <div className="flex flex-col items-end">
                             <span className="text-gray-800 font-bold text-lg">
-                                {toPersianNumbers(formatPrice(Math.round(finalPrice / (plan.duration === 'yearly' ? 12 : plan.duration === '3month' ? 3 : 1))))}
+                                {toPersianNumbers(formatPrice(displayPricePerMonth))}
                             </span>
                             <span className="text-gray-400 text-[10px]">ماهانه</span>
                         </div>
@@ -579,36 +671,22 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
             </div>
 
             {/* Bottom Purchase Bar */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white p-4 pb-8 rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20">
-                <div className="max-w-md mx-auto w-full flex items-center justify-between gap-4">
-                    <div className="flex-1">
-                        <p className="text-xs text-gray-500 mb-1">مبلغ قابل پرداخت</p>
-                        <div className="flex items-center gap-1">
-                            <span className="font-black text-2xl text-gray-900">
-                                {(() => {
-                                    const selected = plans.find(p => p._id === selectedPlanId);
-                                    if (!selected) return '---';
-                                    return toPersianNumbers(formatPrice(calculatePrice(selected).finalPrice));
-                                })()}
-                            </span>
-                            <span className="text-xs font-bold text-gray-500">تومان</span>
-                        </div>
-                    </div>
-
+            <div className="fixed bottom-0 left-0 right-0 bg-white px-4 py-3 rounded-t-[24px] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20">
+                <div className="max-w-md mx-auto w-full">
                     <button
                         onClick={handlePurchase}
                         disabled={isPurchasing || !selectedPlanId}
                         className={`
-                            px-8 py-4 rounded-xl font-bold text-white text-lg shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center gap-2
+                            w-full px-6 py-3.5 rounded-xl font-bold text-white text-sm shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2
                             ${isPurchasing ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'}
                         `}
                     >
                         {isPurchasing ? (
-                            <span className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                         ) : (
                             <>
                                 <span>پرداخت و فعال‌سازی</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                 </svg>
                             </>

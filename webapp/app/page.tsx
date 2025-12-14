@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Dashboard from './components/Dashboard';
 import AnalysisPage from './components/AnalysisPage';
 import AddFoodModal from './components/AddFoodModal';
@@ -25,6 +25,52 @@ type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('SPLASH');
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+
+  // Navigation history management
+  const navigateToView = useCallback((view: ViewState) => {
+    if (view !== 'dashboard') {
+      // Push a new history state when navigating away from dashboard
+      window.history.pushState({ view }, '', `#${view}`);
+    }
+    setCurrentView(view);
+  }, []);
+
+  const navigateBack = useCallback(() => {
+    // Go back to dashboard
+    setCurrentView('dashboard');
+  }, []);
+
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      // When user presses back button, check the state
+      if (event.state?.view) {
+        // Navigate to the view in history state
+        setCurrentView(event.state.view);
+      } else {
+        // If no state (at dashboard), stay at dashboard
+        // Push a state to prevent closing the app
+        if (currentView !== 'dashboard') {
+          setCurrentView('dashboard');
+        } else {
+          // Push an empty state to prevent app from closing
+          window.history.pushState(null, '', window.location.href);
+        }
+      }
+    };
+
+    // Initialize: Push initial state to prevent immediate back-close
+    if (typeof window !== 'undefined') {
+      // Replace current state with our app state
+      window.history.replaceState({ view: 'dashboard' }, '', window.location.pathname);
+    }
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [currentView]);
 
   // Auth State
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -165,7 +211,7 @@ export default function Home() {
       // Check if error is related to limits
       if (errorMessage.includes('محدودیت') || errorMessage.includes('limit') || errorMessage.includes('اشتراک') || errorMessage.includes('رایگان')) {
         showNotification(errorMessage, 'error');
-        setCurrentView('subscription');
+        navigateToView('subscription');
       } else {
         alert("متاسفانه تحلیل غذا با خطا مواجه شد.");
       }
@@ -184,7 +230,7 @@ export default function Home() {
     localStorage.removeItem('isLoggedIn');
     // localStorage.removeItem('hasOnboarded'); // Keep onboarding status
     setAppState('LOGIN');
-    setCurrentView('dashboard');
+    navigateToView('dashboard');
   };
 
   if (appState === 'SPLASH') {
@@ -231,7 +277,7 @@ export default function Home() {
           onFoodClick={setSelectedFood}
           refreshTrigger={dashboardRefreshTrigger}
           pendingAnalyses={pendingAnalyses}
-          onSubscriptionClick={() => setCurrentView('subscription')}
+          onSubscriptionClick={() => navigateToView('subscription')}
         />
       )}
 
@@ -241,13 +287,13 @@ export default function Home() {
 
       {currentView === 'chat' && (
         <ChatPage
-          onBack={() => setCurrentView('dashboard')}
-          onSubscriptionClick={() => setCurrentView('subscription')}
+          onBack={() => window.history.back()}
+          onSubscriptionClick={() => navigateToView('subscription')}
         />
       )}
 
       {currentView === 'subscription' && (
-        <SubscriptionPage onBack={() => setCurrentView('dashboard')} />
+        <SubscriptionPage onBack={() => window.history.back()} />
       )}
 
       {currentView === 'settings' && (
@@ -282,7 +328,7 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <button
-              onClick={() => setCurrentView('dashboard')}
+              onClick={() => navigateToView('dashboard')}
               className={`flex flex-col items-center justify-center h-full w-full rounded-[24px] transition-all duration-300 group ${currentView === 'dashboard' ? '' : 'hover:bg-gray-50'}`}
             >
               <div className={`p-2 rounded-xl transition-all duration-300 ${currentView === 'dashboard' ? 'bg-orange-50 text-orange-500 -translate-y-1' : 'text-gray-400'}`}>
@@ -296,7 +342,7 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <button
-              onClick={() => setCurrentView('analysis')}
+              onClick={() => navigateToView('analysis')}
               className={`flex flex-col items-center justify-center h-full w-full rounded-[24px] transition-all duration-300 group ${currentView === 'analysis' ? '' : 'hover:bg-gray-50'}`}
             >
               <div className={`p-2 rounded-xl transition-all duration-300 ${currentView === 'analysis' ? 'bg-blue-50 text-blue-500 -translate-y-1' : 'text-gray-400'}`}>
@@ -322,7 +368,7 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <button
-              onClick={() => setCurrentView('chat')}
+              onClick={() => navigateToView('chat')}
               className="flex flex-col items-center justify-center h-full w-full rounded-[24px] transition-all duration-300 group hover:bg-gray-50"
             >
               <div className="p-2 rounded-xl transition-all duration-300 text-gray-300 hover:text-gray-400">
@@ -335,7 +381,7 @@ export default function Home() {
 
           <div className="flex-1 flex justify-center">
             <button
-              onClick={() => setCurrentView('settings')}
+              onClick={() => navigateToView('settings')}
               className={`flex flex-col items-center justify-center h-full w-full rounded-[24px] transition-all duration-300 group ${currentView === 'settings' ? '' : 'hover:bg-gray-50'}`}
             >
               <div className={`p-2 rounded-xl transition-all duration-300 ${currentView === 'settings' ? 'bg-purple-50 text-purple-500 -translate-y-1' : 'text-gray-300 hover:text-gray-400'}`}>

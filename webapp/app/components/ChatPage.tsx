@@ -292,15 +292,17 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                     </svg>
                 </button>
 
-                <div className="flex flex-col items-center">
-                    <div className="relative">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md">
+                <div className="flex items-center gap-3">
+                    <div className="relative flex-shrink-0">
+                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md">
                             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="Dorsa" className="w-full h-full object-cover" />
                         </div>
-                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
                     </div>
-                    <h1 className="text-sm font-black text-gray-900 mt-1">درسا</h1>
-                    <p className="text-[10px] text-gray-400 font-bold">مربی تغذیه و رژیم شما</p>
+                    <div className="flex flex-col">
+                        <h1 className="text-sm font-black text-gray-900 leading-tight">درسا</h1>
+                        <p className="text-[10px] text-gray-400 font-medium">مربی تغذیه و رژیم شما</p>
+                    </div>
                 </div>
                 <button className="p-2 -ml-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
