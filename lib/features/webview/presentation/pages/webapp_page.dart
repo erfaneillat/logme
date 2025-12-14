@@ -54,11 +54,18 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
     'payment.zarinpal.com',
   ];
 
+  PackageInfo? _packageInfo;
+
   @override
   void initState() {
     super.initState();
     _initAnimations();
+    _loadPackageInfo();
     _initWebView();
+  }
+
+  Future<void> _loadPackageInfo() async {
+    _packageInfo = await PackageInfo.fromPlatform();
   }
 
   void _initAnimations() {
@@ -335,9 +342,8 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
   /// Injects a Flutter bridge for native features communication
   Future<void> _injectFlutterBridge() async {
     try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      final version = packageInfo.version;
-      final buildNumber = packageInfo.buildNumber;
+      final version = _packageInfo?.version ?? '1.0.0';
+      final buildNumber = _packageInfo?.buildNumber ?? '1';
       final platform = Platform.isAndroid ? 'android' : 'ios';
 
       await _controller.runJavaScript('''

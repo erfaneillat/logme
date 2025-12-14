@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
 
   // Trailing slash for cleaner URLs
   trailingSlash: true,
+
+  // Enable React Compiler (React Forget) for performance
+  experimental: {
+    // @ts-ignore - Supported in Next 16/Canary
+    reactCompiler: true,
+  },
 };
 
 export default withPWA(nextConfig);
