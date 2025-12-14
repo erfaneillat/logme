@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { apiService, SubscriptionPlan, Offer, UserProfile } from '../services/apiService';
+import { apiService, SubscriptionPlan, Offer, UserProfile, BASE_URL } from '../services/apiService';
 
 // --- Utility Functions ---
 
@@ -74,17 +74,17 @@ const CountdownTimer = ({ endDate, textColor, bgColor }: { endDate: Date; textCo
 
     return (
         <div className="flex items-center gap-1.5 sm:gap-2" dir="ltr">
-            <TimerBox value={format(timeLeft.seconds)} bgColor={bgColor} />
+            {timeLeft.days > 0 && (
+                <>
+                    <TimerBox value={format(timeLeft.days)} bgColor={bgColor} />
+                    <span style={{ color: textColor }} className="font-bold">:</span>
+                </>
+            )}
+            <TimerBox value={format(timeLeft.hours)} bgColor={bgColor} />
             <span style={{ color: textColor }} className="font-bold">:</span>
             <TimerBox value={format(timeLeft.minutes)} bgColor={bgColor} />
             <span style={{ color: textColor }} className="font-bold">:</span>
-            <TimerBox value={format(timeLeft.hours)} bgColor={bgColor} />
-            {timeLeft.days > 0 && (
-                <>
-                    <span style={{ color: textColor }} className="font-bold">:</span>
-                    <TimerBox value={format(timeLeft.days)} bgColor={bgColor} />
-                </>
-            )}
+            <TimerBox value={format(timeLeft.seconds)} bgColor={bgColor} />
         </div>
     );
 };
@@ -331,6 +331,25 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
     const yearlyPlan = plans.find(p => p.duration === 'yearly');
     const otherPlans = plans.filter(p => p.duration !== 'yearly');
 
+    // Logic to determine Hero Image from Plans (Yearly > 3Month > Monthly > Default)
+    const getHeroImage = () => {
+        const pYearly = plans.find(p => p.duration === 'yearly');
+        const p3Month = plans.find(p => p.duration === '3month');
+        const pMonthly = plans.find(p => p.duration === 'monthly');
+
+        let imgUrl = null;
+        if (pYearly?.imageUrl) imgUrl = pYearly.imageUrl;
+        else if (p3Month?.imageUrl) imgUrl = p3Month.imageUrl;
+        else if (pMonthly?.imageUrl) imgUrl = pMonthly.imageUrl;
+
+        if (imgUrl) {
+            return imgUrl.startsWith('http') ? imgUrl : `${BASE_URL}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
+        }
+        return 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop&q=80';
+    };
+
+    const heroImageUrl = getHeroImage();
+
     const effectiveEndDate = activeOffer ? getEffectiveEndDate(activeOffer, userProfile?.createdAt) : null;
     const isOfferValid = activeOffer && (!effectiveEndDate || new Date() < effectiveEndDate);
 
@@ -361,12 +380,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
-                            className="relative rounded-3xl overflow-hidden shadow-xl mb-6"
+                            className="relative rounded-3xl overflow-hidden shadow-xl mb-6 bg-gray-100"
                         >
                             <img
-                                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop&q=80"
-                                alt="Healthy Food"
+                                src={heroImageUrl}
+                                alt="Subscription Plan"
                                 className="w-full h-52 object-cover"
+                                style={{ objectFit: 'cover' }}
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop&q=80';
+                                }}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                             <div className="absolute bottom-4 right-4 left-4">
@@ -432,30 +455,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
                     </div>
 
                     <div className="px-6 space-y-6">
-                        {/* Hero Text */}
-                        <div className="text-center space-y-2 mb-8 pt-6">
-                            <h2 className="text-2xl font-black text-gray-900 leading-tight">
-                                به جمع کاربران <span className="text-blue-500">ویژه</span> بپیوندید
-                            </h2>
-                            <p className="text-gray-500 text-sm leading-relaxed px-4">
-                                با اشتراک ویژه، بدون محدودیت از تمام امکانات هوشمند کالری‌شمار و تحلیلگر استفاده کنید.
-                            </p>
-                        </div>
 
-                        {/* Features List */}
-                        <div className="grid grid-cols-2 gap-3 mb-8">
-                            {[
-                                { text: 'تحلیل نامحدود غذا', icon: '📸' },
-                                { text: 'برنامه غذایی اختصاصی', icon: '🥗' },
-                                { text: 'چت هوشمند نامحدود', icon: '💬' },
-                                { text: 'حذف تبلیغات', icon: '🚫' },
-                            ].map((feature, idx) => (
-                                <div key={idx} className="flex items-center gap-2 bg-white p-3 rounded-2xl shadow-sm">
-                                    <span className="text-xl">{feature.icon}</span>
-                                    <span className="text-xs font-bold text-gray-700">{feature.text}</span>
-                                </div>
-                            ))}
-                        </div>
 
                         {/* Pricing Section */}
                         <div className="space-y-4">
@@ -510,6 +510,31 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
 
                             {/* Other Plans */}
                             {otherPlans.map(plan => renderPlanCard(plan, selectedPlanId === plan._id))}
+                        </div>
+
+                        {/* Hero Text */}
+                        <div className="text-center space-y-2 mb-8 pt-6">
+                            <h2 className="text-2xl font-black text-gray-900 leading-tight">
+                                به جمع کاربران <span className="text-blue-500">ویژه</span> بپیوندید
+                            </h2>
+                            <p className="text-gray-500 text-sm leading-relaxed px-4">
+                                با اشتراک ویژه، بدون محدودیت از تمام امکانات هوشمند کالری‌شمار و تحلیلگر استفاده کنید.
+                            </p>
+                        </div>
+
+                        {/* Features List */}
+                        <div className="grid grid-cols-2 gap-3 mb-8">
+                            {[
+                                { text: 'تحلیل نامحدود غذا', icon: '📸' },
+                                { text: 'برنامه غذایی اختصاصی', icon: '🥗' },
+                                { text: 'چت هوشمند نامحدود', icon: '💬' },
+                                { text: 'حذف تبلیغات', icon: '🚫' },
+                            ].map((feature, idx) => (
+                                <div key={idx} className="flex items-center gap-2 bg-white p-3 rounded-2xl shadow-sm">
+                                    <span className="text-xl">{feature.icon}</span>
+                                    <span className="text-xs font-bold text-gray-700">{feature.text}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
