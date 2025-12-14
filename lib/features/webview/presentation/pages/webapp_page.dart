@@ -140,6 +140,12 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
                 _errorMessage = null;
               });
 
+              // Clear cache to ensure fresh content (fixing potential low-res cached version)
+              if (Platform.isAndroid) {
+                _controller.clearCache();
+                _controller.clearLocalStorage();
+              }
+
               // Inject API_BASE_URL early so the webapp uses correct server address
               _injectApiBaseUrl();
             },
