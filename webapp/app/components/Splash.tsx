@@ -14,7 +14,7 @@ interface VersionInfo {
 
 export default function Splash({ onFinish }: SplashProps) {
     const [isUpdating, setIsUpdating] = useState(false);
-    const [updateStatus, setUpdateStatus] = useState<'checking' | 'clearing' | 'reloading'>('checking');
+    const [updateStatus, setUpdateStatus] = useState<'checking' | 'downloading' | 'installing'>('checking');
 
     useEffect(() => {
         const checkVersionAndProceed = async () => {
@@ -38,12 +38,12 @@ export default function Splash({ onFinish }: SplashProps) {
                     if (cachedVersion && cachedVersion !== serverVersion.buildHash) {
                         console.log('[Version Check] New version detected! Updating...');
                         setIsUpdating(true);
-                        setUpdateStatus('clearing');
+                        setUpdateStatus('downloading');
 
                         // Clear caches and reload
                         await clearCachesAndUpdate();
 
-                        setUpdateStatus('reloading');
+                        setUpdateStatus('installing');
 
                         // Store new version
                         localStorage.setItem('app_version_hash', serverVersion.buildHash);
@@ -103,10 +103,10 @@ export default function Splash({ onFinish }: SplashProps) {
 
     const getStatusText = () => {
         switch (updateStatus) {
-            case 'clearing':
-                return 'در حال پاکسازی حافظه...';
-            case 'reloading':
-                return 'در حال بارگذاری نسخه جدید...';
+            case 'downloading':
+                return 'در حال دریافت نسخه جدید...';
+            case 'installing':
+                return 'در حال نصب نسخه جدید...';
             default:
                 return 'در حال بررسی بروزرسانی...';
         }
