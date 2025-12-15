@@ -23,6 +23,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   lastPlatform?: 'web' | 'android' | 'ios' | 'unknown';
+  appVersion?: string;
 }
 
 export interface DeletedUser {

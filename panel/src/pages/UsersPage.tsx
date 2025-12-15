@@ -224,6 +224,7 @@ const UsersPage = () => {
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Activity</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Platform</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Version</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Joined</th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700">Actions</th>
                 </tr>
@@ -231,7 +232,7 @@ const UsersPage = () => {
               <tbody className="divide-y divide-gray-100 bg-white">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-16">
+                    <td colSpan={8} className="px-6 py-16">
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600"></div>
                         <p className="text-sm font-medium text-gray-500">Loading users...</p>
@@ -240,7 +241,7 @@ const UsersPage = () => {
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-16">
+                    <td colSpan={8} className="px-6 py-16">
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                           <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -353,6 +354,13 @@ const UsersPage = () => {
                             u.lastPlatform === 'ios' ? '🍎 iOS' :
                               u.lastPlatform === 'web' ? '🌐 Web' :
                                 '-'}
+                        </span>
+                      </td>
+
+                      {/* App Version */}
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
+                          {u.appVersion || 'N/A'}
                         </span>
                       </td>
 

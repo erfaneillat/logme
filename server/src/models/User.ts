@@ -21,6 +21,7 @@ export interface IUser extends Document {
   lastStreakDate?: string | null; // YYYY-MM-DD of last completed day
   lastActivity?: Date; // timestamp of last user activity
   lastPlatform?: 'web' | 'ios' | 'android' | 'unknown'; // Platform of last activity
+  appVersion?: string;
   // User preferences
   addBurnedCalories?: boolean; // whether to add burned calories to daily goal
   rolloverCalories?: boolean; // whether to rollover remaining calories
@@ -152,6 +153,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ['web', 'ios', 'android', 'unknown'],
       default: 'unknown',
+    },
+    appVersion: {
+      type: String,
+      required: false,
     },
   },
   {

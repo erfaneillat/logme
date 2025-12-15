@@ -65,7 +65,7 @@ export default function Home() {
             }
           }
 
-          await apiService.trackAppOpen(platform);
+          await apiService.trackAppOpen(platform, process.env.NEXT_PUBLIC_APP_VERSION);
         }
       };
 

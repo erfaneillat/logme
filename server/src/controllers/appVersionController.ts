@@ -12,9 +12,9 @@ export const checkAppVersion = async (req: Request, res: Response): Promise<void
     const { platform, version, buildNumber } = req.query;
 
     if (!platform || !buildNumber) {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Platform and build number are required' 
+      res.status(400).json({
+        success: false,
+        message: 'Platform and build number are required'
       });
       return;
     }
@@ -22,17 +22,17 @@ export const checkAppVersion = async (req: Request, res: Response): Promise<void
     const currentBuildNumber = parseInt(buildNumber as string);
 
     if (isNaN(currentBuildNumber)) {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Build number must be a valid number' 
+      res.status(400).json({
+        success: false,
+        message: 'Build number must be a valid number'
       });
       return;
     }
 
     // Get active version configuration for the platform
-    const versionConfig = await AppVersion.findOne({ 
+    const versionConfig = await AppVersion.findOne({
       platform: platform as string,
-      isActive: true 
+      isActive: true
     });
 
     if (!versionConfig) {
@@ -47,13 +47,24 @@ export const checkAppVersion = async (req: Request, res: Response): Promise<void
     }
 
     // Check if force update is required
-    const isForceUpdate = versionConfig.isForceUpdate && 
-                          currentBuildNumber < versionConfig.minBuildNumber;
+    const isForceUpdate = versionConfig.isForceUpdate &&
+      currentBuildNumber < versionConfig.minBuildNumber;
 
     // Check if optional update is available
-    const isOptionalUpdate = versionConfig.isOptionalUpdate && 
-                             currentBuildNumber < versionConfig.buildNumber &&
-                             !isForceUpdate;
+    const isOptionalUpdate = versionConfig.isOptionalUpdate &&
+      currentBuildNumber < versionConfig.buildNumber &&
+      !isForceUpdate;
+
+    console.log('[AppVersion] Check:', {
+      platform,
+      currentBuildNumber,
+      minBuildNumber: versionConfig.minBuildNumber,
+      latestBuildNumber: versionConfig.buildNumber,
+      configForce: versionConfig.isForceUpdate,
+      configOptional: versionConfig.isOptionalUpdate,
+      resultForce: isForceUpdate,
+      resultOptional: isOptionalUpdate
+    });
 
     res.status(200).json({
       success: true,
@@ -71,9 +82,9 @@ export const checkAppVersion = async (req: Request, res: Response): Promise<void
     });
   } catch (error) {
     errorLogger.error('Error checking app version:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error checking app version' 
+    res.status(500).json({
+      success: false,
+      message: 'Error checking app version'
     });
   }
 };
@@ -93,9 +104,9 @@ export const getAllAppVersions = async (req: Request, res: Response): Promise<vo
     });
   } catch (error) {
     errorLogger.error('Error getting app versions:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error retrieving app versions' 
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving app versions'
     });
   }
 };
@@ -112,9 +123,9 @@ export const getAppVersionById = async (req: Request, res: Response): Promise<vo
     const version = await AppVersion.findById(id);
 
     if (!version) {
-      res.status(404).json({ 
-        success: false, 
-        message: 'App version not found' 
+      res.status(404).json({
+        success: false,
+        message: 'App version not found'
       });
       return;
     }
@@ -125,9 +136,9 @@ export const getAppVersionById = async (req: Request, res: Response): Promise<vo
     });
   } catch (error) {
     errorLogger.error('Error getting app version:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error retrieving app version' 
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving app version'
     });
   }
 };
@@ -155,9 +166,9 @@ export const createAppVersion = async (req: Request, res: Response): Promise<voi
 
     // Validate required fields
     if (!platform || !version || !buildNumber || !minVersion || !minBuildNumber) {
-      res.status(400).json({ 
-        success: false, 
-        message: 'All required fields must be provided' 
+      res.status(400).json({
+        success: false,
+        message: 'All required fields must be provided'
       });
       return;
     }
@@ -190,18 +201,18 @@ export const createAppVersion = async (req: Request, res: Response): Promise<voi
     });
   } catch (error: any) {
     errorLogger.error('Error creating app version:', error);
-    
+
     if (error.code === 11000) {
-      res.status(409).json({ 
-        success: false, 
-        message: 'An active version configuration already exists for this platform' 
+      res.status(409).json({
+        success: false,
+        message: 'An active version configuration already exists for this platform'
       });
       return;
     }
 
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Error creating app version' 
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error creating app version'
     });
   }
 };
@@ -231,9 +242,9 @@ export const updateAppVersion = async (req: Request, res: Response): Promise<voi
     const existingVersion = await AppVersion.findById(id);
 
     if (!existingVersion) {
-      res.status(404).json({ 
-        success: false, 
-        message: 'App version not found' 
+      res.status(404).json({
+        success: false,
+        message: 'App version not found'
       });
       return;
     }
@@ -241,8 +252,8 @@ export const updateAppVersion = async (req: Request, res: Response): Promise<voi
     // If setting as active, deactivate other active versions for this platform
     if (isActive && !existingVersion.isActive) {
       await AppVersion.updateMany(
-        { 
-          platform: platform || existingVersion.platform, 
+        {
+          platform: platform || existingVersion.platform,
           isActive: true,
           _id: { $ne: id }
         },
@@ -274,18 +285,18 @@ export const updateAppVersion = async (req: Request, res: Response): Promise<voi
     });
   } catch (error: any) {
     errorLogger.error('Error updating app version:', error);
-    
+
     if (error.code === 11000) {
-      res.status(409).json({ 
-        success: false, 
-        message: 'An active version configuration already exists for this platform' 
+      res.status(409).json({
+        success: false,
+        message: 'An active version configuration already exists for this platform'
       });
       return;
     }
 
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Error updating app version' 
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error updating app version'
     });
   }
 };
@@ -302,9 +313,9 @@ export const deleteAppVersion = async (req: Request, res: Response): Promise<voi
     const version = await AppVersion.findByIdAndDelete(id);
 
     if (!version) {
-      res.status(404).json({ 
-        success: false, 
-        message: 'App version not found' 
+      res.status(404).json({
+        success: false,
+        message: 'App version not found'
       });
       return;
     }
@@ -315,9 +326,9 @@ export const deleteAppVersion = async (req: Request, res: Response): Promise<voi
     });
   } catch (error) {
     errorLogger.error('Error deleting app version:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error deleting app version' 
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting app version'
     });
   }
 };
@@ -334,9 +345,9 @@ export const toggleAppVersionActive = async (req: Request, res: Response): Promi
     const version = await AppVersion.findById(id);
 
     if (!version) {
-      res.status(404).json({ 
-        success: false, 
-        message: 'App version not found' 
+      res.status(404).json({
+        success: false,
+        message: 'App version not found'
       });
       return;
     }
@@ -344,8 +355,8 @@ export const toggleAppVersionActive = async (req: Request, res: Response): Promi
     // If activating, deactivate other active versions for this platform
     if (!version.isActive) {
       await AppVersion.updateMany(
-        { 
-          platform: version.platform, 
+        {
+          platform: version.platform,
           isActive: true,
           _id: { $ne: id }
         },
@@ -362,18 +373,18 @@ export const toggleAppVersionActive = async (req: Request, res: Response): Promi
     });
   } catch (error: any) {
     errorLogger.error('Error toggling app version active status:', error);
-    
+
     if (error.code === 11000) {
-      res.status(409).json({ 
-        success: false, 
-        message: 'An active version configuration already exists for this platform' 
+      res.status(409).json({
+        success: false,
+        message: 'An active version configuration already exists for this platform'
       });
       return;
     }
 
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Error toggling app version active status' 
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error toggling app version active status'
     });
   }
 };

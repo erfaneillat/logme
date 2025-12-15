@@ -683,7 +683,7 @@ export const apiService = {
         }
     },
 
-    trackAppOpen: async (platform: 'web' | 'ios' | 'android'): Promise<void> => {
+    trackAppOpen: async (platform: 'web' | 'ios' | 'android', appVersion?: string): Promise<void> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) return; // Silent fail if not logged in
@@ -694,7 +694,7 @@ export const apiService = {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ platform }),
+                body: JSON.stringify({ platform, appVersion }),
             });
         } catch (error) {
             console.error('trackAppOpen error:', error);

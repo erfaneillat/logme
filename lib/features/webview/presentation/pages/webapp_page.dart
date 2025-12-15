@@ -62,7 +62,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
   void initState() {
     super.initState();
     _initAnimations();
-    _loadPackageInfo();
+    // _loadPackageInfo(); // Moved to _initWebView to ensure it completes before injection
     _initWebView();
   }
 
@@ -120,6 +120,9 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
 
   Future<void> _initWebView() async {
     try {
+      // Load package info first to ensure it's available for bridge injection
+      await _loadPackageInfo();
+
       // Get the auth token from secure storage
       const storage = FlutterSecureStorage();
       final token = await storage.read(key: 'auth_token');

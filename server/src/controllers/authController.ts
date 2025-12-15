@@ -31,17 +31,23 @@ export class AuthController {
   // Track app open
   async trackAppOpen(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const { platform } = req.body;
+      const { platform, appVersion } = req.body;
 
       if (!['web', 'ios', 'android'].includes(platform)) {
         res.status(400).json({ success: false, message: 'Invalid platform' });
         return;
       }
 
-      await User.findByIdAndUpdate(req.user.userId, {
+      const updateData: any = {
         lastActivity: new Date(),
         lastPlatform: platform
-      });
+      };
+
+      if (appVersion) {
+        updateData.appVersion = appVersion;
+      }
+
+      await User.findByIdAndUpdate(req.user.userId, updateData);
 
       res.json({ success: true });
     } catch (error) {

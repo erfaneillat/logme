@@ -43,7 +43,10 @@ export const VersionCheckWrapper: React.FC<VersionCheckWrapperProps> = ({ childr
                         if (!isNaN(buildNum)) {
                             const result = await apiService.checkAppVersion(platform || 'android', buildNum);
 
+                            console.log('[VersionCheck] API Result:', result);
+
                             if (result.isForceUpdate || result.isOptionalUpdate) {
+                                console.log('[VersionCheck] Showing dialog. Force:', result.isForceUpdate, 'Optional:', result.isOptionalUpdate);
                                 setVersionCheck(result);
                                 setShowDialog(true);
                             }

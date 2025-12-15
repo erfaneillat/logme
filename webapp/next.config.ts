@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import withPWAInit from "@ducanh2912/next-pwa";
+import pkg from './package.json';
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -31,6 +32,9 @@ const nextConfig: NextConfig = {
   // Enable React Compiler (React Forget) for performance
   // @ts-ignore - Supported in Next 16
   reactCompiler: true,
+  env: {
+    NEXT_PUBLIC_APP_VERSION: pkg.version,
+  },
 };
 
 export default withPWA(nextConfig);
