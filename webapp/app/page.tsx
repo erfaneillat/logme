@@ -18,7 +18,7 @@ import PlanGeneration from './components/PlanGeneration';
 import PlanSummary from './components/PlanSummary';
 import PaymentResultModal from './components/PaymentResultModal';
 import { FoodItem } from './types';
-import { apiService, User, FoodAnalysisResponse } from './services/apiService';
+import { apiService, User, FoodAnalysisResponse, UserProfile } from './services/apiService';
 
 type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings' | 'subscription';
 type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL_INFO' | 'PLAN_GENERATION' | 'PLAN_SUMMARY' | 'MAIN';
@@ -296,12 +296,24 @@ export default function Home() {
     }
   }, []);
 
-  const handleSplashFinish = () => {
+  const handleSplashFinish = async () => {
     const hasOnboarded = localStorage.getItem('hasOnboarded');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const hasCompletedInfo = localStorage.getItem('hasCompletedAdditionalInfo') === 'true';
+    let hasCompletedInfo = localStorage.getItem('hasCompletedAdditionalInfo') === 'true';
 
     if (isLoggedIn) {
+      // Fetch latest profile to check if additional info is actually completed
+      // This fixes the issue where app update might lose the local storage flag
+      try {
+        const userProfile = await apiService.getUserProfile();
+        if (userProfile) {
+          hasCompletedInfo = !!userProfile.hasCompletedAdditionalInfo;
+          localStorage.setItem('hasCompletedAdditionalInfo', String(hasCompletedInfo));
+        }
+      } catch (error) {
+        console.error('Failed to sync profile on splash:', error);
+      }
+
       if (hasCompletedInfo) {
         setAppState('MAIN');
       } else {
