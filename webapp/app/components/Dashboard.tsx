@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { format as formatJalali, getDate as getJalaliDate } from 'date-fns-jalali';
 import Header from './Header';
 import CircularProgress from './CircularProgress';
 import NutrientCard from './NutrientCard';
@@ -8,12 +9,17 @@ import StreakModal from './StreakModal';
 import OfferBanner from './OfferBanner';
 import { apiService, DailyLog, DailyLogItem, Plan, UserProfile, Offer, getBaseUrl, fixImageUrl } from '../services/apiService';
 
-// Helper to format date as YYYY-MM-DD
+// Helper to format date as YYYY-MM-DD (Gregorian for API)
 const formatDate = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+};
+
+// Helper to get Jalali day of month
+const getJalaliDayOfMonth = (date: Date): number => {
+    return getJalaliDate(date);
 };
 
 // Helper to convert English numbers to Persian/Farsi numerals
@@ -458,7 +464,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         {getDayName(date)}
                                     </button>
                                     <span className={`text-sm font-semibold ${isSelected ? 'text-gray-900' : 'text-gray-500'}`}>
-                                        {toPersianNumbers(date.getDate())}
+                                        {toPersianNumbers(getJalaliDayOfMonth(date))}
                                     </span>
                                     {isTodayDate && (
                                         <div className={`w-1.5 h-1.5 rounded-full -mt-0.5 ${isSelected ? 'bg-orange-500' : 'bg-orange-400'}`} />
