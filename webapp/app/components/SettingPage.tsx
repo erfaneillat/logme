@@ -68,58 +68,54 @@ const ProfileSkeleton = () => (
 
 // Subscription card skeleton
 const SubscriptionSkeleton = () => (
-    <div className="bg-gradient-to-br from-gray-300 to-gray-400 rounded-[32px] p-6 shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+    <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-[32px] p-6 shadow-sm relative overflow-hidden h-full">
+        {/* Abstract shapes for visual interest */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/40 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+        {/* Header Section */}
         <div className="flex justify-between items-start mb-6 relative z-10">
-            <div className="flex items-start gap-4">
-                {/* Icon skeleton */}
-                <div className="w-12 h-12 rounded-2xl bg-white/20 relative overflow-hidden">
-                    <div
-                        className="absolute inset-0 -translate-x-full animate-shimmer"
-                        style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                        }}
-                    />
+            <div className="flex items-start gap-3">
+                {/* Icon Skeleton */}
+                <div className="w-12 h-12 rounded-2xl bg-white/50 relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                 </div>
+                {/* Text Skeleton */}
                 <div className="space-y-2 pt-1">
-                    {/* Title skeleton */}
-                    <div className="h-5 w-24 bg-white/20 rounded-lg relative overflow-hidden">
-                        <div
-                            className="absolute inset-0 -translate-x-full animate-shimmer"
-                            style={{
-                                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                            }}
-                        />
+                    <div className="h-5 w-24 bg-white/50 rounded-lg relative overflow-hidden">
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                     </div>
-                    {/* Subtitle skeleton */}
-                    <div className="h-3 w-32 bg-white/20 rounded-md relative overflow-hidden">
-                        <div
-                            className="absolute inset-0 -translate-x-full animate-shimmer"
-                            style={{
-                                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                            }}
-                        />
+                    <div className="h-3 w-32 bg-white/40 rounded-md relative overflow-hidden">
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                     </div>
                 </div>
             </div>
+            {/* Status Badge Skeleton */}
+            <div className="w-16 h-7 rounded-full bg-white/50 relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+            </div>
         </div>
-        <div className="bg-white/10 rounded-[20px] p-4 backdrop-blur-sm relative z-10">
-            <div className="flex items-center justify-between">
-                <div className="h-4 w-20 bg-white/20 rounded-md relative overflow-hidden">
-                    <div
-                        className="absolute inset-0 -translate-x-full animate-shimmer"
-                        style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                        }}
-                    />
+
+        {/* Bottom Details Card Skeleton */}
+        <div className="bg-white/40 rounded-[20px] p-4 mb-4 relative z-10 box-border">
+            {/* Date Row */}
+            <div className="flex justify-between items-center mb-3">
+                <div className="h-4 w-20 bg-white/50 rounded-md relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                 </div>
-                <div className="w-8 h-8 bg-white/20 rounded-full relative overflow-hidden">
-                    <div
-                        className="absolute inset-0 -translate-x-full animate-shimmer"
-                        style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                        }}
-                    />
+                <div className="h-4 w-20 bg-white/50 rounded-md relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full h-2 bg-white/30 rounded-full overflow-hidden mb-3 relative">
+                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+            </div>
+
+            {/* Bottom Text */}
+            <div className="flex justify-center mt-1">
+                <div className="h-3 w-28 bg-white/50 rounded-md relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                 </div>
             </div>
         </div>
