@@ -1,20 +1,21 @@
 // Dynamic API Base URL getter
 // Checks for injected API_BASE_URL (from WebView), detects Android, or falls back to defaults
 const getApiBaseUrl = (): string => {
-    // Production mode - always use production URL
-    if (process.env.NODE_ENV !== 'development') {
-        return 'https://loqmeapp.ir';
-    }
-
     // Server-side rendering
     if (typeof window === 'undefined') {
-        return 'http://localhost:9000';
+        return process.env.NODE_ENV !== 'development' ? 'https://loqmeapp.ir' : 'http://localhost:9000';
     }
 
     // Check if API_BASE_URL was injected (e.g., from Flutter WebView)
+    // This must take precedence to allow WebView to point to correct backend (e.g. 10.0.2.2)
     if ((window as any).API_BASE_URL) {
         console.log('[API] Using injected API_BASE_URL:', (window as any).API_BASE_URL);
         return (window as any).API_BASE_URL;
+    }
+
+    // Production mode - always use production URL if no injection
+    if (process.env.NODE_ENV !== 'development') {
+        return 'https://loqmeapp.ir';
     }
 
     // Check if running on Android (WebView uses Android user agent)
