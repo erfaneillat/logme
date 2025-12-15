@@ -140,12 +140,6 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
                 _errorMessage = null;
               });
 
-              // Clear cache to ensure fresh content (fixing potential low-res cached version)
-              if (Platform.isAndroid) {
-                _controller.clearCache();
-                _controller.clearLocalStorage();
-              }
-
               // Inject API_BASE_URL early so the webapp uses correct server address
               _injectApiBaseUrl();
             },
@@ -220,6 +214,11 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
         final androidController =
             _controller.platform as AndroidWebViewController;
         await androidController.setMediaPlaybackRequiresUserGesture(false);
+
+        // Fix resolution issues for crisp text rendering
+        await androidController.setTextZoom(100); // Prevent system font scaling
+        await androidController.setUseWideViewPort(
+            true); // Respect viewport meta tag for proper DPI
 
         // Handle file uploads on Android
         await androidController.setOnShowFileSelector((params) async {
@@ -320,6 +319,36 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
     } catch (e) {
       if (kDebugMode) {
         print('Error injecting API base URL: $e');
+      }
+    }
+
+    // Inject viewport enhancements for crisp rendering
+    await _injectViewportEnhancements();
+  }
+
+  /// Injects viewport enhancements for high-resolution WebView rendering
+  Future<void> _injectViewportEnhancements() async {
+    try {
+      await _controller.runJavaScript('''
+        (function() {
+          // Ensure viewport meta tag is set correctly for high-DPI displays
+          var viewport = document.querySelector('meta[name="viewport"]');
+          if (!viewport) {
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            document.head.appendChild(viewport);
+          }
+          viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+          
+          // Set CSS variable for device pixel ratio if needed
+          document.documentElement.style.setProperty('--device-pixel-ratio', window.devicePixelRatio);
+          
+          console.log('[Flutter] Viewport enhanced. DPR:', window.devicePixelRatio);
+        })();
+      ''');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error injecting viewport enhancements: $e');
       }
     }
   }

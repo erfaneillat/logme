@@ -16,6 +16,11 @@
 
   body {
     font-family: 'Vazirmatn', var(--font-vazirmatn), sans-serif;
+    /* Text rendering optimizations for crisp display in WebView */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
   }
 }
 
