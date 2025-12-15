@@ -22,6 +22,11 @@
     text-rendering: optimizeLegibility;
     -webkit-text-size-adjust: 100%;
   }
+
+  /* Optimize image rendering for crisp edges */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
 }
 
 :root {

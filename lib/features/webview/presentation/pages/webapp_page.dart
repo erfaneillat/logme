@@ -689,7 +689,14 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             // WebView (always in the stack, but behind splash when loading)
             if (_isControllerReady)
               SafeArea(
-                child: WebViewWidget(controller: _controller),
+                child: Platform.isAndroid
+                    ? WebViewWidget.fromPlatformCreationParams(
+                        params: AndroidWebViewWidgetCreationParams(
+                          controller: _controller.platform,
+                          displayWithHybridComposition: true,
+                        ),
+                      )
+                    : WebViewWidget(controller: _controller),
               ),
 
             // Splash screen overlay while loading
