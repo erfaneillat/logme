@@ -15,6 +15,7 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
     // Resend Timer Logic
@@ -39,10 +40,12 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
         if (countdown > 0) return;
         setIsLoading(true);
         setError(null);
+        setSuccessMessage(null);
         try {
             await apiService.sendCode(phoneNumber);
             setCountdown(60);
-            alert('کد جدید ارسال شد.');
+            setSuccessMessage('کد جدید ارسال شد.');
+            setTimeout(() => setSuccessMessage(null), 4000);
         } catch (err: any) {
             setError(err.message || 'خطا در ارسال مجدد کد');
         } finally {
@@ -178,6 +181,12 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
                         />
                     ))}
                 </div>
+
+                {successMessage && (
+                    <div className="w-full text-center text-green-600 bg-green-50 py-3 px-4 rounded-2xl text-sm font-bold mb-4 border border-green-100">
+                        ✓ {successMessage}
+                    </div>
+                )}
 
                 {error && (
                     <div className="w-full text-center text-red-500 text-sm font-bold mb-6">

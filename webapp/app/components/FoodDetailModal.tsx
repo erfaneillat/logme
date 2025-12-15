@@ -54,6 +54,12 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
         isLoading: boolean;
     }>({ isOpen: false, isLoading: false });
 
+    // Delete confirmation dialog state
+    const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+        isOpen: boolean;
+        isDeleting: boolean;
+    }>({ isOpen: false, isDeleting: false });
+
     // Ref to store description (survives re-renders)
     const fixResultDescriptionRef = useRef('');
     const fixResultTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -591,41 +597,133 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
         );
     };
 
-    const handleDelete = async () => {
+    // Open delete confirmation dialog
+    const handleDeleteClick = () => {
+        if (!food?.id) return;
+        setDeleteConfirmDialog({ isOpen: true, isDeleting: false });
+    };
+
+    // Actual delete execution
+    const executeDelete = async () => {
         if (!food?.id) return;
 
-        // We'll use a custom confirmation logic or simply showToast after action if undo is supported, 
-        // but for now, replacing native confirm with a safer check or assuming intent if clicked (or maybe keep confirm for critical delete?)
-        // The user asked to remove "alerts". Native confirm is also ugly. 
-        // Let's assume for this specific action (Deletion) we might want a better UI later, 
-        // but since I can't easily build a ConfirmModal right now, I'll stick to a non-blocking flow 
-        // OR better: use showToast to say "Deleted" and maybe handle errors better.
-        // Actually adhering to "good ui", I should probably not use confirm(). 
-        // However, deleting without confirmation is bad UX.
-        // Given constraints, I will leave confirm() if it's strictly about "alerts" from the user request (which showed an alert box), 
-        // but I will definitely change the error alert.
-        // Wait, the user said "it shows this" referring to a native dialog. confirm() is also a native dialog.
-        // But building a custom confirm dialog is out of scope for a quick fix unless I reuse existing modals.
-        // I'll keep confirm() for now as it's a safety feature, but strictly replace checking failure alerts.
+        setDeleteConfirmDialog(prev => ({ ...prev, isDeleting: true }));
 
-        if (confirm('آیا از حذف این وعده اطمینان دارید؟')) {
-            // Cancel any pending save
-            if (debounceTimer.current) {
-                clearTimeout(debounceTimer.current);
-                debounceTimer.current = undefined;
-            }
-            try {
-                // food.date is typically YYYY-MM-DD from the API
-                const dateParam = food.date || new Date().toISOString().slice(0, 10);
-                await apiService.deleteLogItem(food.id, dateParam);
-                setIsOpen(false);
-                setTimeout(onClose, 500);
-                showToast('وعده غذایی حذف شد', 'success');
-            } catch (error) {
-                console.error('Delete error:', error);
-                showToast('خطا در حذف وعده', 'error');
-            }
+        // Cancel any pending save
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
+            debounceTimer.current = undefined;
         }
+        try {
+            // food.date is typically YYYY-MM-DD from the API
+            const dateParam = food.date || new Date().toISOString().slice(0, 10);
+            await apiService.deleteLogItem(food.id, dateParam);
+            setDeleteConfirmDialog({ isOpen: false, isDeleting: false });
+            setIsOpen(false);
+            setTimeout(onClose, 500);
+            showToast('وعده غذایی حذف شد', 'success');
+        } catch (error) {
+            console.error('Delete error:', error);
+            setDeleteConfirmDialog({ isOpen: false, isDeleting: false });
+            showToast('خطا در حذف وعده', 'error');
+        }
+    };
+
+    // Delete Confirmation Modal Component
+    const DeleteConfirmModal = () => {
+        if (!deleteConfirmDialog.isOpen) return null;
+
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                {/* Backdrop */}
+                <div
+                    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                    onClick={() => !deleteConfirmDialog.isDeleting && setDeleteConfirmDialog({ isOpen: false, isDeleting: false })}
+                />
+
+                {/* Modal */}
+                <div className="relative w-full max-w-sm bg-white rounded-[28px] p-6 animate-scale-up shadow-2xl">
+                    {/* Icon */}
+                    <div className="flex justify-center mb-5">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-100 to-red-50 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-xl font-black text-center text-gray-800 mb-2">
+                        حذف وعده غذایی
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-center text-gray-500 text-sm mb-6 leading-relaxed">
+                        آیا از حذف این وعده اطمینان دارید؟
+                        <br />
+                        <span className="text-gray-400">این عمل قابل بازگشت نیست.</span>
+                    </p>
+
+                    {/* Food preview */}
+                    <div className="bg-gray-50 rounded-2xl p-3 mb-6 flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gray-200 overflow-hidden shrink-0">
+                            {displayFood.imageUrl ? (
+                                <img src={fixImageUrl(displayFood.imageUrl)} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-xl">🍲</div>
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-gray-800 text-sm truncate text-right">{displayFood.name}</p>
+                            <p className="text-xs text-gray-400 text-right">{toPersianNumbers(effectiveCalories)} کالری</p>
+                        </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setDeleteConfirmDialog({ isOpen: false, isDeleting: false })}
+                            disabled={deleteConfirmDialog.isDeleting}
+                            className="flex-1 py-3.5 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        >
+                            انصراف
+                        </button>
+                        <button
+                            onClick={executeDelete}
+                            disabled={deleteConfirmDialog.isDeleting}
+                            className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 text-white font-bold hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-lg shadow-red-200"
+                        >
+                            {deleteConfirmDialog.isDeleting ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    <span>در حال حذف...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>حذف</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Animation keyframes */}
+                <style>{`
+                    @keyframes scale-up {
+                        from { opacity: 0; transform: scale(0.9); }
+                        to { opacity: 1; transform: scale(1); }
+                    }
+                    .animate-scale-up {
+                        animation: scale-up 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+                    }
+                `}</style>
+            </div>
+        );
     };
 
     return (
@@ -636,6 +734,9 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
             {/* Ingredient Dialog */}
             <IngredientDialog />
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmModal />
 
             {/* Fix Result Dialog - Inline to prevent re-mount issues */}
             {fixResultDialog.isOpen && (
@@ -782,7 +883,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                     <div className="relative z-10 flex gap-2">
                         {/* Delete Button */}
                         <button
-                            onClick={handleDelete}
+                            onClick={handleDeleteClick}
                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isScrolled
                                 ? 'bg-red-50 text-red-500 shadow-sm hover:bg-red-100'
                                 : 'bg-white/20 backdrop-blur-md text-white border border-white/10 hover:bg-red-500/20'

@@ -361,10 +361,10 @@ export default function Home() {
     } catch (error: any) {
       console.error('Failed to mark additional info as completed:', error);
       if (error.message && error.message.includes('incomplete')) {
-        alert('اطلاعات شما کامل نیست. لطفاً مجدداً تلاش کنید.');
+        showNotification('اطلاعات شما کامل نیست. لطفاً مجدداً تلاش کنید.', 'error');
         setAppState('ADDITIONAL_INFO');
       } else {
-        alert('خطا در ذخیره وضعیت. لطفاً مجدداً تلاش کنید.');
+        showNotification('خطا در ذخیره وضعیت. لطفاً مجدداً تلاش کنید.', 'error');
       }
     }
   };

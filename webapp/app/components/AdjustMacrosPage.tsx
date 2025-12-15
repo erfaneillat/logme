@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService, Plan } from '../services/apiService';
+import { useToast } from '../context/ToastContext';
 
 interface AdjustMacrosPageProps {
     onClose: () => void;
@@ -55,6 +56,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
     const [fats, setFats] = useState('');
 
     const [isCalculating, setIsCalculating] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         fetchPlan();
@@ -90,7 +92,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
             }
         } catch (error: any) {
             console.error('Failed to auto calculate:', error);
-            alert(error.message || 'Error generating plan');
+            showToast(error.message || 'Error generating plan', 'error');
         } finally {
             setIsCalculating(false);
         }
@@ -108,7 +110,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
             onClose();
         } catch (error) {
             console.error('Failed to save macros:', error);
-            alert('Error Saving Macros');
+            showToast('خطا در ذخیره تغییرات', 'error');
         } finally {
             setIsSaving(false);
         }

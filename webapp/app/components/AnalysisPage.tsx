@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { apiService, WeightEntry, DailyLog, AdditionalInfo } from '../services/apiService';
 import { format } from 'date-fns-jalali';
 import { faIR } from 'date-fns/locale';
+import { useToast } from '../context/ToastContext';
 
 // --- Text Utility ---
 const toPersianDigits = (num: number | string | undefined | null): string => {
@@ -206,6 +207,7 @@ const AnalysisPage: React.FC = () => {
     // UI State
     const [weightRange, setWeightRange] = useState<'3m' | '6m' | '1y'>('3m');
     const [modalState, setModalState] = useState<{ isOpen: boolean; mode: 'current' | 'goal' }>({ isOpen: false, mode: 'current' });
+    const { showToast } = useToast();
 
     // Helpers
     const getRangeDate = useCallback((range: '3m' | '6m' | '1y') => {
@@ -262,7 +264,7 @@ const AnalysisPage: React.FC = () => {
             await fetchData(); // Refresh data
         } catch (error) {
             console.error('Failed to save:', error);
-            alert('متاسفانه خطایی رخ داد.');
+            showToast('متاسفانه خطایی رخ داد.', 'error');
         }
     };
 

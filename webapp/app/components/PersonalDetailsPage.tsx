@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiService, AdditionalInfo } from '../services/apiService';
 import { format, getYear, getMonth, getDate, newDate } from 'date-fns-jalali';
+import { useToast } from '../context/ToastContext';
 
 interface PersonalDetailsPageProps {
     onClose: () => void;
@@ -170,6 +171,7 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
     const [jalaliDate, setJalaliDate] = useState<JalaliDate>({ year: 1380, month: 1, day: 1 }); // For date picker
 
     const [isSaving, setIsSaving] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         fetchInfo();
@@ -244,7 +246,7 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
             setEditingField(null);
         } catch (error) {
             console.error('Failed to update info:', error);
-            alert('Error updating info');
+            showToast('خطا در بروزرسانی اطلاعات', 'error');
         } finally {
             setIsSaving(false);
         }

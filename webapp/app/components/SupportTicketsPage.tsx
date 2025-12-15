@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiService, Ticket, TicketCategory, TicketPriority, TicketMessage } from '../services/apiService';
+import { useToast } from '../context/ToastContext';
 // import { format } from 'date-fns-jalali'; // Use if available, else simple date
 
 type ViewState = 'list' | 'create' | 'detail';
@@ -43,6 +44,7 @@ const SupportTicketsPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const [replyAttachmentUrls, setReplyAttachmentUrls] = useState<string[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { showToast } = useToast();
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, isReply: boolean) => {
         const files = e.target.files;
@@ -59,7 +61,7 @@ const SupportTicketsPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             }
         } catch (error) {
             console.error('Upload failed', error);
-            alert('آپلود تصویر با خطا مواجه شد');
+            showToast('آپلود تصویر با خطا مواجه شد', 'error');
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -112,7 +114,7 @@ const SupportTicketsPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             await fetchTickets();
             setView('list');
         } catch (error) {
-            alert('خطا در ایجاد تیکت');
+            showToast('خطا در ایجاد تیکت', 'error');
         } finally {
             setIsSubmitting(false);
         }
@@ -131,7 +133,7 @@ const SupportTicketsPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             // Update in list as well
             setTickets(prev => prev.map(t => t._id === updatedTicket._id ? updatedTicket : t));
         } catch (error) {
-            alert('خطا در ارسال پیام');
+            showToast('خطا در ارسال پیام', 'error');
         } finally {
             setIsSendingReply(false);
         }

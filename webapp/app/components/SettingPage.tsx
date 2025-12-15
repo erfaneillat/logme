@@ -7,6 +7,7 @@ import PersonalDetailsPage from './PersonalDetailsPage';
 import AdjustMacrosPage from './AdjustMacrosPage';
 import WeightHistoryPage from './WeightHistoryPage';
 import SupportTicketsPage from './SupportTicketsPage';
+import { useToast } from '../context/ToastContext';
 
 const Toggle = ({ active, onChange, activeColor = 'bg-orange-400' }: { active: boolean; onChange: () => void; activeColor?: string }) => (
     <button
@@ -158,6 +159,7 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteReason, setDeleteReason] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         requestAnimationFrame(() => setAnimate(true));
@@ -229,7 +231,7 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
             onLogout();
         } catch (error) {
             console.error('Failed to delete account', error);
-            alert('خطا در حذف حساب کاربری');
+            showToast('خطا در حذف حساب کاربری', 'error');
         } finally {
             setIsDeleting(false);
         }

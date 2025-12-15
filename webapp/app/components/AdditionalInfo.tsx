@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { apiService } from '../services/apiService';
 import { newDate } from 'date-fns-jalali';
 import { differenceInYears } from 'date-fns';
+import { useToast } from '../context/ToastContext';
 
 // --- Types ---
 type Gender = 'male' | 'female' | 'other';
@@ -1469,6 +1470,7 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const { showToast } = useToast();
 
     const updateData = (key: string, value: any) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -1618,7 +1620,7 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
                 onFinish();
             } catch (err: any) {
                 console.error(err);
-                alert(err.message || 'خطا در ثبت اطلاعات.');
+                showToast(err.message || 'خطا در ثبت اطلاعات.', 'error');
                 setIsSubmitting(false);
             }
         } else {
