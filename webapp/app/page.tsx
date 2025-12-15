@@ -66,6 +66,12 @@ export default function Home() {
     }
   }, []);
 
+  // State for Food Detail Modal
+  const [selectedFood, setSelectedFood] = useState<any>(null);
+
+  // State for dashboard refresh
+  const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
+
   // Navigation history management
   const navigateToView = useCallback((view: ViewState) => {
     if (view !== 'dashboard') {
@@ -73,6 +79,17 @@ export default function Home() {
       window.history.pushState({ view }, '', `#${view}`);
     }
     setCurrentView(view);
+  }, []);
+
+  const openFoodDetail = useCallback((food: any) => {
+    // Push new state with modal identifier
+    window.history.pushState({ view: currentView, modal: 'food_detail' }, '', '#food_detail');
+    setSelectedFood(food);
+  }, [currentView]);
+
+  const closeFoodDetail = useCallback(() => {
+    // Go back in history to close (triggers popstate)
+    window.history.back();
   }, []);
 
   const navigateBack = useCallback(() => {
@@ -84,27 +101,42 @@ export default function Home() {
   // Handle browser back button
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      // When user presses back button, check the state
-      if (event.state?.view) {
-        // Navigate to the view in history state
-        setCurrentView(event.state.view);
+      const state = event.state || {};
+
+      // Handle View Navigation
+      if (state.view) {
+        setCurrentView(state.view);
       } else {
-        // If no state (at dashboard), stay at dashboard
-        // Push a state to prevent closing the app
+        // If no state (at dashboard root), ensure we are at dashboard
         if (currentView !== 'dashboard') {
           setCurrentView('dashboard');
         } else {
-          // Push an empty state to prevent app from closing
-          window.history.pushState(null, '', window.location.href);
+          // If we are already at dashboard and no state, check if we need to prevent exit
+          // (This part logic is preserved from original to prevent immediate app close if desired)
+          // But usually "no state" means initial load or popped everything.
+          if (!selectedFood && !state.modal) {
+            window.history.pushState(null, '', window.location.href);
+          }
         }
+      }
+
+      // Handle Modal Closing
+      // If selectedFood is active (modal open), but the new state has no 'modal' field
+      // or 'modal' is different, we must close the modal.
+      if (selectedFood && state.modal !== 'food_detail') {
+        setSelectedFood(null);
+        setDashboardRefreshTrigger(prev => prev + 1);
       }
     };
 
     // Initialize: Push initial state to prevent immediate back-close
     if (typeof window !== 'undefined') {
-      // Replace current state with our app state - PRESERVE search params and hash!
-      const fullUrl = window.location.pathname + window.location.search + window.location.hash;
-      window.history.replaceState({ view: 'dashboard' }, '', fullUrl);
+      // Ensure we handle page reloads where we might already be on a hash
+      // For simplicity, we just establish the base dashboard state if history is empty-ish
+      if (!window.history.state) {
+        const fullUrl = window.location.pathname + window.location.search + window.location.hash;
+        window.history.replaceState({ view: 'dashboard' }, '', fullUrl);
+      }
     }
 
     window.addEventListener('popstate', handlePopState);
@@ -112,20 +144,14 @@ export default function Home() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [currentView]);
+  }, [currentView, selectedFood]);
 
   // Auth State
   const [phoneNumber, setPhoneNumber] = useState('');
 
-  // State for Food Detail Modal
-  const [selectedFood, setSelectedFood] = useState<any>(null);
-
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
-
-  // State for dashboard refresh
-  const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
 
   // Payment result modal state
   const [paymentResult, setPaymentResult] = useState<{
@@ -160,8 +186,8 @@ export default function Home() {
 
     console.log('🔗 Full URL:', window.location.href);
     console.log('🔗 Search string:', window.location.search);
-    console.log('� Hash fragment:', window.location.hash);
-    console.log('�🔍 Payment callback check:', { paymentStatus, refId, errorCode, appState });
+    console.log(' Hash fragment:', window.location.hash);
+    console.log('🔍 Payment callback check:', { paymentStatus, refId, errorCode, appState });
 
     if (paymentStatus) {
       console.log('✅ Payment param detected, showing modal...');
