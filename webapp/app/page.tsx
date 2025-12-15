@@ -27,6 +27,13 @@ export default function Home() {
   const [appState, setAppState] = useState<AppState>('SPLASH');
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
 
+  // Auth State
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+
   // Move skip-splash logic to useEffect to avoid hydration mismatch
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -87,6 +94,16 @@ export default function Home() {
     setSelectedFood(food);
   }, [currentView]);
 
+  const openAddFoodModal = useCallback(() => {
+    window.history.pushState({ view: currentView, modal: 'add_food' }, '', '#add_food');
+    setIsModalOpen(true);
+  }, [currentView]);
+
+  const openAddExerciseModal = useCallback(() => {
+    window.history.pushState({ view: currentView, modal: 'add_exercise' }, '', '#add_exercise');
+    setIsExerciseModalOpen(true);
+  }, [currentView]);
+
   const closeFoodDetail = useCallback(() => {
     // Go back in history to close (triggers popstate)
     window.history.back();
@@ -111,18 +128,26 @@ export default function Home() {
         if (currentView !== 'dashboard') {
           setCurrentView('dashboard');
         } else {
-          // If we are already at dashboard and no state, check if we need to prevent exit
-          // (This part logic is preserved from original to prevent immediate app close if desired)
-          // But usually "no state" means initial load or popped everything.
-          if (!selectedFood && !state.modal) {
-            window.history.pushState(null, '', window.location.href);
+          // If we are already at dashboard and no state, force a state to prevent exit loop
+          // only if we are truly at start
+          if (!selectedFood && !state.modal && !isModalOpen && !isExerciseModalOpen) {
+            window.history.pushState({ view: 'dashboard' }, '', '#dashboard');
           }
         }
       }
 
       // Handle Modal Closing
-      // If selectedFood is active (modal open), but the new state has no 'modal' field
-      // or 'modal' is different, we must close the modal.
+      // Check for Add Food Modal
+      if (isModalOpen && state.modal !== 'add_food') {
+        setIsModalOpen(false);
+      }
+
+      // Check for Add Exercise Modal
+      if (isExerciseModalOpen && state.modal !== 'add_exercise') {
+        setIsExerciseModalOpen(false);
+      }
+
+      // Check for Food Detail Modal
       if (selectedFood && state.modal !== 'food_detail') {
         setSelectedFood(null);
         setDashboardRefreshTrigger(prev => prev + 1);
@@ -144,14 +169,9 @@ export default function Home() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [currentView, selectedFood]);
+  }, [currentView, selectedFood, isModalOpen, isExerciseModalOpen]);
 
-  // Auth State
-  const [phoneNumber, setPhoneNumber] = useState('');
 
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
 
   // Payment result modal state
   const [paymentResult, setPaymentResult] = useState<{
@@ -409,8 +429,8 @@ export default function Home() {
 
       {currentView === 'dashboard' && (
         <Dashboard
-          setIsModalOpen={setIsModalOpen}
-          setIsExerciseModalOpen={setIsExerciseModalOpen}
+          setIsModalOpen={(isOpen) => isOpen ? openAddFoodModal() : window.history.back()}
+          setIsExerciseModalOpen={(isOpen) => isOpen ? openAddExerciseModal() : window.history.back()}
           onFoodClick={setSelectedFood}
           refreshTrigger={dashboardRefreshTrigger}
           pendingAnalyses={pendingAnalyses}
@@ -442,24 +462,20 @@ export default function Home() {
 
       <AddFoodModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => window.history.back()}
         onAddFood={handleAddFood}
         onStartAnalysis={handleStartAnalysis}
       />
 
       <AddExerciseModal
         isOpen={isExerciseModalOpen}
-        onClose={() => setIsExerciseModalOpen(false)}
+        onClose={() => window.history.back()}
         onAddExercise={handleAddExercise}
       />
 
       <FoodDetailModal
         food={selectedFood}
-        onClose={() => {
-          setSelectedFood(null);
-          // Refresh dashboard data in background
-          setDashboardRefreshTrigger(prev => prev + 1);
-        }}
+        onClose={() => window.history.back()}
       />
 
       <PaymentResultModal
@@ -505,7 +521,7 @@ export default function Home() {
           {/* Center FAB - integrated in navbar */}
           <div className="flex-1 flex justify-center items-center">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => openAddFoodModal()}
               className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center shadow-lg shadow-gray-900/20 hover:scale-105 active:scale-95 transition-all duration-300 group"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
