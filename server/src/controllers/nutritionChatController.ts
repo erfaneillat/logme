@@ -521,9 +521,11 @@ export class NutritionChatController {
                 return;
             }
 
+            // Use APP_URL in production for correct public URL
+            const appUrl = process.env.APP_URL;
             const host = req.get('host');
             const protocol = req.protocol;
-            const baseUrl = `${protocol}://${host}`;
+            const baseUrl = appUrl || `${protocol}://${host}`;
             const imageUrl = `${baseUrl}/api/food/images/${file.filename}`;
 
             res.status(200).json({

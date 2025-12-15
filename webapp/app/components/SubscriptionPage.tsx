@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { apiService, SubscriptionPlan, Offer, UserProfile, BASE_URL } from '../services/apiService';
+import { apiService, SubscriptionPlan, Offer, UserProfile, BASE_URL, fixImageUrl } from '../services/apiService';
 import { useToast } from '../context/ToastContext';
 
 // --- Utility Functions ---
@@ -531,7 +531,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
         else if (pMonthly?.imageUrl) imgUrl = pMonthly.imageUrl;
 
         if (imgUrl) {
-            return imgUrl.startsWith('http') ? imgUrl : `${BASE_URL}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
+            // Use fixImageUrl to properly handle localhost and Android emulator
+            return fixImageUrl(imgUrl) || imgUrl;
         }
         return 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop&q=80';
     };

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FoodItem, Ingredient } from '../types';
 import CircularProgress from './CircularProgress';
-import { apiService } from '../services/apiService';
+import { apiService, fixImageUrl } from '../services/apiService';
 import { useToast } from '../context/ToastContext';
 
 interface FoodDetailModalProps {
@@ -729,7 +729,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                     <div className="relative w-full h-full">
                         {displayFood.imageUrl ? (
                             <img
-                                src={displayFood.imageUrl}
+                                src={fixImageUrl(displayFood.imageUrl)}
                                 alt={displayFood.name}
                                 className="w-full h-full object-cover transition-transform duration-75 will-change-transform"
                                 style={{

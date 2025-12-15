@@ -80,7 +80,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                         text: item.message,
                         isUser: item.senderRole === 'user',
                         timestamp: new Date(item.createdAt),
-                        imageUrl: item.imageUrl,
+                        imageUrl: fixImageUrl(item.imageUrl),
                     }));
                     setMessages(chatMessages);
                     setHasMore(history.hasMore);
@@ -146,7 +146,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                     text: item.message,
                     isUser: item.senderRole === 'user',
                     timestamp: new Date(item.createdAt),
-                    imageUrl: item.imageUrl,
+                    imageUrl: fixImageUrl(item.imageUrl),
                 }));
 
                 if (olderMessages.length > 0) {

@@ -29,22 +29,51 @@ const getApiBaseUrl = (): string => {
 // BASE_URL is evaluated once at module load - may not have injected values yet
 export const getBaseUrl = getApiBaseUrl;
 
-// Helper to fix image URLs (handle localhost vs 10.0.2.2 for Android Emulator)
+// Helper to fix image URLs (handle localhost vs production, development vs Android Emulator)
 export const fixImageUrl = (url?: string): string | undefined => {
     if (!url) return undefined;
 
-    // If running in browser or no specific handling needed
+    // If running on server-side, return as-is
     if (typeof window === 'undefined') return url;
 
-    // Get current correct base URL (detects Android)
+    // Get current correct base URL (detects Android in dev, production URL in prod)
     const baseUrl = getApiBaseUrl();
+    const isProduction = process.env.NODE_ENV !== 'development';
 
-    // If URL is from localhost:9000 but we need to use 10.0.2.2 (or whatever getBaseUrl returned)
+    // In production, replace any localhost/development URLs with production URL
+    if (isProduction) {
+        // Replace various localhost patterns that might be stored in database
+        const localhostPatterns = [
+            /http:\/\/localhost:9000/g,
+            /https:\/\/localhost:9000/g,
+            /http:\/\/127\.0\.0\.1:9000/g,
+            /https:\/\/127\.0\.0\.1:9000/g,
+            /http:\/\/10\.0\.2\.2:9000/g,  // Android emulator URL
+            /https:\/\/10\.0\.2\.2:9000/g,
+        ];
+
+        let fixedUrl = url;
+        for (const pattern of localhostPatterns) {
+            if (pattern.test(fixedUrl)) {
+                fixedUrl = fixedUrl.replace(pattern, baseUrl);
+            }
+        }
+
+        // Handle relative URLs in production
+        if (fixedUrl.startsWith('/')) {
+            return `${baseUrl}${fixedUrl}`;
+        }
+
+        return fixedUrl;
+    }
+
+    // Development mode handling
+    // If URL is from localhost:9000 but we need to use 10.0.2.2 (Android Emulator)
     if (url.includes('localhost:9000') && !baseUrl.includes('localhost')) {
         return url.replace(/http:\/\/localhost:9000/g, baseUrl).replace(/https:\/\/localhost:9000/g, baseUrl);
     }
 
-    // Handle relative URLs just in case
+    // Handle relative URLs in development
     if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
     }

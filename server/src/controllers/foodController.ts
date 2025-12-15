@@ -166,8 +166,9 @@ export class FoodController {
             const todayIso = targetDate;
             const timeIso = new Date().toISOString();
 
-            // Create image URL
-            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            // Create image URL - use APP_URL in production for correct public URL
+            const appUrl = process.env.APP_URL;
+            const baseUrl = appUrl || `${req.protocol}://${req.get('host')}`;
             const imageUrl = `${baseUrl}/api/food/images/${file.filename}`;
 
             console.log('Saving image URL:', imageUrl);

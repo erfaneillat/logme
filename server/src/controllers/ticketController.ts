@@ -485,9 +485,11 @@ export class TicketController {
         return;
       }
 
+      // Use APP_URL in production for correct public URL
+      const appUrl = process.env.APP_URL;
       const host = req.get('host');
       const protocol = req.protocol;
-      const baseUrl = `${protocol}://${host}`;
+      const baseUrl = appUrl || `${protocol}://${host}`;
       const imageUrl = `${baseUrl}/api/tickets/images/${req.file.filename}`;
 
       res.json({
