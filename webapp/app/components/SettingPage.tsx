@@ -291,13 +291,9 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
             <div className="px-6 -mt-8 space-y-4">
                 {/* Subscription Card */}
                 {(() => {
-                    // Show skeleton while loading
+                    // Hide loading state completely
                     if (isLoading) {
-                        return (
-                            <div className={`transition-all duration-700 delay-100 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                                <SubscriptionSkeleton />
-                            </div>
-                        );
+                        return null;
                     }
 
                     const isSubscribed = subscriptionStatus?.isActive || false;
