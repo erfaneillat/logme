@@ -76,8 +76,9 @@ export default function Home() {
   }, []);
 
   const navigateBack = useCallback(() => {
-    // Go back to dashboard
-    setCurrentView('dashboard');
+    // Go back in history (pops the state pushed by navigateToView)
+    // This triggers popstate event which updates currentView
+    window.history.back();
   }, []);
 
   // Handle browser back button
@@ -397,13 +398,13 @@ export default function Home() {
 
       {currentView === 'chat' && (
         <ChatPage
-          onBack={() => setCurrentView('dashboard')}
+          onBack={navigateBack}
           onSubscriptionClick={() => navigateToView('subscription')}
         />
       )}
 
       {currentView === 'subscription' && (
-        <SubscriptionPage onBack={() => setCurrentView('dashboard')} />
+        <SubscriptionPage onBack={navigateBack} />
       )}
 
       {currentView === 'settings' && (
