@@ -305,6 +305,12 @@ export default function Home() {
       localStorage.setItem('hasCompletedAdditionalInfo', 'false');
       setAppState('ADDITIONAL_INFO');
     }
+
+    // Sync token to Flutter for Native features (Notifications, etc.)
+    if (user.token && (window as any).FlutterBridge && (window as any).FlutterBridge.setAuthToken) {
+      console.log('Syncing auth token to Flutter layer');
+      (window as any).FlutterBridge.setAuthToken(user.token);
+    }
   };
 
   const handleAdditionalInfoFinish = () => {

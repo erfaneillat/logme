@@ -26,13 +26,17 @@ class FCMService {
 
   /// Initialize FCM service
   Future<void> initialize(ApiService apiService) async {
+    // Always attempt to register/refresh token on initialize call
+    // This handles cases where user logs in/out or token needs update
+    await _registerToken(apiService);
+
     if (_initialized) {
-      print('ℹ️  FCM already initialized');
+      print('ℹ️  FCM already initialized (listeners active)');
       return;
     }
 
     try {
-      print('🔔 Initializing FCM service...');
+      print('🔔 Initializing FCM service listeners...');
 
       // Request notification permissions
       final settings = await _requestPermissions();
@@ -45,10 +49,8 @@ class FCMService {
       await _initializeLocalNotifications();
 
       // Set background message handler
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-      // Get and register FCM token
-      await _registerToken(apiService);
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
 
       // Listen for token refresh
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
@@ -71,7 +73,8 @@ class FCMService {
       // Check if app was opened from a terminated state
       final initialMessage = await _firebaseMessaging.getInitialMessage();
       if (initialMessage != null) {
-        print('📬 App opened from notification (terminated): ${initialMessage.messageId}');
+        print(
+            '📬 App opened from notification (terminated): ${initialMessage.messageId}');
         _handleNotificationTap(initialMessage);
       }
 
@@ -97,7 +100,8 @@ class FCMService {
 
   /// Initialize local notifications for displaying in-app
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -155,7 +159,8 @@ class FCMService {
   }
 
   /// Register token with backend server
-  Future<void> _registerTokenToServer(ApiService apiService, String token) async {
+  Future<void> _registerTokenToServer(
+      ApiService apiService, String token) async {
     try {
       final response = await apiService.post(
         '/api/fcm/register',

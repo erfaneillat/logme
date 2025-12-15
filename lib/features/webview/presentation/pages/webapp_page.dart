@@ -11,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
 import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:cal_ai/services/fcm_service.dart';
+import 'package:cal_ai/services/api_service_provider.dart';
 
 /// A page that displays the webapp in a WebView
 /// Supports: File uploads, Camera access, Payment redirects, External links, CafeBazaar payments
@@ -151,6 +153,9 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
               // Inject the auth token into the webapp if available
               if (token != null) {
                 _injectAuthToken(token);
+
+                // Initialize FCM service to restore notifications
+                _initFCM();
               }
 
               // Inject Flutter bridge for native features
@@ -414,6 +419,15 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
                   productKey: productKey
                 }));
               });
+            },
+            
+            // Called when user logs in successfully in WebApp
+            setAuthToken: function(token) {
+              console.log('FlutterBridge.setAuthToken called');
+              FlutterPayment.postMessage(JSON.stringify({
+                action: 'setAuthToken',
+                token: token
+              }));
             }
           };
           
@@ -493,6 +507,21 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
 
           await _sendPaymentResult(false, errorMessage, null);
         }
+      } else if (action == 'setAuthToken') {
+        final token = data['token'] as String?;
+        if (token != null) {
+          if (kDebugMode) {
+            print(
+                'Received auth token from WebApp: ${token.substring(0, 10)}...');
+          }
+
+          // Save token to secure storage
+          const storage = FlutterSecureStorage();
+          await storage.write(key: 'auth_token', value: token);
+
+          // Initialize FCM now that we have a token
+          await _initFCM();
+        }
       } else {
         if (kDebugMode) {
           print(
@@ -550,6 +579,21 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
     } catch (e) {
       if (kDebugMode) {
         print('Error sending payment result: $e');
+      }
+    }
+  }
+
+  /// Initializes FCM service for push notifications
+  Future<void> _initFCM() async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      await FCMService().initialize(apiService);
+      if (kDebugMode) {
+        print('FCM initialized from WebAppPage');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing FCM in WebAppPage: $e');
       }
     }
   }
