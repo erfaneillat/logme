@@ -6,6 +6,7 @@ import Image from 'next/image';
 interface HeaderProps {
     streakCount?: number;
     isSubscribed?: boolean;
+    isLoading?: boolean;
     onSubscriptionClick?: () => void;
     onStreakClick?: () => void;
 }
@@ -33,6 +34,7 @@ const toPersianNumbers = (num: number | string): string => {
 const Header: React.FC<HeaderProps> = ({
     streakCount = 0,
     isSubscribed = false,
+    isLoading = false,
     onSubscriptionClick,
     onStreakClick
 }) => {
@@ -75,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
                 {/* Left side - Crown and Streak */}
                 <div className="flex items-center gap-3">
                     {/* Crown Icon for non-subscribed users */}
-                    {!isSubscribed && (
+                    {!isSubscribed && !isLoading && (
                         <button
                             onClick={onSubscriptionClick}
                             className={`

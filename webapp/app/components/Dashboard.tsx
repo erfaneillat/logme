@@ -426,6 +426,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                 <Header
                     streakCount={userProfile?.streakCount || 0}
                     isSubscribed={isSubscribed}
+                    isLoading={isLoading}
                     onSubscriptionClick={onSubscriptionClick}
                     onStreakClick={handleStreakClick}
                 />
