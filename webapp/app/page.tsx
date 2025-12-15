@@ -93,12 +93,18 @@ export default function Home() {
 
   // Navigation history management
   const navigateToView = useCallback((view: ViewState) => {
-    if (view !== 'dashboard') {
-      // Push a new history state when navigating away from dashboard
+    if (view === currentView) return;
+
+    // Push a new history state
+    if (view === 'dashboard') {
+      // For dashboard, keep URL clean (remove hash) but keep search params (token etc)
+      window.history.pushState({ view }, '', window.location.pathname + window.location.search);
+    } else {
       window.history.pushState({ view }, '', `#${view}`);
     }
+
     setCurrentView(view);
-  }, []);
+  }, [currentView]);
 
   const openFoodDetail = useCallback((food: any) => {
     // Push new state with modal identifier
