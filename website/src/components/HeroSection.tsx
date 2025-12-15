@@ -88,7 +88,10 @@ const HeroSection: React.FC = () => {
                                 {/* Download Buttons */}
                                 <div className="space-y-3">
                                     {/* CafeBazaar Button */}
-                                    <motion.button
+                                    <motion.a
+                                        href="https://cafebazaar.ir/app/ir.loqmeapp.application"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="flex items-center space-x-reverse space-x-3 bg-gray-900/80 hover:bg-gray-800 text-white px-6 py-3 rounded-lg transition-all duration-300 border border-gray-700 hover:border-gray-600 backdrop-blur-sm"
                                         whileHover={{ scale: 1.05, y: -2 }}
                                         whileTap={{ scale: 0.95 }}
@@ -100,10 +103,13 @@ const HeroSection: React.FC = () => {
                                         <div className="text-right">
                                             <div className="text-sm font-semibold font-farsi">{t('hero.download.cafeBazaar')}</div>
                                         </div>
-                                    </motion.button>
+                                    </motion.a>
 
                                     {/* Web App Button */}
-                                    <motion.button
+                                    <motion.a
+                                        href="https://loqmeapp.ir/app"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="flex items-center space-x-reverse space-x-3 bg-blue-600/80 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-300 border border-blue-500 hover:border-blue-400 backdrop-blur-sm"
                                         whileHover={{ scale: 1.05, y: -2 }}
                                         whileTap={{ scale: 0.95 }}
@@ -117,7 +123,27 @@ const HeroSection: React.FC = () => {
                                         <div className="text-right">
                                             <div className="text-sm font-semibold font-farsi">{t('hero.download.webApp')}</div>
                                         </div>
-                                    </motion.button>
+                                    </motion.a>
+
+                                    {/* iOS Button */}
+                                    <motion.a
+                                        href="https://loqmeapp.ir/app"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center space-x-reverse space-x-3 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg transition-all duration-300 border border-white/20 hover:border-white/30 backdrop-blur-sm"
+                                        whileHover={{ scale: 1.05, y: -2 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        initial={{ opacity: 0, x: -30 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 1.4, duration: 0.4 }}
+                                    >
+                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.21-1.21 3.28-1.21 2.21.34 3.08 1.54 3.08 1.54-.15.44-2.61 1.8-2.61 5.56 0 3.76 3.19 5.39 3.19 5.39-.2.53-.42 1.07-.64 1.61-.14.39-.5.9-1.38.34zM12.94 5.28C12.44 2.89 15.22.95 17.5 0c.26 2.76-2.69 4.96-4.56 5.28z" />
+                                        </svg>
+                                        <div className="text-right">
+                                            <div className="text-sm font-semibold font-farsi">{t('hero.download.appStoreTitle')}</div>
+                                        </div>
+                                    </motion.a>
                                 </div>
                             </motion.div>
                         </ScrollAnimation>

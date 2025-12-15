@@ -35,6 +35,8 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: pkg.version,
   },
+  // @ts-ignore - Silence Turbopack warning
+  turbopack: {},
 };
 
 export default withPWA(nextConfig);
