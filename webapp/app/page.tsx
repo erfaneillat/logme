@@ -63,9 +63,32 @@ export default function Home() {
             } else {
               platform = 'android';
             }
-          }
 
-          await apiService.trackAppOpen(platform, process.env.NEXT_PUBLIC_APP_VERSION);
+            // Wait for FlutterBridge to be available (max 2 seconds)
+            let attempts = 0;
+            const maxAttempts = 20;
+
+            const checkBridge = () => {
+              // @ts-ignore
+              if (window.FlutterBridge) {
+                // @ts-ignore
+                const flutterVersion = window.FlutterBridge.version;
+                console.log('✅ Found FlutterBridge version:', flutterVersion);
+                apiService.trackAppOpen(platform, flutterVersion);
+              } else if (attempts < maxAttempts) {
+                attempts++;
+                setTimeout(checkBridge, 100);
+              } else {
+                console.warn('⚠️ FlutterBridge not found after timeout, using web version');
+                apiService.trackAppOpen(platform, process.env.NEXT_PUBLIC_APP_VERSION);
+              }
+            };
+
+            checkBridge();
+          } else {
+            // Web platform
+            await apiService.trackAppOpen(platform, process.env.NEXT_PUBLIC_APP_VERSION);
+          }
         }
       };
 
