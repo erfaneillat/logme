@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Dashboard from './components/Dashboard';
 import AnalysisPage from './components/AnalysisPage';
 import AddFoodModal from './components/AddFoodModal';
@@ -79,6 +79,18 @@ export default function Home() {
   // State for dashboard refresh
   const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
 
+  // Refs for State (to use in stable event listeners)
+  const stateRef = useRef({
+    currentView,
+    selectedFood,
+    isModalOpen,
+    isExerciseModalOpen
+  });
+
+  useEffect(() => {
+    stateRef.current = { currentView, selectedFood, isModalOpen, isExerciseModalOpen };
+  }, [currentView, selectedFood, isModalOpen, isExerciseModalOpen]);
+
   // Navigation history management
   const navigateToView = useCallback((view: ViewState) => {
     if (view !== 'dashboard') {
@@ -105,13 +117,10 @@ export default function Home() {
   }, [currentView]);
 
   const closeFoodDetail = useCallback(() => {
-    // Go back in history to close (triggers popstate)
     window.history.back();
   }, []);
 
   const navigateBack = useCallback(() => {
-    // Go back in history (pops the state pushed by navigateToView)
-    // This triggers popstate event which updates currentView
     window.history.back();
   }, []);
 
@@ -119,10 +128,16 @@ export default function Home() {
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       const state = event.state || {};
+      const { currentView, selectedFood, isModalOpen, isExerciseModalOpen } = stateRef.current;
+
+      console.log('🔙 PopState Event:', { state, currentRefs: stateRef.current });
 
       // Handle View Navigation
       if (state.view) {
-        setCurrentView(state.view);
+        // Only update if different to prevent loops
+        if (state.view !== currentView) {
+          setCurrentView(state.view);
+        }
       } else {
         // If no state (at dashboard root), ensure we are at dashboard
         if (currentView !== 'dashboard') {
@@ -131,7 +146,9 @@ export default function Home() {
           // If we are already at dashboard and no state, force a state to prevent exit loop
           // only if we are truly at start
           if (!selectedFood && !state.modal && !isModalOpen && !isExerciseModalOpen) {
-            window.history.pushState({ view: 'dashboard' }, '', '#dashboard');
+            // We don't push state here blindly as it might fight with normal history
+            // Just ensure we stay.
+            window.history.replaceState({ view: 'dashboard' }, '', '#dashboard');
           }
         }
       }
@@ -169,7 +186,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [currentView, selectedFood, isModalOpen, isExerciseModalOpen]);
+  }, []); // Run ONCE to bind listener
 
 
 
