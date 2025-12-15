@@ -66,61 +66,68 @@ const ProfileSkeleton = () => (
     </div>
 );
 
-// Subscription card skeleton
+// Subscription card skeleton - keeps purple design, shimmer on text/data only
 const SubscriptionSkeleton = () => (
-    <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-[32px] p-6 shadow-sm relative overflow-hidden h-full">
-        {/* Abstract shapes for visual interest */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/40 rounded-full blur-3xl -mr-10 -mt-10"></div>
+    <div className="bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] rounded-[32px] p-6 text-white shadow-lg shadow-purple-200 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
         {/* Header Section */}
         <div className="flex justify-between items-start mb-6 relative z-10">
             <div className="flex items-start gap-3">
-                {/* Icon Skeleton */}
-                <div className="w-12 h-12 rounded-2xl bg-white/50 relative overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                {/* Icon - static */}
+                <div className="bg-white/20 p-2 rounded-xl border border-white/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
                 </div>
-                {/* Text Skeleton */}
-                <div className="space-y-2 pt-1">
-                    <div className="h-5 w-24 bg-white/50 rounded-lg relative overflow-hidden">
+                {/* Title & Subtitle - shimmer */}
+                <div className="text-right space-y-2 pt-1">
+                    <div className="h-5 w-24 bg-white/30 rounded-lg relative overflow-hidden">
                         <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                     </div>
-                    <div className="h-3 w-32 bg-white/40 rounded-md relative overflow-hidden">
+                    <div className="h-3 w-16 bg-white/20 rounded-md relative overflow-hidden">
                         <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                     </div>
                 </div>
             </div>
-            {/* Status Badge Skeleton */}
-            <div className="w-16 h-7 rounded-full bg-white/50 relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+
+            {/* Status Badge - shimmer */}
+            <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/10">
+                <span className="w-2 h-2 rounded-full bg-white/30 animate-pulse"></span>
+                <div className="h-3 w-8 bg-white/30 rounded relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                </div>
             </div>
         </div>
 
-        {/* Bottom Details Card Skeleton */}
-        <div className="bg-white/40 rounded-[20px] p-4 mb-4 relative z-10 box-border">
-            {/* Date Row */}
-            <div className="flex justify-between items-center mb-3">
-                <div className="h-4 w-20 bg-white/50 rounded-md relative overflow-hidden">
+        {/* Bottom Details Card */}
+        <div className="bg-white/10 rounded-[20px] p-4 mb-4 backdrop-blur-sm border border-white/5 relative z-10">
+            {/* Date Row - shimmer */}
+            <div className="flex justify-between text-sm font-bold text-purple-100 mb-2">
+                <div className="h-4 w-20 bg-white/20 rounded-md relative overflow-hidden">
                     <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                 </div>
-                <div className="h-4 w-20 bg-white/50 rounded-md relative overflow-hidden">
+                <div className="h-4 w-24 bg-white/20 rounded-md relative overflow-hidden">
                     <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                 </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="w-full h-2 bg-white/30 rounded-full overflow-hidden mb-3 relative">
-                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+            {/* Progress Bar - shimmer */}
+            <div className="w-full bg-black/20 h-2 rounded-full overflow-hidden mb-2 relative" dir="ltr">
+                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             </div>
 
-            {/* Bottom Text */}
+            {/* Status Text - shimmer */}
             <div className="flex justify-center mt-1">
-                <div className="h-3 w-28 bg-white/50 rounded-md relative overflow-hidden">
+                <div className="h-3 w-24 bg-white/20 rounded-md relative overflow-hidden">
                     <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                 </div>
             </div>
         </div>
     </div>
 );
+
 
 type SettingView = 'main' | 'personal_details' | 'adjust_macros' | 'weight_history' | 'tickets';
 

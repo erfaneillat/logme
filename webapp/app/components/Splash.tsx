@@ -14,7 +14,7 @@ interface VersionInfo {
 
 export default function Splash({ onFinish }: SplashProps) {
     const [isUpdating, setIsUpdating] = useState(false);
-    const [updateProgress, setUpdateProgress] = useState(0);
+    const [updateStatus, setUpdateStatus] = useState<'checking' | 'clearing' | 'reloading'>('checking');
 
     useEffect(() => {
         const checkVersionAndProceed = async () => {
@@ -38,27 +38,19 @@ export default function Splash({ onFinish }: SplashProps) {
                     if (cachedVersion && cachedVersion !== serverVersion.buildHash) {
                         console.log('[Version Check] New version detected! Updating...');
                         setIsUpdating(true);
-
-                        // Animate progress
-                        let progress = 0;
-                        const progressInterval = setInterval(() => {
-                            progress += Math.random() * 15;
-                            if (progress > 90) progress = 90;
-                            setUpdateProgress(progress);
-                        }, 200);
+                        setUpdateStatus('clearing');
 
                         // Clear caches and reload
                         await clearCachesAndUpdate();
 
-                        clearInterval(progressInterval);
-                        setUpdateProgress(100);
+                        setUpdateStatus('reloading');
 
                         // Store new version
                         localStorage.setItem('app_version_hash', serverVersion.buildHash);
                         localStorage.setItem('app_version', serverVersion.version);
 
-                        // Brief delay to show 100% before reload
-                        await new Promise(resolve => setTimeout(resolve, 300));
+                        // Brief delay before reload
+                        await new Promise(resolve => setTimeout(resolve, 500));
 
                         // Force reload to get fresh assets
                         window.location.reload();
@@ -106,6 +98,17 @@ export default function Splash({ onFinish }: SplashProps) {
             await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
             console.error('[Update] Error clearing caches:', error);
+        }
+    };
+
+    const getStatusText = () => {
+        switch (updateStatus) {
+            case 'clearing':
+                return 'در حال پاکسازی حافظه...';
+            case 'reloading':
+                return 'در حال بارگذاری نسخه جدید...';
+            default:
+                return 'در حال بررسی بروزرسانی...';
         }
     };
 
@@ -167,13 +170,19 @@ export default function Splash({ onFinish }: SplashProps) {
                             exit={{ opacity: 0, y: -10 }}
                             className="mt-8 flex flex-col items-center"
                         >
-                            {/* Progress Bar Container */}
-                            <div className="w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            {/* Indeterminate Progress Bar */}
+                            <div className="w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden relative">
                                 <motion.div
-                                    className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${updateProgress}%` }}
-                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="absolute h-full w-1/3 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-400 rounded-full"
+                                    animate={{
+                                        x: ['-100%', '250%'],
+                                    }}
+                                    transition={{
+                                        duration: 1.2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                    }}
+                                    style={{ width: '40%' }}
                                 />
                             </div>
 
@@ -207,16 +216,15 @@ export default function Splash({ onFinish }: SplashProps) {
                                         />
                                     </svg>
                                 </motion.span>
-                                در حال بروزرسانی...
+                                <motion.span
+                                    key={updateStatus}
+                                    initial={{ opacity: 0, y: 5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    {getStatusText()}
+                                </motion.span>
                             </motion.p>
-
-                            {/* Progress Percentage */}
-                            <motion.span
-                                className="mt-1 text-xs text-gray-400"
-                                key={Math.floor(updateProgress)}
-                            >
-                                {Math.floor(updateProgress)}%
-                            </motion.span>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -224,3 +232,4 @@ export default function Splash({ onFinish }: SplashProps) {
         </div>
     );
 }
+
