@@ -1,19 +1,113 @@
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
 interface SplashProps {
     onFinish: () => void;
 }
 
-export default function Splash({ onFinish }: SplashProps) {
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            onFinish();
-        }, 2500);
+interface VersionInfo {
+    version: string;
+    buildTime: string;
+    buildHash: string;
+}
 
-        return () => clearTimeout(timer);
+export default function Splash({ onFinish }: SplashProps) {
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [updateProgress, setUpdateProgress] = useState(0);
+
+    useEffect(() => {
+        const checkVersionAndProceed = async () => {
+            try {
+                // Fetch version.json with cache-busting to always get the latest
+                const response = await fetch(`/app/version.json?t=${Date.now()}`, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+
+                if (response.ok) {
+                    const serverVersion: VersionInfo = await response.json();
+                    const cachedVersion = localStorage.getItem('app_version_hash');
+
+                    console.log('[Version Check] Server:', serverVersion.buildHash, 'Cached:', cachedVersion);
+
+                    // Check if there's a new version
+                    if (cachedVersion && cachedVersion !== serverVersion.buildHash) {
+                        console.log('[Version Check] New version detected! Updating...');
+                        setIsUpdating(true);
+
+                        // Animate progress
+                        let progress = 0;
+                        const progressInterval = setInterval(() => {
+                            progress += Math.random() * 15;
+                            if (progress > 90) progress = 90;
+                            setUpdateProgress(progress);
+                        }, 200);
+
+                        // Clear caches and reload
+                        await clearCachesAndUpdate();
+
+                        clearInterval(progressInterval);
+                        setUpdateProgress(100);
+
+                        // Store new version
+                        localStorage.setItem('app_version_hash', serverVersion.buildHash);
+                        localStorage.setItem('app_version', serverVersion.version);
+
+                        // Brief delay to show 100% before reload
+                        await new Promise(resolve => setTimeout(resolve, 300));
+
+                        // Force reload to get fresh assets
+                        window.location.reload();
+                        return;
+                    }
+
+                    // Store current version (first time or same version)
+                    localStorage.setItem('app_version_hash', serverVersion.buildHash);
+                    localStorage.setItem('app_version', serverVersion.version);
+                }
+            } catch (error) {
+                console.error('[Version Check] Error:', error);
+                // Continue with splash even if version check fails
+            }
+
+            // Normal splash timeout
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            onFinish();
+        };
+
+        checkVersionAndProceed();
     }, [onFinish]);
+
+    const clearCachesAndUpdate = async (): Promise<void> => {
+        try {
+            // 1. Clear Service Worker caches
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                console.log('[Update] Clearing caches:', cacheNames);
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+            }
+
+            // 2. Unregister and re-register service worker
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const registration of registrations) {
+                    console.log('[Update] Unregistering service worker:', registration.scope);
+                    await registration.unregister();
+                }
+            }
+
+            // Small delay to ensure everything is cleared
+            await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (error) {
+            console.error('[Update] Error clearing caches:', error);
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
@@ -63,6 +157,69 @@ export default function Splash({ onFinish }: SplashProps) {
                 >
                     لقمه
                 </motion.h1>
+
+                {/* Update Status */}
+                <AnimatePresence>
+                    {isUpdating && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="mt-8 flex flex-col items-center"
+                        >
+                            {/* Progress Bar Container */}
+                            <div className="w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <motion.div
+                                    className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${updateProgress}%` }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                />
+                            </div>
+
+                            {/* Update Text */}
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="mt-3 text-sm text-gray-500 flex items-center gap-2"
+                            >
+                                <motion.span
+                                    animate={{ rotate: 360 }}
+                                    transition={{
+                                        duration: 1,
+                                        repeat: Infinity,
+                                        ease: "linear"
+                                    }}
+                                    className="inline-block"
+                                >
+                                    <svg
+                                        className="w-4 h-4 text-orange-500"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                        />
+                                    </svg>
+                                </motion.span>
+                                در حال بروزرسانی...
+                            </motion.p>
+
+                            {/* Progress Percentage */}
+                            <motion.span
+                                className="mt-1 text-xs text-gray-400"
+                                key={Math.floor(updateProgress)}
+                            >
+                                {Math.floor(updateProgress)}%
+                            </motion.span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </motion.div>
         </div>
     );
