@@ -448,7 +448,7 @@ export default function Home() {
         <Dashboard
           setIsModalOpen={(isOpen) => isOpen ? openAddFoodModal() : window.history.back()}
           setIsExerciseModalOpen={(isOpen) => isOpen ? openAddExerciseModal() : window.history.back()}
-          onFoodClick={setSelectedFood}
+          onFoodClick={openFoodDetail}
           refreshTrigger={dashboardRefreshTrigger}
           pendingAnalyses={pendingAnalyses}
           onSubscriptionClick={() => navigateToView('subscription')}
