@@ -15,7 +15,7 @@ export class AdminLogsController {
 
             // Build query
             const query: any = {};
-            
+
             // Filter by type
             if (type === 'image') {
                 query['items.imageUrl'] = { $exists: true, $ne: null };
@@ -47,6 +47,7 @@ export class AdminLogsController {
                         date: log.date,
                         type: item.imageUrl ? 'image' : 'text',
                         imageUrl: item.imageUrl,
+                        description: item.description,
                         title: item.title,
                         calories: item.calories,
                         carbsGrams: item.carbsGrams,
@@ -94,7 +95,7 @@ export class AdminLogsController {
         try {
             // Get total counts
             const totalLogs = await DailyLog.countDocuments();
-            
+
             // Count items with images vs text
             const logsWithImages = await DailyLog.aggregate([
                 { $unwind: '$items' },
@@ -196,6 +197,7 @@ export class AdminLogsController {
                         date: log.date,
                         type: item.imageUrl ? 'image' : 'text',
                         imageUrl: item.imageUrl,
+                        description: item.description,
                         title: item.title,
                         calories: item.calories,
                         carbsGrams: item.carbsGrams,
@@ -265,6 +267,7 @@ export class AdminLogsController {
                         date: log.date,
                         type: item.imageUrl ? 'image' : 'text',
                         imageUrl: item.imageUrl,
+                        description: item.description,
                         title: item.title,
                         calories: item.calories,
                         carbsGrams: item.carbsGrams,

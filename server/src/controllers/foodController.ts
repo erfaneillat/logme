@@ -212,6 +212,7 @@ export class FoodController {
                             healthScore: Math.max(0, Math.min(10, Math.round(result.healthScore || 0))),
                             timeIso,
                             imageUrl,
+                            description: description || undefined,
                             ingredients: result.ingredients?.map((ing: any) => ({
                                 name: ing.name,
                                 calories: Math.round(ing.calories || 0),

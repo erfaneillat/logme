@@ -18,6 +18,7 @@ export interface ILogItem {
     healthScore?: number;
     timeIso: string; // ISO timestamp of when item was added
     imageUrl?: string; // optional image URL or data URI
+    description?: string; // optional user-provided description for better analysis
     ingredients?: IIngredient[]; // detailed ingredients breakdown
     liked?: boolean; // whether user liked this item
 }
@@ -45,6 +46,7 @@ const logItemSchema = new Schema<ILogItem>({
     healthScore: { type: Number, required: false, min: 0, max: 10 },
     timeIso: { type: String, required: true },
     imageUrl: { type: String },
+    description: { type: String },
     ingredients: [{
         name: { type: String, required: true },
         calories: { type: Number, required: true },

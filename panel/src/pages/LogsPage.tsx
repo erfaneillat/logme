@@ -164,8 +164,8 @@ const LogsPage = () => {
                             <button
                                 onClick={() => { setFilterType('all'); setPage(1); }}
                                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterType === 'all'
-                                        ? 'bg-black text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-black text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 All
@@ -173,8 +173,8 @@ const LogsPage = () => {
                             <button
                                 onClick={() => { setFilterType('image'); setPage(1); }}
                                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterType === 'image'
-                                        ? 'bg-black text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-black text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 Images
@@ -182,8 +182,8 @@ const LogsPage = () => {
                             <button
                                 onClick={() => { setFilterType('text'); setPage(1); }}
                                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${filterType === 'text'
-                                        ? 'bg-black text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-black text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 Text
@@ -356,6 +356,20 @@ const LogsPage = () => {
                                         alt={selectedLog.title}
                                         className="w-full"
                                     />
+                                </div>
+                            )}
+
+                            {selectedLog.description && (
+                                <div className="mb-6">
+                                    <h3 className="mb-2 text-sm font-semibold text-gray-600">User's Description</h3>
+                                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                                        <div className="flex items-start gap-2">
+                                            <svg className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <p className="text-sm text-gray-700 leading-relaxed">{selectedLog.description}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 

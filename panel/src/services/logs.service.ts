@@ -9,6 +9,7 @@ export interface LogItem {
     date: string;
     type: 'image' | 'text';
     imageUrl?: string;
+    description?: string;
     title: string;
     calories: number;
     carbsGrams: number;
@@ -84,7 +85,7 @@ class LogsService {
                 page: page.toString(),
                 limit: limit.toString(),
             });
-            
+
             if (type) {
                 params.append('type', type);
             }
