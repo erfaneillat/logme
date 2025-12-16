@@ -412,20 +412,20 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                 {/* Quick Actions Grid */}
                 <div className={`space-y-4 transition-all duration-700 delay-200 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                     <h3 className="font-black text-xl text-gray-800 px-1">اقدامات سریع</h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3" dir="rtl">
                         <button
                             onClick={() => setCurrentView('personal_details')}
                             className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md active:scale-95 transition-all flex flex-col items-center text-center group"
                         >
-                            <div className="w-full flex justify-between items-start mb-2">
-                                <span className="text-gray-300 transform group-hover:translate-x-1 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="w-full flex justify-start items-center gap-2 mb-3">
+                                <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl">
+                                    👤
+                                </div>
+                                <span className="text-gray-300 transform group-hover:-translate-x-1 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </span>
-                                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
-                                    👤
-                                </div>
                             </div>
                             <span className="font-bold text-gray-800 text-sm mb-1">اطلاعات شخصی</span>
                             <span className="text-[10px] text-gray-400 font-medium">پروفایل و جزئیات</span>
@@ -435,15 +435,15 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                             onClick={() => setCurrentView('adjust_macros')}
                             className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md active:scale-95 transition-all flex flex-col items-center text-center group"
                         >
-                            <div className="w-full flex justify-between items-start mb-2">
-                                <span className="text-gray-300 transform group-hover:translate-x-1 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="w-full flex justify-start items-center gap-2 mb-3">
+                                <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl">
+                                    🍽️
+                                </div>
+                                <span className="text-gray-300 transform group-hover:-translate-x-1 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </span>
-                                <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-lg">
-                                    🍽️
-                                </div>
                             </div>
                             <span className="font-bold text-gray-800 text-sm mb-1">تنظیم ماکروها</span>
                             <span className="text-[10px] text-gray-400 font-medium">اهداف تغذیه‌ای</span>
@@ -453,15 +453,15 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                             onClick={() => setCurrentView('personal_details')} // Reusing for now
                             className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md active:scale-95 transition-all flex flex-col items-center text-center group"
                         >
-                            <div className="w-full flex justify-between items-start mb-2">
-                                <span className="text-gray-300 transform group-hover:translate-x-1 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="w-full flex justify-start items-center gap-2 mb-3">
+                                <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-xl">
+                                    🚩
+                                </div>
+                                <span className="text-gray-300 transform group-hover:-translate-x-1 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </span>
-                                <div className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg">
-                                    🚩
-                                </div>
                             </div>
                             <span className="font-bold text-gray-800 text-sm mb-1">هدف و وزن فعلی</span>
                             <span className="text-[10px] text-gray-400 font-medium">ردیابی پیشرفت</span>
@@ -471,15 +471,15 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                             onClick={() => setCurrentView('weight_history')}
                             className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md active:scale-95 transition-all flex flex-col items-center text-center group"
                         >
-                            <div className="w-full flex justify-between items-start mb-2">
-                                <span className="text-gray-300 transform group-hover:translate-x-1 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="w-full flex justify-start items-center gap-2 mb-3">
+                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                                    📉
+                                </div>
+                                <span className="text-gray-300 transform group-hover:-translate-x-1 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </span>
-                                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-                                    📉
-                                </div>
                             </div>
                             <span className="font-bold text-gray-800 text-sm mb-1">تاریخچه وزن</span>
                             <span className="text-[10px] text-gray-400 font-medium">مشاهده روندها</span>
