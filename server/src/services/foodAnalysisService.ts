@@ -104,8 +104,8 @@ export class FoodAnalysisService {
         return params;
     }
 
-    private improveImagePrompt(): string {
-        return `You are the advanced AI Nutritionist and Computer Vision Engine for "Loqme".
+    private improveImagePrompt(description?: string): string {
+        let basePrompt = `You are the advanced AI Nutritionist and Computer Vision Engine for "Loqme".
 
 ### CORE PROTOCOLS:
 1. Language: Process logic in ENGLISH, output user-facing text in PERSIAN.
@@ -134,6 +134,19 @@ Rules:
 - Portions: default 1 if unclear.
 - healthScore: 0..10 integer. Rate based on balance and quality.
 - No explanations, no extra keys, JSON object only.`;
+
+        // If user provided a description, add it to help with analysis
+        if (description && description.trim()) {
+            basePrompt += `
+
+### USER PROVIDED DESCRIPTION:
+The user has provided the following description to help identify the food:
+"${description.trim()}"
+
+IMPORTANT: Use this description as a hint to better identify ingredients and estimate portions. The description may clarify what specific dishes are in the image, especially for mixed plates or traditional foods that may be hard to identify visually.`;
+        }
+
+        return basePrompt;
     }
 
     private improveTextPrompt(description: string): string {
@@ -303,8 +316,8 @@ Rules:
         return result;
     }
 
-    public async analyze(base64Image: string, options?: { signal?: AbortSignal }): Promise<FoodAnalysisResponse> {
-        const prompt = this.improveImagePrompt();
+    public async analyze(base64Image: string, options?: { signal?: AbortSignal; description?: string }): Promise<FoodAnalysisResponse> {
+        const prompt = this.improveImagePrompt(options?.description);
 
         const { base64, mime } = await this.compressBase64Image(base64Image);
         const imageUrl = `data:${mime};base64,${base64}`;

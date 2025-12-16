@@ -128,9 +128,16 @@ export class FoodController {
         }
         const base64 = fileBuffer.toString('base64');
 
+        // Extract optional description from form data
+        const description = (req.body as any)?.description as string | undefined;
+
         let analysis: any;
         try {
-            analysis = await this.service.analyze(base64, { signal: ac.signal });
+            const options: { signal: AbortSignal; description?: string } = { signal: ac.signal };
+            if (description) {
+                options.description = description;
+            }
+            analysis = await this.service.analyze(base64, options);
         } catch (err: any) {
             // Abort triggered or other error before persistence
             if (aborted || err?.name === 'AbortError') {

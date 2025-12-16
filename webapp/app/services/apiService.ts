@@ -702,7 +702,7 @@ export const apiService = {
     },
 
     // Food Analysis APIs (matching Flutter implementation)
-    analyzeFoodImage: async (imageFile: File, date?: string): Promise<FoodAnalysisResponse> => {
+    analyzeFoodImage: async (imageFile: File, date?: string, description?: string): Promise<FoodAnalysisResponse> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
@@ -711,6 +711,9 @@ export const apiService = {
             formData.append('image', imageFile);
             if (date) {
                 formData.append('date', date);
+            }
+            if (description && description.trim()) {
+                formData.append('description', description.trim());
             }
 
             const response = await fetch(`${getBaseUrl()}/api/food/analyze`, {

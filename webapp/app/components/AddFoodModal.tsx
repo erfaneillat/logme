@@ -8,7 +8,7 @@ interface AddFoodModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAddFood: (food: FoodAnalysisResponse, image?: string) => void;
-    onStartAnalysis?: (imageFile: File | null, textInput: string | null, previewImage: string | null) => Promise<void>;
+    onStartAnalysis?: (imageFile: File | null, textInput: string | null, previewImage: string | null, imageDescription?: string) => Promise<void>;
 }
 
 type ModalView = 'menu' | 'preview' | 'text' | 'analyzing' | 'result' | 'favorites';
@@ -24,6 +24,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
     const [image, setImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [textInput, setTextInput] = useState('');
+    const [imageDescription, setImageDescription] = useState('');
     const [analysis, setAnalysis] = useState<FoodAnalysisResponse | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +40,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
         setImage(null);
         setImageFile(null);
         setTextInput('');
+        setImageDescription('');
         setAnalysis(null);
         setView('menu');
         onClose();
@@ -62,7 +64,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
     const handleAnalyze = async () => {
         if (onStartAnalysis) {
             // Background analysis flow
-            onStartAnalysis(imageFile, textInput, image);
+            onStartAnalysis(imageFile, textInput, image, imageDescription || undefined);
             resetAndClose();
             return;
         }
@@ -77,7 +79,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
 
             if (imageFile) {
                 // Use backend API for image analysis (like Flutter does)
-                result = await apiService.analyzeFoodImage(imageFile, dateStr);
+                result = await apiService.analyzeFoodImage(imageFile, dateStr, imageDescription || undefined);
             } else if (textInput) {
                 // Use backend API for text analysis (like Flutter does)
                 result = await apiService.analyzeFoodText(textInput, dateStr);
@@ -329,12 +331,12 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
     );
 
     const renderPreview = () => (
-        <div className="space-y-6 animate-slide-up">
+        <div className="space-y-5 animate-slide-up">
             <h2 className="text-xl font-bold text-gray-800 text-center">تایید تصویر</h2>
-            <div className="relative h-72 w-full rounded-[32px] overflow-hidden bg-gray-900 shadow-xl shadow-gray-200">
+            <div className="relative h-56 w-full rounded-[32px] overflow-hidden bg-gray-900 shadow-xl shadow-gray-200">
                 <img src={image!} alt="Preview" className="w-full h-full object-cover" />
                 <button
-                    onClick={() => { setImage(null); setView('menu'); }}
+                    onClick={() => { setImage(null); setImageDescription(''); setView('menu'); }}
                     className="absolute top-4 left-4 bg-black/40 hover:bg-black/60 backdrop-blur-md text-white p-2.5 rounded-full transition-all active:scale-90"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -342,6 +344,26 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                     </svg>
                 </button>
             </div>
+
+            {/* Optional Description Field */}
+            <div className="bg-gray-50 rounded-[20px] p-4 border border-gray-100">
+                <div className="flex items-center gap-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm font-bold text-gray-700">توضیحات (اختیاری)</span>
+                </div>
+                <textarea
+                    value={imageDescription}
+                    onChange={(e) => setImageDescription(e.target.value)}
+                    placeholder="مثال: این غذا مخلوط چلو خورشت قیمه با برنج و سالاد است..."
+                    className="w-full bg-white border border-gray-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none text-gray-800 text-right rounded-xl p-3 min-h-[80px] resize-none placeholder-gray-400 text-sm leading-relaxed transition-all"
+                />
+                <p className="text-xs text-gray-400 mt-2 text-right">
+                    💡 اگر غذا مخلوط یا ترکیبی است، توضیح دادن کمک می‌کند تا تحلیل دقیق‌تری داشته باشید
+                </p>
+            </div>
+
             <button
                 onClick={handleAnalyze}
                 className="w-full py-5 bg-gray-900 text-white rounded-[20px] font-bold text-lg shadow-xl shadow-gray-300 hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2"

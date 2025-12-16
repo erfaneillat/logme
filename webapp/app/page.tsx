@@ -402,7 +402,7 @@ export default function Home() {
     startTime: number;
   }[]>([]);
 
-  const handleStartAnalysis = async (imageFile: File | null, textInput: string | null, previewImage: string | null) => {
+  const handleStartAnalysis = async (imageFile: File | null, textInput: string | null, previewImage: string | null, imageDescription?: string) => {
     const tempId = Date.now().toString();
 
     // 1. Add to pending list
@@ -420,7 +420,7 @@ export default function Home() {
 
       // A. Analyze (Backend automatically adds the item)
       if (imageFile) {
-        await apiService.analyzeFoodImage(imageFile, dateStr);
+        await apiService.analyzeFoodImage(imageFile, dateStr, imageDescription);
       } else if (textInput) {
         await apiService.analyzeFoodText(textInput, dateStr);
       } else {
