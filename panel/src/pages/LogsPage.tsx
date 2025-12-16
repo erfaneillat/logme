@@ -2,7 +2,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { useEffect, useState } from 'react';
 import { logsService, LogItem, LogStats } from '../services/logs.service';
-import { formatJalaliDateTime } from '../utils/date';
+import { formatJalaliDateTime, formatJalaliShortDate } from '../utils/date';
 
 const LogsPage = () => {
     const { token } = useAuth();
@@ -423,7 +423,7 @@ const LogsPage = () => {
                                     <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                                         <p className="text-sm text-gray-600">Name: <span className="font-semibold text-black">{selectedLog.userName || 'N/A'}</span></p>
                                         <p className="text-sm text-gray-600">Phone: <span className="font-semibold text-black">{selectedLog.userPhone}</span></p>
-                                        <p className="text-sm text-gray-600">Date: <span className="font-semibold text-black">{selectedLog.date}</span></p>
+                                        <p className="text-sm text-gray-600">Date: <span className="font-semibold text-black">{formatJalaliShortDate(selectedLog.date)}</span></p>
                                         <p className="text-sm text-gray-600">Time: <span className="font-semibold text-black">{formatDate(selectedLog.timeIso)}</span></p>
                                     </div>
                                 </div>

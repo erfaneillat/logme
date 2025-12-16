@@ -21,3 +21,12 @@ export function formatJalaliTime(date: Date | string | number, options?: Intl.Da
 export function formatJalaliDateTime(date: Date | string | number, optionsDate?: Intl.DateTimeFormatOptions, optionsTime?: Intl.DateTimeFormatOptions) {
   return `${formatJalaliDate(date, optionsDate)}، ${formatJalaliTime(date, optionsTime)}`;
 }
+
+export function formatJalaliShortDate(date: Date | string | number) {
+  const d = new Date(date);
+  return d.toLocaleDateString('fa-IR-u-ca-persian', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
