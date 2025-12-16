@@ -198,6 +198,10 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
 
+    // Preferences State
+    const [preferences, setPreferences] = useState({ addBurnedCalories: true, rolloverCalories: true });
+    const [rolloverCaloriesAmount, setRolloverCaloriesAmount] = useState(0);
+
     // Streak Modal State
     const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
     const [streakCompletions, setStreakCompletions] = useState<string[]>([]);
@@ -226,19 +230,39 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
         try {
             const dateStr = formatDate(selectedDate);
 
-            // Fetch all data in parallel
-            const [logData, planData, profileData, subStatus, offers] = await Promise.all([
+            // Calculate yesterday's date for rollover
+            const yesterday = new Date(selectedDate);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = formatDate(yesterday);
+
+            // Fetch all data in parallel (including preferences and yesterday's log)
+            const [logData, planData, profileData, subStatus, offers, prefs, yesterdayLog] = await Promise.all([
                 apiService.getDailyLog(dateStr),
                 apiService.getLatestPlan(),
                 apiService.getUserProfile(),
                 apiService.getSubscriptionStatus(),
                 apiService.getActiveOffers(),
+                apiService.getPreferences(),
+                apiService.getDailyLog(yesterdayStr),
             ]);
 
             setDailyLog(logData);
             setPlan(planData);
             setUserProfile(profileData);
             setIsSubscribed(subStatus?.isActive || false);
+            setPreferences(prefs);
+
+            // Calculate rollover calories from yesterday (max 200)
+            if (prefs.rolloverCalories && yesterdayLog && planData) {
+                const yesterdayGoal = planData.calories || 0;
+                const yesterdayConsumed = yesterdayLog.caloriesConsumed || 0;
+                const remaining = yesterdayGoal - yesterdayConsumed;
+                // Only rollover positive remaining calories, max 200
+                const rollover = Math.min(200, Math.max(0, remaining));
+                setRolloverCaloriesAmount(rollover);
+            } else {
+                setRolloverCaloriesAmount(0);
+            }
 
             // Set highest priority offer (first one)
             if (offers && offers.length > 0) {
@@ -280,8 +304,29 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
         return dayNames[dayOfWeek];
     };
 
-    // Calculate remaining values
-    const goals = plan || { calories: 2200, proteinGrams: 150, carbsGrams: 250, fatsGrams: 70 };
+    // Calculate remaining values with preferences applied
+    const basePlan = plan || { calories: 2200, proteinGrams: 150, carbsGrams: 250, fatsGrams: 70 };
+
+    // Calculate adjusted calorie goal based on preferences
+    let adjustedCalorieGoal = basePlan.calories;
+    const burnedCalories = dailyLog?.burnedCalories || 0;
+
+    // Add burned calories to daily goal if preference is enabled
+    if (preferences.addBurnedCalories && burnedCalories > 0) {
+        adjustedCalorieGoal += burnedCalories;
+    }
+
+    // Add rollover calories from yesterday if preference is enabled
+    if (preferences.rolloverCalories && rolloverCaloriesAmount > 0) {
+        adjustedCalorieGoal += rolloverCaloriesAmount;
+    }
+
+    const goals = {
+        ...basePlan,
+        calories: adjustedCalorieGoal,
+        baseCalories: basePlan.calories // Keep original for reference
+    };
+
     const consumed = dailyLog ? {
         calories: dailyLog.caloriesConsumed,
         protein: dailyLog.proteinGrams,
@@ -289,8 +334,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
         fat: dailyLog.fatsGrams,
     } : { calories: 0, protein: 0, carbs: 0, fat: 0 };
 
-    const caloriesRemaining = Math.max(0, goals.calories - consumed.calories);
-    const percentConsumed = goals.calories > 0 ? Math.round((consumed.calories / goals.calories) * 100) : 0;
+    const caloriesRemaining = Math.max(0, adjustedCalorieGoal - consumed.calories);
+    const percentConsumed = adjustedCalorieGoal > 0 ? Math.round((consumed.calories / adjustedCalorieGoal) * 100) : 0;
 
     // Format food items from API
     const foods = dailyLog?.items?.map((item: DailyLogItem) => ({
@@ -522,6 +567,15 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         </svg>
                                         <span>ورزش</span>
                                     </button>
+                                )}
+                                {/* Rollover calories indicator */}
+                                {preferences.rolloverCalories && rolloverCaloriesAmount > 0 && (
+                                    <div className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 text-xs font-bold border border-blue-200 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>+{toPersianNumbers(rolloverCaloriesAmount)} از دیروز</span>
+                                    </div>
                                 )}
                             </div>
                         </div>
