@@ -122,6 +122,9 @@ export default function Home() {
     if (view === 'dashboard') {
       // For dashboard, keep URL clean (remove hash) but keep search params (token etc)
       window.history.pushState({ view }, '', window.location.pathname + window.location.search);
+      // Trigger dashboard refresh when navigating back to dashboard
+      // This ensures any settings changes (like preferences) are reflected
+      setDashboardRefreshTrigger(prev => prev + 1);
     } else {
       window.history.pushState({ view }, '', `#${view}`);
     }
@@ -166,6 +169,10 @@ export default function Home() {
         // Only update if different to prevent loops
         if (state.view !== currentView) {
           setCurrentView(state.view);
+          // Refresh dashboard when navigating to it (e.g., after changing settings)
+          if (state.view === 'dashboard') {
+            setDashboardRefreshTrigger(prev => prev + 1);
+          }
         }
       } else {
         // If no state (at dashboard root), ensure we are at dashboard

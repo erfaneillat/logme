@@ -199,8 +199,10 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
 
         try {
             await apiService.updatePreferences({ [key]: newValue });
+            showToast('تنظیمات ذخیره شد', 'success');
         } catch (error) {
             console.error('Failed to update preference:', error);
+            showToast('خطا در ذخیره تنظیمات', 'error');
             // Revert on error
             setPreferences(prev => ({ ...prev, [key]: !newValue }));
         }
