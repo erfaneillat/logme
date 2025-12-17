@@ -1861,4 +1861,31 @@ export const apiService = {
             };
         }
     },
+
+    // Kitchen API
+    getKitchenCategories: async (): Promise<any[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/categories`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                console.error('Failed to fetch categories:', data);
+                return [];
+            }
+            return data;
+        } catch (error) {
+            console.error('getKitchenCategories error:', error);
+            return [];
+        }
+    },
 };

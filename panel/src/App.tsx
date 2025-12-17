@@ -15,6 +15,8 @@ import AppVersionsPage from './pages/AppVersionsPage';
 import TicketsPage from './pages/TicketsPage';
 import TicketDetailPage from './pages/TicketDetailPage';
 import ErrorLogsPage from './pages/ErrorLogsPage';
+import KitchenPage from './pages/KitchenPage';
+
 
 const App = () => {
     return (
@@ -36,6 +38,7 @@ const App = () => {
                         <Route path="/app-versions" element={<AppVersionsPage />} />
                         <Route path="/tickets" element={<TicketsPage />} />
                         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
+                        <Route path="/kitchen" element={<KitchenPage />} />
                         <Route path="/error-logs" element={<ErrorLogsPage />} />
                     </Routes>
                 </ProtectedRoute>

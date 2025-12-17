@@ -1,0 +1,166 @@
+import { API_BASE_URL, API_TIMEOUT } from '../config/api';
+import { KitchenCategory, CreateKitchenCategoryRequest, UpdateKitchenCategoryRequest } from '../types/kitchen';
+
+interface ApiResponse<T> {
+    success?: boolean; // Some APIs return success, others just data.
+    // My controller returns pure data on 200, so I should be careful.
+    // Actually, look at the controller: res.status(200).json(categories).
+    // It doesn't wrap in { success: true, data: ... }.
+    // But `appVersionService` expects `ApiResponse`.
+    // I should probably adapt the service to the controller or vice versa.
+    // The previous controller code I wrote returns just the object or array.
+    // So I should just return the data directly or wrap it here.
+    // To match appVersionService structure (which seems to expect success/data/message handling in frontend),
+    // I will return { success: true, data: response } or { success: false, message: error }.
+}
+
+// I will make the service methods return { success: boolean, data?: T, message?: string }
+// consistent with how the frontend likely consumes it, even if the backend returns raw data.
+
+class KitchenService {
+    private readonly basePath = '/api/kitchen';
+
+    private async fetchWithTimeout(url: string, options: RequestInit = {}) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), API_TIMEOUT);
+
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+            });
+            clearTimeout(timeout);
+            return response;
+        } catch (error) {
+            clearTimeout(timeout);
+            throw error;
+        }
+    }
+
+    async getAllCategories(token: string): Promise<{ success: boolean; data?: KitchenCategory[]; message?: string }> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}${this.basePath}/admin/categories`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to fetch categories');
+            }
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to fetch categories',
+            };
+        }
+    }
+
+    async createCategory(token: string, categoryData: CreateKitchenCategoryRequest): Promise<{ success: boolean; data?: KitchenCategory; message?: string }> {
+        try {
+            const response = await this.fetchWithTimeout(`${API_BASE_URL}${this.basePath}/categories`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(categoryData),
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to create category');
+            }
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to create category',
+            };
+        }
+    }
+
+    async updateCategory(token: string, id: string, categoryData: UpdateKitchenCategoryRequest): Promise<{ success: boolean; data?: KitchenCategory; message?: string }> {
+        try {
+            const response = await this.fetchWithTimeout(`${API_BASE_URL}${this.basePath}/categories/${id}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(categoryData),
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to update category');
+            }
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to update category',
+            };
+        }
+    }
+
+    async deleteCategory(token: string, id: string): Promise<{ success: boolean; message?: string }> {
+        try {
+            const response = await this.fetchWithTimeout(`${API_BASE_URL}${this.basePath}/categories/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to delete category');
+            }
+            return { success: true, message: 'Category deleted successfully' };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to delete category',
+            };
+        }
+    }
+
+    async uploadImage(token: string, file: File): Promise<{ success: boolean; url?: string; message?: string }> {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/upload`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    // Content-Type is intentionally omitted so browser sets it with boundary
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to upload image');
+            }
+
+            const data = await response.json();
+            return { success: true, url: data.url };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to upload image',
+            };
+        }
+    }
+}
+
+export const kitchenService = new KitchenService();
