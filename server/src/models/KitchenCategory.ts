@@ -13,6 +13,7 @@ export interface IKitchenItem {
     carbs: number;
     fat: number;
     image: string; // URL or emoji
+    imagePrompt?: string; // AI generation prompt
     prepTime: string; // e.g., "15 min"
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: IIngredient[]; // List of ingredients with amounts
@@ -45,6 +46,7 @@ const KitchenItemSchema = new Schema({
     carbs: { type: Number, required: true },
     fat: { type: Number, required: true },
     image: { type: String, required: true },
+    imagePrompt: { type: String },
     prepTime: { type: String, required: true },
     difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true, default: 'medium' },
     ingredients: { type: [IngredientSchema], default: [] },

@@ -12,6 +12,7 @@ export interface KitchenItem {
     carbs: number;
     fat: number;
     image: string; // URL or emoji
+    imagePrompt?: string; // AI generation prompt
     prepTime: string; // e.g., "15 min"
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[]; // List of ingredients with amounts

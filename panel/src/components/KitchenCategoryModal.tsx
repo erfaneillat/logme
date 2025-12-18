@@ -166,6 +166,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
             image: '🥣',
             prepTime: '15 min',
             difficulty: 'medium',
+            imagePrompt: '',
             ingredients: [],
             instructions: ''
         });
@@ -753,6 +754,17 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                                     value={itemFormData.instructions || ''}
                                     onChange={e => setItemFormData({ ...itemFormData, instructions: e.target.value })}
                                     placeholder="مراحل تهیه را بنویسید..."
+                                />
+                            </div>
+
+                            {/* Image Prompt */}
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Image Prompt</label>
+                                <textarea
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-black focus:ring-1 focus:ring-black outline-none transition-all font-medium resize-none h-28 text-sm"
+                                    value={itemFormData.imagePrompt || ''}
+                                    onChange={e => setItemFormData({ ...itemFormData, imagePrompt: e.target.value })}
+                                    placeholder="AI Image Generation Prompt..."
                                 />
                             </div>
                         </div>
