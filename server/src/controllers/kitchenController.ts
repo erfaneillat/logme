@@ -1,8 +1,54 @@
 import { Request, Response } from 'express';
 import KitchenCategory from '../models/KitchenCategory';
+import SavedKitchenItem from '../models/SavedKitchenItem';
+import Settings from '../models/Settings';
 
-export const getAllCategories = async (req: Request, res: Response) => {
+interface AuthRequest extends Request {
+    user?: any;
+}
+
+export const getKitchenStatus = async (req: AuthRequest, res: Response) => {
     try {
+        const settings = await Settings.findOne();
+        const response = {
+            isEnabled: true,
+            hasAccess: true
+        };
+
+        if (settings && settings.kitchen) {
+            response.isEnabled = settings.kitchen.isEnabled;
+
+            if (response.isEnabled && settings.kitchen.accessMode === 'selected') {
+                const userId = req.user?.userId;
+                const isAllowed = settings.kitchen.allowedUserIds.some((id: any) => id.toString() === userId);
+                response.hasAccess = isAllowed;
+            }
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error checking kitchen status', error });
+    }
+};
+
+export const getAllCategories = async (req: AuthRequest, res: Response) => {
+    try {
+        // Check Global Settings
+        const settings = await Settings.findOne();
+        if (settings && settings.kitchen) {
+            if (!settings.kitchen.isEnabled) {
+                return res.status(403).json({ message: 'Kitchen feature is currently disabled' });
+            }
+
+            if (settings.kitchen.accessMode === 'selected') {
+                const userId = req.user?.userId;
+                const isAllowed = settings.kitchen.allowedUserIds.some((id: any) => id.toString() === userId);
+                if (!isAllowed) {
+                    return res.status(403).json({ message: 'You do not have access to the Kitchen feature' });
+                }
+            }
+        }
+
         const categories = await KitchenCategory.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
         return res.status(200).json(categories);
     } catch (error) {
@@ -182,5 +228,131 @@ export const importKitchenItems = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Import error:', error);
         return res.status(500).json({ message: 'Error importing items', error });
+    }
+};
+
+// Save a kitchen item to user's saved list
+export const saveKitchenItem = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const { kitchenItemId, name, calories, protein, carbs, fat, image, prepTime, difficulty, ingredients, instructions } = req.body;
+
+        if (!kitchenItemId || !name) {
+            return res.status(400).json({ message: 'Kitchen item ID and name are required' });
+        }
+
+        // Check if already saved
+        const existing = await SavedKitchenItem.findOne({ userId, kitchenItemId });
+        if (existing) {
+            return res.status(200).json({ message: 'Already saved', saved: true, item: existing });
+        }
+
+        const savedItem = new SavedKitchenItem({
+            userId,
+            kitchenItemId,
+            name,
+            calories: calories || 0,
+            protein: protein || 0,
+            carbs: carbs || 0,
+            fat: fat || 0,
+            image: image || '🍽️',
+            prepTime: prepTime || '15 min',
+            difficulty: difficulty || 'medium',
+            ingredients: ingredients || [],
+            instructions: instructions || ''
+        });
+
+        await savedItem.save();
+        return res.status(201).json({ message: 'Item saved successfully', saved: true, item: savedItem });
+    } catch (error: any) {
+        // Handle duplicate key error gracefully
+        if (error.code === 11000) {
+            return res.status(200).json({ message: 'Already saved', saved: true });
+        }
+        console.error('Save kitchen item error:', error);
+        return res.status(500).json({ message: 'Error saving kitchen item', error });
+    }
+};
+
+// Remove a kitchen item from user's saved list
+export const unsaveKitchenItem = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const { kitchenItemId } = req.params;
+
+        if (!kitchenItemId) {
+            return res.status(400).json({ message: 'Kitchen item ID is required' });
+        }
+
+        const result = await SavedKitchenItem.findOneAndDelete({ userId, kitchenItemId });
+
+        if (!result) {
+            return res.status(404).json({ message: 'Saved item not found', saved: false });
+        }
+
+        return res.status(200).json({ message: 'Item removed from saved', saved: false });
+    } catch (error) {
+        console.error('Unsave kitchen item error:', error);
+        return res.status(500).json({ message: 'Error removing saved item', error });
+    }
+};
+
+// Get all saved kitchen items for a user
+export const getSavedKitchenItems = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const savedItems = await SavedKitchenItem.find({ userId }).sort({ savedAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            items: savedItems,
+            count: savedItems.length
+        });
+    } catch (error) {
+        console.error('Get saved kitchen items error:', error);
+        return res.status(500).json({ message: 'Error fetching saved items', error });
+    }
+};
+
+// Check if specific items are saved (for batch checking)
+export const checkSavedStatus = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const { itemIds } = req.body;
+
+        if (!itemIds || !Array.isArray(itemIds)) {
+            return res.status(400).json({ message: 'Item IDs array is required' });
+        }
+
+        const savedItems = await SavedKitchenItem.find({
+            userId,
+            kitchenItemId: { $in: itemIds }
+        }).select('kitchenItemId');
+
+        const savedIds = savedItems.map(item => item.kitchenItemId);
+
+        return res.status(200).json({
+            success: true,
+            savedIds
+        });
+    } catch (error) {
+        console.error('Check saved status error:', error);
+        return res.status(500).json({ message: 'Error checking saved status', error });
     }
 };

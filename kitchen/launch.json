@@ -1,0 +1,3182 @@
+[
+    {
+        "id": 1,
+        "name": "سینه مرغ گریل با سبزیجات",
+        "category": "رژیمی و کتو",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 35,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "کدو سبز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "بروکلی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مرغ را مزه‌دار کرده و گریل کنید، سبزیجات را بخارپز یا تفت دهید.",
+        "image_prompt": "Grilled chicken breast with grill marks served with steamed broccoli and zucchini slices."
+    },
+    {
+        "id": 2,
+        "name": "سالاد تن ماهی و لوبیا",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 25,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "تن ماهی (بدون روغن)",
+                "amount": "۱ قوطی"
+            },
+            {
+                "name": "لوبیا چیتی پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "کاهو خرد شده",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "زیتون",
+                "amount": "۵ عدد"
+            }
+        ],
+        "instructions": "همه مواد را مخلوط کرده و با آبلیمو و فلفل سیاه سرو کنید.",
+        "image_prompt": "Fresh salad bowl mixed with tuna chunks, beans, lettuce, and olives."
+    },
+    {
+        "id": 3,
+        "name": "خوراک کدو سبز و قارچ",
+        "category": "گیاهی و وگان",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 6,
+            "carbs": 15,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز حلقه شده",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "قارچ اسلایس شده",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "پیاز را تفت دهید، سبزیجات را اضافه کرده و درب ظرف را بگذارید تا با آب خود بپزند.",
+        "image_prompt": "Pan filled with sautéed zucchini, mushrooms, and tomatoes."
+    },
+    {
+        "id": 4,
+        "name": "ماهی سالمون در فر",
+        "category": "دریایی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 35,
+            "carbs": 0,
+            "fat": 25
+        },
+        "ingredients": [
+            {
+                "name": "فیله سالمون",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "لیمو ترش",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "شوید خشک",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق مرباخوری"
+            }
+        ],
+        "instructions": "ماهی را با مواد مزه‌دار کرده و ۲۰ دقیقه در فر ۱۸۰ درجه بپزید.",
+        "image_prompt": "Baked salmon fillet with lemon slices on top and dill garnish."
+    },
+    {
+        "id": 5,
+        "name": "سالاد سزار رژیمی",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 28,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "کاهو",
+                "amount": "۱ بوته کوچک"
+            },
+            {
+                "name": "سینه مرغ آب‌پز/گریل",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "نان تست رژیمی (تست شده)",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سس ماست و خردل",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "به جای سس مایونز از ترکیب ماست، سیر و خردل استفاده کنید.",
+        "image_prompt": "Diet Caesar salad with grilled chicken strips and yogurt dressing."
+    },
+    {
+        "id": 6,
+        "name": "عدسی با گلپر",
+        "category": "سوپ و آش",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 18,
+            "carbs": 45,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "عدس",
+                "amount": "۳/۴ پیمانه"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سیب زمینی کوچک",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گلپر",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "عدس را با پیاز و سیب‌زمینی بپزید تا لعاب دهد.",
+        "image_prompt": "Bowl of thick lentil soup (Adasi) sprinkled with angelica powder."
+    },
+    {
+        "id": 7,
+        "name": "کباب تابه‌ای بدون روغن",
+        "category": "کباب و گوشت",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "گوشت چرخ کرده کم‌چرب",
+                "amount": "۱۲۰ گرم"
+            },
+            {
+                "name": "پیاز رنده شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "سماق",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "گوشت و پیاز را ورز داده و کف تابه نچسب بدون روغن بپزید.",
+        "image_prompt": "Lean beef kebab strips cooked in a pan with roasted tomatoes."
+    },
+    {
+        "id": 8,
+        "name": "پاستا سبزیجات (کم کربوهیدرات)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 10,
+            "carbs": 40,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "پاستا سبوس‌دار",
+                "amount": "۷۰ گرم"
+            },
+            {
+                "name": "بروکلی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "فلفل دلمه‌ای",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۵ عدد"
+            }
+        ],
+        "instructions": "سبزیجات را تفت داده و با پاستای آبکش شده مخلوط کنید.",
+        "image_prompt": "Whole wheat pasta mixed with colorful sautéed vegetables."
+    },
+    {
+        "id": 9,
+        "name": "شنیتسل مرغ در فر",
+        "category": "مرغ و پرندگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 40,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "پودر سوخاری",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "سفیده تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "اسپری روغن",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "مرغ را در سفیده و پودر زده، روی کاغذ روغنی در فر بپزید (سرخ نکنید).",
+        "image_prompt": "Oven baked chicken schnitzel, golden and crispy without deep frying."
+    },
+    {
+        "id": 10,
+        "name": "میگو کبابی",
+        "category": "دریایی",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "میگو پاک شده",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "آبلیمو",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سیر رنده شده",
+                "amount": "۱ حبه"
+            },
+            {
+                "name": "زعفران",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "میگوها را مزه‌دار کرده و به سیخ چوبی بکشید و گریل کنید.",
+        "image_prompt": "Grilled shrimp skewers with char marks served with lime."
+    },
+    {
+        "id": 11,
+        "name": "لوبیا پلو با برنج قهوه‌ای",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۵۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 380,
+            "protein": 18,
+            "carbs": 55,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "برنج قهوه‌ای",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "لوبیا سبز",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "گوشت چرخ کرده کم‌چرب",
+                "amount": "۶۰ گرم"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مانند لوبیا پلوی سنتی اما با روغن بسیار کم و برنج قهوه‌ای دم کنید.",
+        "image_prompt": "Brown rice mixed with green beans and meat, healthy version of Lubia Polo."
+    },
+    {
+        "id": 12,
+        "name": "دال عدس",
+        "category": "سوپ و آش",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 15,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "عدس قرمز (دال)",
+                "amount": "۳/۴ پیمانه"
+            },
+            {
+                "name": "سیر و پیاز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "فلفل قرمز",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "دال عدس را با پیاز و سیر و رب بپزید تا غلیظ و تند شود.",
+        "image_prompt": "Spicy red lentil soup (Dal Adas) garnished with cilantro."
+    },
+    {
+        "id": 13,
+        "name": "رپ مرغ و کاهو",
+        "category": "رژیمی و کتو",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "برگ کاهو بزرگ",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "مرغ پخته ریش شده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "هویج رنده شده",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "سس تند",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مواد را داخل برگ کاهو ریخته و مثل لقمه بپیچید (بدون نان).",
+        "image_prompt": "Lettuce wraps filled with shredded chicken and veggies."
+    },
+    {
+        "id": 14,
+        "name": "خوراک بادمجان (یتیمچه رژیمی)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "بادمجان",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "سیر",
+                "amount": "۲ حبه"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "بادمجان‌ها را نگینی کرده و با گوجه و سیر بخارپز/تفت دهید.",
+        "image_prompt": "Stew of eggplant and tomatoes cooked together without excess oil."
+    },
+    {
+        "id": 15,
+        "name": "استیک بوقلمون",
+        "category": "کباب و گوشت",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 40,
+            "carbs": 0,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "سینه بوقلمون",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق مرباخوری"
+            },
+            {
+                "name": "رزماری",
+                "amount": "۱ شاخه"
+            }
+        ],
+        "instructions": "بوقلمون را کوبیده و در تابه چدنی گریل کنید.",
+        "image_prompt": "Grilled turkey breast steak served with a side salad."
+    },
+    {
+        "id": 16,
+        "name": "کاسه کینوا و سبزیجات",
+        "category": "گیاهی و وگان",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "کینوا پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "نخود پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "آووکادو",
+                "amount": "۱/۴ عدد"
+            },
+            {
+                "name": "خیار و گوجه",
+                "amount": "۱/۲ پیمانه"
+            }
+        ],
+        "instructions": "همه مواد را در کاسه چیده و با آبلیمو میل کنید.",
+        "image_prompt": "Buddha bowl with quinoa, chickpeas, avocado, and fresh veggies."
+    },
+    {
+        "id": 17,
+        "name": "سوپ سبزیجات چربی‌سوز",
+        "category": "سوپ و آش",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 15,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "کلم برگ",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "کرفس",
+                "amount": "۲ ساقه"
+            },
+            {
+                "name": "هویج",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پیاز و گوجه",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "همه سبزیجات را خرد کرده و با آب بپزید تا نرم شوند.",
+        "image_prompt": "Bowl of clear vegetable soup with cabbage, celery, and carrots."
+    },
+    {
+        "id": 18,
+        "name": "کتلت مرغ (بدون روغن)",
+        "category": "غذای نونی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ چرخ شده",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "پیاز رنده شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سبوس جو",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده و در تابه رژیمی یا فر بپزید.",
+        "image_prompt": "Chicken patties (Kotlet) baked to a golden brown color."
+    },
+    {
+        "id": 19,
+        "name": "جوجه کباب تابه‌ای (سینه)",
+        "category": "کباب و گوشت",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 35,
+            "carbs": 2,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ مکعبی",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "پیاز و فلفل دلمه‌ای",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "زعفران و آبلیمو",
+                "amount": "به مقدار لازم"
+            },
+            {
+                "name": "روغن کم",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مرغ را مزه‌دار کرده و با سبزیجات در تابه تفت دهید.",
+        "image_prompt": "Pan seared saffron chicken cubes with bell peppers."
+    },
+    {
+        "id": 20,
+        "name": "پلو گل کلم (کتو)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "گل کلم رنده شده",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "روغن نارگیل/کره",
+                "amount": "۱ قاشق مرباخوری"
+            },
+            {
+                "name": "زعفران",
+                "amount": "کمی"
+            },
+            {
+                "name": "زرشک (اختیاری)",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "گل کلم را رنده کنید (شبیه برنج) و در تابه تفت دهید تا نرم شود.",
+        "image_prompt": "Cauliflower rice cooked with saffron, looking like traditional rice."
+    },
+    {
+        "id": 21,
+        "name": "خورش کرفس (کم چرب)",
+        "category": "سوپ و آش",
+        "prep_time": "۹۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 20,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "کرفس",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "گوشت گوساله بدون چربی",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "نعنا و جعفری",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "آبغوره",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "سبزی‌ها را با روغن بسیار کم تفت دهید و خورش را بار بگذارید.",
+        "image_prompt": "Lean Celery Stew (Khoresht Karafs) with fresh green herbs."
+    },
+    {
+        "id": 22,
+        "name": "همبرگر بوقلمون (بدون نان)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 30,
+            "carbs": 5,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "گوشت بوقلمون چرخ شده",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "کاهو (جای نان)",
+                "amount": "۲ برگ بزرگ"
+            },
+            {
+                "name": "گوجه",
+                "amount": "۱ حلقه"
+            }
+        ],
+        "instructions": "برگر را گریل کرده و لای برگ کاهو با گوجه سرو کنید.",
+        "image_prompt": "Turkey burger patty served inside a lettuce bun with tomato."
+    },
+    {
+        "id": 23,
+        "name": "سالاد یونانی با مرغ",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "خیار و گوجه",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "پنیر فتا",
+                "amount": "۳۰ گرم"
+            },
+            {
+                "name": "زیتون",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "سینه مرغ گریل",
+                "amount": "۱۰۰ گرم"
+            }
+        ],
+        "instructions": "سبزیجات خرد شده را با مرغ و پنیر و روغن زیتون مخلوط کنید.",
+        "image_prompt": "Greek salad with feta cubes, olives, and grilled chicken slices."
+    },
+    {
+        "id": 24,
+        "name": "نودل کدو سبز (Zoodles)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 12,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز (رشته شده)",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "سیر",
+                "amount": "۱ حبه"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "پنیر پارمزان",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "کدو را رشته کنید و ۱ دقیقه با سیر تفت دهید.",
+        "image_prompt": "Spiralized zucchini noodles (Zoodles) sautéed with garlic."
+    },
+    {
+        "id": 25,
+        "name": "خوراک لوبیا چیتی (قارچ)",
+        "category": "سوپ و آش",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 15,
+            "carbs": 45,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا چیتی",
+                "amount": "۱ پیمانه پخته"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "گلپر",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "خوراک لوبیا را غلیظ درست کنید و قارچ تفت داده اضافه نمایید.",
+        "image_prompt": "Warm bowl of Pinto Bean Stew with mushrooms."
+    },
+    {
+        "id": 26,
+        "name": "کوکو سبزی در فر",
+        "category": "غذای نونی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 8,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "سبزی کوکو",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "زرشک",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "روغن (برای چرب کردن)",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مایه کوکو را در قالب چرب شده ریخته و در فر بپزید تا روغن کمتری ببرد.",
+        "image_prompt": "Slice of baked Herb Frittata (Kuku Sabzi) showing fluffy texture."
+    },
+    {
+        "id": 27,
+        "name": "ماهی تیلاپیا لیمویی",
+        "category": "دریایی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 30,
+            "carbs": 0,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "فیله تیلاپیا",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "لیمو ترش",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "کره",
+                "amount": "۱۰ گرم"
+            },
+            {
+                "name": "جعفری",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "ماهی را در تابه با کره کم و آبلیمو تفت دهید.",
+        "image_prompt": "Pan fried Tilapia fillet with lemon butter sauce."
+    },
+    {
+        "id": 28,
+        "name": "اسفناج و تخم مرغ (نرگسی)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 16,
+            "carbs": 5,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "اسفناج تازه",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پیاز داغ کم روغن",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "اسفناج را تفت دهید تا آبش برود، سپس تخم مرغ را روی آن بشکنید.",
+        "image_prompt": "Spinach and eggs dish (Nargesi) cooked in a skillet."
+    },
+    {
+        "id": 29,
+        "name": "خورش بامیه با مرغ",
+        "category": "سوپ و آش",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "بامیه",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "سینه مرغ",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "سیر",
+                "amount": "۲ حبه"
+            }
+        ],
+        "instructions": "به جای گوشت قرمز از مرغ استفاده کنید و بامیه را کم تفت دهید.",
+        "image_prompt": "Okra stew made with chicken chunks and tomato sauce."
+    },
+    {
+        "id": 30,
+        "name": "سالاد پاستا سبوس‌دار",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 12,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "پاستا فرمی سبوس‌دار",
+                "amount": "۱ پیمانه پخته"
+            },
+            {
+                "name": "فلفل دلمه‌ای رنگی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "ذرت",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "ماست چکیده",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "پاستای سرد را با سبزیجات و سس ماست مخلوط کنید.",
+        "image_prompt": "Cold whole wheat pasta salad with colorful peppers and corn."
+    },
+    {
+        "id": 31,
+        "name": "کوفته ریزه با سس گوجه",
+        "category": "کباب و گوشت",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "گوشت چرخ کرده کم چرب",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پوره گوجه فرنگی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "سبزی معطر",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "کوفته‌های ریز درست کنید و در سس گوجه بپزید (بدون سرخ کردن عمیق).",
+        "image_prompt": "Small meatballs simmering in a rich red tomato sauce."
+    },
+    {
+        "id": 32,
+        "name": "برنج گل کلم و میگو",
+        "category": "رژیمی و کتو",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 25,
+            "carbs": 8,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "گل کلم رنده شده",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "میگو",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "سیر و گشنیز",
+                "amount": "به مقدار لازم"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "میگو و سیر را تفت داده، گل کلم را اضافه کنید و تفت دهید.",
+        "image_prompt": "Cauliflower rice stir-fry with shrimp and cilantro."
+    },
+    {
+        "id": 33,
+        "name": "ساندویچ تخم مرغ آب‌پز",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 18,
+            "carbs": 25,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ آب‌پز",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "نان جو",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "کاهو و گوجه",
+                "amount": "به مقدار لازم"
+            },
+            {
+                "name": "سس خردل",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "تخم مرغ‌ها را حلقه کرده و داخل نان جو بگذارید.",
+        "image_prompt": "Open faced sandwich with hard boiled egg slices on rye bread."
+    },
+    {
+        "id": 34,
+        "name": "راتاتویی (تاس کباب سبزیجات)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "بادمجان، کدو، گوجه",
+                "amount": "از هر کدام ۲ عدد"
+            },
+            {
+                "name": "پیاز و سیر",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "سبزیجات را حلقه کرده، مرتب در ظرف بچینید و با سس بپزید.",
+        "image_prompt": "Traditional Ratatouille dish with spiraled vegetable slices."
+    },
+    {
+        "id": 35,
+        "name": "مرغ پرتقالی (رژیمی)",
+        "category": "مرغ و پرندگان",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 30,
+            "carbs": 20,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "ران یا سینه مرغ",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "آب پرتقال طبیعی",
+                "amount": "۱/۲ لیوان"
+            },
+            {
+                "name": "زعفران",
+                "amount": "کمی"
+            },
+            {
+                "name": "هویج",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "مرغ را با آب پرتقال و زعفران آرام پز کنید تا سس غلیظ شود.",
+        "image_prompt": "Orange glazed chicken served with cooked carrots."
+    },
+    {
+        "id": 36,
+        "name": "سالاد نخود و کینوا",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 50,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "نخود پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "کینوا پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "جعفری خرد شده",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "لیمو و روغن زیتون",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "همه مواد را مخلوط کرده و به عنوان ناهار کامل میل کنید.",
+        "image_prompt": "Fresh salad bowl with chickpeas, quinoa, and chopped parsley."
+    },
+    {
+        "id": 37,
+        "name": "بورانی بادمجان رژیمی",
+        "category": "غذای نونی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "بادمجان کبابی",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "ماست کم چرب",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "سیر",
+                "amount": "۱ حبه"
+            },
+            {
+                "name": "نان خشک رژیمی",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "بادمجان کبابی را ساتوری کرده و با ماست و سیر مخلوط کنید.",
+        "image_prompt": "Bowl of eggplant dip (Borani) garnished with walnuts."
+    },
+    {
+        "id": 38,
+        "name": "سوپ جو پرک با مرغ",
+        "category": "سوپ و آش",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "جو پرک",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "سینه مرغ ریش شده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "هویج رنده شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "جعفری",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "جو، مرغ و هویج را در آب مرغ بپزید تا لعاب دهد.",
+        "image_prompt": "Creamy style oat soup with chicken shreds and carrots."
+    },
+    {
+        "id": 39,
+        "name": "کباب حسینی (چوبی)",
+        "category": "کباب و گوشت",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "گوشت تکه‌ای",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "فلفل دلمه‌ای و پیاز",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سیخ چوبی",
+                "amount": "چند عدد"
+            }
+        ],
+        "instructions": "گوشت و سبزیجات را به سیخ کشیده و در سس رب و آب بپزید.",
+        "image_prompt": "Wooden skewers with meat and veggies cooked in a tomato sauce."
+    },
+    {
+        "id": 40,
+        "name": "باقلا قاتق",
+        "category": "گیاهی و وگان",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا کشاورزی (پاچ باقلا)",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "شوید خشک",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سیر",
+                "amount": "۳ حبه"
+            }
+        ],
+        "instructions": "لوبیا پوست کنده را با سیر و شوید تفت داده، بپزید و تخم مرغ بزنید.",
+        "image_prompt": "Traditional Northern Iranian dish (Baghali Ghatogh) with beans and dill."
+    },
+    {
+        "id": 41,
+        "name": "سبزی پلو با ماهی (در فر)",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 450,
+            "protein": 30,
+            "carbs": 55,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "سبزی پلویی",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "ماهی سفید/قزل‌آلا",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "نارنج",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "ماهی را در فر کبابی کنید و با برنج کم‌روغن سرو کنید.",
+        "image_prompt": "Plate of herbed rice (Sabzi Polo) served with oven baked fish."
+    },
+    {
+        "id": 42,
+        "name": "خوراک قارچ و گوشت",
+        "category": "رژیمی و کتو",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 25,
+            "carbs": 8,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "گوشت چرخ کرده/تکه‌ای",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "فلفل دلمه‌ای",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "گوشت و پیاز را تفت داده، قارچ و فلفل را اضافه کنید.",
+        "image_prompt": "Stir-fry of beef strips and mushrooms with bell peppers."
+    },
+    {
+        "id": 43,
+        "name": "سالاد ماکارونی رژیمی",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "ماکارونی فرمی",
+                "amount": "۱ پیمانه پخته"
+            },
+            {
+                "name": "سینه مرغ پخته",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "نخود فرنگی و ذرت",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "ماست کم چرب",
+                "amount": "۳ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده و با سس ماست و آبلیمو مزه‌دار کنید.",
+        "image_prompt": "Pasta salad with veggies and chicken, dressed with creamy yogurt."
+    },
+    {
+        "id": 44,
+        "name": "سوپ گوجه فرنگی",
+        "category": "سوپ و آش",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 4,
+            "carbs": 25,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "پیاز و سیر",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "آب مرغ",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "ریحان",
+                "amount": "برای تزیین"
+            }
+        ],
+        "instructions": "گوجه و سبزیجات را پخته و میکس کنید تا پوره شود.",
+        "image_prompt": "Bowl of rich red creamy tomato soup with basil leaf."
+    },
+    {
+        "id": 45,
+        "name": "تاس کباب (بدون روغن)",
+        "category": "غذای نونی",
+        "prep_time": "۹۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 30,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "گوشت گوسفندی بدون چربی",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "به، هویج، سیب زمینی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "آلو خورشتی",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "پیاز حلقه شده",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "مواد را لایه لایه چیده، کمی آب و رب ریخته و بگذارید بپزد.",
+        "image_prompt": "Traditional Persian Tas Kabab with meat, quince, and carrots layered in pot."
+    },
+    {
+        "id": 46,
+        "name": "خورش آلو اسفناج (مرغ)",
+        "category": "سوپ و آش",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 20,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "اسفناج",
+                "amount": "۳۰۰ گرم"
+            },
+            {
+                "name": "سینه مرغ",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "آلو بخارا",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "اسفناج تفت داده را به مرغ پخته و آلو اضافه کنید.",
+        "image_prompt": "Green Spinach Stew (Aloo Esfenaj) with chicken and golden plums."
+    },
+    {
+        "id": 47,
+        "name": "ماهی بخارپز با سبزیجات",
+        "category": "دریایی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "ماهی سفید/قزل",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "بروکلی و هویج",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "زنجبیل و سویا سوس",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "ماهی و سبزیجات را در بخارپز قرار دهید تا سالم پخته شوند.",
+        "image_prompt": "Steamed white fish served with vibrant steamed vegetables."
+    },
+    {
+        "id": 48,
+        "name": "اوتمیل مرغ (ناهار)",
+        "category": "سوپ و آش",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 20,
+            "carbs": 40,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر پرک",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "آب مرغ",
+                "amount": "۱.۵ لیوان"
+            },
+            {
+                "name": "مرغ پخته ریش شده",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "سبزیجات معطر",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "جو را در آب مرغ بپزید تا شبیه حلیم/سوپ غلیظ شود.",
+        "image_prompt": "Savory oatmeal bowl with shredded chicken and herbs."
+    },
+    {
+        "id": 49,
+        "name": "پیتزا بادمجان (بدون خمیر)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 15,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "بادمجان حلقه ضخیم",
+                "amount": "۲ حلقه"
+            },
+            {
+                "name": "پنیر پیتزا کم چرب",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "سس گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "روی حلقه بادمجان کبابی سس و پنیر ریخته و در فر آب کنید.",
+        "image_prompt": "Eggplant rounds topped with marinara sauce and melted cheese like mini pizzas."
+    },
+    {
+        "id": 50,
+        "name": "کشک کدو",
+        "category": "غذای نونی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 8,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز سرخ/بخارپز",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "کشک",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "پیاز داغ و نعنا",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "گردو",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "کدو را له کرده و با کشک و مخلفات مخلوط کنید (رژیمی‌تر از بادمجان).",
+        "image_prompt": "Bowl of Zucchini dip (Kashk Kadoo) with mint oil garnish."
+    },
+    {
+        "id": 51,
+        "name": "رول بادمجان و گردو",
+        "category": "گیاهی و وگان",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 6,
+            "carbs": 15,
+            "fat": 25
+        },
+        "ingredients": [
+            {
+                "name": "بادمجان ورقه ای سرخ شده",
+                "amount": "۳ ورقه"
+            },
+            {
+                "name": "گردو آسیاب شده",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "رب انار",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سبزی معطر شمالی",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "مخلوط گردو و رب انار را داخل ورقه‌های بادمجان بپیچید.",
+        "image_prompt": "Eggplant rolls filled with walnut and pomegranate paste."
+    },
+    {
+        "id": 52,
+        "name": "عدس پلو با خرما (بدون گوشت)",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 12,
+            "carbs": 80,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "عدس",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "خرما",
+                "amount": "۴ عدد"
+            },
+            {
+                "name": "کشمش",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "عدس پلو را دم کرده و با خرما و کشمش تفت داده سرو کنید.",
+        "image_prompt": "Lentil rice (Adas Polo) garnished with dates and raisins."
+    },
+    {
+        "id": 53,
+        "name": "خوراک لوبیا سبز",
+        "category": "غذای نونی",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا سبز خرد شده",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "گوشت چرخ کرده/سویا",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "هویج و سیب زمینی نگینی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "همه مواد را با پیاز و رب تفت داده و بپزید (راگو).",
+        "image_prompt": "Green bean stew (Ragout) with carrots and meat."
+    },
+    {
+        "id": 54,
+        "name": "ساندویچ مرغ سرد",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 30,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ پخته",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "نان باگت سبوس‌دار",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "خیارشور و گوجه",
+                "amount": "به مقدار لازم"
+            },
+            {
+                "name": "جعفری",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "مرغ ریش شده را با مخلفات داخل نان بگذارید.",
+        "image_prompt": "Cold chicken sandwich with fresh vegetables in a baguette."
+    },
+    {
+        "id": 55,
+        "name": "کدو شکم‌پر (رژیمی)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز درشت",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "مایه گوشت و پیاز",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "پنیر کم چرب",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "داخل کدو را خالی کرده، با مواد پر کنید و در فر بپزید.",
+        "image_prompt": "Zucchini boats stuffed with ground meat and topped with melted cheese."
+    },
+    {
+        "id": 56,
+        "name": "سوپ بروکلی و پنیر",
+        "category": "سوپ و آش",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 10,
+            "carbs": 15,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "بروکلی",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "شیر کم چرب",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "پنیر چدار رنده شده",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "بروکلی را پخته، میکس کنید و با شیر و پنیر گرم نمایید.",
+        "image_prompt": "Creamy green broccoli soup with a swirl of cheese."
+    },
+    {
+        "id": 57,
+        "name": "همبرگر گیاهی (لوبیا)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا سیاه/قرمز پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "جو پرک",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "پیاز و ادویه",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "نان برگر",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "مواد را میکس کرده، فرم دهید و سرخ کنید.",
+        "image_prompt": "Veggie burger patty made of beans served on a bun."
+    },
+    {
+        "id": 58,
+        "name": "میگو پفکی (در هواپز)",
+        "category": "دریایی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "میگو",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "آرد و ادویه",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "سفیده تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "اسپری روغن",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "میگوها را آغشته کرده و در هواپز (Air Fryer) ترد کنید.",
+        "image_prompt": "Crispy breaded shrimp cooked in air fryer without deep frying."
+    },
+    {
+        "id": 59,
+        "name": "آلبالو پلو با گوشت قلقلی (کم روغن)",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۵۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 450,
+            "protein": 18,
+            "carbs": 70,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "آلبالو (بدون شکر زیاد)",
+                "amount": "۱/۳ پیمانه"
+            },
+            {
+                "name": "گوشت قلقلی",
+                "amount": "۱۰۰ گرم"
+            }
+        ],
+        "instructions": "کوفته‌ها را در آب بپزید (سرخ نکنید) و لای برنج دم کنید.",
+        "image_prompt": "Sour cherry rice (Albaloo Polo) with small meatballs."
+    },
+    {
+        "id": 60,
+        "name": "خوراک مرغ و قارچ (سس سفید رژیمی)",
+        "category": "رژیمی و کتو",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "شیر و نشاسته ذرت",
+                "amount": "۱/۲ پیمانه (سس)"
+            }
+        ],
+        "instructions": "مرغ و قارچ را تفت داده، سس غلیظ شده با شیر کم چرب را اضافه کنید.",
+        "image_prompt": "Chicken and mushroom stew in a creamy white sauce."
+    },
+    {
+        "id": 61,
+        "name": "سالاد اسفناج و انار",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "بیبی اسفناج",
+                "amount": "۳ پیمانه"
+            },
+            {
+                "name": "دانه انار",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "رب انار",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده و با سس رب انار سرو کنید.",
+        "image_prompt": "Spinach salad bowl topped with pomegranate seeds and walnuts."
+    },
+    {
+        "id": 62,
+        "name": "ناگت مرغ خانگی (فر)",
+        "category": "مرغ و پرندگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "مرغ چرخ شده",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "پیاز و سیر",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پودر سوخاری",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مرغ را با ادویه مخلوط، فرم داده، در پودر زده و در فر بپزید.",
+        "image_prompt": "Homemade chicken nuggets baked on a tray."
+    },
+    {
+        "id": 63,
+        "name": "خورش کنگر (رژیمی)",
+        "category": "سوپ و آش",
+        "prep_time": "۹۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "کنگر پاک شده",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "گوشت گوساله",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "نعنا و جعفری",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "لیمو عمانی",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "کنگر را کم تفت دهید و با گوشت و سبزی بپزید.",
+        "image_prompt": "Persian Artichoke stew (Khoresht Kangar) with meat."
+    },
+    {
+        "id": 64,
+        "name": "پلو سبزیجات مخلوط",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 8,
+            "carbs": 65,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "نخود فرنگی، هویج، ذرت",
+                "amount": "۱ پیمانه مخلوط"
+            },
+            {
+                "name": "ادویه پلویی",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "سبزیجات را با برنج کته کنید (استانبولی سبزیجات).",
+        "image_prompt": "Rice mixed with peas, carrots, and corn."
+    },
+    {
+        "id": 65,
+        "name": "املت قارچ و اسفناج",
+        "category": "رژیمی و کتو",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 14,
+            "carbs": 5,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "اسفناج",
+                "amount": "۱ مشت"
+            },
+            {
+                "name": "روغن کم",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "قارچ و اسفناج را تفت داده و تخم مرغ را اضافه کنید.",
+        "image_prompt": "Omelet filled with sautéed mushrooms and spinach."
+    },
+    {
+        "id": 66,
+        "name": "ساندویچ تن ماهی (کلاب)",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 30,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "تن ماهی",
+                "amount": "۱/۲ قوطی"
+            },
+            {
+                "name": "نان تست سبوس‌دار",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "کاهو و گوجه",
+                "amount": "به مقدار لازم"
+            },
+            {
+                "name": "سس مایونز رژیمی",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "تن را با سس مخلوط کرده و ساندویچ کنید.",
+        "image_prompt": "Club sandwich with tuna filling, lettuce, and tomato."
+    },
+    {
+        "id": 67,
+        "name": "دمی گوجه (بدون سیب‌زمینی)",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 6,
+            "carbs": 65,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "گوجه فرنگی پوره شده",
+                "amount": "۴ عدد"
+            },
+            {
+                "name": "پیاز داغ",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "برنج را در پوره گوجه کته کنید (رژیمی و ساده).",
+        "image_prompt": "Red tomato rice (Dami Gojeh) cooked simply."
+    },
+    {
+        "id": 68,
+        "name": "خوراک کدو حلوایی و عدس",
+        "category": "گیاهی و وگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "کدو حلوایی مکعبی",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "عدس پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "پیاز و دارچین",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "کدو و عدس را با کمی آب و دارچین بپزید.",
+        "image_prompt": "Stew of pumpkin cubes and lentils."
+    },
+    {
+        "id": 69,
+        "name": "کباب تابه‌ای مرغ",
+        "category": "کباب و گوشت",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ چرخ شده",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "پیاز رنده شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "زعفران",
+                "amount": "کمی"
+            },
+            {
+                "name": "کره",
+                "amount": "۱۰ گرم"
+            }
+        ],
+        "instructions": "مانند کباب کوبیده گوشت، ولی با مرغ تهیه و در تابه بپزید.",
+        "image_prompt": "Chicken kebab strips cooked in a pan (Kabab Tabei Morgh)."
+    },
+    {
+        "id": 70,
+        "name": "آش ماست (رژیمی)",
+        "category": "سوپ و آش",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "برنج نیم‌دانه",
+                "amount": "۱/۴ پیمانه"
+            },
+            {
+                "name": "لپه پخته",
+                "amount": "۱/۴ پیمانه"
+            },
+            {
+                "name": "سبزی آش",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "ماست کم چرب",
+                "amount": "۱.۵ پیمانه"
+            }
+        ],
+        "instructions": "آش را بپزید و در آخر ماست را اضافه کنید (بدون پیاز داغ چرب).",
+        "image_prompt": "White Yogurt Soup (Ash Mast) with green herbs."
+    },
+    {
+        "id": 71,
+        "name": "سیب زمینی تنوری با سبزیجات",
+        "category": "گیاهی و وگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 5,
+            "carbs": 45,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "سیب زمینی",
+                "amount": "۲ عدد متوسط"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "رزماری و آویشن",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "سیب زمینی‌ها را قاچ کرده، ادویه زده و در فر برشته کنید.",
+        "image_prompt": "Roasted potato wedges with herbs served on a tray."
+    },
+    {
+        "id": 72,
+        "name": "ساندویچ بوقلمون دودی",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "ژامبون بوقلمون (بالای ۹۰٪)",
+                "amount": "۳ ورقه"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "کاهو",
+                "amount": "۲ برگ"
+            }
+        ],
+        "instructions": "ساندویچ ساده و سرد با بوقلمون.",
+        "image_prompt": "Turkey sandwich with fresh lettuce and whole wheat bread."
+    },
+    {
+        "id": 73,
+        "name": "خوراک میگو و سبزیجات",
+        "category": "دریایی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 20,
+            "carbs": 10,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "میگو",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "کلم بروکلی و فلفل",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "سویا سوس",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "میگو و سبزیجات را سریع تفت دهید (Stir-fry).",
+        "image_prompt": "Shrimp and vegetable stir-fry in a wok."
+    },
+    {
+        "id": 74,
+        "name": "پاستا پستو با مرغ",
+        "category": "پاستا و بین‌المللی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 45,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "پاستا",
+                "amount": "۸۰ گرم"
+            },
+            {
+                "name": "سس پستو",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سینه مرغ گریل",
+                "amount": "۸۰ گرم"
+            }
+        ],
+        "instructions": "پاستا را با سس پستو مخلوط کرده و مرغ را روی آن بگذارید.",
+        "image_prompt": "Green pesto pasta topped with sliced chicken breast."
+    },
+    {
+        "id": 75,
+        "name": "کوفته تبریزی (کم چرب)",
+        "category": "غذای نونی",
+        "prep_time": "۹۰ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 35,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "گوشت چرخ کرده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "لپه و برنج نیم پز",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "سبزی معطر",
+                "amount": "۲ قاشق"
+            },
+            {
+                "name": "آلو و گردو",
+                "amount": "برای مغز"
+            }
+        ],
+        "instructions": "کوفته بزرگ را آماده کرده و در سس رقیق بپزید.",
+        "image_prompt": "Large Persian Koofteh Tabrizi served in a bowl with broth."
+    },
+    {
+        "id": 76,
+        "name": "سالاد تبوله (بلغور)",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 6,
+            "carbs": 35,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "بلغور گندم خیس خورده",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "جعفری خرد شده فراوان",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "گوجه ریز خرد شده",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "روغن زیتون و لیمو",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "سالاد لبنانی معروف با سبزی فراوان.",
+        "image_prompt": "Green Tabbouleh salad with bulgur, parsley, and tomatoes."
+    },
+    {
+        "id": 77,
+        "name": "خوراک زبان (بدون سس چرب)",
+        "category": "کباب و گوشت",
+        "prep_time": "۱۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "زبان گوساله پخته",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "قارچ تفت داده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "سبزیجات بخارپز",
+                "amount": "کنار غذا"
+            }
+        ],
+        "instructions": "زبان را کامل بپزید، پوست بگیرید و حلقه کنید (بدون سس سفید).",
+        "image_prompt": "Slices of cooked beef tongue served with steamed veggies."
+    },
+    {
+        "id": 78,
+        "name": "لوبیا چیتی با گلپر",
+        "category": "سوپ و آش",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 14,
+            "carbs": 45,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا چیتی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق"
+            },
+            {
+                "name": "گلپر",
+                "amount": "فراوان"
+            }
+        ],
+        "instructions": "خوراک لوبیای غلیظ و داغ (صبحانه یا ناهار سبک).",
+        "image_prompt": "Bowl of hot Pinto beans (Khorak Loobia) with lemon."
+    },
+    {
+        "id": 79,
+        "name": "رولت مرغ و سبزیجات",
+        "category": "مرغ و پرندگان",
+        "prep_time": "۵۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ پهن شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "هویج و فلفل دلمه‌ای",
+                "amount": "برای داخل رولت"
+            },
+            {
+                "name": "نخ آشپزی",
+                "amount": "برای بستن"
+            }
+        ],
+        "instructions": "سبزیجات را داخل مرغ گذاشته، رول کنید و بپزید/بخارپز کنید.",
+        "image_prompt": "Chicken breast roulade stuffed with colorful vegetables, sliced."
+    },
+    {
+        "id": 80,
+        "name": "سالاد کلم و انار",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "کلم قرمز خرد شده",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "دانه انار",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "سس ماست",
+                "amount": "۲ قاشق"
+            }
+        ],
+        "instructions": "سالاد زمستانی ترد و خوشمزه.",
+        "image_prompt": "Red cabbage salad with pomegranate seeds and creamy dressing."
+    },
+    {
+        "id": 81,
+        "name": "ماهی قزل‌آلا کبابی (بدون روغن)",
+        "category": "دریایی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 0,
+            "fat": 25
+        },
+        "ingredients": [
+            {
+                "name": "ماهی قزل‌آلا",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "لیمو و زعفران",
+                "amount": "برای مزه"
+            },
+            {
+                "name": "توری کباب",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "ماهی را در توری روی زغال یا گاز کباب کنید.",
+        "image_prompt": "Whole grilled trout fish with crispy skin."
+    },
+    {
+        "id": 82,
+        "name": "خورش بامیه (گیاهی)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "بامیه",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "قارچ (جای گوشت)",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "گوجه و سیر",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "خورش بامیه را با قارچ و سس گوجه درست کنید.",
+        "image_prompt": "Vegetarian Okra stew with mushrooms."
+    },
+    {
+        "id": 83,
+        "name": "سوپ جو سفید (شیر)",
+        "category": "سوپ و آش",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 10,
+            "carbs": 30,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "جو پرک",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "شیر کم چرب",
+                "amount": "۲ لیوان"
+            },
+            {
+                "name": "هویج",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "خامه (حذف شود)",
+                "amount": "۰"
+            }
+        ],
+        "instructions": "سوپ شیر را بدون خامه و با شیر کم‌چرب تهیه کنید.",
+        "image_prompt": "Bowl of white barley soup (Soup-e Jo) garnished with parsley."
+    },
+    {
+        "id": 84,
+        "name": "پلو ماش (ماش پلو)",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 380,
+            "protein": 12,
+            "carbs": 70,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "ماش پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "شوید خشک",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "ماش و برنج را با شوید دم کنید (بسیار مقوی و سبک).",
+        "image_prompt": "Mung bean rice (Mash Polo) served simply."
+    },
+    {
+        "id": 85,
+        "name": "ساندویچ مرغ و قارچ",
+        "category": "فست‌فود و ساندویچ",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 30,
+            "carbs": 40,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ خرد شده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "قارچ تفت داده",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "نان باگت",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "پنیر پیتزا کم",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "مرغ و قارچ را تفت داده، پنیر زده و ساندویچ کنید.",
+        "image_prompt": "Hot chicken and mushroom sandwich with melted cheese."
+    },
+    {
+        "id": 86,
+        "name": "سالاد آووکادو و مرغ",
+        "category": "رژیمی و کتو",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "آووکادو خرد شده",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "سینه مرغ پخته",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "کاهو و پیاز قرمز",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "سالاد سبز و سیرکننده با چربی سالم.",
+        "image_prompt": "Bowl of salad featuring avocado slices and grilled chicken."
+    },
+    {
+        "id": 87,
+        "name": "کبه برنج (در فر)",
+        "category": "غذای نونی",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "برنج کته شده شل",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "مایه گوشتی",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "برنج را خمیر کرده، مغزدار کنید و در فر بپزید (سرخ نکنید).",
+        "image_prompt": "Baked Rice Kibbeh, golden brown oval shapes."
+    },
+    {
+        "id": 88,
+        "name": "خوراک نخود (فلافل باز)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "نخود پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "پیاز و سیر",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ادویه فلافل",
+                "amount": "۱ قاشق"
+            },
+            {
+                "name": "گوجه",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "نخود را با پیاز و ادویه تفت دهید (طعم فلافل بدون سرخ کردن).",
+        "image_prompt": "Spiced chickpeas stir-fried with onions and tomatoes."
+    },
+    {
+        "id": 89,
+        "name": "کدو سبز پر شده با مرغ",
+        "category": "رژیمی و کتو",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز (قایقی)",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "مرغ چرخ کرده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "پنیر موزارلا",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "کدوها را با مرغ پر کرده و گراتینه کنید.",
+        "image_prompt": "Zucchini halves stuffed with chicken mince."
+    },
+    {
+        "id": 90,
+        "name": "سالاد لوبیا چشم‌بلبلی",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا چشم‌بلبلی پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "شوید تازه",
+                "amount": "۲ قاشق"
+            },
+            {
+                "name": "خیار نگینی",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "سالاد مقوی و خنک با آبلیمو.",
+        "image_prompt": "Black-eyed pea salad with fresh dill and cucumber."
+    },
+    {
+        "id": 91,
+        "name": "ماکارونی با سویا (رژیمی)",
+        "category": "پاستا و بین‌المللی",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 60,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "ماکارونی",
+                "amount": "۸۰ گرم"
+            },
+            {
+                "name": "سویا ریز",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق"
+            },
+            {
+                "name": "فلفل دلمه‌ای",
+                "amount": "۱/۲ عدد"
+            }
+        ],
+        "instructions": "ماکارونی دمی با مایه سویا و روغن بسیار کم.",
+        "image_prompt": "Spaghetti cooked with soy mince sauce."
+    },
+    {
+        "id": 92,
+        "name": "خوراک به (شیرین خورش)",
+        "category": "غذاهای سنتی و خورش",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 20,
+            "carbs": 35,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "به خرد شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گوشت/مرغ",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "آلو",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "شکر (کم)",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "خورش به را کم‌شیرین و کم‌روغن درست کنید.",
+        "image_prompt": "Persian Quince stew (Khoresht Beh) with meat chunks."
+    },
+    {
+        "id": 93,
+        "name": "ماهی تنوری جنوب",
+        "category": "دریایی",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 5,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "ماهی کامل (سنگسر/شوریده)",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "حشو (گشنیز و سیر و تمرهندی)",
+                "amount": "۱/۲ پیمانه"
+            }
+        ],
+        "instructions": "شکم ماهی را با حشو پر کرده و در فر تنوری کنید.",
+        "image_prompt": "Stuffed baked fish southern style with tamarind herb filling."
+    },
+    {
+        "id": 94,
+        "name": "سالاد سیب زمینی و شوید",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 5,
+            "carbs": 45,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "سیب زمینی پخته",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "شوید تازه",
+                "amount": "۳ قاشق"
+            },
+            {
+                "name": "پیازچه",
+                "amount": "۲ ساقه"
+            },
+            {
+                "name": "ماست چکیده",
+                "amount": "۲ قاشق"
+            }
+        ],
+        "instructions": "سیب زمینی را مکعبی کرده و با سس ماست و شوید مخلوط کنید.",
+        "image_prompt": "Potato salad with creamy dill dressing."
+    },
+    {
+        "id": 95,
+        "name": "استراگانف قارچ (گیاهی)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "قارچ ورقه شده",
+                "amount": "۳۰۰ گرم"
+            },
+            {
+                "name": "خامه گیاهی/صبحانه",
+                "amount": "۲ قاشق"
+            },
+            {
+                "name": "سیب زمینی خلالی (فر)",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "سس قارچ خامه‌ای را با چیپس خلالی خانگی سرو کنید.",
+        "image_prompt": "Mushroom Stroganoff served with shoestring potatoes."
+    },
+    {
+        "id": 96,
+        "name": "آش گوجه فرنگی (تبریز)",
+        "category": "سوپ و آش",
+        "prep_time": "۵۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "گوجه فرنگی فراوان",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "برنج",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "لپه",
+                "amount": "۱/۴ پیمانه"
+            },
+            {
+                "name": "نعنا داغ",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "آش ترش و خوشرنگ با بیس گوجه فرنگی.",
+        "image_prompt": "Red Tomato Ash (Ash Goje) garnished with mint."
+    },
+    {
+        "id": 97,
+        "name": "شامی کباب (لپه)",
+        "category": "غذای نونی",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 20,
+            "carbs": 25,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "گوشت پخته ریش شده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "لپه پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "مواد را چرخ کرده، کتلت درست کنید (پوک و خوشمزه).",
+        "image_prompt": "Persian Shami Kabab patties made with split peas."
+    },
+    {
+        "id": 98,
+        "name": "پلو زیره با مرغ",
+        "category": "پلو و چلو (کم‌کالری)",
+        "prep_time": "۴۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 60,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "برنج",
+                "amount": "۶ قاشق غذاخوری"
+            },
+            {
+                "name": "زیره سیاه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سینه مرغ پخته",
+                "amount": "۱۰۰ گرم"
+            }
+        ],
+        "instructions": "برنج را با زیره دم کرده و مرغ را کنارش بگذارید.",
+        "image_prompt": "Cumin Rice (Zireh Polo) served with chicken."
+    },
+    {
+        "id": 99,
+        "name": "سالاد فتوش (عربی)",
+        "category": "سالاد و غذای سرد",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 4,
+            "carbs": 30,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "کاهو، خیار، گوجه، تربچه",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "نان پیتا برشته (تکه شده)",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سماق و روغن زیتون",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "سالاد مدیترانه‌ای با تکه‌های نان برشته.",
+        "image_prompt": "Fattoush salad with toasted pita bread chips and sumac."
+    },
+    {
+        "id": 100,
+        "name": "کباب چنجه (رژیمی)",
+        "category": "کباب و گوشت",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 35,
+            "carbs": 0,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "گوشت راسته گوسفندی",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "روغن زیتون و کیوی (برای نرم کردن)",
+                "amount": "کمی"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "گوشت را در کیوی و پیاز خوابانده و کباب کنید (بسیار نرم).",
+        "image_prompt": "Juicy lamb Chenjeh kebab skewers."
+    }
+]

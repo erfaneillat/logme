@@ -16,6 +16,7 @@ import TicketsPage from './pages/TicketsPage';
 import TicketDetailPage from './pages/TicketDetailPage';
 import ErrorLogsPage from './pages/ErrorLogsPage';
 import KitchenPage from './pages/KitchenPage';
+import SettingsPage from './pages/SettingsPage';
 
 
 const App = () => {
@@ -40,6 +41,7 @@ const App = () => {
                         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
                         <Route path="/kitchen" element={<KitchenPage />} />
                         <Route path="/error-logs" element={<ErrorLogsPage />} />
+                        <Route path="/settings" element={<SettingsPage />} />
                     </Routes>
                 </ProtectedRoute>
             </AuthProvider>

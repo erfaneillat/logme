@@ -1,6 +1,7 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/apiService';
 
 interface Ingredient {
     name: string;
@@ -26,6 +27,8 @@ interface KitchenItemDetailPageProps {
     item: KitchenItem;
     onBack: () => void;
     onAddToLog?: (item: KitchenItem) => void;
+    isSaved?: boolean;
+    onSaveToggle?: (item: KitchenItem, saved: boolean) => void;
 }
 
 // Helper to convert English numbers to Persian/Farsi numerals
@@ -37,8 +40,17 @@ const toPersianNumbers = (num: number | string): string => {
 const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
     item,
     onBack,
-    onAddToLog
+    onAddToLog,
+    isSaved: initialIsSaved = false,
+    onSaveToggle
 }) => {
+    const [isSaved, setIsSaved] = useState(initialIsSaved);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        setIsSaved(initialIsSaved);
+    }, [initialIsSaved]);
+
     const difficultyConfig = {
         easy: { label: 'آسان', color: 'text-green-600 bg-green-50' },
         medium: { label: 'متوسط', color: 'text-amber-600 bg-amber-50' },
@@ -46,6 +58,38 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
     };
 
     const difficulty = difficultyConfig[item.difficulty] || difficultyConfig.medium;
+
+    const handleSaveToggle = async () => {
+        const itemId = item._id || item.id || item.name;
+        setIsSaving(true);
+        try {
+            if (isSaved) {
+                await apiService.unsaveKitchenItem(itemId);
+                setIsSaved(false);
+                onSaveToggle?.(item, false);
+            } else {
+                await apiService.saveKitchenItem({
+                    kitchenItemId: itemId,
+                    name: item.name,
+                    calories: item.calories,
+                    protein: item.protein,
+                    carbs: item.carbs,
+                    fat: item.fat,
+                    image: item.image,
+                    prepTime: item.prepTime,
+                    difficulty: item.difficulty,
+                    ingredients: item.ingredients,
+                    instructions: item.instructions
+                });
+                setIsSaved(true);
+                onSaveToggle?.(item, true);
+            }
+        } catch (error) {
+            console.error('Save toggle error:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <div className="h-full flex flex-col bg-white" dir="rtl">
@@ -60,6 +104,24 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                     </svg>
                 </button>
                 <h1 className="text-lg font-bold text-gray-900 flex-1 text-right truncate">{item.name}</h1>
+
+                {/* Save Button in Header */}
+                <button
+                    onClick={handleSaveToggle}
+                    disabled={isSaving}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isSaved
+                            ? 'bg-red-50 text-red-500'
+                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                        } ${isSaving ? 'opacity-50' : ''}`}
+                >
+                    {isSaving ? (
+                        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isSaved ? 0 : 2}>
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
+                    )}
+                </button>
             </header>
 
             {/* Scrollable Content */}

@@ -1,0 +1,2446 @@
+[
+    {
+        "id": 1,
+        "name": "سیب و کره بادام زمینی",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 7,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "سیب متوسط",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "کره بادام زمینی",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "سیب را قاچ کرده و روی آن کره بادام زمینی بمالید.",
+        "image_prompt": "Sliced red apple arranged on a plate with peanut butter dip."
+    },
+    {
+        "id": 2,
+        "name": "ماست یونانی و بری",
+        "category": "ماست و لبنیات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 15,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "ماست یونانی کم‌چرب",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "مخلوط توت (بری)",
+                "amount": "۱/۲ پیمانه"
+            }
+        ],
+        "instructions": "میوه‌ها را روی ماست ریخته و میل کنید.",
+        "image_prompt": "Bowl of thick white greek yogurt topped with mixed berries."
+    },
+    {
+        "id": 3,
+        "name": "پفیلا (پاپ‌کورن) خانگی",
+        "category": "شور و نمکی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 20,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "ذرت",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "نمک و فلفل",
+                "amount": "کمی"
+            },
+            {
+                "name": "روغن (اسپری)",
+                "amount": "بسیار کم"
+            }
+        ],
+        "instructions": "ذرت را در قابلمه دربسته یا هواپز بدون روغن زیاد پف دهید.",
+        "image_prompt": "Bowl of fluffy white popcorn on a wooden table."
+    },
+    {
+        "id": 4,
+        "name": "رایس کیک و آووکادو",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 3,
+            "carbs": 20,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "رایس کیک (نخود/برنج)",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "آووکادو له شده",
+                "amount": "۱/۴ عدد"
+            },
+            {
+                "name": "فلفل قرمز",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "آووکادو را روی رایس کیک بمالید و ادویه بزنید.",
+        "image_prompt": "Rice cakes topped with green mashed avocado and red pepper flakes."
+    },
+    {
+        "id": 5,
+        "name": "بادام درختی خام",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 6,
+            "carbs": 6,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "بادام درختی خام",
+                "amount": "۲۳ عدد (یک مشت)"
+            }
+        ],
+        "instructions": "به عنوان میان وعده ساده میل کنید.",
+        "image_prompt": "Handful of raw almonds on a rustic surface."
+    },
+    {
+        "id": 6,
+        "name": "هویج و هوموس",
+        "category": "دیپ و سس",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 20,
+            "fat": 7
+        },
+        "ingredients": [
+            {
+                "name": "هویج خلالی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "هوموس",
+                "amount": "۳ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "هویج‌ها را در هوموس بزنید و لذت ببرید.",
+        "image_prompt": "Carrot sticks served in a glass with a side of hummus dip."
+    },
+    {
+        "id": 7,
+        "name": "توپک خرمایی (انرژی بال)",
+        "category": "پروتئین بار و توپک",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 3,
+            "carbs": 15,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "خرما",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پودر نارگیل",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "خرما و گردو را میکس کرده، گرد کنید و در نارگیل بغلتانید.",
+        "image_prompt": "Date energy balls coated in coconut flakes."
+    },
+    {
+        "id": 8,
+        "name": "تخم مرغ آب‌پز",
+        "category": "شور و نمکی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 70,
+            "protein": 6,
+            "carbs": 0,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "نمک و فلفل",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "تخم مرغ را سفت آب‌پز کنید.",
+        "image_prompt": "Single hard boiled egg peeled and cut in half."
+    },
+    {
+        "id": 9,
+        "name": "شکلات تلخ و چای",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "شکلات تلخ (۸۵٪ به بالا)",
+                "amount": "۲۰ گرم"
+            },
+            {
+                "name": "چای سبز/سیاه",
+                "amount": "۱ فنجان"
+            }
+        ],
+        "instructions": "دو مربع شکلات تلخ با چای.",
+        "image_prompt": "Squares of dark chocolate next to a cup of hot tea."
+    },
+    {
+        "id": 10,
+        "name": "نخود برشته (چیپس نخود)",
+        "category": "شور و نمکی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 7,
+            "carbs": 20,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "نخود پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "پاپریکا و نمک",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "نخود را ادویه زده و در فر یا هواپز برشته کنید.",
+        "image_prompt": "Crispy roasted chickpeas seasoned with spices in a bowl."
+    },
+    {
+        "id": 11,
+        "name": "پنیر کاتیج و آناناس",
+        "category": "ماست و لبنیات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "پنیر کاتیج",
+                "amount": "۳/۴ پیمانه"
+            },
+            {
+                "name": "آناناس خرد شده",
+                "amount": "۱/۴ پیمانه"
+            }
+        ],
+        "instructions": "ترکیب شور و شیرین عالی برای عصرانه.",
+        "image_prompt": "Bowl of chunky cottage cheese topped with yellow pineapple pieces."
+    },
+    {
+        "id": 12,
+        "name": "خیار و پنیر فتا",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 5,
+            "carbs": 4,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "خیار حلقه شده",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پنیر فتا",
+                "amount": "۳۰ گرم"
+            },
+            {
+                "name": "نعنا خشک",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "پنیر را روی حلقه‌های خیار بگذارید.",
+        "image_prompt": "Cucumber rounds topped with feta cheese cubes."
+    },
+    {
+        "id": 13,
+        "name": "اسموتی سبز کوچک",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "اسفناج",
+                "amount": "۱ مشت"
+            },
+            {
+                "name": "موز",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "آب",
+                "amount": "۱/۲ لیوان"
+            }
+        ],
+        "instructions": "مواد را میکس کنید.",
+        "image_prompt": "Small glass of green smoothie with spinach leaf garnish."
+    },
+    {
+        "id": 14,
+        "name": "تست موز و دارچین",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 35,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "نان تست سبوس‌دار",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "موز حلقه شده",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "دارچین",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "موز را روی نان تست شده بچینید و دارچین بپاشید.",
+        "image_prompt": "Toast topped with banana slices and dusted with cinnamon."
+    },
+    {
+        "id": 15,
+        "name": "ادمام (لوبیا سویا)",
+        "category": "شور و نمکی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 11,
+            "carbs": 9,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "ادمام غلاف‌دار (یخ زده)",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "نمک دریا",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "ادمام را بخارپز کنید و نمک بزنید.",
+        "image_prompt": "Bowl of steamed edamame pods sprinkled with salt."
+    },
+    {
+        "id": 16,
+        "name": "پودینگ چیا فوری",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 12,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "دانه چیا",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "شیر بادام",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "وانیل",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "مخلوط کنید و ۱ ساعت صبر کنید تا ژله‌ای شود.",
+        "image_prompt": "Small jar of chia seed pudding."
+    },
+    {
+        "id": 17,
+        "name": "ساقه کرفس و کره بادام",
+        "category": "دیپ و سس",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 8,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "ساقه کرفس",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "کره بادام درختی",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "کشمش (اختیاری)",
+                "amount": "چند عدد"
+            }
+        ],
+        "instructions": "داخل گودی کرفس کره بمالید (مورچه‌ها روی کنده).",
+        "image_prompt": "Celery sticks filled with almond butter and topped with raisins."
+    },
+    {
+        "id": 18,
+        "name": "لقمه بوقلمون (بدون نان)",
+        "category": "شور و نمکی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 15,
+            "carbs": 2,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "ژامبون بوقلمون",
+                "amount": "۲ ورقه"
+            },
+            {
+                "name": "پنیر خامه‌ای",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "خیارشور",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "پنیر را روی ژامبون مالیده و دور خیارشور بپیچید.",
+        "image_prompt": "Turkey slices rolled up with cream cheese filling."
+    },
+    {
+        "id": 19,
+        "name": "مخلوط آجیل (Trail Mix)",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 5,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "مغزیجات خام",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "میوه خشک",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مخلوط کرده و میل کنید (کنترل حجم مهم است).",
+        "image_prompt": "Handful of trail mix with nuts and dried cranberries."
+    },
+    {
+        "id": 20,
+        "name": "گوجه گیلاسی و پنیر توپی",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 6,
+            "carbs": 5,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "گوجه گیلاسی",
+                "amount": "۱۰ عدد"
+            },
+            {
+                "name": "پنیر موزارلا توپی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "ریحان",
+                "amount": "چند برگ"
+            }
+        ],
+        "instructions": "به صورت سیخ چوبی کوچک یا در کاسه سرو کنید.",
+        "image_prompt": "Skewers of cherry tomatoes and mozzarella balls with basil."
+    },
+    {
+        "id": 21,
+        "name": "انگور یخ زده",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 0,
+            "carbs": 16,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "انگور بی دانه",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "انگورها را در فریزر بگذارید تا یخ بزند (جایگزین بستنی).",
+        "image_prompt": "Bowl of frosty frozen grapes."
+    },
+    {
+        "id": 22,
+        "name": "ماست ایسلندی ساده",
+        "category": "ماست و لبنیات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 12,
+            "carbs": 8,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "ماست ایسلندی (Skyr)",
+                "amount": "۱ بسته کوچک"
+            }
+        ],
+        "instructions": "پروتئین بالا و چربی صفر.",
+        "image_prompt": "Cup of plain Icelandic yogurt."
+    },
+    {
+        "id": 23,
+        "name": "چیپس کدو سبز",
+        "category": "شور و نمکی",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 3,
+            "carbs": 10,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز حلقه نازک",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ادویه و نمک",
+                "amount": "کمی"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "در فر خشک کنید تا ترد شود.",
+        "image_prompt": "Crispy baked zucchini chips."
+    },
+    {
+        "id": 24,
+        "name": "پروتئین شیک وانیلی",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 24,
+            "carbs": 3,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "پودر پروتئین وی",
+                "amount": "۱ اسکوپ"
+            },
+            {
+                "name": "آب سرد",
+                "amount": "۱ لیوان"
+            }
+        ],
+        "instructions": "در شیکر مخلوط کنید.",
+        "image_prompt": "Vanilla protein shake in a shaker bottle."
+    },
+    {
+        "id": 25,
+        "name": "تست پنیر و گردو",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 8,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "نان تست سبوس‌دار",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پنیر فتا",
+                "amount": "۲۰ گرم"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "نان و پنیر و گردوی کلاسیک.",
+        "image_prompt": "Toast with feta cheese and walnut halves."
+    },
+    {
+        "id": 26,
+        "name": "سالاد میوه لیوانی",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 25,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "سیب، پرتقال، کیوی",
+                "amount": "۱ پیمانه خرد شده"
+            },
+            {
+                "name": "آبلیمو",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "میوه‌های فصل را خرد کرده و مخلوط کنید.",
+        "image_prompt": "Fruit salad served in a glass cup."
+    },
+    {
+        "id": 27,
+        "name": "تخمه کدو",
+        "category": "شور و نمکی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 7,
+            "carbs": 5,
+            "fat": 13
+        },
+        "ingredients": [
+            {
+                "name": "مغز تخمه کدو خام/بو داده",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "منبع عالی منیزیم.",
+        "image_prompt": "Small bowl of pumpkin seeds."
+    },
+    {
+        "id": 28,
+        "name": "شیر کاکائو رژیمی",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 110,
+            "protein": 8,
+            "carbs": 12,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "شیر کم چرب",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "پودر کاکائو تلخ",
+                "amount": "۱ قاشق مرباخوری"
+            },
+            {
+                "name": "استویا",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "شیر گرم را با کاکائو مخلوط کنید.",
+        "image_prompt": "Mug of hot chocolate made with milk."
+    },
+    {
+        "id": 29,
+        "name": "خرمالو خشک (چیپس خرمالو)",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 130,
+            "protein": 1,
+            "carbs": 32,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "برگه خرمالو خشک",
+                "amount": "۵ عدد"
+            }
+        ],
+        "instructions": "جایگزین آبنبات و شیرینی.",
+        "image_prompt": "Dried persimmon slices arranged on a plate."
+    },
+    {
+        "id": 30,
+        "name": "رول خیار و سوشی (گیاهی)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 10,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "خیار ورقه نازک",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "هویج و آووکادو",
+                "amount": "خلالی"
+            }
+        ],
+        "instructions": "سبزیجات را داخل ورقه خیار رول کنید.",
+        "image_prompt": "Cucumber rolls filled with carrot and avocado sticks."
+    },
+    {
+        "id": 31,
+        "name": "کفیر",
+        "category": "ماست و لبنیات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 6,
+            "carbs": 8,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "کفیر طبیعی",
+                "amount": "۱ لیوان"
+            }
+        ],
+        "instructions": "نوشیدنی پروبیوتیک برای سلامت روده.",
+        "image_prompt": "Glass of white kefir drink."
+    },
+    {
+        "id": 32,
+        "name": "گرانولا بار خانگی (کوچک)",
+        "category": "پروتئین بار و توپک",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 4,
+            "carbs": 20,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر، عسل، آجیل",
+                "amount": "۱ قطعه کوچک"
+            }
+        ],
+        "instructions": "یک بار کوچک خانگی به عنوان میان وعده.",
+        "image_prompt": "Small rectangular homemade granola bar."
+    },
+    {
+        "id": 33,
+        "name": "زیتون پرورده (کم)",
+        "category": "شور و نمکی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 5,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "زیتون پرورده",
+                "amount": "۵ عدد درشت"
+            }
+        ],
+        "instructions": "چربی سالم و طعم عالی.",
+        "image_prompt": "Small dish of marinated olives with walnuts (Zeytoon Parvardeh)."
+    },
+    {
+        "id": 34,
+        "name": "گل کلم سوخاری (در فر)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 5,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "گل کلم",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "پودر سوخاری و ادویه",
+                "amount": "۲ قاشق"
+            }
+        ],
+        "instructions": "گل کلم را در مواد زده و در فر برشته کنید (بال کبابی گیاهی).",
+        "image_prompt": "Baked cauliflower florets looking like popcorn chicken."
+    },
+    {
+        "id": 35,
+        "name": "تست ریحان و گوجه",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "نان تست سبوس‌دار",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ حلقه"
+            },
+            {
+                "name": "ریحان تازه",
+                "amount": "چند برگ"
+            }
+        ],
+        "instructions": "بروسکتا ساده و سریع.",
+        "image_prompt": "Toast topped with tomato slices and fresh basil leaves."
+    },
+    {
+        "id": 36,
+        "name": "آب کرفس و لیمو",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 40,
+            "protein": 1,
+            "carbs": 8,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "آب کرفس تازه",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "لیمو ترش",
+                "amount": "۱/۲ عدد"
+            }
+        ],
+        "instructions": "نوشیدنی سم‌زدا.",
+        "image_prompt": "Glass of bright green celery juice."
+    },
+    {
+        "id": 37,
+        "name": "لواشک خانگی (بدون شکر)",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 1,
+            "carbs": 20,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "لواشک میوه طبیعی",
+                "amount": "۱ ورقه کوچک"
+            }
+        ],
+        "instructions": "جایگزین تنقلات ترش ناسالم.",
+        "image_prompt": "Roll of dark fruit leather (Lavashak)."
+    },
+    {
+        "id": 38,
+        "name": "دیپ ماست و موسیر با چیپس خلالی",
+        "category": "دیپ و سس",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "ماست موسیر",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "سیب زمینی خلالی (فرپز)",
+                "amount": "۱/۲ پیمانه"
+            }
+        ],
+        "instructions": "چیپس سالم خانگی با ماست.",
+        "image_prompt": "Dip bowl with yogurt and homemade potato sticks."
+    },
+    {
+        "id": 39,
+        "name": "تخم بلدرچین",
+        "category": "شور و نمکی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 70,
+            "protein": 6,
+            "carbs": 0,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "تخم بلدرچین آب‌پز",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "گلپر",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "میان وعده پروتئینی کوچک.",
+        "image_prompt": "Small boiled quail eggs sprinkled with spice."
+    },
+    {
+        "id": 40,
+        "name": "سالاد لوبیا چشم‌بلبلی (کوچک)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 6,
+            "carbs": 20,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "شوید و آبلیمو",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "سالاد سریع و سیرکننده.",
+        "image_prompt": "Small bowl of black-eyed pea salad."
+    },
+    {
+        "id": 41,
+        "name": "پسته خام",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 6,
+            "carbs": 8,
+            "fat": 13
+        },
+        "ingredients": [
+            {
+                "name": "پسته",
+                "amount": "۲۰ عدد"
+            }
+        ],
+        "instructions": "پسته با پوست برای کندتر خوردن بهتر است.",
+        "image_prompt": "Handful of pistachios in shell."
+    },
+    {
+        "id": 42,
+        "name": "شیر گرم و زردچوبه",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 8,
+            "carbs": 12,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "شیر",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "زردچوبه و عسل",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "شیر طلایی ضد التهاب.",
+        "image_prompt": "Golden milk latte in a glass mug."
+    },
+    {
+        "id": 43,
+        "name": "ژله رژیمی با میوه",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 50,
+            "protein": 2,
+            "carbs": 10,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "ژله بدون قند",
+                "amount": "۱/۲ لیوان"
+            },
+            {
+                "name": "تکه های میوه",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "ژله کم کالری با تکه‌های میوه داخلش.",
+        "image_prompt": "Clear jelly with fruit pieces suspended inside."
+    },
+    {
+        "id": 44,
+        "name": "چیپس سیب (خشک)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 25,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "برگه سیب خشک",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "دارچین",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "چیپس میوه سالم.",
+        "image_prompt": "Dried apple rings sprinkled with cinnamon."
+    },
+    {
+        "id": 45,
+        "name": "اسنک جلبک دریایی",
+        "category": "شور و نمکی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 30,
+            "protein": 2,
+            "carbs": 4,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "ورقه جلبک نوری",
+                "amount": "۱ بسته کوچک"
+            }
+        ],
+        "instructions": "اسنک شور و ترد ژاپنی.",
+        "image_prompt": "Sheets of roasted seaweed snack."
+    },
+    {
+        "id": 46,
+        "name": "تست تن ماهی (مینی)",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 15,
+            "carbs": 15,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "نان تست کوچک",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "تن ماهی",
+                "amount": "۲ قاشق"
+            },
+            {
+                "name": "آبلیمو",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "یک میان وعده پروتئینی سریع.",
+        "image_prompt": "Single toast topped with tuna salad."
+    },
+    {
+        "id": 47,
+        "name": "دسر ماست و شکلات",
+        "category": "ماست و لبنیات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 10,
+            "carbs": 18,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "ماست یونانی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "خرده شکلات تلخ",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "ماست را با شکلات مخلوط کنید.",
+        "image_prompt": "Yogurt bowl with dark chocolate shavings."
+    },
+    {
+        "id": 48,
+        "name": "فلفل دلمه‌ای و پنیر",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 4,
+            "carbs": 6,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "برش‌های فلفل دلمه‌ای",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پنیر مثلثی",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "فلفل را با پنیر بخورید.",
+        "image_prompt": "Colorful bell pepper strips with a cheese wedge."
+    },
+    {
+        "id": 49,
+        "name": "اسموتی هندوانه",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "هندوانه یخ زده",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "نعنا",
+                "amount": "چند برگ"
+            }
+        ],
+        "instructions": "هندوانه را بدون شکر میکس کنید.",
+        "image_prompt": "Glass of red watermelon slushie."
+    },
+    {
+        "id": 50,
+        "name": "تخم کدو",
+        "category": "شور و نمکی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 7,
+            "carbs": 4,
+            "fat": 13
+        },
+        "ingredients": [
+            {
+                "name": "تخم کدو",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "تخمه شکستن سرگرم کننده و سالم است.",
+        "image_prompt": "Pile of roasted pumpkin seeds."
+    },
+    {
+        "id": 51,
+        "name": "بستنی موزی (نایس کریم)",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 25,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "موز یخ زده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "شیر (خیلی کم)",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "موز یخ زده را میکس کنید تا بافت بستنی بگیرد.",
+        "image_prompt": "Scoop of creamy banana ice cream (nice cream)."
+    },
+    {
+        "id": 52,
+        "name": "رول پنیر و سبزی",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 5,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "نان لواش کوچک",
+                "amount": "۱/۲ نان"
+            },
+            {
+                "name": "پنیر و سبزی خوردن",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "لقمه سنتی ایرانی کوچک.",
+        "image_prompt": "Small wrap of flatbread with feta cheese and fresh herbs."
+    },
+    {
+        "id": 53,
+        "name": "سالاد کاپریس (سیخی)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 8,
+            "carbs": 3,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "گوجه گیلاسی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "پنیر موزارلا توپی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "روغن زیتون و ریحان",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "گوجه و پنیر را به سیخ بکشید.",
+        "image_prompt": "Caprese salad skewers with balsamic glaze."
+    },
+    {
+        "id": 54,
+        "name": "پروتئین بار خانگی",
+        "category": "پروتئین بار و توپک",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 15,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "پودر پروتئین، جو، کره بادام",
+                "amount": "۱ بار"
+            }
+        ],
+        "instructions": "بار پروتئینی سالم بدون مواد نگهدارنده.",
+        "image_prompt": "Homemade protein bar wrapped in paper."
+    },
+    {
+        "id": 55,
+        "name": "لوبیا سبز خام",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 30,
+            "protein": 2,
+            "carbs": 7,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا سبز تازه و ترد",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "به عنوان اسنک ترد میل کنید.",
+        "image_prompt": "Fresh raw green beans in a cup."
+    },
+    {
+        "id": 56,
+        "name": "چای ماسالا (رژیمی)",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 4,
+            "carbs": 8,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "چای سیاه و ادویه ماسالا",
+                "amount": "۱ فنجان"
+            },
+            {
+                "name": "شیر کم چرب",
+                "amount": "۱/۲ فنجان"
+            }
+        ],
+        "instructions": "چای پرادویه و گرم.",
+        "image_prompt": "Cup of spiced masala chai tea."
+    },
+    {
+        "id": 57,
+        "name": "چیپس کلم پیچ (Kale Chips)",
+        "category": "شور و نمکی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 50,
+            "protein": 3,
+            "carbs": 6,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "برگ کلم پیچ",
+                "amount": "۲ پیمانه"
+            },
+            {
+                "name": "روغن و نمک",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "برگ‌ها را در فر خشک و ترد کنید.",
+        "image_prompt": "Bowl of crispy green kale chips."
+    },
+    {
+        "id": 58,
+        "name": "ماست میوه‌ای یخی",
+        "category": "ماست و لبنیات",
+        "prep_time": "۶۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 4,
+            "carbs": 12,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "ماست میوه‌ای",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "ماست را سکه‌ای روی کاغذ ریخته و فریز کنید (Yogurt Bark).",
+        "image_prompt": "Frozen yogurt bark pieces with fruit bits."
+    },
+    {
+        "id": 59,
+        "name": "کلوچه جو دوسر (۱ عدد)",
+        "category": "نان و غلات",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 18,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر و موز له شده",
+                "amount": "۱ عدد کلوچه"
+            }
+        ],
+        "instructions": "کلوچه رژیمی بدون شکر.",
+        "image_prompt": "Single oatmeal cookie on a napkin."
+    },
+    {
+        "id": 60,
+        "name": "آب انار طبیعی",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 130,
+            "protein": 1,
+            "carbs": 32,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "انار",
+                "amount": "۲ عدد (آب گرفته)"
+            }
+        ],
+        "instructions": "آنتی‌اکسیدان خالص.",
+        "image_prompt": "Glass of deep red pomegranate juice."
+    },
+    {
+        "id": 61,
+        "name": "توت فرنگی و شکلات",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "توت فرنگی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "شکلات آب شده",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "توت فرنگی را در شکلات تلخ بزنید.",
+        "image_prompt": "Strawberries dipped in dark chocolate."
+    },
+    {
+        "id": 62,
+        "name": "گواکامولی و سبزیجات",
+        "category": "دیپ و سس",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 3,
+            "carbs": 12,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "آووکادو له شده (گواکامولی)",
+                "amount": "۳ قاشق"
+            },
+            {
+                "name": "فلفل دلمه‌ای برای دیپ",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "دیپ سالم چربی‌سوز.",
+        "image_prompt": "Guacamole dip bowl with bell pepper slices."
+    },
+    {
+        "id": 63,
+        "name": "سفیده تخم مرغ پر شده",
+        "category": "شور و نمکی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 10,
+            "carbs": 2,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ آب‌پز",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "هوموس یا ماست",
+                "amount": "برای پر کردن زرده"
+            }
+        ],
+        "instructions": "زرده را درآورده و با هوموس جایگزین کنید (Deviled eggs رژیمی).",
+        "image_prompt": "Egg whites filled with hummus swirl."
+    },
+    {
+        "id": 64,
+        "name": "کشمش و گردو",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 3,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "کشمش",
+                "amount": "۱ قاشق"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "میان وعده سنتی و مقوی.",
+        "image_prompt": "Small mix of raisins and walnut pieces."
+    },
+    {
+        "id": 65,
+        "name": "گلابی",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 27,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "گلابی متوسط",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "میوه کامل با فیبر بالا.",
+        "image_prompt": "Fresh green pear on a white background."
+    },
+    {
+        "id": 66,
+        "name": "نان جو خشک (کراکر)",
+        "category": "نان و غلات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 70,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "نان جو خشک رژیمی",
+                "amount": "۲ تکه"
+            }
+        ],
+        "instructions": "سیرکننده و ترد.",
+        "image_prompt": "Crispbread crackers stacked."
+    },
+    {
+        "id": 67,
+        "name": "اسموتی بری و اسفناج",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 130,
+            "protein": 2,
+            "carbs": 28,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "بری‌ها",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "اسفناج",
+                "amount": "۱ مشت"
+            },
+            {
+                "name": "آب",
+                "amount": "۱ لیوان"
+            }
+        ],
+        "instructions": "مخلوط بنفش و مقوی.",
+        "image_prompt": "Purple berry smoothie with hidden spinach."
+    },
+    {
+        "id": 68,
+        "name": "ماست و خیار و نعنا",
+        "category": "ماست و لبنیات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "ماست",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "خیار",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "نعنا",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "میان وعده خنک کننده.",
+        "image_prompt": "Bowl of Tzatziki style yogurt dip."
+    },
+    {
+        "id": 69,
+        "name": "کنجد بار (سوهان کنجدی)",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "بار کنجدی عسلی",
+                "amount": "۱ تکه کوچک"
+            }
+        ],
+        "instructions": "انرژی‌زا و سرشار از کلسیم.",
+        "image_prompt": "Piece of sesame snap bar."
+    },
+    {
+        "id": 70,
+        "name": "سوپ سرد (گازپاچو) شات",
+        "category": "دیپ و سس",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 50,
+            "protein": 2,
+            "carbs": 10,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "سوپ گوجه سرد",
+                "amount": "۱ شات کوچک"
+            }
+        ],
+        "instructions": "به عنوان میان وعده نوشیدنی.",
+        "image_prompt": "Shot glass filled with red tomato gazpacho."
+    },
+    {
+        "id": 71,
+        "name": "فندق خام",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 5,
+            "fat": 17
+        },
+        "ingredients": [
+            {
+                "name": "فندق",
+                "amount": "۲۰ عدد"
+            }
+        ],
+        "instructions": "خوشمزه و مقوی.",
+        "image_prompt": "Handful of raw hazelnuts."
+    },
+    {
+        "id": 72,
+        "name": "آلو خشک (بخارا)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 26,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "آلو خشک",
+                "amount": "۵ عدد"
+            }
+        ],
+        "instructions": "برای هضم عالی است.",
+        "image_prompt": "Dried plums (prunes) in a small bowl."
+    },
+    {
+        "id": 73,
+        "name": "تارتلت ماست و گرانولا",
+        "category": "ماست و لبنیات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 6,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "نان تارت کوچک",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ماست و میوه",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "فینگر فود شیرین.",
+        "image_prompt": "Mini tart shell filled with yogurt and a berry."
+    },
+    {
+        "id": 74,
+        "name": "تربچه و کره",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 50,
+            "protein": 0,
+            "carbs": 2,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "تربچه نقلی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "کره (کم)",
+                "amount": "کمی"
+            },
+            {
+                "name": "نمک",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "اسنک کلاسیک فرانسوی (تربچه با کمی کره).",
+        "image_prompt": "Fresh radishes served with a smear of butter and salt."
+    },
+    {
+        "id": 75,
+        "name": "ذرت مکزیکی خانگی (رژیمی)",
+        "category": "شور و نمکی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "ذرت بخارپز",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "آبلیمو، نمک، آویشن",
+                "amount": "فراوان"
+            },
+            {
+                "name": "روغن زیتون (جای کره)",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "ذرت را با ادویه مخلوط کنید (بدون سس مایونز).",
+        "image_prompt": "Cup of steamed corn seasoned with herbs and lime."
+    },
+    {
+        "id": 76,
+        "name": "آب هویج بستنی (بدون بستنی!)",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 2,
+            "carbs": 28,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "آب هویج",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "شیر نارگیل غلیظ",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "آب هویج را با کمی شیر نارگیل مخلوط کنید تا خامه‌ای شود.",
+        "image_prompt": "Glass of carrot juice with a swirl of coconut cream."
+    },
+    {
+        "id": 77,
+        "name": "انجیر خشک",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 110,
+            "protein": 1,
+            "carbs": 28,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "انجیر خشک",
+                "amount": "۳ عدد"
+            }
+        ],
+        "instructions": "شیرینی طبیعی.",
+        "image_prompt": "Dried figs on a wooden board."
+    },
+    {
+        "id": 78,
+        "name": "ساندویچ خیار (کوچک)",
+        "category": "نان و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 3,
+            "carbs": 10,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "نان تست (برش کوچک)",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پنیر و خیار",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "اسنک عصرانه چای.",
+        "image_prompt": "Mini cucumber tea sandwich without crust."
+    },
+    {
+        "id": 79,
+        "name": "توت سفید خشک",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "توت خشک",
+                "amount": "۱ مشت کوچک"
+            }
+        ],
+        "instructions": "جایگزین قند.",
+        "image_prompt": "Handful of dried white mulberries."
+    },
+    {
+        "id": 80,
+        "name": "دمنوش بابونه و عسل",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 30,
+            "protein": 0,
+            "carbs": 8,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "دمنوش بابونه",
+                "amount": "۱ فنجان"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "آرامش بخش عصرانه.",
+        "image_prompt": "Cup of chamomile tea with a honey dipper."
+    },
+    {
+        "id": 81,
+        "name": "بیسکویت دایجستیو (ساقه طلایی)",
+        "category": "نان و غلات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 70,
+            "protein": 1,
+            "carbs": 10,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "بیسکویت سبوس‌دار",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "با چای میل شود.",
+        "image_prompt": "Single digestive biscuit."
+    },
+    {
+        "id": 82,
+        "name": "زغال اخته (فصل)",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "زغال اخته تازه",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "نمک",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "میوه ترش و جذاب.",
+        "image_prompt": "Bowl of fresh red cornelian cherries."
+    },
+    {
+        "id": 83,
+        "name": "پنیر کبابی (هلومی) - ۱ تکه",
+        "category": "شور و نمکی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 90,
+            "protein": 6,
+            "carbs": 0,
+            "fat": 7
+        },
+        "ingredients": [
+            {
+                "name": "پنیر هلومی",
+                "amount": "۱ برش"
+            }
+        ],
+        "instructions": "پنیر را گریل کنید.",
+        "image_prompt": "Grilled slice of halloumi cheese."
+    },
+    {
+        "id": 84,
+        "name": "آب نارگیل",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 45,
+            "protein": 0,
+            "carbs": 11,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "آب نارگیل طبیعی",
+                "amount": "۱ لیوان"
+            }
+        ],
+        "instructions": "الکترولیت طبیعی.",
+        "image_prompt": "Fresh coconut water in a glass."
+    },
+    {
+        "id": 85,
+        "name": "کلوچه پروتئینی",
+        "category": "پروتئین بار و توپک",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "پودر پروتئین، تخم مرغ، جو",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "کلوچه خانگی با پروتئین بالا.",
+        "image_prompt": "Soft baked protein cookie."
+    },
+    {
+        "id": 86,
+        "name": "سالاد جوانه گندم",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "جوانه گندم",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "آبلیمو و روغن زیتون",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "بمب ویتامین.",
+        "image_prompt": "Bowl of wheat sprout salad."
+    },
+    {
+        "id": 87,
+        "name": "ماست و چیپس خرما",
+        "category": "ماست و لبنیات",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "ماست",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "چیپس خرما (خرمای خشک)",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "جایگزین شکر در ماست.",
+        "image_prompt": "Yogurt topped with dried date pieces."
+    },
+    {
+        "id": 88,
+        "name": "نارنگی",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 50,
+            "protein": 1,
+            "carbs": 13,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "نارنگی",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "راحت پوست کنده می‌شود و کم کالری است.",
+        "image_prompt": "Peeled tangerine segments."
+    },
+    {
+        "id": 89,
+        "name": "تخم آفتابگردان",
+        "category": "شور و نمکی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 6,
+            "carbs": 6,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "مغز تخمه آفتابگردان",
+                "amount": "۲ قاشق"
+            }
+        ],
+        "instructions": "میان وعده کلاسیک.",
+        "image_prompt": "Bowl of sunflower seeds."
+    },
+    {
+        "id": 90,
+        "name": "شیر بادام شکلاتی",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 1,
+            "carbs": 12,
+            "fat": 2.5
+        },
+        "ingredients": [
+            {
+                "name": "شیر بادام",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "پودر کاکائو",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "نسخه گیاهی شیرکاکائو.",
+        "image_prompt": "Glass of chocolate almond milk."
+    },
+    {
+        "id": 91,
+        "name": "نان سوخاری و پنیر",
+        "category": "نان و غلات",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "نان سوخاری رژیمی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پنیر کم چرب",
+                "amount": "۱ قاشق"
+            }
+        ],
+        "instructions": "ترد و خوشمزه.",
+        "image_prompt": "Rusk toast with spread cheese."
+    },
+    {
+        "id": 92,
+        "name": "سالاد انار و گلپر",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 1,
+            "carbs": 18,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "دانه انار",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "گلپر و نمک",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "میان وعده پاییزی.",
+        "image_prompt": "Bowl of pomegranate seeds seasoned with angelica powder."
+    },
+    {
+        "id": 93,
+        "name": "لقمه خرما و ارده",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 3,
+            "carbs": 20,
+            "fat": 7
+        },
+        "ingredients": [
+            {
+                "name": "خرما",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "ارده",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "خرما را در ارده بزنید.",
+        "image_prompt": "Dates dipped in tahini sauce."
+    },
+    {
+        "id": 94,
+        "name": "اسلایس نارگیل تازه",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 1,
+            "carbs": 6,
+            "fat": 13
+        },
+        "ingredients": [
+            {
+                "name": "نارگیل تازه",
+                "amount": "۱ قطعه"
+            }
+        ],
+        "instructions": "چربی سالم و فیبر.",
+        "image_prompt": "Pieces of fresh white coconut meat."
+    },
+    {
+        "id": 95,
+        "name": "سوپ سرد خیار (آبدوغ)",
+        "category": "دیپ و سس",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 4,
+            "carbs": 8,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "ماست رقیق",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "خیار و سبزی",
+                "amount": "کمی"
+            }
+        ],
+        "instructions": "شات کوچک آبدوغ خیار.",
+        "image_prompt": "Small glass of cucumber yogurt soup."
+    },
+    {
+        "id": 96,
+        "name": "گیلاس",
+        "category": "میوه و سبزیجات",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 90,
+            "protein": 1,
+            "carbs": 22,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "گیلاس تازه",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "جایگزین شیرینی.",
+        "image_prompt": "Bowl of fresh red cherries."
+    },
+    {
+        "id": 97,
+        "name": "شیک قهوه سرد (بدون شکر)",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۲ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 50,
+            "protein": 3,
+            "carbs": 5,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "قهوه سرد",
+                "amount": "۱ فنجان"
+            },
+            {
+                "name": "شیر",
+                "amount": "۱/۴ فنجان"
+            },
+            {
+                "name": "یخ",
+                "amount": "فراوان"
+            }
+        ],
+        "instructions": "آیس کافی کم کالری.",
+        "image_prompt": "Iced coffee in a tall glass."
+    },
+    {
+        "id": 98,
+        "name": "سنجد",
+        "category": "شیرین و انرژی‌زا",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 1,
+            "carbs": 20,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "سنجد",
+                "amount": "۱۰ عدد"
+            }
+        ],
+        "instructions": "برای سلامت استخوان.",
+        "image_prompt": "Bowl of dried Oleaster (Senjed)."
+    },
+    {
+        "id": 99,
+        "name": "بادام زمینی با پوست",
+        "category": "شور و نمکی",
+        "prep_time": "۱ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 7,
+            "carbs": 6,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "بادام زمینی غلاف‌دار",
+                "amount": "۱ مشت"
+            }
+        ],
+        "instructions": "شکستن آن سرگرم کننده است.",
+        "image_prompt": "Peanuts in shell."
+    },
+    {
+        "id": 100,
+        "name": "آب زرشک",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "زرشک سیاه",
+                "amount": "آب گرفته"
+            }
+        ],
+        "instructions": "تصفیه کننده خون.",
+        "image_prompt": "Glass of dark red barberry juice."
+    }
+]

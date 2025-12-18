@@ -100,6 +100,11 @@ export default function Home() {
   // State for Food Detail Modal
   const [selectedFood, setSelectedFood] = useState<any>(null);
 
+  // Kitchen Access State
+  const [showKitchenTab, setShowKitchenTab] = useState(false);
+
+
+
   // State for dashboard refresh
   const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
 
@@ -132,6 +137,20 @@ export default function Home() {
 
     setCurrentView(view);
   }, [currentView]);
+
+  useEffect(() => {
+    const checkKitchenAccess = async () => {
+      const status = await apiService.getKitchenStatus();
+      const shouldShow = status.isEnabled && status.hasAccess;
+      setShowKitchenTab(shouldShow);
+
+      // Redirect if currently on kitchen page but access is lost
+      if (!shouldShow && currentView === 'kitchen') {
+        navigateToView('dashboard');
+      }
+    };
+    checkKitchenAccess();
+  }, [appState, currentView, navigateToView]);
 
   const openFoodDetail = useCallback((food: any) => {
     // Push new state with modal identifier
@@ -516,10 +535,33 @@ export default function Home() {
 
       {currentView === 'kitchen' && (
         <KitchenPage
-          onAddFood={(food) => {
-            console.log("Add food from kitchen:", food);
-            // logic to add food or open modal
-            openFoodDetail(food);
+          onAddFood={async (food) => {
+            try {
+              // Map kitchen item to API format
+              const foodData = {
+                title: food.name,
+                calories: food.calories,
+                proteinGrams: food.protein,
+                carbsGrams: food.carbs,
+                fatsGrams: food.fat,
+                imageUrl: food.image,
+                ingredients: food.ingredients?.map((i: any) => ({
+                  name: `${i.name} (${i.amount})`,
+                  calories: 0,
+                  proteinGrams: 0,
+                  fatGrams: 0,
+                  carbsGrams: 0
+                })),
+                date: new Date().toISOString().slice(0, 10)
+              };
+
+              await apiService.addFoodItem(foodData);
+              showNotification(`"${food.name}" به گزارش امروز اضافه شد`, 'success');
+              setDashboardRefreshTrigger(prev => prev + 1);
+            } catch (error) {
+              console.error("Failed to add kitchen food:", error);
+              showNotification("خطا در افزودن غذا", 'error');
+            }
           }}
         />
       )}
@@ -613,20 +655,22 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="flex-1 flex justify-center min-w-0">
-            <button
-              onClick={() => navigateToView('kitchen')}
-              className={`flex flex-col items-center justify-center h-full w-full rounded-[20px] transition-all duration-300 group ${currentView === 'kitchen' ? '' : 'hover:bg-gray-50'}`}
-            >
-              <div className={`p-1.5 rounded-xl transition-all duration-300 ${currentView === 'kitchen' ? 'bg-green-50 text-green-500 -translate-y-1' : 'text-gray-400'}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 10-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                </svg>
-              </div>
-              {currentView === 'kitchen' && <span className="text-[9px] font-bold text-green-500 mt-0.5 animate-fade-in truncate w-full text-center">آشپزخانه</span>}
-            </button>
-          </div>
+          {showKitchenTab && (
+            <div className="flex-1 flex justify-center min-w-0">
+              <button
+                onClick={() => navigateToView('kitchen')}
+                className={`flex flex-col items-center justify-center h-full w-full rounded-[20px] transition-all duration-300 group ${currentView === 'kitchen' ? '' : 'hover:bg-gray-50'}`}
+              >
+                <div className={`p-1.5 rounded-xl transition-all duration-300 ${currentView === 'kitchen' ? 'bg-green-50 text-green-500 -translate-y-1' : 'text-gray-400'}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 10-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {currentView === 'kitchen' && <span className="text-[9px] font-bold text-green-500 mt-0.5 animate-fade-in truncate w-full text-center">آشپزخانه</span>}
+              </button>
+            </div>
+          )}
 
           <div className="flex-1 flex justify-center min-w-0">
             <button

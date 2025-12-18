@@ -33,6 +33,7 @@ import errorLogRoutes from './routes/errorLogRoutes';
 import chatRoutes from './routes/chatRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import kitchenRoutes from './routes/kitchenRoutes';
+import settingsRoutes from './routes/settingsRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 import firebaseService from './services/firebaseService';
@@ -136,6 +137,7 @@ app.use('/api/error-logs', errorLogRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/kitchen', kitchenRoutes);
+app.use('/api/settings', settingsRoutes);
 
 
 // Serve static files from the React website build directory

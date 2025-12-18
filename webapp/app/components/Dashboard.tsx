@@ -601,7 +601,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             value={consumed.fat}
                             total={goals.fatsGrams}
                             unit="گرم"
-                            color="#EC4899"
+                            color="#EAB308"
                             icon={<FatIcon />}
                         />
                         <NutrientCard
@@ -617,7 +617,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             value={consumed.protein}
                             total={goals.proteinGrams}
                             unit="گرم"
-                            color="#3B82F6"
+                            color="#EF4444"
                             icon={<ProteinIcon />}
                         />
                     </div>
@@ -684,13 +684,15 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                                     {food.timestamp.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
-                                            <div className="text-xl font-black text-gray-900 mt-auto mb-2 text-right">
-                                                {toPersianNumbers(food.calories)} <span className="text-xs font-bold text-gray-400">کالری</span>
-                                            </div>
-                                            <div className="flex gap-1.5 justify-end flex-wrap">
-                                                <MacroPill value={toPersianNumbers(food.protein)} label="گرم" color="text-blue-600" bg="bg-blue-50" icon="🥩" />
-                                                <MacroPill value={toPersianNumbers(food.carbs)} label="گرم" color="text-amber-600" bg="bg-amber-50" icon="🌾" />
-                                                <MacroPill value={toPersianNumbers(food.fat)} label="گرم" color="text-pink-600" bg="bg-pink-50" icon="🧈" />
+                                            <div className="flex flex-col gap-0.5 mt-auto">
+                                                <div className="text-lg font-black text-gray-900 text-right leading-none mb-1">
+                                                    {toPersianNumbers(food.calories)} <span className="text-[10px] font-bold text-gray-400">کالری</span>
+                                                </div>
+                                                <div className="flex gap-1 justify-end flex-nowrap overflow-hidden">
+                                                    <MacroPill value={toPersianNumbers(food.protein)} label="گرم" color="text-red-600" bg="bg-red-50" icon="🥩" />
+                                                    <MacroPill value={toPersianNumbers(food.carbs)} label="گرم" color="text-amber-600" bg="bg-amber-50" icon="🌾" />
+                                                    <MacroPill value={toPersianNumbers(food.fat)} label="گرم" color="text-yellow-600" bg="bg-yellow-50" icon="🧈" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

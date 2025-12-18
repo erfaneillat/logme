@@ -4,13 +4,18 @@ import path from 'path';
 import fs from 'fs';
 import {
     getAllCategories,
+    getKitchenStatus,
     getAdminCategories,
     createCategory,
     updateCategory,
     deleteCategory,
     getCategoryById,
     uploadKitchenImage,
-    importKitchenItems
+    importKitchenItems,
+    saveKitchenItem,
+    unsaveKitchenItem,
+    getSavedKitchenItems,
+    checkSavedStatus
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -46,6 +51,7 @@ const upload = multer({
 const router = express.Router();
 
 // Public/User routes
+router.get('/status', authenticateToken, getKitchenStatus);
 router.get('/categories', authenticateToken, getAllCategories);
 
 // Upload route
@@ -73,5 +79,11 @@ router.get('/categories/:id', authenticateAdmin, getCategoryById);
 router.post('/categories', authenticateAdmin, createCategory);
 router.put('/categories/:id', authenticateAdmin, updateCategory);
 router.delete('/categories/:id', authenticateAdmin, deleteCategory);
+
+// User saved items routes
+router.get('/saved', authenticateToken, getSavedKitchenItems);
+router.post('/saved', authenticateToken, saveKitchenItem);
+router.post('/saved/check', authenticateToken, checkSavedStatus);
+router.delete('/saved/:kitchenItemId', authenticateToken, unsaveKitchenItem);
 
 export default router;

@@ -781,6 +781,43 @@ export const apiService = {
         }
     },
 
+    addFoodItem: async (data: {
+        title: string;
+        calories: number;
+        proteinGrams: number;
+        fatsGrams: number;
+        carbsGrams: number;
+        ingredients?: any[];
+        imageUrl?: string;
+        date?: string;
+    }): Promise<ApiResponse> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/food/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.error || responseData.message || 'Failed to add food');
+            }
+
+            return responseData;
+        } catch (error: any) {
+            console.error('addFoodItem error:', error);
+            throw error;
+        }
+    },
+
     updateLogItem: async (itemId: string, data: any): Promise<DailyLogItem> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
@@ -1863,6 +1900,31 @@ export const apiService = {
     },
 
     // Kitchen API
+    getKitchenStatus: async (): Promise<{ isEnabled: boolean; hasAccess: boolean }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) return { isEnabled: false, hasAccess: false };
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/status`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                return { isEnabled: false, hasAccess: false };
+            }
+            return data;
+        } catch (error) {
+            console.error('getKitchenStatus error:', error);
+            return { isEnabled: false, hasAccess: false };
+        }
+    },
+
     getKitchenCategories: async (): Promise<any[]> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
@@ -1885,6 +1947,122 @@ export const apiService = {
             return data;
         } catch (error) {
             console.error('getKitchenCategories error:', error);
+            return [];
+        }
+    },
+
+    getSavedKitchenItems: async (): Promise<any[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/saved`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                console.error('Failed to fetch saved items:', data);
+                return [];
+            }
+            return data.items || [];
+        } catch (error) {
+            console.error('getSavedKitchenItems error:', error);
+            return [];
+        }
+    },
+
+    saveKitchenItem: async (item: {
+        kitchenItemId: string;
+        name: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        image: string;
+        prepTime: string;
+        difficulty: string;
+        ingredients?: any[];
+        instructions?: string;
+    }): Promise<{ saved: boolean }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/saved`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(item),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to save item');
+            }
+            return { saved: data.saved };
+        } catch (error) {
+            console.error('saveKitchenItem error:', error);
+            throw error;
+        }
+    },
+
+    unsaveKitchenItem: async (kitchenItemId: string): Promise<{ saved: boolean }> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/saved/${encodeURIComponent(kitchenItemId)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok && response.status !== 404) {
+                throw new Error(data.message || 'Failed to unsave item');
+            }
+            return { saved: false };
+        } catch (error) {
+            console.error('unsaveKitchenItem error:', error);
+            throw error;
+        }
+    },
+
+    checkSavedKitchenItems: async (itemIds: string[]): Promise<string[]> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/saved/check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ itemIds }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                console.error('Failed to check saved status:', data);
+                return [];
+            }
+            return data.savedIds || [];
+        } catch (error) {
+            console.error('checkSavedKitchenItems error:', error);
             return [];
         }
     },

@@ -20,10 +20,11 @@ interface KitchenItem {
     carbs: number;
     fat: number;
     image: string;
-    prepTime: string; // e.g., "15 min"
+    prepTime: string;
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[];
     instructions?: string;
+    originalId?: string;
 }
 
 interface KitchenSubCategory {
@@ -58,26 +59,68 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
     const [selectedItem, setSelectedItem] = useState<KitchenItem | null>(null);
     const [selectedSubCategory, setSelectedSubCategory] = useState<KitchenSubCategory | null>(null);
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const data = await apiService.getKitchenCategories();
-                setCategories(data);
-            } catch (error) {
-                console.error('Failed to load kitchen data', error);
-                setCategories([]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    // Saved items state
+    const [savedItems, setSavedItems] = useState<KitchenItem[]>([]);
+    const [savedItemIds, setSavedItemIds] = useState<Set<string>>(new Set());
+    const [showSavedList, setShowSavedList] = useState(false);
 
-        fetchCategories();
+    const refreshData = async () => {
+        setIsLoading(true);
+        try {
+            const [catsData, savedData] = await Promise.all([
+                apiService.getKitchenCategories(),
+                apiService.getSavedKitchenItems()
+            ]);
+
+            // Process saved items
+            const processedSavedItems = (savedData || []).map((item: any) => ({
+                ...item,
+                _id: item.kitchenItemId,
+                id: item.kitchenItemId,
+                originalId: item._id
+            }));
+
+            setSavedItems(processedSavedItems);
+            setSavedItemIds(new Set(processedSavedItems.map((i: any) => i._id)));
+
+            // Set categories directly (no saved category prepended)
+            setCategories(catsData);
+
+        } catch (error) {
+            console.error('Failed to load kitchen data', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        refreshData();
     }, []);
 
-    // Get the currently selected category
+    const handleSaveToggle = (item: KitchenItem, isSaved: boolean) => {
+        const itemId = item._id || item.id;
+        if (!itemId) return;
+
+        if (isSaved) {
+            const newItem = { ...item, _id: itemId };
+            setSavedItems(prev => [newItem, ...prev]);
+            setSavedItemIds(prev => {
+                const next = new Set(prev);
+                next.add(itemId);
+                return next;
+            });
+        } else {
+            setSavedItems(prev => prev.filter(i => (i._id || i.id) !== itemId));
+            setSavedItemIds(prev => {
+                const next = new Set(prev);
+                next.delete(itemId);
+                return next;
+            });
+        }
+    };
+
     const selectedCategory = categories[selectedCategoryIndex];
 
-    // Filter items by search across all subcategories
     const getFilteredSubCategories = () => {
         if (!selectedCategory) return [];
         if (!searchQuery.trim()) return selectedCategory.subCategories || [];
@@ -92,6 +135,70 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
             .filter(subCat => subCat.items.length > 0);
     };
 
+    // Render a single item card (reusable)
+    const renderItemCard = (item: KitchenItem, showSavedBadge = false) => (
+        <div
+            key={item._id || item.id}
+            className="snap-center relative shrink-0 w-[220px] bg-white rounded-[32px] p-4 pb-4 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.08)] border border-gray-100/50 hover:border-orange-200 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl"
+            onClick={() => setSelectedItem(item)}
+        >
+            <div className="w-full h-32 rounded-[24px] bg-gradient-to-br from-gray-50 to-gray-100 mb-4 flex items-center justify-center shadow-inner relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500">
+                {item.image?.startsWith('http') ? (
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                ) : (
+                    <svg className="w-14 h-14 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.38a48.474 48.474 0 00-6-.37c-2.032 0-4.034.125-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265zm-3 0a.375.375 0 11-.53 0L9 2.845l.265.265zm6 0a.375.375 0 11-.53 0L15 2.845l.265.265z" />
+                    </svg>
+                )}
+
+                {(showSavedBadge || savedItemIds.has(item._id || item.id || '')) && (
+                    <div className="absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-sm text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                )}
+
+                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold text-white flex items-center gap-1">
+                    <span>⏱️</span>
+                    {toPersianNumbers(item.prepTime)}
+                </div>
+            </div>
+
+            <div>
+                <h3 className="font-bold text-gray-800 mb-1 truncate text-lg">{item.name}</h3>
+                <div className="flex items-center gap-2 mb-3">
+                    <span className="text-orange-500 font-extrabold text-sm flex items-center gap-1">
+                        🔥 {toPersianNumbers(item.calories)}
+                    </span>
+                    <span className="text-gray-300 text-xs">|</span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${item.difficulty === 'easy' ? 'bg-green-50 text-green-600' :
+                        item.difficulty === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'
+                        }`}>
+                        {item.difficulty === 'easy' ? 'آسان' : item.difficulty === 'medium' ? 'متوسط' : 'سخت'}
+                    </span>
+                </div>
+
+                <div className="flex gap-1 mt-2 bg-gray-50 p-2 rounded-2xl justify-between">
+                    <div className="flex flex-col items-center">
+                        <span className="text-[9px] text-gray-400 font-medium">پروتئین</span>
+                        <span className="text-[10px] text-gray-700 font-bold">{toPersianNumbers(item.protein)}g</span>
+                    </div>
+                    <div className="w-px bg-gray-200"></div>
+                    <div className="flex flex-col items-center">
+                        <span className="text-[9px] text-gray-400 font-medium">کربو</span>
+                        <span className="text-[10px] text-gray-700 font-bold">{toPersianNumbers(item.carbs)}g</span>
+                    </div>
+                    <div className="w-px bg-gray-200"></div>
+                    <div className="flex flex-col items-center">
+                        <span className="text-[9px] text-gray-400 font-medium">چربی</span>
+                        <span className="text-[10px] text-gray-700 font-bold">{toPersianNumbers(item.fat)}g</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <div className="h-full flex flex-col bg-[#F8F9FB] overflow-hidden relative">
             {/* Background Decorative Elements */}
@@ -105,8 +212,16 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                         <h1 className="text-2xl font-black text-gray-900 mb-1">آشپزخانه 🧑‍🍳</h1>
                         <p className="text-sm text-gray-500 font-medium">پیشنهادهای خوشمزه و سالم برای شما</p>
                     </div>
-                    <div className="w-10 h-10 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-gray-100">
-                        <span className="text-xl">🥗</span>
+                    <div className="flex items-center gap-3">
+                        {/* Saved Items Button */}
+                        <button
+                            onClick={() => setShowSavedList(true)}
+                            className="relative w-10 h-10 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-gray-100 hover:bg-red-50 hover:border-red-200 transition-colors"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -147,12 +262,35 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                 </div>
 
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="space-y-6 animate-pulse">
+                        {/* Loading Categories - Mimics the subcategory structure */}
+                        {[1, 2].map((i) => (
+                            <div key={i}>
+                                <div className="px-6 mb-4 flex justify-between items-end">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-6 bg-gray-200 rounded-full"></div>
+                                        <div className="h-6 w-32 bg-gray-200 rounded-lg"></div>
+                                    </div>
+                                </div>
+                                <div className="flex overflow-x-hidden px-6 gap-4 pb-4">
+                                    {[1, 2, 3].map((j) => (
+                                        <div key={j} className="shrink-0 w-[220px] bg-white rounded-[32px] p-4 pb-4 border border-gray-100">
+                                            <div className="w-full h-32 rounded-[24px] bg-gray-100 mb-4"></div>
+                                            <div className="h-5 w-3/4 bg-gray-100 rounded-lg mb-2"></div>
+                                            <div className="h-4 w-1/2 bg-gray-100 rounded-lg mb-4"></div>
+                                            <div className="flex gap-1 justify-between">
+                                                <div className="h-8 w-12 bg-gray-100 rounded-lg"></div>
+                                                <div className="h-8 w-12 bg-gray-100 rounded-lg"></div>
+                                                <div className="h-8 w-12 bg-gray-100 rounded-lg"></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <>
-                        {/* Subcategories with items */}
                         {getFilteredSubCategories().map((subCat, subIndex) => (
                             <div key={subCat._id || subIndex} className="animate-slide-up" style={{ animationDelay: `${subIndex * 100}ms` }}>
                                 <div className="px-6 mb-4 flex justify-between items-end">
@@ -163,99 +301,49 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                                             ({toPersianNumbers(subCat.items.length)} مورد)
                                         </span>
                                     </h2>
-                                    <button
-                                        onClick={() => setSelectedSubCategory(subCat)}
-                                        className="text-xs font-bold text-orange-500 hover:text-orange-600 transition-colors"
-                                    >
-                                        مشاهده همه
-                                    </button>
+                                    {subCat.items.length > 5 && (
+                                        <button
+                                            onClick={() => setSelectedSubCategory(subCat)}
+                                            className="text-xs font-bold text-orange-500 hover:text-orange-600 transition-colors"
+                                        >
+                                            مشاهده همه
+                                        </button>
+                                    )}
                                 </div>
 
-                                {/* Horizontal List */}
                                 <div className="flex overflow-x-auto px-6 gap-4 pb-4 no-scrollbar -mx-1 pt-1 snap-x snap-mandatory">
-                                    {subCat.items.map((item) => (
+                                    {subCat.items.map((item) => renderItemCard(item))}
+
+                                    {subCat.items.length > 5 && (
                                         <div
-                                            key={item._id || item.id}
-                                            className="snap-center relative shrink-0 w-[220px] bg-white rounded-[32px] p-4 pb-4 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.08)] border border-gray-100/50 hover:border-orange-200 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl"
-                                            onClick={() => setSelectedItem(item)}
+                                            className="snap-center shrink-0 w-[100px] flex flex-col items-center justify-center cursor-pointer"
+                                            onClick={() => setSelectedSubCategory(subCat)}
                                         >
-                                            {/* Image Area */}
-                                            <div className="w-full h-32 rounded-[24px] bg-gradient-to-br from-gray-50 to-gray-100 mb-4 flex items-center justify-center shadow-inner relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500">
-                                                {item.image?.startsWith('http') ? (
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <svg className="w-14 h-14 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.38a48.474 48.474 0 00-6-.37c-2.032 0-4.034.125-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265zm-3 0a.375.375 0 11-.53 0L9 2.845l.265.265zm6 0a.375.375 0 11-.53 0L15 2.845l.265.265z" />
-                                                    </svg>
-                                                )}
-
-                                                {/* Add overlay button */}
-                                                <div className="absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 text-orange-500">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                                    </svg>
-                                                </div>
-
-                                                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold text-white flex items-center gap-1">
-                                                    <span>⏱️</span>
-                                                    {toPersianNumbers(item.prepTime)}
-                                                </div>
-                                            </div>
-
-                                            {/* Content */}
-                                            <div>
-                                                <h3 className="font-bold text-gray-800 mb-1 truncate text-lg">{item.name}</h3>
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <span className="text-orange-500 font-extrabold text-sm flex items-center gap-1">
-                                                        🔥 {toPersianNumbers(item.calories)}
-                                                    </span>
-                                                    <span className="text-gray-300 text-xs">|</span>
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${item.difficulty === 'easy' ? 'bg-green-50 text-green-600' :
-                                                        item.difficulty === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'
-                                                        }`}>
-                                                        {item.difficulty === 'easy' ? 'آسان' : item.difficulty === 'medium' ? 'متوسط' : 'سخت'}
-                                                    </span>
-                                                </div>
-
-                                                {/* Macros Mini Bar */}
-                                                <div className="flex gap-1 mt-2 bg-gray-50 p-2 rounded-2xl justify-between">
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-[9px] text-gray-400 font-medium">پروتئین</span>
-                                                        <span className="text-[10px] text-gray-700 font-bold">{toPersianNumbers(item.protein)}g</span>
-                                                    </div>
-                                                    <div className="w-px bg-gray-200"></div>
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-[9px] text-gray-400 font-medium">کربو</span>
-                                                        <span className="text-[10px] text-gray-700 font-bold">{toPersianNumbers(item.carbs)}g</span>
-                                                    </div>
-                                                    <div className="w-px bg-gray-200"></div>
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-[9px] text-gray-400 font-medium">چربی</span>
-                                                        <span className="text-[10px] text-gray-700 font-bold">{toPersianNumbers(item.fat)}g</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <button className="w-14 h-14 bg-white border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center text-gray-400 hover:border-orange-300 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300 mb-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </button>
+                                            <span className="text-xs font-bold text-gray-400">بیشتر</span>
                                         </div>
-                                    ))}
-
-                                    {/* "See More" Card */}
-                                    <div
-                                        className="snap-center shrink-0 w-[100px] flex flex-col items-center justify-center cursor-pointer"
-                                        onClick={() => setSelectedSubCategory(subCat)}
-                                    >
-                                        <button className="w-14 h-14 bg-white border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center text-gray-400 hover:border-orange-300 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300 mb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                            </svg>
-                                        </button>
-                                        <span className="text-xs font-bold text-gray-400">بیشتر</span>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
 
-                        {/* Empty state when no subcategories */}
-                        {selectedCategory && getFilteredSubCategories().length === 0 && (
+                        {categories.length === 0 && (
+                            <div className="flex flex-col items-center justify-center py-20 px-6">
+                                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-5xl mb-6">
+                                    👨‍🍳
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">آشپزخانه در دسترس نیست</h3>
+                                <p className="text-sm text-gray-500 text-center max-w-xs">
+                                    در حال حاضر آیتمی برای نمایش وجود ندارد یا شما دسترسی لازم را ندارید.
+                                </p>
+                            </div>
+                        )}
+
+                        {categories.length > 0 && selectedCategory && getFilteredSubCategories().length === 0 && (
                             <div className="flex flex-col items-center justify-center py-16 px-6">
                                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-4xl mb-4">
                                     🍽️
@@ -292,7 +380,81 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                 <div className="h-10"></div>
             </div>
 
-            {/* See All Page - overlays the kitchen page */}
+            {/* Saved Items Overlay */}
+            {showSavedList && (
+                <div className="fixed inset-0 z-50 bg-[#F8F9FB]">
+                    <div className="h-full flex flex-col">
+                        {/* Header */}
+                        <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl px-4 py-4 flex items-center gap-4 border-b border-gray-100">
+                            <button
+                                onClick={() => setShowSavedList(false)}
+                                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                            <div className="flex-1">
+                                <h1 className="text-lg font-bold text-gray-900">ذخیره‌شده‌ها</h1>
+                                <p className="text-xs text-gray-500">{toPersianNumbers(savedItems.length)} دستور غذا</p>
+                            </div>
+                            <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                        </header>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-6 pb-32">
+                            {savedItems.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-20">
+                                    <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center text-5xl mb-6">
+                                        ❤️
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">هنوز چیزی ذخیره نکردید</h3>
+                                    <p className="text-sm text-gray-500 text-center max-w-xs">
+                                        دستور غذاهای مورد علاقه‌تان را ذخیره کنید تا بعداً راحت‌تر پیدایشان کنید
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {savedItems.map((item) => (
+                                        <div
+                                            key={item._id || item.id}
+                                            className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex gap-4 items-center cursor-pointer hover:shadow-md hover:border-orange-200 transition-all"
+                                            onClick={() => setSelectedItem(item)}
+                                        >
+                                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                                                {item.image?.startsWith('http') ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="text-3xl">🍽️</span>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-bold text-gray-900 truncate mb-1">{item.name}</h3>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <span className="text-orange-500 font-bold">🔥 {toPersianNumbers(item.calories)}</span>
+                                                    <span className="text-gray-300">|</span>
+                                                    <span className="text-gray-500">{toPersianNumbers(item.prepTime)}</span>
+                                                </div>
+                                            </div>
+                                            <div className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center text-red-500 shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* See All Page */}
             {selectedSubCategory && !selectedItem && (
                 <div className="fixed inset-0 z-50 bg-[#F8F9FB]">
                     <KitchenSeeAllPage
@@ -304,11 +466,13 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                 </div>
             )}
 
-            {/* Item Detail Page - overlays the kitchen page */}
+            {/* Item Detail Page */}
             {selectedItem && (
                 <div className="fixed inset-0 z-50 bg-[#F8F9FB]">
                     <KitchenItemDetailPage
                         item={selectedItem}
+                        isSaved={savedItemIds.has(selectedItem._id || selectedItem.id || '')}
+                        onSaveToggle={handleSaveToggle}
                         onBack={() => setSelectedItem(null)}
                         onAddToLog={(item) => {
                             onAddFood && onAddFood(item);

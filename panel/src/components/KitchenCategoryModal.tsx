@@ -174,7 +174,14 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
 
     const handleEditItem = (index: number) => {
         setEditingItemIndex(index);
-        setItemFormData({ ...subCatFormData.items![index] });
+        const item = subCatFormData.items![index];
+        // Sanitize image: if it's a long string that is not a URL, it's likely a prompt/garbage
+        let image = item.image || '🥣';
+        if (image && !image.startsWith('http') && image.length > 30) {
+            image = '';
+        }
+
+        setItemFormData({ ...item, image });
         setIsItemModalOpen(true);
     };
 
@@ -512,7 +519,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                                                 {item.image?.startsWith('http') ? (
                                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <span>{item.image}</span>
+                                                    <span>{(item.image && item.image.length <= 30) ? item.image : ''}</span>
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -624,7 +631,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                                             className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-black focus:ring-1 focus:ring-black outline-none transition-all text-sm font-medium"
                                             value={itemFormData.image || ''}
                                             onChange={e => setItemFormData({ ...itemFormData, image: e.target.value })}
-                                            placeholder="Paste URL or Type Emoji (e.g. 🥣)"
+                                            placeholder="Paste URL (http/https) or Type Emoji (e.g. 🥣)"
                                         />
                                     </div>
                                 </div>
