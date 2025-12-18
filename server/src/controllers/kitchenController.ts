@@ -212,6 +212,7 @@ export const importKitchenItems = async (req: Request, res: Response) => {
                 carbs: item.nutritional_info?.carbs || 0,
                 fat: item.nutritional_info?.fat || 0,
                 image: item.image_prompt || '🍲', // Use prompt as image placeholder or default emoji
+                imagePrompt: item.image_prompt, // Store raw prompt
                 prepTime: item.prep_time || '15 min',
                 difficulty: difficulty,
                 ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
