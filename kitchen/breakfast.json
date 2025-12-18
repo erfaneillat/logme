@@ -1,0 +1,3162 @@
+[
+    {
+        "id": 1,
+        "name": "اوتمیل سیب و دارچین",
+        "category": "اوتمیل و غلات",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 6,
+            "carbs": 45,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر پرک",
+                "amount": "۴۰ گرم (۴ قاشق غذاخوری)"
+            },
+            {
+                "name": "شیر کم‌چرب",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "سیب",
+                "amount": "۱ عدد کوچک"
+            },
+            {
+                "name": "دارچین",
+                "amount": "۱/۲ قاشق چای‌خوری"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق مرباخوری"
+            }
+        ],
+        "instructions": "جو و شیر را بپزید تا نرم شود، سپس سیب خرد شده و دارچین را اضافه کنید.",
+        "image_prompt": "A close-up of a ceramic bowl with oatmeal, topped with diced red apples and cinnamon powder, soft morning light, 8k."
+    },
+    {
+        "id": 2,
+        "name": "املت سفیده و اسفناج",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 20,
+            "carbs": 3,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "سفیده تخم مرغ",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "اسفناج تازه",
+                "amount": "۱ مشت بزرگ"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۳ عدد ورقه شده"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "اسفناج و قارچ را تفت دهید، سپس سفیده را اضافه کنید تا بپزد.",
+        "image_prompt": "Fluffy white egg omelet with spinach and mushrooms on a white plate, bright kitchen lighting."
+    },
+    {
+        "id": 3,
+        "name": "تست آووکادو و تخم‌مرغ",
+        "category": "نان و تست",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 25,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "نان تست جو",
+                "amount": "۱ برش"
+            },
+            {
+                "name": "آووکادو",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پول‌بیبر",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "آووکادو له شده را روی نان بمالید و تخم مرغ آب‌پز یا پوج شده را روی آن قرار دهید.",
+        "image_prompt": "Toast topped with mashed avocado and a poached egg with runny yolk, sprinkled with red pepper flakes."
+    },
+    {
+        "id": 4,
+        "name": "پودینگ دانه چیا",
+        "category": "دسر و پودینگ",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "دانه چیا",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "شیر بادام",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "توت فرنگی",
+                "amount": "۴ عدد"
+            },
+            {
+                "name": "وانیل",
+                "amount": "نوک قاشق"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده و شب تا صبح در یخچال بگذارید تا غلیظ شود.",
+        "image_prompt": "Glass jar of chia pudding layered with fresh strawberries on a marble counter."
+    },
+    {
+        "id": 5,
+        "name": "پنکیک پروتئینی موزی",
+        "category": "پنکیک و وافل",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 25,
+            "carbs": 30,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "موز رسیده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پودر پروتئین (وی)",
+                "amount": "۱ اسکوپ"
+            },
+            {
+                "name": "بیکینگ پودر",
+                "amount": "۱/۲ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مواد را در مخلوط‌کن یکدست کرده و در تابه نچسب سرخ کنید.",
+        "image_prompt": "Stack of golden brown pancakes with banana slices and maple syrup drizzle, white background."
+    },
+    {
+        "id": 6,
+        "name": "ماست یونانی و گرنولا",
+        "category": "سریع و فوری",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 18,
+            "carbs": 22,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "ماست یونانی کم‌چرب",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "گرنولا رژیمی",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "بلوبری یا توت",
+                "amount": "۱ مشت"
+            }
+        ],
+        "instructions": "ماست را در کاسه ریخته و گرنولا و میوه را روی آن تزیین کنید.",
+        "image_prompt": "Bowl of thick Greek yogurt topped with granola and blueberries, clean composition."
+    },
+    {
+        "id": 7,
+        "name": "تست کره بادام زمینی",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 10,
+            "carbs": 35,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "نان تست سبوس‌دار",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "کره بادام زمینی",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "موز",
+                "amount": "۱ عدد کوچک"
+            }
+        ],
+        "instructions": "کره را روی نان مالیده و برش‌های موز را روی آن بچینید.",
+        "image_prompt": "Whole wheat toast with peanut butter and banana slices, wooden table background."
+    },
+    {
+        "id": 8,
+        "name": "فریتاتا مدیترانه‌ای",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 16,
+            "carbs": 6,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پنیر فتا",
+                "amount": "۳۰ گرم"
+            },
+            {
+                "name": "گوجه گیلاسی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "زیتون سیاه",
+                "amount": "۴ عدد"
+            }
+        ],
+        "instructions": "تخم مرغ را با سبزیجات مخلوط کرده و در تابه بپزید تا سفت شود.",
+        "image_prompt": "Slice of vegetable frittata with tomatoes and olives, melted feta cheese on top."
+    },
+    {
+        "id": 9,
+        "name": "اسموتی سبز سم‌زدا",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 4,
+            "carbs": 30,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "اسفناج",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "سیب سبز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "خیار",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "آب لیمو تازه",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "همه مواد را با کمی آب در مخلوط‌کن میکس کنید.",
+        "image_prompt": "Tall glass of green smoothie with cucumber slice, condensation on glass, fresh vibe."
+    },
+    {
+        "id": 10,
+        "name": "کاسه پنیر کاتیج",
+        "category": "پروتئین بالا",
+        "prep_time": "۳ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 22,
+            "carbs": 12,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "پنیر کاتیج",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "هلو یا آناناس",
+                "amount": "۱/۲ پیمانه خرد شده"
+            }
+        ],
+        "instructions": "پنیر را در کاسه ریخته و تکه‌های میوه را اضافه کنید.",
+        "image_prompt": "Bowl of cottage cheese with fresh peach chunks, macro shot, bright white aesthetic."
+    },
+    {
+        "id": 11,
+        "name": "تست ریکوتا و عسل",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 10,
+            "carbs": 28,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "پنیر ریکوتا",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "بادام پرک",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "پنیر را روی نان بمالید و عسل و بادام را روی آن بریزید.",
+        "image_prompt": "Toast spread with white ricotta cheese, drizzled with honey and almond flakes."
+    },
+    {
+        "id": 12,
+        "name": "شاکشوکا (املت گوجه)",
+        "category": "بین‌المللی",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 14,
+            "carbs": 15,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "فلفل دلمه‌ای",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد کوچک"
+            }
+        ],
+        "instructions": "سس گوجه غلیظ درست کنید و تخم مرغ را داخل آن بشکنید تا بپزد.",
+        "image_prompt": "Red tomato sauce in a cast iron skillet with eggs poached inside, garnished with parsley."
+    },
+    {
+        "id": 13,
+        "name": "فرنی کوینوا",
+        "category": "اوتمیل و غلات",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "کوینوا خام",
+                "amount": "۴۰ گرم"
+            },
+            {
+                "name": "شیر بادام",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "دارچین",
+                "amount": "۱/۲ قاشق چای‌خوری"
+            },
+            {
+                "name": "شیره افرا",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "کوینوا را با شیر بپزید تا غلیظ و نرم شود.",
+        "image_prompt": "Bowl of cooked quinoa porridge with cinnamon stick and milk splash."
+    },
+    {
+        "id": 14,
+        "name": "تخم مرغ آب‌پز و هوموس",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 14,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "هوموس",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "نان سبوس‌دار",
+                "amount": "۱ کف دست"
+            },
+            {
+                "name": "خیار",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "تخم مرغ را آب‌پز کرده و در کنار هوموس و نان سرو کنید.",
+        "image_prompt": "Plate with hummus swirl, halved hard-boiled eggs, and cucumber sticks."
+    },
+    {
+        "id": 15,
+        "name": "رپ سفیده و بوقلمون",
+        "category": "سریع و فوری",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 30,
+            "carbs": 25,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "نان تورتیلا",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سفیده تخم مرغ",
+                "amount": "۳ عدد (پخته)"
+            },
+            {
+                "name": "کالباس بوقلمون",
+                "amount": "۲ ورقه"
+            }
+        ],
+        "instructions": "سفیده پخته و بوقلمون را داخل نان بپیچید.",
+        "image_prompt": "Breakfast wrap cut in half showing layers of egg white and turkey breast."
+    },
+    {
+        "id": 16,
+        "name": "سالاد میوه و کتان",
+        "category": "گیاهی و وگان",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 3,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "سیب",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "موز",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "کیوی",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "دانه کتان آسیاب شده",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "میوه‌ها را خرد کرده و دانه کتان روی آن‌ها بپاشید.",
+        "image_prompt": "Colorful bowl of mixed fruit salad sprinkled with ground flaxseeds."
+    },
+    {
+        "id": 17,
+        "name": "پنکیک کدو حلوایی",
+        "category": "پنکیک و وافل",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "پوره کدو حلوایی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "آرد جو",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "دارچین",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مایه پنکیک را آماده کرده و در تابه سرخ کنید.",
+        "image_prompt": "Orange pumpkin pancakes stacked with pecans and syrup."
+    },
+    {
+        "id": 18,
+        "name": "مافین تخم مرغی",
+        "category": "پروتئین بالا",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 12,
+            "carbs": 2,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "اسفناج خرد شده",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "فلفل دلمه‌ای",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "پنیر موزارلا",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده، در قالب مافین ریخته و در فر بپزید.",
+        "image_prompt": "Egg muffin cups with visible vegetables baked in a muffin tin."
+    },
+    {
+        "id": 19,
+        "name": "اسموتی پروتئین شکلاتی",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 30,
+            "carbs": 20,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "پودر وی شکلاتی",
+                "amount": "۱ اسکوپ"
+            },
+            {
+                "name": "موز یخ زده",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "شیر کم چرب",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "کره بادام زمینی",
+                "amount": "۱/۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "همه مواد را در شیکر یا مخلوط‌کن میکس کنید.",
+        "image_prompt": "Chocolate smoothie in a shaker bottle with banana slices nearby."
+    },
+    {
+        "id": 20,
+        "name": "عدسی رژیمی",
+        "category": "سنتی ایرانی",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 18,
+            "carbs": 40,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "عدس سبز",
+                "amount": "۱/۲ پیمانه (خام)"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱ عدد کوچک"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "گلپر و ادویه",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "عدس را با پیاز و ادویه بپزید تا کاملاً لعاب دهد.",
+        "image_prompt": "Bowl of Persian lentil soup (Adasi) garnished with angelica powder and lemon."
+    },
+    {
+        "id": 21,
+        "name": "خوراک لوبیا و قارچ",
+        "category": "سنتی ایرانی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 270,
+            "protein": 15,
+            "carbs": 45,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا چیتی پخته",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "قارچ",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "پیاز داغ کم‌روغن",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "رب گوجه",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "قارچ را تفت داده و به لوبیا چیتی پخته اضافه کنید.",
+        "image_prompt": "Bowl of pinto bean stew with sliced mushrooms, steaming hot."
+    },
+    {
+        "id": 22,
+        "name": "تست تن ماهی و خیار",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 25,
+            "carbs": 20,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "تن ماهی (بدون روغن)",
+                "amount": "۱/۲ قوطی"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "خیار",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سس خردل",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "تن ماهی را روی نان ریخته و خیار را روی آن بچینید.",
+        "image_prompt": "Toast topped with tuna chunks and fresh cucumber slices."
+    },
+    {
+        "id": 23,
+        "name": "اسموتی بول (کاسه‌ای)",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 8,
+            "carbs": 50,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "موز یخ زده",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "توت فرنگی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "شیر کم چرب",
+                "amount": "۱/۴ پیمانه"
+            },
+            {
+                "name": "مغزیجات (گردو/بادام)",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "میوه یخ زده را با کمی شیر میکس کنید تا غلیظ شود و با مغزها تزیین کنید.",
+        "image_prompt": "Thick smoothie bowl decorated neatly with rows of seeds, nuts, and fruit."
+    },
+    {
+        "id": 24,
+        "name": "ساندویچ تخم مرغ",
+        "category": "نان و تست",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 18,
+            "carbs": 28,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ آب‌پز",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "نان سبوس‌دار",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "کاهو",
+                "amount": "۲ برگ"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "تخم مرغ را خرد کرده و با سبزیجات داخل نان قرار دهید.",
+        "image_prompt": "Egg salad sandwich with lettuce on whole grain bread, cross-section view."
+    },
+    {
+        "id": 25,
+        "name": "املت مارچوبه",
+        "category": "کم کربوهیدرات (کتو)",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 15,
+            "carbs": 5,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "مارچوبه",
+                "amount": "۵ شاخه"
+            },
+            {
+                "name": "پنیر پارمزان",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "کره",
+                "amount": "۱ قاشق مرباخوری"
+            }
+        ],
+        "instructions": "مارچوبه را تفت دهید و تخم مرغ زده شده را روی آن بریزید.",
+        "image_prompt": "Omelet filled with green asparagus spears and sprinkled with parmesan."
+    },
+    {
+        "id": 26,
+        "name": "وافل رژیمی بادام",
+        "category": "پنکیک و وافل",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 10,
+            "carbs": 12,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "آرد بادام",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "شیر",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "وانیل",
+                "amount": "نوک قاشق"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده و در دستگاه وافل ساز بپزید.",
+        "image_prompt": "Single almond flour waffle topped with berries, keto friendly."
+    },
+    {
+        "id": 27,
+        "name": "پودینگ چیا کاکائویی",
+        "category": "دسر و پودینگ",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 9,
+            "carbs": 22,
+            "fat": 13
+        },
+        "ingredients": [
+            {
+                "name": "دانه چیا",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "شیر",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "پودر کاکائو",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق مرباخوری"
+            }
+        ],
+        "instructions": "همه مواد را مخلوط کرده و چند ساعت در یخچال بگذارید.",
+        "image_prompt": "Chocolate chia seed pudding in a glass with mint garnish."
+    },
+    {
+        "id": 28,
+        "name": "اسکرامبل توفو (وگان)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 190,
+            "protein": 15,
+            "carbs": 8,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "توفو سفت",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "زردچوبه",
+                "amount": "۱/۲ قاشق چای‌خوری"
+            },
+            {
+                "name": "پیازچه",
+                "amount": "۲ ساقه"
+            },
+            {
+                "name": "فلفل سیاه",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "توفو را له کرده و با ادویه‌ها در تابه تفت دهید.",
+        "image_prompt": "Scrambled tofu resembling eggs with green onions and turmeric yellow color."
+    },
+    {
+        "id": 29,
+        "name": "تست گلابی و بادام",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 8,
+            "carbs": 35,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "کره بادام",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "گلابی",
+                "amount": "۱/۲ عدد (ورقه شده)"
+            }
+        ],
+        "instructions": "کره بادام را روی نان بمالید و گلابی‌ها را روی آن بچینید.",
+        "image_prompt": "Toast with almond butter and thin pear slices, cozy autumn vibe."
+    },
+    {
+        "id": 30,
+        "name": "برنج قهوه‌ای و تخم مرغ",
+        "category": "بین‌المللی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 14,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "برنج قهوه‌ای پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سویا سوس",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "کنجد",
+                "amount": "۱/۲ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "تخم مرغ نیمرو شده را روی برنج گرم قرار دهید.",
+        "image_prompt": "Bowl of brown rice topped with a fried egg and sesame seeds."
+    },
+    {
+        "id": 31,
+        "name": "نان و پنیر و خیار",
+        "category": "سنتی ایرانی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 30,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "نان سنگک یا جو",
+                "amount": "۲ کف دست"
+            },
+            {
+                "name": "پنیر کم‌چرب",
+                "amount": "۳۰ گرم"
+            },
+            {
+                "name": "خیار",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "به صورت لقمه‌های سنتی آماده و سرو کنید.",
+        "image_prompt": "Traditional Persian breakfast platter with flatbread, feta cheese, walnuts, and herbs."
+    },
+    {
+        "id": 32,
+        "name": "گرانولا بار خانگی",
+        "category": "سریع و فوری",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 6,
+            "carbs": 30,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "بادام خرد شده",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "کشمش",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مواد را مخلوط، در قالب فشرده کرده و در فر بپزید، سپس برش دهید.",
+        "image_prompt": "Homemade rectangular granola bar with visible oats and nuts."
+    },
+    {
+        "id": 33,
+        "name": "سیب پخته با گردو",
+        "category": "دسر و پودینگ",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 4,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "سیب متوسط",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گردو خرد شده",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "دارچین",
+                "amount": "۱/۴ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "داخل سیب را خالی کرده، با گردو پر کنید و بپزید.",
+        "image_prompt": "Baked apple with wrinkled skin stuffed with walnuts and cinnamon."
+    },
+    {
+        "id": 34,
+        "name": "اسموتی توت‌فرنگی موز",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 190,
+            "protein": 5,
+            "carbs": 40,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "توت فرنگی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "موز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ماست کم چرب",
+                "amount": "۱/۲ پیمانه"
+            }
+        ],
+        "instructions": "همه مواد را در مخلوط‌کن میکس کنید.",
+        "image_prompt": "Pink strawberry banana smoothie in a glass jar."
+    },
+    {
+        "id": 35,
+        "name": "رپ مرغ سرد",
+        "category": "سریع و فوری",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 35,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "نان لواش سبوس‌دار",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "سینه مرغ پخته",
+                "amount": "۱۰۰ گرم (ریش شده)"
+            },
+            {
+                "name": "کاهو",
+                "amount": "۲ برگ"
+            },
+            {
+                "name": "سس مایونز رژیمی",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مرغ ریش شده و سبزیجات را داخل نان بپیچید.",
+        "image_prompt": "Chicken wrap with fresh greens, cut open on a wooden board."
+    },
+    {
+        "id": 36,
+        "name": "اوتمیل شور (Savory)",
+        "category": "اوتمیل و غلات",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 12,
+            "carbs": 35,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر پرک",
+                "amount": "۴۰ گرم"
+            },
+            {
+                "name": "آب مرغ",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پیازچه",
+                "amount": "۱ ساقه"
+            }
+        ],
+        "instructions": "جو را در آب مرغ بپزید و روی آن تخم مرغ عسلی قرار دهید.",
+        "image_prompt": "Savory oatmeal bowl topped with a soft boiled egg and green onions."
+    },
+    {
+        "id": 37,
+        "name": "پنکیک اسفناج",
+        "category": "پنکیک و وافل",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 10,
+            "carbs": 35,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "اسفناج تازه",
+                "amount": "۱ مشت"
+            },
+            {
+                "name": "موز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "آرد جو",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "همه را میکس کرده تا خمیر سبز شود، سپس سرخ کنید.",
+        "image_prompt": "Bright green spinach pancakes stacked, healthy and vibrant."
+    },
+    {
+        "id": 38,
+        "name": "فروزن یوگرت میوه‌ای",
+        "category": "دسر و پودینگ",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "ماست یونانی",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "تمشک یخ زده",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق مرباخوری"
+            }
+        ],
+        "instructions": "در غذاساز میکس کنید تا بافت بستنی بگیرد و سرو کنید.",
+        "image_prompt": "Scoops of berry frozen yogurt in a bowl, melting slightly."
+    },
+    {
+        "id": 39,
+        "name": "سینه مرغ گریل",
+        "category": "پروتئین بالا",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 40,
+            "carbs": 0,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "سینه مرغ",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "نمک و فلفل",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "سینه مرغ را مزه‌دار کرده و گریل کنید.",
+        "image_prompt": "Grilled chicken breast with grill marks served with a lemon wedge."
+    },
+    {
+        "id": 40,
+        "name": "کرپ جو دوسر",
+        "category": "پنکیک و وافل",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 8,
+            "carbs": 30,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "آرد جو دوسر",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "شیر",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد کوچک"
+            }
+        ],
+        "instructions": "مایه رقیق درست کرده و لایه نازکی در تابه پهن کنید.",
+        "image_prompt": "Thin folded crepe made of oat flour, served plain or with berries."
+    },
+    {
+        "id": 41,
+        "name": "الویه رژیمی",
+        "category": "سنتی ایرانی",
+        "prep_time": "۳۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 18,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "سیب زمینی پخته",
+                "amount": "۱ عدد متوسط"
+            },
+            {
+                "name": "سینه مرغ پخته",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "تخم مرغ آب‌پز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ماست یونانی",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "مواد پخته و نگینی شده را با ماست و ادویه مخلوط کنید.",
+        "image_prompt": "Bowl of Olivier salad with creamy yogurt dressing instead of mayo."
+    },
+    {
+        "id": 42,
+        "name": "تخم مرغ در نان",
+        "category": "نان و تست",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 12,
+            "carbs": 20,
+            "fat": 11
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۱ برش ضخیم"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "روغن",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "وسط نان را سوراخ کرده و تخم مرغ را در حفره آن بپزید.",
+        "image_prompt": "Toast with a hole in the center containing a fried egg."
+    },
+    {
+        "id": 43,
+        "name": "کدو حلوایی بخارپز",
+        "category": "گیاهی و وگان",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 2,
+            "carbs": 28,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "کدو حلوایی",
+                "amount": "۲۰۰ گرم"
+            },
+            {
+                "name": "شیره انگور یا عسل",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "کدو را بخارپز کرده و با شیره سرو کنید.",
+        "image_prompt": "Steamed pumpkin cubes drizzled with syrup, soft texture."
+    },
+    {
+        "id": 44,
+        "name": "شیربرنج رژیمی",
+        "category": "سنتی ایرانی",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 8,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "برنج نیم‌دانه",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "شیر کم چرب",
+                "amount": "۱.۵ لیوان"
+            },
+            {
+                "name": "استویا/عسل",
+                "amount": "به مقدار دلخواه"
+            },
+            {
+                "name": "گلاب",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "برنج را با شیر بپزید تا غلیظ شود و با شیرین‌کننده مخلوط کنید.",
+        "image_prompt": "Creamy rice pudding in a bowl with rose petals on top."
+    },
+    {
+        "id": 45,
+        "name": "سالاد لوبیا صبحانه",
+        "category": "گیاهی و وگان",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "لوبیا سیاه پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "ذرت",
+                "amount": "۱/۴ پیمانه"
+            },
+            {
+                "name": "گوجه خرد شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گشنیز و آب لیمو",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "همه مواد را مخلوط کرده و با لیمو طعم‌دار کنید.",
+        "image_prompt": "Bowl of black bean and corn salad with fresh cilantro and lime."
+    },
+    {
+        "id": 46,
+        "name": "تست سالمون دودی",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 20,
+            "carbs": 25,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "پنیر خامه‌ای لایت",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سالمون دودی",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "شوید",
+                "amount": "برای تزیین"
+            }
+        ],
+        "instructions": "پنیر را روی نان مالیده و سالمون را روی آن قرار دهید.",
+        "image_prompt": "Toast with cream cheese and smoked salmon slices, garnished with dill."
+    },
+    {
+        "id": 47,
+        "name": "اسموتی قهوه موز",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 5,
+            "carbs": 30,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "قهوه دم شده سرد",
+                "amount": "۱/۲ لیوان"
+            },
+            {
+                "name": "موز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "شیر",
+                "amount": "۱/۲ لیوان"
+            },
+            {
+                "name": "یخ",
+                "amount": "۳-۴ تکه"
+            }
+        ],
+        "instructions": "همه مواد را در مخلوط‌کن میکس کنید.",
+        "image_prompt": "Coffee colored smoothie in a tall glass with coffee beans nearby."
+    },
+    {
+        "id": 48,
+        "name": "کوکی جو و موز",
+        "category": "سریع و فوری",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 18,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "موز له شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "جو دوسر پرک",
+                "amount": "۱/۲ پیمانه"
+            }
+        ],
+        "instructions": "موز و جو را مخلوط کرده و به شکل کوکی در فر بپزید.",
+        "image_prompt": "Rustic oatmeal cookies on a baking sheet, simple and textured."
+    },
+    {
+        "id": 49,
+        "name": "املت گوجه و ریحان",
+        "category": "بین‌المللی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 190,
+            "protein": 14,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "گوجه گیلاسی",
+                "amount": "۵ عدد"
+            },
+            {
+                "name": "ریحان تازه",
+                "amount": "چند برگ"
+            },
+            {
+                "name": "پنیر موزارلا کم چرب",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "املت را آماده کرده و داخل آن گوجه و ریحان بگذارید.",
+        "image_prompt": "Omelet folded with cherry tomatoes and fresh basil leaves sticking out."
+    },
+    {
+        "id": 50,
+        "name": "کاسه بوریتو صبحانه",
+        "category": "بین‌المللی",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 16
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "لوبیا چیتی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "آووکادو",
+                "amount": "۱/۴ عدد"
+            },
+            {
+                "name": "سالسا",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "همه مواد را پخته و در کاسه کنار هم بچینید.",
+        "image_prompt": "Burrito bowl ingredients (beans, eggs, salsa, avocado) arranged neatly without tortilla."
+    },
+    {
+        "id": 51,
+        "name": "کوکو کدو سبز (فری)",
+        "category": "سنتی ایرانی",
+        "prep_time": "۲۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 10,
+            "carbs": 8,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "کدو سبز رنده شده",
+                "amount": "۲ عدد متوسط"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "شوید و سیر",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "مواد را مخلوط کرده و در فر یا تابه کم روغن بپزید.",
+        "image_prompt": "Golden zucchini fritters served with a side of yogurt dip."
+    },
+    {
+        "id": 52,
+        "name": "ماگ کیک پروتئینی",
+        "category": "دسر و پودینگ",
+        "prep_time": "۳ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "پودر پروتئین",
+                "amount": "۱ اسکوپ"
+            },
+            {
+                "name": "بیکینگ پودر",
+                "amount": "۱/۴ قاشق چای‌خوری"
+            },
+            {
+                "name": "شیر",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "بری (توت)",
+                "amount": "برای تزیین"
+            }
+        ],
+        "instructions": "همه را در ماگ مخلوط کرده و ۱ دقیقه در مایکروویو بگذارید.",
+        "image_prompt": "Mug cake cooked in a coffee mug topped with a few berries."
+    },
+    {
+        "id": 53,
+        "name": "هندوانه و پنیر",
+        "category": "سریع و فوری",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 6,
+            "carbs": 20,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "هندوانه",
+                "amount": "۲ برش مثلثی"
+            },
+            {
+                "name": "پنیر فتا",
+                "amount": "۳۰ گرم"
+            },
+            {
+                "name": "نعنا",
+                "amount": "چند برگ"
+            }
+        ],
+        "instructions": "هندوانه را مکعبی خرد کرده و با پنیر و نعنا سرو کنید.",
+        "image_prompt": "Cube of watermelon topped with feta cheese crumble and a mint leaf."
+    },
+    {
+        "id": 54,
+        "name": "تست قارچ",
+        "category": "نان و تست",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "قارچ خرد شده",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "جعفری خرد شده",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "سیر",
+                "amount": "۱ حبه"
+            }
+        ],
+        "instructions": "قارچ را با سیر تفت داده و روی نان تست بریزید.",
+        "image_prompt": "Sautéed mushrooms piled high on a slice of toasted bread."
+    },
+    {
+        "id": 55,
+        "name": "حلقه فلفل و تخم مرغ",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 12,
+            "carbs": 5,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "فلفل دلمه‌ای",
+                "amount": "۲ حلقه ضخیم"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "روغن",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "تخم مرغ را وسط حلقه فلفل در تابه بشکنید تا بپزد.",
+        "image_prompt": "Fried egg cooked perfectly inside a ring of red bell pepper."
+    },
+    {
+        "id": 56,
+        "name": "اوورنایت اوتس ساده",
+        "category": "اوتمیل و غلات",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر پرک",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "شیر",
+                "amount": "۳/۴ پیمانه"
+            },
+            {
+                "name": "دانه چیا",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "مخلوط کنید و بگذارید شب تا صبح در یخچال بماند.",
+        "image_prompt": "Mason jar with overnight oats, creamy texture, simple background."
+    },
+    {
+        "id": 57,
+        "name": "قهوه بولت‌пруف (کتو)",
+        "category": "کم کربوهیدرات (کتو)",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 1,
+            "carbs": 0,
+            "fat": 28
+        },
+        "ingredients": [
+            {
+                "name": "قهوه دم شده",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "کره حیوانی (Grass-fed)",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "روغن نارگیل/MCT",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "قهوه و روغن‌ها را با همزن شدید مخلوط کنید تا کف کند.",
+        "image_prompt": "Creamy frothy coffee in a glass mug, keto bulletproof style."
+    },
+    {
+        "id": 58,
+        "name": "تست سیب‌زمینی شیرین",
+        "category": "کم کربوهیدرات (کتو)",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "سیب زمینی شیرین",
+                "amount": "۲ ورقه (طولی)"
+            },
+            {
+                "name": "آووکادو",
+                "amount": "۱/۴ عدد"
+            },
+            {
+                "name": "دانه کدو",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "ورقه‌های سیب زمینی را در توستر بپزید (به جای نان) و تاپینگ بزنید.",
+        "image_prompt": "Slices of sweet potato used as toast, topped with avocado and seeds."
+    },
+    {
+        "id": 59,
+        "name": "لبنه و زعتر",
+        "category": "بین‌المللی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "پنیر لبنه",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "ادویه زعتر",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "روغن زیتون",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "نان پیتا",
+                "amount": "۱/۲ عدد"
+            }
+        ],
+        "instructions": "لبنه را در بشقاب پهن کرده و زعتر و روغن زیتون بریزید.",
+        "image_prompt": "Plate of creamy labneh cheese with olive oil pool and za'atar spices."
+    },
+    {
+        "id": 60,
+        "name": "فرنچ تست پروتئینی",
+        "category": "نان و تست",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 22,
+            "carbs": 30,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "سفیده تخم مرغ",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "پودر پروتئین",
+                "amount": "۱/۲ اسکوپ"
+            },
+            {
+                "name": "دارچین",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "نان را در مخلوط سفیده و پروتئین زده و در تابه سرخ کنید.",
+        "image_prompt": "French toast slices dusted with cinnamon, high protein version."
+    },
+    {
+        "id": 61,
+        "name": "حلیم بوقلمون",
+        "category": "سنتی ایرانی",
+        "prep_time": "۱۸۰ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 40,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "گندم پوست‌کنده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "گوشت بوقلمون",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "دارچین",
+                "amount": "برای تزیین"
+            },
+            {
+                "name": "روغن/کره",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "گندم و گوشت را جداگانه بپزید و با هم بکوبید تا کشدار شود.",
+        "image_prompt": "Bowl of traditional Persian Haleem garnished with cinnamon and oil patterns."
+    },
+    {
+        "id": 62,
+        "name": "املت منمن (ترکی)",
+        "category": "بین‌المللی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 14,
+            "carbs": 12,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "فلفل سبز شیرین",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پیاز",
+                "amount": "۱/۲ عدد"
+            }
+        ],
+        "instructions": "سبزیجات را تفت دهید و تخم مرغ را همزده به آن اضافه کنید تا نیم‌بند شود.",
+        "image_prompt": "Turkish Menemen in a copper pan, scrambled eggs with peppers and tomatoes."
+    },
+    {
+        "id": 63,
+        "name": "کره عسل و گردو",
+        "category": "سنتی ایرانی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 4,
+            "carbs": 35,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "کره حیوانی",
+                "amount": "۱۵ گرم"
+            },
+            {
+                "name": "عسل طبیعی",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "مغز گردو",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "نان سنگک",
+                "amount": "۱ کف دست"
+            }
+        ],
+        "instructions": "کره و عسل را روی نان گرم مالیده و گردو بگذارید.",
+        "image_prompt": "Fresh flatbread with a pat of butter, honey drizzle, and walnut halves."
+    },
+    {
+        "id": 64,
+        "name": "اسموتی سبز کرفس",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "ساقه کرفس",
+                "amount": "۳ عدد"
+            },
+            {
+                "name": "سیب سبز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "لیمو ترش",
+                "amount": "۱/۲ عدد"
+            },
+            {
+                "name": "زنجبیل",
+                "amount": "۱ تکه کوچک"
+            }
+        ],
+        "instructions": "آب کرفس و سیب را بگیرید و با لیمو مخلوط کنید.",
+        "image_prompt": "Glass of bright green celery juice with a celery stick garnish."
+    },
+    {
+        "id": 65,
+        "name": "قایق آووکادو (کتو)",
+        "category": "کم کربوهیدرات (کتو)",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 14,
+            "carbs": 8,
+            "fat": 28
+        },
+        "ingredients": [
+            {
+                "name": "آووکادو",
+                "amount": "۱ عدد نصف شده"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "بیکن خرد شده",
+                "amount": "۱ ورقه"
+            }
+        ],
+        "instructions": "هسته آووکادو را درآورید، تخم مرغ را داخلش بریزید و در فر بپزید.",
+        "image_prompt": "Baked avocado half filled with an egg, topped with crispy bacon bits."
+    },
+    {
+        "id": 66,
+        "name": "پارفه بری و ماست",
+        "category": "دسر و پودینگ",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 12,
+            "carbs": 30,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "ماست کم‌چرب",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "پوره تمشک/توت",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "جو پرک (تفت داده)",
+                "amount": "۲ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "ماست و پوره میوه را لایه لایه در لیوان بریزید.",
+        "image_prompt": "Glass layered dessert with yogurt, red berry sauce, and granola layers."
+    },
+    {
+        "id": 67,
+        "name": "سوسیس تخم مرغ",
+        "category": "پروتئین بالا",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 32
+        },
+        "ingredients": [
+            {
+                "name": "سوسیس (درصد گوشت بالا)",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "روغن سرخ‌کردنی",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "سوسیس را حلقه و سرخ کنید، سپس تخم مرغ را روی آن بشکنید.",
+        "image_prompt": "Frying pan with sliced sausages and sunny side up eggs sizzling."
+    },
+    {
+        "id": 68,
+        "name": "فرنی گندم سیاه (وگان)",
+        "category": "گیاهی و وگان",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 6,
+            "carbs": 45,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "گندم سیاه (Buckwheat)",
+                "amount": "۱/۳ پیمانه خام"
+            },
+            {
+                "name": "شیر گیاهی (سویا/بادام)",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "موز",
+                "amount": "۱/۲ عدد"
+            }
+        ],
+        "instructions": "گندم سیاه را بپزید تا نرم شود و با شیر گیاهی مخلوط کنید.",
+        "image_prompt": "Bowl of buckwheat porridge with sliced banana and seeds."
+    },
+    {
+        "id": 69,
+        "name": "ساندویچ کروسان",
+        "category": "بین‌المللی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 30,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "نان کروسان",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ژامبون مرغ",
+                "amount": "۲ ورقه"
+            },
+            {
+                "name": "پنیر گودا",
+                "amount": "۱ ورقه"
+            },
+            {
+                "name": "کاهو",
+                "amount": "۱ برگ"
+            }
+        ],
+        "instructions": "کروسان را برش داده و با ژامبون و پنیر پر کنید.",
+        "image_prompt": "Buttery croissant sandwich filled with ham and cheese slices."
+    },
+    {
+        "id": 70,
+        "name": "سالاد خیار و گوجه (پنیر)",
+        "category": "سریع و فوری",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "خیار",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پنیر سفید (لیقوان/فتا)",
+                "amount": "۵۰ گرم"
+            },
+            {
+                "name": "پیازچه",
+                "amount": "۱ ساقه"
+            }
+        ],
+        "instructions": "همه مواد را نگینی خرد کرده و مخلوط کنید.",
+        "image_prompt": "Fresh salad bowl with diced cucumber, tomato, and white cheese cubes."
+    },
+    {
+        "id": 71,
+        "name": "تست موز و ارده",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 10,
+            "carbs": 35,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "ارده کنجد",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "موز",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "شیره خرما",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "ارده را روی نان مالیده، موز بچینید و شیره بریزید.",
+        "image_prompt": "Toast topped with tahini paste, banana slices, and date syrup drizzle."
+    },
+    {
+        "id": 72,
+        "name": "املت خرما",
+        "category": "سنتی ایرانی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "خرما (بدون هسته)",
+                "amount": "۶ عدد"
+            },
+            {
+                "name": "گردو",
+                "amount": "۲ عدد خرد شده"
+            },
+            {
+                "name": "کره",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "خرما را در کره تفت دهید و تخم مرغ را اضافه کنید.",
+        "image_prompt": "Persian date omelet with walnuts cooked in a traditional pan."
+    },
+    {
+        "id": 73,
+        "name": "شیر طلایی (زردچوبه)",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 12,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "شیر",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "زردچوبه",
+                "amount": "۱/۲ قاشق چای‌خوری"
+            },
+            {
+                "name": "زنجبیل",
+                "amount": "۱/۴ قاشق چای‌خوری"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "شیر را با ادویه‌ها گرم کنید تا طلایی و معطر شود.",
+        "image_prompt": "Mug of golden milk latte dusted with turmeric powder."
+    },
+    {
+        "id": 74,
+        "name": "بورانی اسفناج و نان",
+        "category": "سنتی ایرانی",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "ماست چکیده",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "اسفناج پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "سیر رنده شده",
+                "amount": "۱ حبه"
+            },
+            {
+                "name": "نان لواش خشک",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "اسفناج و سیر را با ماست مخلوط کرده و با نان سرو کنید.",
+        "image_prompt": "Bowl of spinach yogurt dip (Borani) served with flatbread pieces."
+    },
+    {
+        "id": 75,
+        "name": "پنکیک پنیر و سبزی",
+        "category": "پنکیک و وافل",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 12,
+            "carbs": 25,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "آرد گندم",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "پنیر فتا خرد شده",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "شوید تازه",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "پنیر و سبزی را به مایه پنکیک اضافه کرده و سرخ کنید.",
+        "image_prompt": "Savory pancakes with visible herbs and white cheese chunks."
+    },
+    {
+        "id": 76,
+        "name": "ساندویچ پستو و موزارلا",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 16
+        },
+        "ingredients": [
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "سس پستو",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "پنیر موزارلا",
+                "amount": "۲ ورقه"
+            },
+            {
+                "name": "گوجه فرنگی",
+                "amount": "۲ حلقه"
+            }
+        ],
+        "instructions": "پستو را روی نان مالیده و پنیر و گوجه را اضافه کنید (گریل اختیاری).",
+        "image_prompt": "Caprese style sandwich with pesto, mozzarella, and tomato."
+    },
+    {
+        "id": 77,
+        "name": "تخم مرغ اسکاچ (ساده)",
+        "category": "پروتئین بالا",
+        "prep_time": "۴۰ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 22
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ آب‌پز سفت",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "گوشت چرخ کرده",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "آرد سوخاری",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "روغن",
+                "amount": "برای سرخ کردن"
+            }
+        ],
+        "instructions": "گوشت را دور تخم مرغ بپبچید، سوخاری کنید و سرخ نمایید.",
+        "image_prompt": "Scotch egg cut in half revealing the boiled egg inside the meat layer."
+    },
+    {
+        "id": 78,
+        "name": "موسلی سوئیسی",
+        "category": "اوتمیل و غلات",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 8,
+            "carbs": 45,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "جو پرک (خام)",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "سیب رنده شده",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "ماست",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "آجیل خرد شده",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "همه مواد را مخلوط کرده و سرد سرو کنید (بدون پخت).",
+        "image_prompt": "Bowl of Bircher muesli with grated apple and chopped nuts."
+    },
+    {
+        "id": 79,
+        "name": "مربای چیا و تست",
+        "category": "گیاهی و وگان",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 6,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "توت فرنگی پخته",
+                "amount": "۱ پیمانه"
+            },
+            {
+                "name": "دانه چیا",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            }
+        ],
+        "instructions": "توت فرنگی را بپزید و چیا بزنید تا ژله‌ای شود، روی نان بمالید.",
+        "image_prompt": "Toast topped with homemade thick chia seed strawberry jam."
+    },
+    {
+        "id": 80,
+        "name": "املت قارچ و ترافل",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 14,
+            "carbs": 4,
+            "fat": 16
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "قارچ صدفی",
+                "amount": "۱۰۰ گرم"
+            },
+            {
+                "name": "روغن ترافل (یا کره)",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "قارچ را با حرارت بالا تفت دهید و با املت مخلوط کنید.",
+        "image_prompt": "Elegant omelet with sautéed gourmet mushrooms and truffle oil drizzle."
+    },
+    {
+        "id": 81,
+        "name": "شیک خرما و بادام",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 10,
+            "carbs": 40,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "شیر بادام",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "خرما",
+                "amount": "۴ عدد"
+            },
+            {
+                "name": "کره بادام",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "یخ",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "همه را در مخلوط‌کن قوی میکس کنید تا یکدست شود.",
+        "image_prompt": "Creamy beige almond date shake in a tall glass."
+    },
+    {
+        "id": 82,
+        "name": "پیتزا صبحانه",
+        "category": "بین‌المللی",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 18,
+            "carbs": 35,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "نان پیتا (پایه)",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پنیر پیتزا",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "بیکن یا ژامبون",
+                "amount": "۱ ورقه"
+            }
+        ],
+        "instructions": "مواد را روی نان ریخته و در فر بگذارید تا تخم مرغ بپزد.",
+        "image_prompt": "Small pita pizza topped with an egg sunny side up and cheese."
+    },
+    {
+        "id": 83,
+        "name": "نیمرو با کنجد",
+        "category": "سریع و فوری",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 12,
+            "carbs": 1,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "دانه کنجد",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "روغن کنجد",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "نیمرو را در روغن کنجد درست کنید و رویش کنجد بپاشید.",
+        "image_prompt": "Fried egg with crispy edges sprinkled generously with sesame seeds."
+    },
+    {
+        "id": 84,
+        "name": "تست حمص و لبو",
+        "category": "گیاهی و وگان",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 8,
+            "carbs": 35,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "حمص (مخلوط با لبو)",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "جوانه ماش",
+                "amount": "برای تزیین"
+            }
+        ],
+        "instructions": "حمص لبو (صورتی رنگ) را روی نان تست بمالید.",
+        "image_prompt": "Toast spread with vibrant pink beet hummus and microgreens."
+    },
+    {
+        "id": 85,
+        "name": "کله پاچه (زبان)",
+        "category": "سنتی ایرانی",
+        "prep_time": "۱۰۰ دقیقه",
+        "difficulty": "سخت",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 35,
+            "carbs": 5,
+            "fat": 28
+        },
+        "ingredients": [
+            {
+                "name": "زبان گوساله/گوسفند",
+                "amount": "۱۵۰ گرم"
+            },
+            {
+                "name": "آب قلم",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "نان سنگک",
+                "amount": "۱ کف دست"
+            },
+            {
+                "name": "آبلیمو",
+                "amount": "به مقدار لازم"
+            }
+        ],
+        "instructions": "زبان را کامل پخته و با آب لیمو و نان سرو کنید.",
+        "image_prompt": "Plate of cooked tongue meat (Kale Pache) with lime and bread."
+    },
+    {
+        "id": 86,
+        "name": "کاسه کینوا مکزیکی",
+        "category": "بین‌المللی",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "کینوا پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "لوبیا سیاه",
+                "amount": "۱/۳ پیمانه"
+            },
+            {
+                "name": "ذرت",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "آووکادو",
+                "amount": "۱/۴ عدد"
+            }
+        ],
+        "instructions": "کینوا را گرم کنید و با مخلفات مکزیکی مخلوط نمایید.",
+        "image_prompt": "Quinoa bowl with black beans, corn, and avocado slices."
+    },
+    {
+        "id": 87,
+        "name": "وافل سیب‌زمینی",
+        "category": "پنکیک و وافل",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 6,
+            "carbs": 35,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "پوره سیب‌زمینی",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "آرد",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پیازچه",
+                "amount": "۱ قاشق غذاخوری"
+            }
+        ],
+        "instructions": "پوره را با مواد مخلوط کرده و در وافل‌ساز بپزید (شور).",
+        "image_prompt": "Savory potato waffle topped with sour cream and chives."
+    },
+    {
+        "id": 88,
+        "name": "املت بادمجان",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 12,
+            "carbs": 8,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "بادمجان کبابی",
+                "amount": "۱ عدد بزرگ"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "سیر رنده شده",
+                "amount": "۱ حبه"
+            }
+        ],
+        "instructions": "بادمجان له شده را تفت داده و تخم مرغ را اضافه کنید.",
+        "image_prompt": "Persian eggplant omelet (Mirza Ghasemi style without tomato) in a pan."
+    },
+    {
+        "id": 89,
+        "name": "دونات سیب (رژیمی)",
+        "category": "دسر و پودینگ",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "سیب",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "کره بادام زمینی",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "ترافل رنگی/گرانولا",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "سیب را حلقه کنید (هسته را درآورید)، کره بمالید (شبیه دونات).",
+        "image_prompt": "Apple slices cut like donuts topped with peanut butter and sprinkles."
+    },
+    {
+        "id": 90,
+        "name": "رول خیار و پنیر",
+        "category": "کم کربوهیدرات (کتو)",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 6,
+            "carbs": 4,
+            "fat": 7
+        },
+        "ingredients": [
+            {
+                "name": "خیار (ورقه نازک)",
+                "amount": "۴ ورقه"
+            },
+            {
+                "name": "پنیر خامه‌ای",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "شوید",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "پنیر را روی ورقه خیار مالیده و رول کنید.",
+        "image_prompt": "Cucumber strips rolled up filled with cream cheese and herbs."
+    },
+    {
+        "id": 91,
+        "name": "سالاد الویه تن ماهی",
+        "category": "پروتئین بالا",
+        "prep_time": "۲۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 28,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "تن ماهی (بدون روغن)",
+                "amount": "۱ قوطی"
+            },
+            {
+                "name": "سیب زمینی کوچک",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "خیارشور",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۱ عدد"
+            }
+        ],
+        "instructions": "مانند الویه ولی با تن ماهی و سس کم چرب تهیه کنید.",
+        "image_prompt": "Tuna salad bowl with potato cubes and pickles."
+    },
+    {
+        "id": 92,
+        "name": "تست بری و پنیر بری",
+        "category": "نان و تست",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 10,
+            "carbs": 30,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "پنیر بری (Brie)",
+                "amount": "۲ ورقه"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "توت فرنگی",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "پنیر بری را روی نان گذاشته، کمی آب کنید و میوه بگذارید.",
+        "image_prompt": "Toast with melted brie cheese and fresh strawberry slices."
+    },
+    {
+        "id": 93,
+        "name": "اوتمیل شکلات تلخ",
+        "category": "اوتمیل و غلات",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 270,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "جو دوسر",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "پودر کاکائو تلخ",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "شکلات تلخ (۸۰٪)",
+                "amount": "۱۰ گرم"
+            },
+            {
+                "name": "شیر",
+                "amount": "۱ پیمانه"
+            }
+        ],
+        "instructions": "جو را با کاکائو بپزید و تکه‌های شکلات تلخ روی آن بریزید.",
+        "image_prompt": "Dark chocolate oatmeal bowl with chocolate shavings on top."
+    },
+    {
+        "id": 94,
+        "name": "املت نخود فرنگی",
+        "category": "تخم‌مرغ و املت",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 14,
+            "carbs": 12,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "نخود فرنگی پخته",
+                "amount": "۱/۲ پیمانه"
+            },
+            {
+                "name": "نعنا خشک",
+                "amount": "۱ قاشق چای‌خوری"
+            },
+            {
+                "name": "کره",
+                "amount": "۱ قاشق مرباخوری"
+            }
+        ],
+        "instructions": "نخود فرنگی را در کره تفت داده و تخم مرغ را اضافه کنید.",
+        "image_prompt": "Green pea omelet with fresh mint leaves."
+    },
+    {
+        "id": 95,
+        "name": "آب پرتقال و هویج",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 110,
+            "protein": 2,
+            "carbs": 26,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "پرتقال تازه",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "هویج",
+                "amount": "۲ عدد"
+            }
+        ],
+        "instructions": "آب هر دو را تازه گرفته و مخلوط کنید.",
+        "image_prompt": "Glass of bright orange carrot and orange juice mix."
+    },
+    {
+        "id": 96,
+        "name": "تست کدو حلوایی و پنیر",
+        "category": "نان و تست",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "پوره کدو حلوایی",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "پنیر خامه‌ای",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "نان تست",
+                "amount": "۲ برش"
+            },
+            {
+                "name": "تخم کدو",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "پوره کدو و پنیر را مخلوط کرده، روی نان بمالید.",
+        "image_prompt": "Toast spread with pumpkin cream cheese mixture and pumpkin seeds."
+    },
+    {
+        "id": 97,
+        "name": "پنکیک نارگیلی (کتو)",
+        "category": "کم کربوهیدرات (کتو)",
+        "prep_time": "۱۵ دقیقه",
+        "difficulty": "متوسط",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 8,
+            "carbs": 6,
+            "fat": 24
+        },
+        "ingredients": [
+            {
+                "name": "آرد نارگیل",
+                "amount": "۳ قاشق غذاخوری"
+            },
+            {
+                "name": "تخم مرغ",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "شیر نارگیل",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "استویا",
+                "amount": "۱ قاشق چای‌خوری"
+            }
+        ],
+        "instructions": "با آرد نارگیل مایه پنکیک درست کرده و سرخ کنید.",
+        "image_prompt": "Coconut flour pancakes topped with shredded coconut."
+    },
+    {
+        "id": 98,
+        "name": "سالاد سزار صبحانه",
+        "category": "سریع و فوری",
+        "prep_time": "۱۰ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 18,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "کاهو رسمی",
+                "amount": "۲ پیمانه خرد شده"
+            },
+            {
+                "name": "تخم مرغ آب‌پز",
+                "amount": "۲ عدد"
+            },
+            {
+                "name": "پنیر پارمزان",
+                "amount": "۱ قاشق غذاخوری"
+            },
+            {
+                "name": "نان کروتون",
+                "amount": "۵ عدد"
+            }
+        ],
+        "instructions": "سالاد سزار کلاسیک را با تخم مرغ آب‌پز سرو کنید.",
+        "image_prompt": "Breakfast Caesar salad bowl with hard boiled eggs."
+    },
+    {
+        "id": 99,
+        "name": "شیر پسته",
+        "category": "نوشیدنی و اسموتی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 8,
+            "carbs": 15,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "مغز پسته خام",
+                "amount": "۳۰ گرم"
+            },
+            {
+                "name": "شیر",
+                "amount": "۱ لیوان"
+            },
+            {
+                "name": "عسل",
+                "amount": "۱ قاشق مرباخوری"
+            },
+            {
+                "name": "هل",
+                "amount": "۱ دانه"
+            }
+        ],
+        "instructions": "پسته و شیر را با کمی هل و عسل میکس کنید.",
+        "image_prompt": "Green tinted pistachio milk in a glass with crushed pistachios."
+    },
+    {
+        "id": 100,
+        "name": "سیمیت و پنیر (ترکی)",
+        "category": "بین‌المللی",
+        "prep_time": "۵ دقیقه",
+        "difficulty": "آسان",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 10,
+            "carbs": 55,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "نان سیمیت",
+                "amount": "۱ عدد"
+            },
+            {
+                "name": "پنیر خامه‌ای",
+                "amount": "۲ قاشق غذاخوری"
+            },
+            {
+                "name": "زیتون",
+                "amount": "۵ عدد"
+            }
+        ],
+        "instructions": "نان سیمیت را با پنیر و زیتون سرو کنید.",
+        "image_prompt": "Turkish Simit bread ring served with cream cheese and olives."
+    }
+]

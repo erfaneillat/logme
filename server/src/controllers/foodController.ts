@@ -444,6 +444,90 @@ export class FoodController {
             });
         }
     });
+    public addFoodItem = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+        const { title, calories, proteinGrams, carbsGrams, fatsGrams, ingredients, imageUrl, date } = req.body;
+        const userId = req.user?.userId;
+
+        if (!title) {
+            res.status(400).json({ success: false, error: 'Title is required', timestamp: new Date() });
+            return;
+        }
+
+        // Determine date in YYYY-MM-DD format
+        let targetDate: string;
+        if (date && typeof date === 'string') {
+            targetDate = date.slice(0, 10);
+        } else {
+            // Local date in server timezone
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            targetDate = `${y}-${m}-${d}`;
+        }
+
+        if (userId) {
+            const todayIso = targetDate;
+            const timeIso = new Date().toISOString();
+
+            // Step 1: upsert totals
+            await DailyLog.findOneAndUpdate(
+                { userId, date: todayIso },
+                {
+                    userId,
+                    date: todayIso,
+                    $inc: {
+                        caloriesConsumed: Math.round(calories || 0),
+                        carbsGrams: Math.round(carbsGrams || 0),
+                        proteinGrams: Math.round(proteinGrams || 0),
+                        fatsGrams: Math.round(fatsGrams || 0),
+                    },
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
+            // Step 2: ensure items array receives the entry
+            await DailyLog.updateOne(
+                { userId, date: todayIso },
+                {
+                    $push: {
+                        items: {
+                            title: title,
+                            calories: Math.round(calories || 0),
+                            carbsGrams: Math.round(carbsGrams || 0),
+                            proteinGrams: Math.round(proteinGrams || 0),
+                            fatsGrams: Math.round(fatsGrams || 0),
+                            healthScore: 8, // Set a default good score for kitchen items
+                            timeIso,
+                            imageUrl: imageUrl || null,
+                            ingredients: ingredients || [],
+                            liked: false,
+                        },
+                    },
+                }
+            );
+
+            // Check if this is the first meal of the day and update streak accordingly
+            try {
+                // Check existing items for today
+                const existingLog = await DailyLog.findOne({ userId, date: todayIso }).lean();
+                // Since we just added an item, valid check is if we have exactly 1 item
+                const isFirstMealOfDay = !existingLog || !existingLog.items || existingLog.items.length <= 1;
+
+                if (isFirstMealOfDay) {
+                    // First meal of the day - update streak
+                    await updateStreakOnFirstMeal(String(userId), todayIso);
+                } else {
+                    // Not first meal - check if goal is met for streak
+                    await updateStreakIfEligible(String(userId), todayIso);
+                }
+            } catch (e) {
+                errorLogger.error('Streak update (add food) error:', e);
+            }
+        }
+
+        res.status(200).json({ success: true, timestamp: new Date() });
+    });
 }
 
 

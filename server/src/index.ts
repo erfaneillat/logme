@@ -32,7 +32,10 @@ import fcmRoutes from './routes/fcmRoutes';
 import errorLogRoutes from './routes/errorLogRoutes';
 import chatRoutes from './routes/chatRoutes';
 import paymentRoutes from './routes/paymentRoutes';
+import kitchenRoutes from './routes/kitchenRoutes';
+import settingsRoutes from './routes/settingsRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+
 import firebaseService from './services/firebaseService';
 import { sanitizeInput } from './middleware/validation';
 import * as cron from 'node-cron';
@@ -48,7 +51,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 9002;
 const HOST = process.env.HOST || '0.0.0.0'; // Changed from 'localhost' to '0.0.0.0'
 
 // Security middleware
@@ -63,7 +66,7 @@ app.use(helmet({
 const allowedOrigins = [
   'http://localhost:5173',     // Admin panel dev
   'http://localhost:9001',     // Website dev
-  'http://localhost:9000',     // Local server
+  'http://localhost:9002',     // Local server
   'https://loqmeapp.ir',       // Production website
   'https://dev.loqmeapp.ir',   // Development website
 ];
@@ -133,6 +136,9 @@ app.use('/api/fcm', fcmRoutes);
 app.use('/api/error-logs', errorLogRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/kitchen', kitchenRoutes);
+app.use('/api/settings', settingsRoutes);
+
 
 // Serve static files from the React website build directory
 const websiteBuildPath = path.join(__dirname, '../../website/build');

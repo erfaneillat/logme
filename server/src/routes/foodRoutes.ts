@@ -55,6 +55,9 @@ router.post('/analyze-description', authenticateToken, controller.analyzeDescrip
 // POST /api/food/fix-result  application/json
 router.post('/fix-result', authenticateToken, controller.fixResult);
 
+// POST /api/food/add  application/json
+router.post('/add', authenticateToken, controller.addFoodItem);
+
 // GET /api/food/images/:filename - serve uploaded images
 router.get('/images/:filename', (req, res): void => {
     const filename = req.params.filename;
