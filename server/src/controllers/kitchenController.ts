@@ -120,3 +120,67 @@ export const uploadKitchenImage = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'Error uploading image', error });
     }
 };
+
+export const importKitchenItems = async (req: Request, res: Response) => {
+    try {
+        const { categoryId, items } = req.body;
+
+        if (!categoryId || !items || !Array.isArray(items)) {
+            return res.status(400).json({ message: 'Category ID and items array are required' });
+        }
+
+        const mainCategory = await KitchenCategory.findById(categoryId);
+        if (!mainCategory) {
+            return res.status(404).json({ message: 'Main category not found' });
+        }
+
+        let addedCount = 0;
+
+        for (const item of items) {
+            const subCategoryName = item.category || 'General';
+
+            // Find or create subcategory
+            let subCategory = mainCategory.subCategories.find(sub => sub.title === subCategoryName);
+            if (!subCategory) {
+                // Determine difficulty enum
+                // Map Persian difficulty to English enum
+                mainCategory.subCategories.push({
+                    title: subCategoryName,
+                    items: []
+                });
+                subCategory = mainCategory.subCategories[mainCategory.subCategories.length - 1];
+            }
+
+            if (!subCategory) continue; // Safety check
+
+            // Map Persian difficulty to English enum for the item
+            let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
+            if (item.difficulty === 'آسان') difficulty = 'easy';
+            if (item.difficulty === 'سخت') difficulty = 'hard';
+
+            // Create item object
+            const newItem = {
+                name: item.name,
+                calories: item.nutritional_info?.calories || 0,
+                protein: item.nutritional_info?.protein || 0,
+                carbs: item.nutritional_info?.carbs || 0,
+                fat: item.nutritional_info?.fat || 0,
+                image: item.image_prompt || '🍲', // Use prompt as image placeholder or default emoji
+                prepTime: item.prep_time || '15 min',
+                difficulty: difficulty,
+                ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
+                instructions: item.instructions || ''
+            };
+
+            subCategory.items.push(newItem);
+            addedCount++;
+        }
+
+        await mainCategory.save();
+        return res.status(200).json({ message: `Successfully imported ${addedCount} items`, category: mainCategory });
+
+    } catch (error) {
+        console.error('Import error:', error);
+        return res.status(500).json({ message: 'Error importing items', error });
+    }
+};

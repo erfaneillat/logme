@@ -1,3 +1,8 @@
+export interface Ingredient {
+    name: string;
+    amount: string;
+}
+
 export interface KitchenItem {
     _id?: string;
     id?: string; // Frontend compatibility
@@ -9,6 +14,8 @@ export interface KitchenItem {
     image: string; // URL or emoji
     prepTime: string; // e.g., "15 min"
     difficulty: 'easy' | 'medium' | 'hard';
+    ingredients?: Ingredient[]; // List of ingredients with amounts
+    instructions?: string; // How to prepare/cook
 }
 
 export interface KitchenSubCategory {
@@ -30,3 +37,4 @@ export interface KitchenCategory {
 
 export type CreateKitchenCategoryRequest = Omit<KitchenCategory, '_id' | 'createdAt' | 'updatedAt' | 'id'>;
 export type UpdateKitchenCategoryRequest = Partial<CreateKitchenCategoryRequest>;
+

@@ -161,6 +161,31 @@ class KitchenService {
             };
         }
     }
+
+    async importItems(token: string, categoryId: string, items: any[]): Promise<{ success: boolean; message?: string; category?: KitchenCategory }> {
+        try {
+            const response = await this.fetchWithTimeout(`${API_BASE_URL}${this.basePath}/import`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ categoryId, items }),
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to import items');
+            }
+
+            const data = await response.json();
+            return { success: true, message: data.message, category: data.category };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to import items',
+            };
+        }
+    }
 }
 
 export const kitchenService = new KitchenService();

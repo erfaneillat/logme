@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IIngredient {
+    name: string;
+    amount: string;
+}
+
 export interface IKitchenItem {
     id?: string;
     name: string;
@@ -10,6 +15,8 @@ export interface IKitchenItem {
     image: string; // URL or emoji
     prepTime: string; // e.g., "15 min"
     difficulty: 'easy' | 'medium' | 'hard';
+    ingredients?: IIngredient[]; // List of ingredients with amounts
+    instructions?: string; // How to prepare/cook
 }
 
 export interface IKitchenSubCategory {
@@ -26,6 +33,11 @@ export interface IKitchenCategory extends Document {
     updatedAt: Date;
 }
 
+const IngredientSchema = new Schema({
+    name: { type: String, required: true },
+    amount: { type: String, required: true }
+}, { _id: false });
+
 const KitchenItemSchema = new Schema({
     name: { type: String, required: true },
     calories: { type: Number, required: true },
@@ -34,7 +46,9 @@ const KitchenItemSchema = new Schema({
     fat: { type: Number, required: true },
     image: { type: String, required: true },
     prepTime: { type: String, required: true },
-    difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true, default: 'medium' }
+    difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true, default: 'medium' },
+    ingredients: { type: [IngredientSchema], default: [] },
+    instructions: { type: String, default: '' }
 });
 
 const KitchenSubCategorySchema = new Schema({
@@ -52,3 +66,4 @@ const KitchenCategorySchema = new Schema({
 });
 
 export default mongoose.model<IKitchenCategory>('KitchenCategory', KitchenCategorySchema);
+

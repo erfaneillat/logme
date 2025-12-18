@@ -99,31 +99,25 @@ const FireIcon = () => (
     </svg>
 );
 
-// Fat/Oil Drop Icon
-const DropIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="currentColor" />
-    </svg>
+// Fat Icon - Butter emoji
+const FatIcon = () => (
+    <span className="text-2xl">🧈</span>
 );
 
-// Carbs/Bread Icon
-const WheatIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 24 24" fill="currentColor">
-        <ellipse cx="12" cy="8" rx="8" ry="5" />
-        <path d="M4 8v6c0 2.76 3.58 5 8 5s8-2.24 8-5V8" />
-        <ellipse cx="12" cy="14" rx="8" ry="5" fillOpacity="0.3" />
-    </svg>
+// Carbs Icon - Rice/Wheat emoji
+const CarbsIcon = () => (
+    <span className="text-2xl">🌾</span>
 );
 
-const LightningIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-    </svg>
+// Protein Icon - Meat emoji
+const ProteinIcon = () => (
+    <span className="text-2xl">🥩</span>
 );
 
 // Macro Pill Component
-const MacroPill = ({ label, value, color, bg }: { label: string, value: string, color: string, bg: string }) => (
+const MacroPill = ({ label, value, color, bg, icon }: { label: string, value: string, color: string, bg: string, icon?: string }) => (
     <div className={`${bg} ${color} px-2.5 py-1 rounded-xl text-[10px] font-bold border border-transparent hover:border-current transition-colors flex items-center gap-1`}>
+        {icon && <span className="text-sm">{icon}</span>}
         <span>{value}</span>
         <span className="opacity-70">{label}</span>
     </div>
@@ -607,16 +601,16 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             value={consumed.fat}
                             total={goals.fatsGrams}
                             unit="گرم"
-                            color="#A855F7"
-                            icon={<DropIcon />}
+                            color="#EC4899"
+                            icon={<FatIcon />}
                         />
                         <NutrientCard
                             label="کربو"
                             value={consumed.carbs}
                             total={goals.carbsGrams}
                             unit="گرم"
-                            color="#EAB308"
-                            icon={<WheatIcon />}
+                            color="#F59E0B"
+                            icon={<CarbsIcon />}
                         />
                         <NutrientCard
                             label="پروتئین"
@@ -624,7 +618,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             total={goals.proteinGrams}
                             unit="گرم"
                             color="#3B82F6"
-                            icon={<LightningIcon />}
+                            icon={<ProteinIcon />}
                         />
                     </div>
                 )}
@@ -694,9 +688,9 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                                 {toPersianNumbers(food.calories)} <span className="text-xs font-bold text-gray-400">کالری</span>
                                             </div>
                                             <div className="flex gap-1.5 justify-end flex-wrap">
-                                                <MacroPill value={toPersianNumbers(food.protein)} label="گرم" color="text-blue-600" bg="bg-blue-50" />
-                                                <MacroPill value={toPersianNumbers(food.carbs)} label="گرم" color="text-yellow-600" bg="bg-yellow-50" />
-                                                <MacroPill value={toPersianNumbers(food.fat)} label="گرم" color="text-purple-600" bg="bg-purple-50" />
+                                                <MacroPill value={toPersianNumbers(food.protein)} label="گرم" color="text-blue-600" bg="bg-blue-50" icon="🥩" />
+                                                <MacroPill value={toPersianNumbers(food.carbs)} label="گرم" color="text-amber-600" bg="bg-amber-50" icon="🌾" />
+                                                <MacroPill value={toPersianNumbers(food.fat)} label="گرم" color="text-pink-600" bg="bg-pink-50" icon="🧈" />
                                             </div>
                                         </div>
                                     </div>

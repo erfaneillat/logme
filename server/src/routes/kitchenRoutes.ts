@@ -9,7 +9,8 @@ import {
     updateCategory,
     deleteCategory,
     getCategoryById,
-    uploadKitchenImage
+    uploadKitchenImage,
+    importKitchenItems
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -49,6 +50,9 @@ router.get('/categories', authenticateToken, getAllCategories);
 
 // Upload route
 router.post('/upload', authenticateAdmin, upload.single('image'), uploadKitchenImage);
+
+// Import route
+router.post('/import', authenticateAdmin, importKitchenItems);
 
 // Serve images
 router.get('/images/:filename', (req, res) => {

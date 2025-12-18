@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { KitchenCategory, KitchenSubCategory, KitchenItem } from '../types/kitchen';
+import { KitchenCategory, KitchenSubCategory, KitchenItem, Ingredient } from '../types/kitchen';
 import { kitchenService } from '../services/kitchen.service';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -43,6 +43,10 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
 
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [importJson, setImportJson] = useState('');
+    const [importing, setImporting] = useState(false);
+
     useEffect(() => {
         if (initialData) {
             setFormData({
@@ -78,6 +82,38 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
             alert('Failed to save category');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleImport = async () => {
+        if (!token || !initialData?._id) {
+            alert('Please create and save the category first before importing items.');
+            return;
+        }
+
+        try {
+            const items = JSON.parse(importJson);
+            if (!Array.isArray(items)) {
+                alert('Invalid JSON: Must be an array of items.');
+                return;
+            }
+
+            setImporting(true);
+            const result = await kitchenService.importItems(token, initialData._id, items);
+
+            if (result.success) {
+                alert(result.message);
+                setIsImportModalOpen(false);
+                setImportJson('');
+                // Ideally reload the category data or just close/save
+                onSave();
+            } else {
+                alert('Import failed: ' + result.message);
+            }
+        } catch (e) {
+            alert('Invalid JSON format.');
+        } finally {
+            setImporting(false);
         }
     };
 
@@ -129,7 +165,9 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
             fat: 0,
             image: '🥣',
             prepTime: '15 min',
-            difficulty: 'medium'
+            difficulty: 'medium',
+            ingredients: [],
+            instructions: ''
         });
         setIsItemModalOpen(true);
     };
@@ -203,11 +241,22 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                             {formData.subCategories?.length || 0} subcategories • {getTotalItems()} items
                         </p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-white/50 transition-colors">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {initialData?._id && (
+                            <button
+                                type="button"
+                                onClick={() => setIsImportModalOpen(true)}
+                                className="px-4 py-2 bg-white text-orange-600 border border-orange-200 text-sm font-bold rounded-xl hover:bg-orange-50 transition-colors"
+                            >
+                                Import JSON
+                            </button>
+                        )}
+                        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-white/50 transition-colors">
+                            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="p-6 overflow-y-auto flex-1">
@@ -361,6 +410,53 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                     </button>
                 </div>
             </div>
+
+            {/* Import Modal */}
+            {isImportModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-[32px] w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="text-xl font-black text-gray-900">Import Kitchen Items</h3>
+                            <button onClick={() => setIsImportModalOpen(false)} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Paste JSON Data</label>
+                            <p className="text-xs text-gray-500 mb-4">
+                                JSON must be an array of objects. Each object should have 'name', 'category' (subcategory), 'difficulty', etc.
+                            </p>
+                            <textarea
+                                className="w-full h-64 p-4 rounded-xl border border-gray-200 bg-gray-50 font-mono text-xs focus:bg-white focus:border-black outline-none resize-none"
+                                value={importJson}
+                                onChange={(e) => setImportJson(e.target.value)}
+                                placeholder='[{"name": "Food Name", "category": "Subcat Title", ...}]'
+                            ></textarea>
+
+                            <div className="mt-6 flex justify-end gap-3">
+                                <button
+                                    onClick={() => setIsImportModalOpen(false)}
+                                    className="px-6 py-2.5 rounded-xl border border-gray-200 font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleImport}
+                                    disabled={importing || !importJson}
+                                    className="px-6 py-2.5 rounded-xl bg-black font-bold text-white hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    {importing && (
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    )}
+                                    {importing ? 'Importing...' : 'Import Items'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* SubCategory Edit Modal */}
             {isSubCatModalOpen && (
@@ -581,6 +677,76 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                                             value={itemFormData.fat || 0} onChange={e => setItemFormData({ ...itemFormData, fat: Number(e.target.value) })} />
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Ingredients */}
+                            <div dir="rtl">
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">مواد لازم (Ingredients)</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setItemFormData({
+                                            ...itemFormData,
+                                            ingredients: [...(itemFormData.ingredients || []), { name: '', amount: '' }]
+                                        })}
+                                        className="text-xs font-bold text-blue-600 hover:text-blue-700"
+                                    >
+                                        + افزودن مورد
+                                    </button>
+                                </div>
+                                <div className="space-y-2 max-h-40 overflow-y-auto">
+                                    {(itemFormData.ingredients || []).map((ing, idx) => (
+                                        <div key={idx} className="flex gap-2 items-center">
+                                            <input
+                                                type="text"
+                                                className="flex-1 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-black outline-none text-sm text-right"
+                                                value={ing.name}
+                                                onChange={e => {
+                                                    const newIngredients = [...(itemFormData.ingredients || [])];
+                                                    newIngredients[idx] = { ...newIngredients[idx], name: e.target.value };
+                                                    setItemFormData({ ...itemFormData, ingredients: newIngredients });
+                                                }}
+                                                placeholder="نام ماده"
+                                            />
+                                            <input
+                                                type="text"
+                                                className="w-24 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-black outline-none text-sm text-right"
+                                                value={ing.amount}
+                                                onChange={e => {
+                                                    const newIngredients = [...(itemFormData.ingredients || [])];
+                                                    newIngredients[idx] = { ...newIngredients[idx], amount: e.target.value };
+                                                    setItemFormData({ ...itemFormData, ingredients: newIngredients });
+                                                }}
+                                                placeholder="مقدار"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newIngredients = [...(itemFormData.ingredients || [])];
+                                                    newIngredients.splice(idx, 1);
+                                                    setItemFormData({ ...itemFormData, ingredients: newIngredients });
+                                                }}
+                                                className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 shrink-0"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {(!itemFormData.ingredients || itemFormData.ingredients.length === 0) && (
+                                        <p className="text-sm text-gray-400 text-center py-2">هنوز موردی اضافه نشده است</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Instructions */}
+                            <div dir="rtl">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 text-right">طرز تهیه (Instructions)</label>
+                                <textarea
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-black focus:ring-1 focus:ring-black outline-none transition-all font-medium resize-none h-32 text-right"
+                                    value={itemFormData.instructions || ''}
+                                    onChange={e => setItemFormData({ ...itemFormData, instructions: e.target.value })}
+                                    placeholder="مراحل تهیه را بنویسید..."
+                                />
                             </div>
                         </div>
 
