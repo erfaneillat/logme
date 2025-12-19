@@ -15,7 +15,8 @@ import {
     saveKitchenItem,
     unsaveKitchenItem,
     getSavedKitchenItems,
-    checkSavedStatus
+    checkSavedStatus,
+    generateImagesForSubcategory
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -63,7 +64,14 @@ router.post('/import', authenticateAdmin, importKitchenItems);
 // Serve images
 router.get('/images/:filename', (req, res) => {
     const filename = req.params.filename;
-    const filepath = path.join(uploadsDir, filename);
+
+    // Check in main uploads directory first
+    let filepath = path.join(uploadsDir, filename);
+
+    // If not found, check in kitchen subdirectory
+    if (!fs.existsSync(filepath)) {
+        filepath = path.join(uploadsDir, 'kitchen', filename);
+    }
 
     if (!fs.existsSync(filepath)) {
         res.status(404).json({ error: 'Image not found' });
@@ -79,6 +87,9 @@ router.get('/categories/:id', authenticateAdmin, getCategoryById);
 router.post('/categories', authenticateAdmin, createCategory);
 router.put('/categories/:id', authenticateAdmin, updateCategory);
 router.delete('/categories/:id', authenticateAdmin, deleteCategory);
+
+// AI Image Generation route
+router.post('/generate-images', authenticateAdmin, generateImagesForSubcategory);
 
 // User saved items routes
 router.get('/saved', authenticateToken, getSavedKitchenItems);

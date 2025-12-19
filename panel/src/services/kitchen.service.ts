@@ -186,6 +186,59 @@ class KitchenService {
             };
         }
     }
+
+    async generateImagesForSubcategory(
+        token: string,
+        categoryId: string,
+        subcategoryIndex: number
+    ): Promise<{
+        success: boolean;
+        message?: string;
+        generated?: number;
+        skipped?: number;
+        errors?: number;
+        results?: Array<{ itemName: string; success: boolean; imageUrl?: string; error?: string }>;
+        category?: KitchenCategory;
+    }> {
+        try {
+            // Use a longer timeout for image generation (5 minutes)
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/generate-images`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ categoryId, subcategoryIndex }),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeout);
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to generate images');
+            }
+
+            const data = await response.json();
+            return {
+                success: true,
+                message: data.message,
+                generated: data.generated,
+                skipped: data.skipped,
+                errors: data.errors,
+                results: data.results,
+                category: data.category
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to generate images',
+            };
+        }
+    }
 }
 
 export const kitchenService = new KitchenService();

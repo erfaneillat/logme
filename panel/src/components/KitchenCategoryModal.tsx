@@ -47,6 +47,10 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     const [importJson, setImportJson] = useState('');
     const [importing, setImporting] = useState(false);
 
+    // Image generation state
+    const [generatingImages, setGeneratingImages] = useState(false);
+    const [generationProgress, setGenerationProgress] = useState<string>('');
+
     useEffect(() => {
         if (initialData) {
             setFormData({
@@ -232,6 +236,66 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
 
     const getTotalItems = () => {
         return formData.subCategories?.reduce((sum, sub) => sum + (sub.items?.length || 0), 0) || 0;
+    };
+
+    const handleGenerateImages = async () => {
+        if (!token || !initialData?._id || editingSubCatIndex === null) {
+            alert('Please save the category first before generating images.');
+            return;
+        }
+
+        // Count items with prompts but no images
+        const itemsWithPrompts = subCatFormData.items?.filter(
+            item => item.imagePrompt && item.imagePrompt.trim().length > 0 && !item.image?.startsWith('http')
+        ) || [];
+
+        if (itemsWithPrompts.length === 0) {
+            alert('No items with image prompts to generate. Add image prompts to items first.');
+            return;
+        }
+
+        if (!window.confirm(`This will generate images for ${itemsWithPrompts.length} items. This may take a few minutes. Continue?`)) {
+            return;
+        }
+
+        setGeneratingImages(true);
+        setGenerationProgress(`Starting image generation for ${itemsWithPrompts.length} items...`);
+
+        try {
+            const result = await kitchenService.generateImagesForSubcategory(
+                token,
+                initialData._id,
+                editingSubCatIndex
+            );
+
+            if (result.success) {
+                setGenerationProgress(`Completed: ${result.generated} generated, ${result.skipped} skipped, ${result.errors} errors`);
+
+                // Update the local state with the new images
+                if (result.category) {
+                    const updatedSubcategory = result.category.subCategories[editingSubCatIndex];
+                    if (updatedSubcategory) {
+                        setSubCatFormData({ ...updatedSubcategory });
+                    }
+
+                    // Also update the main form data
+                    setFormData(prev => ({
+                        ...prev,
+                        subCategories: result.category!.subCategories
+                    }));
+                }
+
+                alert(result.message || 'Image generation completed!');
+            } else {
+                alert('Failed to generate images: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Image generation error:', error);
+            alert('Error generating images. Please try again.');
+        } finally {
+            setGeneratingImages(false);
+            setGenerationProgress('');
+        }
     };
 
     if (!isOpen) return null;
@@ -572,13 +636,47 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                             </div>
                         </div>
 
-                        <div className="p-6 border-t border-gray-100 flex gap-3">
-                            <button onClick={() => setIsSubCatModalOpen(false)} className="flex-1 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-colors">
-                                Cancel
-                            </button>
-                            <button onClick={saveSubCategory} className="flex-1 py-3 rounded-xl bg-black text-white font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-black/20">
-                                {editingSubCatIndex !== null ? 'Update Subcategory' : 'Add Subcategory'}
-                            </button>
+                        <div className="p-6 border-t border-gray-100 space-y-3">
+                            {/* Generate Images Button */}
+                            {editingSubCatIndex !== null && initialData?._id && (
+                                <button
+                                    type="button"
+                                    onClick={handleGenerateImages}
+                                    disabled={generatingImages}
+                                    className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold hover:from-purple-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-200"
+                                >
+                                    {generatingImages ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            <span>Generating Images...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <span>Generate Image for All</span>
+                                        </>
+                                    )}
+                                </button>
+                            )}
+
+                            {/* Progress indicator */}
+                            {generationProgress && (
+                                <div className="text-center text-sm text-purple-600 font-medium bg-purple-50 px-4 py-2 rounded-lg">
+                                    {generationProgress}
+                                </div>
+                            )}
+
+                            {/* Action buttons */}
+                            <div className="flex gap-3">
+                                <button onClick={() => setIsSubCatModalOpen(false)} className="flex-1 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+                                    Cancel
+                                </button>
+                                <button onClick={saveSubCategory} className="flex-1 py-3 rounded-xl bg-black text-white font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-black/20">
+                                    {editingSubCatIndex !== null ? 'Update Subcategory' : 'Add Subcategory'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

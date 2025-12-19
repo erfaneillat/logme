@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import KitchenCategory from '../models/KitchenCategory';
 import SavedKitchenItem from '../models/SavedKitchenItem';
 import Settings from '../models/Settings';
+import { googleImageService } from '../services/googleImageService';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -355,5 +356,120 @@ export const checkSavedStatus = async (req: AuthRequest, res: Response) => {
     } catch (error) {
         console.error('Check saved status error:', error);
         return res.status(500).json({ message: 'Error checking saved status', error });
+    }
+};
+
+/**
+ * Generate images for all items in a subcategory that have an imagePrompt but no image URL
+ */
+export const generateImagesForSubcategory = async (req: Request, res: Response) => {
+    try {
+        const { categoryId, subcategoryIndex } = req.body;
+
+        if (!categoryId || subcategoryIndex === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'Category ID and subcategory index are required'
+            });
+        }
+
+        const category = await KitchenCategory.findById(categoryId);
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+
+        const subcategory = category.subCategories[subcategoryIndex];
+        if (!subcategory) {
+            return res.status(404).json({ success: false, message: 'Subcategory not found' });
+        }
+
+        const results: Array<{ itemName: string; success: boolean; imageUrl?: string; error?: string }> = [];
+        let generatedCount = 0;
+        let skippedCount = 0;
+        let errorCount = 0;
+
+        for (let i = 0; i < subcategory.items.length; i++) {
+            const item = subcategory.items[i];
+
+            // Safety check for undefined item
+            if (!item) {
+                skippedCount++;
+                continue;
+            }
+
+            // Skip if no imagePrompt
+            if (!item.imagePrompt || item.imagePrompt.trim().length === 0) {
+                skippedCount++;
+                results.push({
+                    itemName: item.name,
+                    success: false,
+                    error: 'No image prompt defined'
+                });
+                continue;
+            }
+
+            // Skip if already has a valid HTTP image URL
+            if (item.image && item.image.startsWith('http')) {
+                skippedCount++;
+                results.push({
+                    itemName: item.name,
+                    success: true,
+                    imageUrl: item.image,
+                    error: 'Already has image'
+                });
+                continue;
+            }
+
+            console.log(`Generating image for: ${item.name}`);
+
+            // Generate image using Google AI
+            const result = await googleImageService.generateImage(item.imagePrompt);
+
+            if (result.success && result.imageUrl) {
+                // Update the item's image URL
+                if (subcategory.items[i]) {
+                    subcategory.items[i]!.image = result.imageUrl;
+                }
+                generatedCount++;
+                results.push({
+                    itemName: item.name,
+                    success: true,
+                    imageUrl: result.imageUrl
+                });
+            } else {
+                errorCount++;
+                results.push({
+                    itemName: item.name,
+                    success: false,
+                    error: result.error || 'Generation failed'
+                });
+            }
+
+            // Small delay between requests to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Save the updated category if any images were generated
+        if (generatedCount > 0) {
+            await category.save();
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Generated ${generatedCount} images, skipped ${skippedCount}, errors ${errorCount}`,
+            generated: generatedCount,
+            skipped: skippedCount,
+            errors: errorCount,
+            results,
+            category // Return updated category
+        });
+
+    } catch (error) {
+        console.error('Generate images error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error generating images',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
 };
