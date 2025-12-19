@@ -187,31 +187,31 @@ class KitchenService {
         }
     }
 
-    async generateImagesForSubcategory(
+    async generateImageForItem(
         token: string,
         categoryId: string,
-        subcategoryIndex: number
+        subcategoryIndex: number,
+        itemIndex: number
     ): Promise<{
         success: boolean;
+        itemName?: string;
+        imageUrl?: string;
+        skipped?: boolean;
         message?: string;
-        generated?: number;
-        skipped?: number;
-        errors?: number;
-        results?: Array<{ itemName: string; success: boolean; imageUrl?: string; error?: string }>;
-        category?: KitchenCategory;
+        error?: string;
     }> {
         try {
-            // Use a longer timeout for image generation (5 minutes)
+            // 90 second timeout per image (well under Cloudflare's ~100s limit)
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+            const timeout = setTimeout(() => controller.abort(), 90 * 1000);
 
-            const response = await fetch(`${API_BASE_URL}${this.basePath}/generate-images`, {
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/generate-image`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ categoryId, subcategoryIndex }),
+                body: JSON.stringify({ categoryId, subcategoryIndex, itemIndex }),
                 signal: controller.signal
             });
 
@@ -219,23 +219,22 @@ class KitchenService {
 
             if (!response.ok) {
                 const err = await response.json();
-                throw new Error(err.message || 'Failed to generate images');
+                throw new Error(err.message || 'Failed to generate image');
             }
 
             const data = await response.json();
             return {
-                success: true,
-                message: data.message,
-                generated: data.generated,
+                success: data.success,
+                itemName: data.itemName,
+                imageUrl: data.imageUrl,
                 skipped: data.skipped,
-                errors: data.errors,
-                results: data.results,
-                category: data.category
+                message: data.message,
+                error: data.error
             };
         } catch (error: any) {
             return {
                 success: false,
-                message: error.message || 'Failed to generate images',
+                message: error.message || 'Failed to generate image',
             };
         }
     }

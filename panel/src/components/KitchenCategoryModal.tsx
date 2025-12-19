@@ -244,58 +244,86 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
             return;
         }
 
-        // Count items with prompts but no images
-        const itemsWithPrompts = subCatFormData.items?.filter(
-            item => item.imagePrompt && item.imagePrompt.trim().length > 0 && !item.image?.startsWith('http')
-        ) || [];
+        const items = subCatFormData.items || [];
 
-        if (itemsWithPrompts.length === 0) {
+        // Find items with prompts but no images
+        const itemsToGenerate = items
+            .map((item, index) => ({ item, index }))
+            .filter(({ item }) =>
+                item.imagePrompt &&
+                item.imagePrompt.trim().length > 0 &&
+                !item.image?.startsWith('http')
+            );
+
+        if (itemsToGenerate.length === 0) {
             alert('No items with image prompts to generate. Add image prompts to items first.');
             return;
         }
 
-        if (!window.confirm(`This will generate images for ${itemsWithPrompts.length} items. This may take a few minutes. Continue?`)) {
+        if (!window.confirm(`This will generate images for ${itemsToGenerate.length} items. Each may take 30-60 seconds. Continue?`)) {
             return;
         }
 
         setGeneratingImages(true);
-        setGenerationProgress(`Starting image generation for ${itemsWithPrompts.length} items...`);
 
-        try {
-            const result = await kitchenService.generateImagesForSubcategory(
-                token,
-                initialData._id,
-                editingSubCatIndex
-            );
+        let generatedCount = 0;
+        let skippedCount = 0;
+        let errorCount = 0;
 
-            if (result.success) {
-                setGenerationProgress(`Completed: ${result.generated} generated, ${result.skipped} skipped, ${result.errors} errors`);
+        const updatedItems = [...items];
 
-                // Update the local state with the new images
-                if (result.category) {
-                    const updatedSubcategory = result.category.subCategories[editingSubCatIndex];
-                    if (updatedSubcategory) {
-                        setSubCatFormData({ ...updatedSubcategory });
-                    }
+        for (let i = 0; i < itemsToGenerate.length; i++) {
+            const { item, index } = itemsToGenerate[i];
+            setGenerationProgress(`Generating ${i + 1}/${itemsToGenerate.length}: ${item.name}...`);
 
-                    // Also update the main form data
-                    setFormData(prev => ({
-                        ...prev,
-                        subCategories: result.category!.subCategories
-                    }));
+            try {
+                const result = await kitchenService.generateImageForItem(
+                    token,
+                    initialData._id,
+                    editingSubCatIndex,
+                    index
+                );
+
+                if (result.success && result.imageUrl) {
+                    // Update local state with new image
+                    updatedItems[index] = { ...updatedItems[index], image: result.imageUrl };
+                    generatedCount++;
+                } else if (result.skipped) {
+                    skippedCount++;
+                } else {
+                    errorCount++;
+                    console.error(`Failed to generate for ${item.name}:`, result.error || result.message);
                 }
-
-                alert(result.message || 'Image generation completed!');
-            } else {
-                alert('Failed to generate images: ' + result.message);
+            } catch (error) {
+                errorCount++;
+                console.error(`Error generating for ${item.name}:`, error);
             }
-        } catch (error) {
-            console.error('Image generation error:', error);
-            alert('Error generating images. Please try again.');
-        } finally {
-            setGeneratingImages(false);
-            setGenerationProgress('');
+
+            // Small delay between requests
+            if (i < itemsToGenerate.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
         }
+
+        // Update local state with all new images
+        setSubCatFormData(prev => ({ ...prev, items: updatedItems }));
+
+        // Update main form data too
+        setFormData(prev => {
+            const newSubCategories = [...(prev.subCategories || [])];
+            if (newSubCategories[editingSubCatIndex]) {
+                newSubCategories[editingSubCatIndex] = {
+                    ...newSubCategories[editingSubCatIndex],
+                    items: updatedItems
+                };
+            }
+            return { ...prev, subCategories: newSubCategories };
+        });
+
+        setGenerationProgress(`Done! Generated: ${generatedCount}, Skipped: ${skippedCount}, Errors: ${errorCount}`);
+        alert(`Image generation completed!\nGenerated: ${generatedCount}\nSkipped: ${skippedCount}\nErrors: ${errorCount}`);
+
+        setGeneratingImages(false);
     };
 
     if (!isOpen) return null;

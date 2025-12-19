@@ -360,16 +360,17 @@ export const checkSavedStatus = async (req: AuthRequest, res: Response) => {
 };
 
 /**
- * Generate images for all items in a subcategory that have an imagePrompt but no image URL
+ * Generate image for a single item in a subcategory
+ * This is called multiple times from the frontend (one per item) to avoid timeout
  */
-export const generateImagesForSubcategory = async (req: Request, res: Response) => {
+export const generateImageForItem = async (req: Request, res: Response) => {
     try {
-        const { categoryId, subcategoryIndex } = req.body;
+        const { categoryId, subcategoryIndex, itemIndex } = req.body;
 
-        if (!categoryId || subcategoryIndex === undefined) {
+        if (!categoryId || subcategoryIndex === undefined || itemIndex === undefined) {
             return res.status(400).json({
                 success: false,
-                message: 'Category ID and subcategory index are required'
+                message: 'Category ID, subcategory index, and item index are required'
             });
         }
 
@@ -383,92 +384,61 @@ export const generateImagesForSubcategory = async (req: Request, res: Response) 
             return res.status(404).json({ success: false, message: 'Subcategory not found' });
         }
 
-        const results: Array<{ itemName: string; success: boolean; imageUrl?: string; error?: string }> = [];
-        let generatedCount = 0;
-        let skippedCount = 0;
-        let errorCount = 0;
-
-        for (let i = 0; i < subcategory.items.length; i++) {
-            const item = subcategory.items[i];
-
-            // Safety check for undefined item
-            if (!item) {
-                skippedCount++;
-                continue;
-            }
-
-            // Skip if no imagePrompt
-            if (!item.imagePrompt || item.imagePrompt.trim().length === 0) {
-                skippedCount++;
-                results.push({
-                    itemName: item.name,
-                    success: false,
-                    error: 'No image prompt defined'
-                });
-                continue;
-            }
-
-            // Skip if already has a valid HTTP image URL
-            if (item.image && item.image.startsWith('http')) {
-                skippedCount++;
-                results.push({
-                    itemName: item.name,
-                    success: true,
-                    imageUrl: item.image,
-                    error: 'Already has image'
-                });
-                continue;
-            }
-
-            console.log(`Generating image for: ${item.name}`);
-
-            // Generate image using Google AI
-            const result = await googleImageService.generateImage(item.imagePrompt);
-
-            if (result.success && result.imageUrl) {
-                // Update the item's image URL
-                if (subcategory.items[i]) {
-                    subcategory.items[i]!.image = result.imageUrl;
-                }
-                generatedCount++;
-                results.push({
-                    itemName: item.name,
-                    success: true,
-                    imageUrl: result.imageUrl
-                });
-            } else {
-                errorCount++;
-                results.push({
-                    itemName: item.name,
-                    success: false,
-                    error: result.error || 'Generation failed'
-                });
-            }
-
-            // Small delay between requests to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        const item = subcategory.items[itemIndex];
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Item not found' });
         }
 
-        // Save the updated category if any images were generated
-        if (generatedCount > 0) {
+        // Check if item has a prompt
+        if (!item.imagePrompt || item.imagePrompt.trim().length === 0) {
+            return res.status(200).json({
+                success: false,
+                itemName: item.name,
+                skipped: true,
+                message: 'No image prompt defined'
+            });
+        }
+
+        // Check if already has image
+        if (item.image && item.image.startsWith('http')) {
+            return res.status(200).json({
+                success: true,
+                itemName: item.name,
+                skipped: true,
+                imageUrl: item.image,
+                message: 'Already has image'
+            });
+        }
+
+        console.log(`Generating image for: ${item.name}`);
+
+        // Generate image using Google AI
+        const result = await googleImageService.generateImage(item.imagePrompt);
+
+        if (result.success && result.imageUrl) {
+            // Update the item's image URL
+            subcategory.items[itemIndex]!.image = result.imageUrl;
             await category.save();
-        }
 
-        return res.status(200).json({
-            success: true,
-            message: `Generated ${generatedCount} images, skipped ${skippedCount}, errors ${errorCount}`,
-            generated: generatedCount,
-            skipped: skippedCount,
-            errors: errorCount,
-            results,
-            category // Return updated category
-        });
+            return res.status(200).json({
+                success: true,
+                itemName: item.name,
+                imageUrl: result.imageUrl,
+                message: 'Image generated successfully'
+            });
+        } else {
+            return res.status(200).json({
+                success: false,
+                itemName: item.name,
+                error: result.error || 'Generation failed'
+            });
+        }
 
     } catch (error) {
-        console.error('Generate images error:', error);
+        console.error('Generate image error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Error generating images',
+            message: 'Error generating image',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
     }
