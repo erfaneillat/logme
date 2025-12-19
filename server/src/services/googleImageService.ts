@@ -19,14 +19,9 @@ export class GoogleImageService {
         this.apiKey = process.env.GOOGLE_AI_API_KEY || '';
         this.endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
 
-        // Determine project root - works whether running from src/ or dist/
-        const currentDir = __dirname;
-        const isInDist = currentDir.includes('/dist/');
-        const serverRoot = isInDist
-            ? path.resolve(currentDir, '../../..') // from dist/services -> server
-            : path.resolve(currentDir, '../..'); // from src/services -> server
-
-        this.uploadsDir = path.join(serverRoot, 'uploads', 'kitchen');
+        // Use relative path from current directory - works whether in src/ or dist/
+        // From src/services or dist/services, going ../../uploads reaches server/uploads
+        this.uploadsDir = path.join(__dirname, '../../uploads/kitchen');
 
         // Ensure uploads directory exists
         if (!fs.existsSync(this.uploadsDir)) {
