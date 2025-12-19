@@ -52,6 +52,8 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     const [generationProgress, setGenerationProgress] = useState<string>('');
     const [generatingSingleImage, setGeneratingSingleImage] = useState(false);
     const [compressingImages, setCompressingImages] = useState(false);
+    const [generatingAllImages, setGeneratingAllImages] = useState(false);
+    const [allImagesProgress, setAllImagesProgress] = useState<string>('');
 
     useEffect(() => {
         if (initialData) {
@@ -409,6 +411,88 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
         }
     };
 
+    const handleGenerateAllCategoryImages = async () => {
+        if (!token || !initialData?._id) {
+            alert('Please save the category first.');
+            return;
+        }
+
+        // Collect all items across all subcategories
+        const allItems: { subcategoryIndex: number; itemIndex: number; item: any }[] = [];
+        formData.subCategories?.forEach((subcat, subcatIdx) => {
+            subcat.items?.forEach((item, itemIdx) => {
+                if (item.imagePrompt && item.imagePrompt.trim().length > 0) {
+                    allItems.push({ subcategoryIndex: subcatIdx, itemIndex: itemIdx, item });
+                }
+            });
+        });
+
+        if (allItems.length === 0) {
+            alert('No items with image prompts found. Add image prompts to items first.');
+            return;
+        }
+
+        // Check how many need generation vs already have images
+        const needGeneration = allItems.filter(({ item }) => !item.image?.startsWith('http'));
+        const itemsToGenerate = needGeneration.length > 0 ? needGeneration : allItems;
+
+        if (needGeneration.length === 0) {
+            if (!window.confirm(`All ${allItems.length} items already have images. Regenerate ALL images?`)) {
+                return;
+            }
+        }
+
+        if (!window.confirm(`Generate images for ${itemsToGenerate.length} items? This may take several minutes.`)) {
+            return;
+        }
+
+        setGeneratingAllImages(true);
+        let generatedCount = 0;
+        let errorCount = 0;
+
+        for (let i = 0; i < itemsToGenerate.length; i++) {
+            const { subcategoryIndex, itemIndex, item } = itemsToGenerate[i];
+            setAllImagesProgress(`Generating ${i + 1}/${itemsToGenerate.length}: ${item.name}...`);
+
+            try {
+                const result = await kitchenService.generateImageForItem(
+                    token,
+                    initialData._id,
+                    subcategoryIndex,
+                    itemIndex
+                );
+
+                if (result.success && result.imageUrl) {
+                    generatedCount++;
+                    // Update local state
+                    setFormData(prev => {
+                        const newSubCategories = [...(prev.subCategories || [])];
+                        if (newSubCategories[subcategoryIndex]?.items?.[itemIndex]) {
+                            newSubCategories[subcategoryIndex].items[itemIndex] = {
+                                ...newSubCategories[subcategoryIndex].items[itemIndex],
+                                image: result.imageUrl!
+                            };
+                        }
+                        return { ...prev, subCategories: newSubCategories };
+                    });
+                } else {
+                    errorCount++;
+                }
+            } catch (error) {
+                errorCount++;
+            }
+
+            // Small delay between requests
+            if (i < itemsToGenerate.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        setAllImagesProgress(`Done! Generated: ${generatedCount}, Errors: ${errorCount}`);
+        alert(`Image generation complete!\n\nGenerated: ${generatedCount}\nErrors: ${errorCount}`);
+        setGeneratingAllImages(false);
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -427,6 +511,26 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                     <div className="flex items-center gap-2">
                         {initialData?._id && (
                             <>
+                                <button
+                                    type="button"
+                                    onClick={handleGenerateAllCategoryImages}
+                                    disabled={generatingAllImages}
+                                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-bold rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {generatingAllImages ? (
+                                        <>
+                                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            Generating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                            </svg>
+                                            Generate All
+                                        </>
+                                    )}
+                                </button>
                                 <button
                                     type="button"
                                     onClick={handleCompressImages}
@@ -463,6 +567,18 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                         </button>
                     </div>
                 </div>
+
+                {/* Progress indicator for generating all images */}
+                {allImagesProgress && (
+                    <div className="px-6 py-3 bg-purple-50 border-b border-purple-100">
+                        <div className="flex items-center gap-2 text-sm text-purple-700 font-medium">
+                            {generatingAllImages && (
+                                <div className="w-4 h-4 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
+                            )}
+                            <span>{allImagesProgress}</span>
+                        </div>
+                    </div>
+                )}
 
                 <div className="p-6 overflow-y-auto flex-1">
                     <form onSubmit={handleSubmit} className="space-y-6">
