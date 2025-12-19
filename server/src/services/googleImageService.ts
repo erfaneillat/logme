@@ -11,7 +11,7 @@ export interface ImageGenerationResult {
 
 export class GoogleImageService {
     private readonly apiKey: string;
-    private readonly model: string = 'gemini-2.0-flash-exp-image-generation';
+    private readonly model: string = 'gemini-3-pro-image-preview';
     private readonly endpoint: string;
     private readonly uploadsDir: string;
 
@@ -43,11 +43,10 @@ export class GoogleImageService {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 const response = await axios.post(
-                    `${this.endpoint}?key=${this.apiKey}`,
+                    this.endpoint,
                     {
                         contents: [
                             {
-                                role: 'user',
                                 parts: [{ text: enhancedPrompt }]
                             }
                         ],
@@ -57,7 +56,8 @@ export class GoogleImageService {
                     },
                     {
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': this.apiKey
                         },
                         timeout: 120000 // 2 minute timeout for image generation
                     }
