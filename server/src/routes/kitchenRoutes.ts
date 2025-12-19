@@ -16,7 +16,8 @@ import {
     unsaveKitchenItem,
     getSavedKitchenItems,
     checkSavedStatus,
-    generateImageForItem
+    generateImageForItem,
+    compressImagesForCategory
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -90,6 +91,9 @@ router.delete('/categories/:id', authenticateAdmin, deleteCategory);
 
 // AI Image Generation route (single item at a time to avoid timeout)
 router.post('/generate-image', authenticateAdmin, generateImageForItem);
+
+// Image compression route
+router.post('/compress-images', authenticateAdmin, compressImagesForCategory);
 
 // User saved items routes
 router.get('/saved', authenticateToken, getSavedKitchenItems);

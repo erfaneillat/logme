@@ -3,6 +3,9 @@ import KitchenCategory from '../models/KitchenCategory';
 import SavedKitchenItem from '../models/SavedKitchenItem';
 import Settings from '../models/Settings';
 import { googleImageService } from '../services/googleImageService';
+import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -441,6 +444,118 @@ export const generateImageForItem = async (req: Request, res: Response) => {
         return res.status(500).json({
             success: false,
             message: 'Error generating image',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+/**
+ * Compress all images in a category from PNG to optimized WebP
+ */
+export const compressImagesForCategory = async (req: Request, res: Response) => {
+    try {
+        const { categoryId } = req.body;
+
+        if (!categoryId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Category ID is required'
+            });
+        }
+
+        const category = await KitchenCategory.findById(categoryId);
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+
+        // Determine uploads directory
+        const uploadsDir = path.join(__dirname, '../../uploads/kitchen');
+
+        let processed = 0;
+        let skipped = 0;
+        let errors = 0;
+        let totalOriginalSize = 0;
+        let totalCompressedSize = 0;
+
+        for (const subcategory of category.subCategories) {
+            for (let i = 0; i < subcategory.items.length; i++) {
+                const item = subcategory.items[i];
+                if (!item || !item.image) continue;
+
+                // Check if it's a PNG image URL
+                if (!item.image.includes('/api/kitchen/images/') || !item.image.endsWith('.png')) {
+                    skipped++;
+                    continue;
+                }
+
+                // Extract filename
+                const filename = item.image.split('/').pop();
+                if (!filename) continue;
+
+                const inputPath = path.join(uploadsDir, filename);
+                const outputFilename = filename.replace('.png', '.webp');
+                const outputPath = path.join(uploadsDir, outputFilename);
+
+                // Check if source file exists
+                if (!fs.existsSync(inputPath)) {
+                    skipped++;
+                    continue;
+                }
+
+                try {
+                    // Read and compress
+                    const inputBuffer = await fs.promises.readFile(inputPath);
+                    const compressedBuffer = await sharp(inputBuffer)
+                        .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
+                        .webp({ quality: 80 })
+                        .toBuffer();
+
+                    await fs.promises.writeFile(outputPath, compressedBuffer);
+
+                    // Update URL in database
+                    const newUrl = item.image.replace('.png', '.webp');
+                    subcategory.items[i]!.image = newUrl;
+
+                    // Delete old file
+                    await fs.promises.unlink(inputPath);
+
+                    totalOriginalSize += inputBuffer.length;
+                    totalCompressedSize += compressedBuffer.length;
+                    processed++;
+
+                    console.log(`Compressed: ${item.name} (${(inputBuffer.length / 1024).toFixed(0)}KB → ${(compressedBuffer.length / 1024).toFixed(0)}KB)`);
+                } catch (err) {
+                    console.error(`Error compressing ${item.name}:`, err);
+                    errors++;
+                }
+            }
+        }
+
+        // Save category if anything was processed
+        if (processed > 0) {
+            await category.save();
+        }
+
+        const savedMB = ((totalOriginalSize - totalCompressedSize) / 1024 / 1024).toFixed(2);
+        const savingsPercent = totalOriginalSize > 0
+            ? ((1 - totalCompressedSize / totalOriginalSize) * 100).toFixed(0)
+            : '0';
+
+        return res.status(200).json({
+            success: true,
+            message: `Compressed ${processed} images, skipped ${skipped}, errors ${errors}`,
+            processed,
+            skipped,
+            errors,
+            savedMB: parseFloat(savedMB),
+            savingsPercent: parseInt(savingsPercent)
+        });
+
+    } catch (error) {
+        console.error('Compress images error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error compressing images',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
     }

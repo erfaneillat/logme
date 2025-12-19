@@ -238,6 +238,51 @@ class KitchenService {
             };
         }
     }
+
+    async compressImagesForCategory(
+        token: string,
+        categoryId: string
+    ): Promise<{
+        success: boolean;
+        message?: string;
+        processed?: number;
+        skipped?: number;
+        errors?: number;
+        savedMB?: number;
+        savingsPercent?: number;
+    }> {
+        try {
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/compress-images`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ categoryId })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to compress images');
+            }
+
+            const data = await response.json();
+            return {
+                success: data.success,
+                message: data.message,
+                processed: data.processed,
+                skipped: data.skipped,
+                errors: data.errors,
+                savedMB: data.savedMB,
+                savingsPercent: data.savingsPercent
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to compress images',
+            };
+        }
+    }
 }
 
 export const kitchenService = new KitchenService();

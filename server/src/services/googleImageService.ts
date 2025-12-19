@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import sharp from 'sharp';
 
 export interface ImageGenerationResult {
     success: boolean;
@@ -157,19 +158,32 @@ export class GoogleImageService {
     }
 
     /**
-     * Save base64 image to disk and return the URL
+     * Save base64 image to disk with compression and return the URL
      */
     private async saveImage(base64Data: string): Promise<string> {
-        const buffer = Buffer.from(base64Data, 'base64');
-        const filename = `food-${uuidv4()}.png`;
+        const inputBuffer = Buffer.from(base64Data, 'base64');
+        const filename = `food-${uuidv4()}.webp`;
         const filepath = path.join(this.uploadsDir, filename);
 
-        await fs.promises.writeFile(filepath, buffer);
+        // Compress and resize image using sharp
+        // - Resize to max 800x800 (good for food thumbnails)
+        // - Convert to WebP format (much smaller than PNG)
+        // - Use 80% quality (good balance of size vs quality)
+        const compressedBuffer = await sharp(inputBuffer)
+            .resize(800, 800, {
+                fit: 'inside',
+                withoutEnlargement: true
+            })
+            .webp({ quality: 80 })
+            .toBuffer();
 
-        console.log(`Image saved to: ${filepath}`);
+        await fs.promises.writeFile(filepath, compressedBuffer);
+
+        const originalSize = (inputBuffer.length / 1024).toFixed(1);
+        const compressedSize = (compressedBuffer.length / 1024).toFixed(1);
+        console.log(`Image saved to: ${filepath} (${originalSize}KB -> ${compressedSize}KB)`);
 
         // Return relative URL path - this will be appended to the API base URL
-        // The frontend knows the full URL, so we just return the path
         return `/api/kitchen/images/${filename}`;
     }
 

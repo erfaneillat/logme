@@ -50,6 +50,8 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     // Image generation state
     const [generatingImages, setGeneratingImages] = useState(false);
     const [generationProgress, setGenerationProgress] = useState<string>('');
+    const [generatingSingleImage, setGeneratingSingleImage] = useState(false);
+    const [compressingImages, setCompressingImages] = useState(false);
 
     useEffect(() => {
         if (initialData) {
@@ -339,6 +341,74 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
         setGeneratingImages(false);
     };
 
+    const handleGenerateSingleImage = async () => {
+        if (!token || !initialData?._id || editingSubCatIndex === null || editingItemIndex === null) {
+            alert('Please save the category and item first.');
+            return;
+        }
+
+        if (!itemFormData.imagePrompt || itemFormData.imagePrompt.trim().length === 0) {
+            alert('Please enter an image prompt first.');
+            return;
+        }
+
+        setGeneratingSingleImage(true);
+
+        try {
+            const result = await kitchenService.generateImageForItem(
+                token,
+                initialData._id,
+                editingSubCatIndex,
+                editingItemIndex
+            );
+
+            if (result.success && result.imageUrl) {
+                // Update the item's image in local state
+                setItemFormData(prev => ({ ...prev, image: result.imageUrl }));
+                alert('Image generated successfully!');
+            } else {
+                alert('Failed to generate image: ' + (result.error || result.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Single image generation error:', error);
+            alert('Error generating image. Please try again.');
+        } finally {
+            setGeneratingSingleImage(false);
+        }
+    };
+
+    const handleCompressImages = async () => {
+        if (!token || !initialData?._id) {
+            alert('Please save the category first.');
+            return;
+        }
+
+        if (!window.confirm('This will compress all PNG images to WebP format (smaller file size). Continue?')) {
+            return;
+        }
+
+        setCompressingImages(true);
+
+        try {
+            const result = await kitchenService.compressImagesForCategory(token, initialData._id);
+
+            if (result.success) {
+                if (result.processed && result.processed > 0) {
+                    alert(`Compression complete!\n\nProcessed: ${result.processed} images\nSkipped: ${result.skipped}\nErrors: ${result.errors}\n\nSaved: ${result.savedMB}MB (${result.savingsPercent}% smaller)`);
+                } else {
+                    alert('No PNG images found to compress. All images may already be in WebP format.');
+                }
+            } else {
+                alert('Failed to compress images: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Compress images error:', error);
+            alert('Error compressing images. Please try again.');
+        } finally {
+            setCompressingImages(false);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -356,13 +426,35 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                     </div>
                     <div className="flex items-center gap-2">
                         {initialData?._id && (
-                            <button
-                                type="button"
-                                onClick={() => setIsImportModalOpen(true)}
-                                className="px-4 py-2 bg-white text-orange-600 border border-orange-200 text-sm font-bold rounded-xl hover:bg-orange-50 transition-colors"
-                            >
-                                Import JSON
-                            </button>
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={handleCompressImages}
+                                    disabled={compressingImages}
+                                    className="px-4 py-2 bg-white text-green-600 border border-green-200 text-sm font-bold rounded-xl hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {compressingImages ? (
+                                        <>
+                                            <div className="w-3 h-3 border-2 border-green-600/30 border-t-green-600 rounded-full animate-spin"></div>
+                                            Compressing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                            </svg>
+                                            Compress
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsImportModalOpen(true)}
+                                    className="px-4 py-2 bg-white text-orange-600 border border-orange-200 text-sm font-bold rounded-xl hover:bg-orange-50 transition-colors"
+                                >
+                                    Import JSON
+                                </button>
+                            </>
                         )}
                         <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-white/50 transition-colors">
                             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -898,7 +990,31 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
 
                             {/* Image Prompt */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Image Prompt</label>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">Image Prompt</label>
+                                    {editingItemIndex !== null && initialData?._id && editingSubCatIndex !== null && (
+                                        <button
+                                            type="button"
+                                            onClick={handleGenerateSingleImage}
+                                            disabled={generatingSingleImage || !itemFormData.imagePrompt?.trim()}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {generatingSingleImage ? (
+                                                <>
+                                                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                    <span>Generating...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                                    </svg>
+                                                    <span>Generate Image</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
+                                </div>
                                 <textarea
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-black focus:ring-1 focus:ring-black outline-none transition-all font-medium resize-none h-28 text-sm"
                                     value={itemFormData.imagePrompt || ''}
