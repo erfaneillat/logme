@@ -399,16 +399,8 @@ export const generateImageForItem = async (req: Request, res: Response) => {
             });
         }
 
-        // Check if already has image
-        if (item.image && item.image.startsWith('http')) {
-            return res.status(200).json({
-                success: true,
-                itemName: item.name,
-                skipped: true,
-                imageUrl: item.image,
-                message: 'Already has image'
-            });
-        }
+        // Note: We no longer skip items with existing images
+        // The frontend decides whether to regenerate, the server just processes the request
 
         console.log(`Generating image for: ${item.name}`);
 
@@ -416,14 +408,24 @@ export const generateImageForItem = async (req: Request, res: Response) => {
         const result = await googleImageService.generateImage(item.imagePrompt);
 
         if (result.success && result.imageUrl) {
+            // Build full URL from relative path
+            // The service returns a path like /api/kitchen/images/filename.png
+            const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
+            const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3000';
+            const fullImageUrl = result.imageUrl.startsWith('http')
+                ? result.imageUrl
+                : `${protocol}://${host}${result.imageUrl}`;
+
             // Update the item's image URL
-            subcategory.items[itemIndex]!.image = result.imageUrl;
+            subcategory.items[itemIndex]!.image = fullImageUrl;
             await category.save();
+
+            console.log(`Image saved with URL: ${fullImageUrl}`);
 
             return res.status(200).json({
                 success: true,
                 itemName: item.name,
-                imageUrl: result.imageUrl,
+                imageUrl: fullImageUrl,
                 message: 'Image generated successfully'
             });
         } else {

@@ -238,7 +238,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
         return formData.subCategories?.reduce((sum, sub) => sum + (sub.items?.length || 0), 0) || 0;
     };
 
-    const handleGenerateImages = async () => {
+    const handleGenerateImages = async (forceRegenerate: boolean = false) => {
         if (!token || !initialData?._id || editingSubCatIndex === null) {
             alert('Please save the category first before generating images.');
             return;
@@ -246,18 +246,31 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
 
         const items = subCatFormData.items || [];
 
-        // Find items with prompts but no images
-        const itemsToGenerate = items
+        // Find items with prompts
+        const itemsWithPrompts = items
             .map((item, index) => ({ item, index }))
             .filter(({ item }) =>
                 item.imagePrompt &&
-                item.imagePrompt.trim().length > 0 &&
-                !item.image?.startsWith('http')
+                item.imagePrompt.trim().length > 0
             );
 
-        if (itemsToGenerate.length === 0) {
-            alert('No items with image prompts to generate. Add image prompts to items first.');
+        if (itemsWithPrompts.length === 0) {
+            alert('No items with image prompts found. Add image prompts to items first.');
             return;
+        }
+
+        // Filter based on whether we're force regenerating
+        let itemsToGenerate = forceRegenerate
+            ? itemsWithPrompts
+            : itemsWithPrompts.filter(({ item }) => !item.image?.startsWith('http'));
+
+        if (itemsToGenerate.length === 0) {
+            // All items already have images - ask if they want to regenerate
+            if (window.confirm(`All ${itemsWithPrompts.length} items already have images. Do you want to regenerate ALL images? This will replace existing images.`)) {
+                itemsToGenerate = itemsWithPrompts;
+            } else {
+                return;
+            }
         }
 
         if (!window.confirm(`This will generate images for ${itemsToGenerate.length} items. Each may take 30-60 seconds. Continue?`)) {
@@ -669,7 +682,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                             {editingSubCatIndex !== null && initialData?._id && (
                                 <button
                                     type="button"
-                                    onClick={handleGenerateImages}
+                                    onClick={() => handleGenerateImages()}
                                     disabled={generatingImages}
                                     className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold hover:from-purple-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-200"
                                 >
