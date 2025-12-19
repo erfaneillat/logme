@@ -97,6 +97,45 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
         refreshData();
     }, []);
 
+    // Handle browser back button for overlays
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            // When back button is pressed, check the state
+            if (selectedItem) {
+                // If detail page is open, close it
+                setSelectedItem(null);
+            } else if (selectedSubCategory) {
+                // If subcategory page is open, close it
+                setSelectedSubCategory(null);
+            } else if (showSavedList) {
+                // If saved list is open, close it
+                setShowSavedList(false);
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [selectedItem, selectedSubCategory, showSavedList]);
+
+    // Push/pop history state when opening/closing overlays
+    useEffect(() => {
+        if (selectedItem) {
+            window.history.pushState({ view: 'detail' }, '');
+        }
+    }, [selectedItem]);
+
+    useEffect(() => {
+        if (selectedSubCategory && !selectedItem) {
+            window.history.pushState({ view: 'subcategory' }, '');
+        }
+    }, [selectedSubCategory, selectedItem]);
+
+    useEffect(() => {
+        if (showSavedList) {
+            window.history.pushState({ view: 'saved' }, '');
+        }
+    }, [showSavedList]);
+
     const handleSaveToggle = (item: KitchenItem, isSaved: boolean) => {
         const itemId = item._id || item.id;
         if (!itemId) return;
