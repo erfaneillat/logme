@@ -18,6 +18,7 @@ export interface IKitchenItem {
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: IIngredient[]; // List of ingredients with amounts
     instructions?: string; // How to prepare/cook
+    isFree?: boolean; // If true, no subscription required to view details
 }
 
 export interface IKitchenSubCategory {
@@ -50,7 +51,8 @@ const KitchenItemSchema = new Schema({
     prepTime: { type: String, required: true },
     difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true, default: 'medium' },
     ingredients: { type: [IngredientSchema], default: [] },
-    instructions: { type: String, default: '' }
+    instructions: { type: String, default: '' },
+    isFree: { type: Boolean, default: false }
 });
 
 const KitchenSubCategorySchema = new Schema({

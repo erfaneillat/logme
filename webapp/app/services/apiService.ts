@@ -2066,4 +2066,34 @@ export const apiService = {
             return [];
         }
     },
+
+    // Kitchen Analytics
+    recordKitchenItemClick: async (clickData: {
+        kitchenItemId: string;
+        kitchenItemName: string;
+        categoryId: string;
+        categoryTitle: string;
+        subCategoryTitle: string;
+    }): Promise<boolean> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) return false; // Silently fail if no token
+
+            const response = await fetch(`${getBaseUrl()}/api/kitchen/analytics/click`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(clickData),
+            });
+
+            // Don't throw on error - analytics should be non-blocking
+            return response.ok;
+        } catch (error) {
+            console.error('recordKitchenItemClick error:', error);
+            return false;
+        }
+    },
 };

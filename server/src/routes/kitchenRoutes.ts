@@ -17,7 +17,10 @@ import {
     getSavedKitchenItems,
     checkSavedStatus,
     generateImageForItem,
-    compressImagesForCategory
+    compressImagesForCategory,
+    recordKitchenItemClick,
+    getKitchenAnalytics,
+    getItemClickHistory
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -100,5 +103,10 @@ router.get('/saved', authenticateToken, getSavedKitchenItems);
 router.post('/saved', authenticateToken, saveKitchenItem);
 router.post('/saved/check', authenticateToken, checkSavedStatus);
 router.delete('/saved/:kitchenItemId', authenticateToken, unsaveKitchenItem);
+
+// Analytics routes
+router.post('/analytics/click', authenticateToken, recordKitchenItemClick);
+router.get('/admin/analytics', authenticateAdmin, getKitchenAnalytics);
+router.get('/admin/analytics/item/:itemId', authenticateAdmin, getItemClickHistory);
 
 export default router;

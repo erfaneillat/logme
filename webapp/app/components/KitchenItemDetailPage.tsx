@@ -22,6 +22,7 @@ interface KitchenItem {
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[];
     instructions?: string;
+    isFree?: boolean;
 }
 
 interface KitchenItemDetailPageProps {
@@ -30,6 +31,8 @@ interface KitchenItemDetailPageProps {
     onAddToLog?: (item: KitchenItem) => void;
     isSaved?: boolean;
     onSaveToggle?: (item: KitchenItem, saved: boolean) => void;
+    hasSubscription?: boolean;
+    onSubscriptionClick?: () => void;
 }
 
 // Helper to convert English numbers to Persian/Farsi numerals
@@ -43,7 +46,9 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
     onBack,
     onAddToLog,
     isSaved: initialIsSaved = false,
-    onSaveToggle
+    onSaveToggle,
+    hasSubscription = true,
+    onSubscriptionClick
 }) => {
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [isSaving, setIsSaving] = useState(false);
@@ -187,15 +192,33 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 {item.ingredients && item.ingredients.length > 0 && (
                     <div className="px-6 mb-6">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 text-right">مواد لازم</h3>
-                        <div className="bg-gray-50 rounded-2xl p-4">
-                            <div className="space-y-2">
-                                {item.ingredients.map((ing, idx) => (
-                                    <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                                        <span className="text-gray-700 font-medium">{ing.name}</span>
-                                        <span className="text-gray-500 font-medium text-sm">{ing.amount}</span>
-                                    </div>
-                                ))}
+                        <div className="relative">
+                            <div className={`bg-gray-50 rounded-2xl p-4 ${!hasSubscription && !item.isFree ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
+                                <div className="space-y-2">
+                                    {item.ingredients.map((ing, idx) => (
+                                        <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                                            <span className="text-gray-700 font-medium">{ing.name}</span>
+                                            <span className="text-gray-500 font-medium text-sm">{ing.amount}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
+
+                            {/* Premium Lock Overlay */}
+                            {!hasSubscription && !item.isFree && (
+                                <div
+                                    onClick={onSubscriptionClick}
+                                    className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer rounded-2xl bg-gradient-to-br from-gray-900/5 to-gray-900/20 backdrop-blur-[1px] transition-all hover:from-gray-900/10 hover:to-gray-900/30 active:scale-[0.98]"
+                                >
+                                    <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center mb-3 transform transition-transform hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-800">ویژه اعضای پرمیوم</p>
+                                    <p className="text-xs text-gray-500 mt-1">برای مشاهده اشتراک تهیه کنید</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -204,8 +227,26 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 {item.instructions && (
                     <div className="px-6 mb-6">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 text-right">طرز تهیه</h3>
-                        <div className="bg-gray-50 rounded-2xl p-5">
-                            <p className="text-gray-700 text-right leading-loose whitespace-pre-line">{item.instructions}</p>
+                        <div className="relative">
+                            <div className={`bg-gray-50 rounded-2xl p-5 ${!hasSubscription && !item.isFree ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
+                                <p className="text-gray-700 text-right leading-loose whitespace-pre-line">{item.instructions}</p>
+                            </div>
+
+                            {/* Premium Lock Overlay */}
+                            {!hasSubscription && !item.isFree && (
+                                <div
+                                    onClick={onSubscriptionClick}
+                                    className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer rounded-2xl bg-gradient-to-br from-gray-900/5 to-gray-900/20 backdrop-blur-[1px] transition-all hover:from-gray-900/10 hover:to-gray-900/30 active:scale-[0.98]"
+                                >
+                                    <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center mb-3 transform transition-transform hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-800">ویژه اعضای پرمیوم</p>
+                                    <p className="text-xs text-gray-500 mt-1">برای مشاهده اشتراک تهیه کنید</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

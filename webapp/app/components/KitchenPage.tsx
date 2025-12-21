@@ -26,6 +26,7 @@ interface KitchenItem {
     ingredients?: Ingredient[];
     instructions?: string;
     originalId?: string;
+    isFree?: boolean;
 }
 
 interface KitchenSubCategory {
@@ -50,9 +51,10 @@ const toPersianNumbers = (num: number | string): string => {
 interface KitchenPageProps {
     onBack?: () => void;
     onAddFood?: (food: any) => void;
+    onSubscriptionClick?: () => void;
 }
 
-const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
+const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClick }) => {
     const [categories, setCategories] = useState<KitchenCategory[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -65,12 +67,16 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
     const [savedItemIds, setSavedItemIds] = useState<Set<string>>(new Set());
     const [showSavedList, setShowSavedList] = useState(false);
 
+    // Subscription status
+    const [hasSubscription, setHasSubscription] = useState(true); // Default to true to avoid flash of lock
+
     const refreshData = async () => {
         setIsLoading(true);
         try {
-            const [catsData, savedData] = await Promise.all([
+            const [catsData, savedData, subscriptionStatus] = await Promise.all([
                 apiService.getKitchenCategories(),
-                apiService.getSavedKitchenItems()
+                apiService.getSavedKitchenItems(),
+                apiService.getSubscriptionStatus()
             ]);
 
             // Process saved items
@@ -86,6 +92,9 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
 
             // Set categories directly (no saved category prepended)
             setCategories(catsData);
+
+            // Set subscription status
+            setHasSubscription(subscriptionStatus?.isActive ?? false);
 
         } catch (error) {
             console.error('Failed to load kitchen data', error);
@@ -175,12 +184,38 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
             .filter(subCat => subCat.items.length > 0);
     };
 
+    // Handle item click with analytics tracking
+    const handleItemClick = (item: KitchenItem, categoryContext?: {
+        categoryId: string;
+        categoryTitle: string;
+        subCategoryTitle: string;
+    }) => {
+        // Record analytics (non-blocking)
+        const itemId = item._id || item.id;
+        if (itemId && categoryContext) {
+            apiService.recordKitchenItemClick({
+                kitchenItemId: itemId,
+                kitchenItemName: item.name,
+                categoryId: categoryContext.categoryId,
+                categoryTitle: categoryContext.categoryTitle,
+                subCategoryTitle: categoryContext.subCategoryTitle,
+            }).catch(() => { }); // Silently ignore errors
+        }
+
+        // Show the item detail page
+        setSelectedItem(item);
+    };
+
     // Render a single item card (reusable)
-    const renderItemCard = (item: KitchenItem, showSavedBadge = false) => (
+    const renderItemCard = (item: KitchenItem, showSavedBadge = false, categoryContext?: {
+        categoryId: string;
+        categoryTitle: string;
+        subCategoryTitle: string;
+    }) => (
         <div
             key={item._id || item.id}
             className="snap-center relative shrink-0 w-[220px] bg-white rounded-[32px] p-4 pb-4 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.08)] border border-gray-100/50 hover:border-orange-200 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl"
-            onClick={() => setSelectedItem(item)}
+            onClick={() => handleItemClick(item, categoryContext)}
         >
             <div className="w-full h-32 rounded-[24px] bg-gradient-to-br from-gray-50 to-gray-100 mb-4 flex items-center justify-center shadow-inner relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500">
                 <KitchenItemImage
@@ -355,7 +390,11 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                                 </div>
 
                                 <div className="flex overflow-x-auto px-6 gap-4 pb-4 no-scrollbar -mx-1 pt-1 snap-x snap-mandatory">
-                                    {subCat.items.map((item) => renderItemCard(item))}
+                                    {subCat.items.map((item) => renderItemCard(item, false, {
+                                        categoryId: selectedCategory?._id || '',
+                                        categoryTitle: selectedCategory?.title || '',
+                                        subCategoryTitle: subCat.title,
+                                    }))}
 
                                     {subCat.items.length > 5 && (
                                         <div
@@ -466,7 +505,11 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                                         <div
                                             key={item._id || item.id}
                                             className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex gap-4 items-center cursor-pointer hover:shadow-md hover:border-orange-200 transition-all"
-                                            onClick={() => setSelectedItem(item)}
+                                            onClick={() => handleItemClick(item, {
+                                                categoryId: 'saved',
+                                                categoryTitle: 'ذخیره‌شده‌ها',
+                                                subCategoryTitle: 'ذخیره‌شده‌ها',
+                                            })}
                                         >
                                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden shrink-0">
                                                 <KitchenItemImage
@@ -507,7 +550,11 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                         title={selectedSubCategory.title}
                         items={selectedSubCategory.items}
                         onBack={() => setSelectedSubCategory(null)}
-                        onItemClick={(item) => setSelectedItem(item)}
+                        onItemClick={(item) => handleItemClick(item, {
+                            categoryId: selectedCategory?._id || '',
+                            categoryTitle: selectedCategory?.title || '',
+                            subCategoryTitle: selectedSubCategory.title,
+                        })}
                     />
                 </div>
             )}
@@ -524,6 +571,8 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood }) => {
                             onAddFood && onAddFood(item);
                             setSelectedItem(null);
                         }}
+                        hasSubscription={hasSubscription}
+                        onSubscriptionClick={onSubscriptionClick}
                     />
                 </div>
             )}

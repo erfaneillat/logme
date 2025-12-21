@@ -17,6 +17,7 @@ export interface KitchenItem {
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[]; // List of ingredients with amounts
     instructions?: string; // How to prepare/cook
+    isFree?: boolean; // If true, no subscription required
 }
 
 export interface KitchenSubCategory {

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import KitchenCategory from '../models/KitchenCategory';
 import SavedKitchenItem from '../models/SavedKitchenItem';
+import KitchenItemClick from '../models/KitchenItemClick';
 import Settings from '../models/Settings';
 import { googleImageService } from '../services/googleImageService';
 import sharp from 'sharp';
@@ -556,6 +557,199 @@ export const compressImagesForCategory = async (req: Request, res: Response) => 
         return res.status(500).json({
             success: false,
             message: 'Error compressing images',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+// =====================
+// Analytics Functions
+// =====================
+
+/**
+ * Record a click on a kitchen item
+ */
+export const recordKitchenItemClick = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        const { kitchenItemId, kitchenItemName, categoryId, categoryTitle, subCategoryTitle } = req.body;
+
+        if (!kitchenItemId || !kitchenItemName || !categoryId || !categoryTitle || !subCategoryTitle) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields: kitchenItemId, kitchenItemName, categoryId, categoryTitle, subCategoryTitle'
+            });
+        }
+
+        const clickRecord = new KitchenItemClick({
+            kitchenItemId,
+            kitchenItemName,
+            categoryId,
+            categoryTitle,
+            subCategoryTitle,
+            userId: userId || null
+        });
+
+        await clickRecord.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Click recorded successfully'
+        });
+    } catch (error) {
+        console.error('Record kitchen item click error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error recording click',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+/**
+ * Get analytics summary for kitchen items (admin only)
+ */
+export const getKitchenAnalytics = async (req: Request, res: Response) => {
+    try {
+        const { startDate, endDate, categoryId, limit = 50 } = req.query;
+
+        // Build match query
+        const matchQuery: any = {};
+
+        if (startDate || endDate) {
+            matchQuery.createdAt = {};
+            if (startDate) matchQuery.createdAt.$gte = new Date(startDate as string);
+            if (endDate) matchQuery.createdAt.$lte = new Date(endDate as string);
+        }
+
+        if (categoryId) {
+            matchQuery.categoryId = categoryId;
+        }
+
+        // Get top clicked items
+        const topItems = await KitchenItemClick.aggregate([
+            { $match: matchQuery },
+            {
+                $group: {
+                    _id: '$kitchenItemId',
+                    name: { $first: '$kitchenItemName' },
+                    categoryId: { $first: '$categoryId' },
+                    categoryTitle: { $first: '$categoryTitle' },
+                    subCategoryTitle: { $first: '$subCategoryTitle' },
+                    clickCount: { $sum: 1 },
+                    uniqueUsers: { $addToSet: '$userId' },
+                    lastClicked: { $max: '$createdAt' }
+                }
+            },
+            {
+                $addFields: {
+                    uniqueUserCount: { $size: { $filter: { input: '$uniqueUsers', as: 'u', cond: { $ne: ['$$u', null] } } } }
+                }
+            },
+            { $project: { uniqueUsers: 0 } },
+            { $sort: { clickCount: -1 } },
+            { $limit: parseInt(limit as string) || 50 }
+        ]);
+
+        // Get category-wise summary
+        const categorySummary = await KitchenItemClick.aggregate([
+            { $match: matchQuery },
+            {
+                $group: {
+                    _id: '$categoryId',
+                    categoryTitle: { $first: '$categoryTitle' },
+                    totalClicks: { $sum: 1 },
+                    uniqueItems: { $addToSet: '$kitchenItemId' }
+                }
+            },
+            {
+                $addFields: {
+                    uniqueItemCount: { $size: '$uniqueItems' }
+                }
+            },
+            { $project: { uniqueItems: 0 } },
+            { $sort: { totalClicks: -1 } }
+        ]);
+
+        // Get overall stats
+        const totalClicks = await KitchenItemClick.countDocuments(matchQuery);
+        const uniqueItemsClicked = await KitchenItemClick.distinct('kitchenItemId', matchQuery);
+        const uniqueUsersClicked = await KitchenItemClick.distinct('userId', matchQuery);
+
+        // Get clicks over time (daily for last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const clicksOverTime = await KitchenItemClick.aggregate([
+            {
+                $match: {
+                    ...matchQuery,
+                    createdAt: { $gte: thirtyDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                summary: {
+                    totalClicks,
+                    uniqueItemsClicked: uniqueItemsClicked.length,
+                    uniqueUsersClicked: uniqueUsersClicked.filter(u => u).length
+                },
+                topItems,
+                categorySummary,
+                clicksOverTime
+            }
+        });
+    } catch (error) {
+        console.error('Get kitchen analytics error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching analytics',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+/**
+ * Get click history for a specific item (admin only)
+ */
+export const getItemClickHistory = async (req: Request, res: Response) => {
+    try {
+        const { itemId } = req.params;
+        const { limit = 100 } = req.query;
+
+        if (!itemId) {
+            return res.status(400).json({ success: false, message: 'Item ID is required' });
+        }
+
+        const clicks = await KitchenItemClick.find({ kitchenItemId: itemId })
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit as string) || 100);
+
+        const totalClicks = await KitchenItemClick.countDocuments({ kitchenItemId: itemId });
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                itemId,
+                totalClicks,
+                recentClicks: clicks
+            }
+        });
+    } catch (error) {
+        console.error('Get item click history error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching item click history',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
     }

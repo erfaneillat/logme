@@ -563,6 +563,7 @@ export default function Home() {
               showNotification("خطا در افزودن غذا", 'error');
             }
           }}
+          onSubscriptionClick={() => navigateToView('subscription')}
         />
       )}
 

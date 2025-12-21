@@ -66,6 +66,34 @@ export interface CostAnalytics {
     }>;
 }
 
+export interface KitchenAnalytics {
+    summary: {
+        totalClicks: number;
+        uniqueItemsClicked: number;
+        uniqueUsersClicked: number;
+    };
+    topItems: Array<{
+        _id: string;
+        name: string;
+        categoryId: string;
+        categoryTitle: string;
+        subCategoryTitle: string;
+        clickCount: number;
+        uniqueUserCount: number;
+        lastClicked: string;
+    }>;
+    categorySummary: Array<{
+        _id: string;
+        categoryTitle: string;
+        totalClicks: number;
+        uniqueItemCount: number;
+    }>;
+    clicksOverTime: Array<{
+        _id: string;
+        count: number;
+    }>;
+}
+
 class AnalyticsService {
     private async fetchWithTimeout(url: string, options: RequestInit = {}) {
         const controller = new AbortController();
@@ -175,6 +203,23 @@ class AnalyticsService {
             return data.data;
         } catch (error) {
             errorLogger.error('Error fetching cost analytics:', error);
+            throw error;
+        }
+    }
+
+    async getKitchenAnalytics(token: string): Promise<KitchenAnalytics> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/kitchen/admin/analytics`,
+                {
+                    method: 'GET',
+                    headers: this.getAuthHeaders(token),
+                }
+            );
+            const data = await response.json();
+            return data.data;
+        } catch (error) {
+            errorLogger.error('Error fetching kitchen analytics:', error);
             throw error;
         }
     }

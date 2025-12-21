@@ -176,7 +176,8 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
             difficulty: 'medium',
             imagePrompt: '',
             ingredients: [],
-            instructions: ''
+            instructions: '',
+            isFree: false
         });
         setIsItemModalOpen(true);
     };
@@ -1137,6 +1138,34 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                                     onChange={e => setItemFormData({ ...itemFormData, imagePrompt: e.target.value })}
                                     placeholder="AI Image Generation Prompt..."
                                 />
+                            </div>
+
+                            {/* Free Item Toggle */}
+                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-2xl border border-green-100">
+                                <label className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                            <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-800">Free Content</p>
+                                            <p className="text-xs text-gray-500">Ingredients & instructions visible without subscription</p>
+                                        </div>
+                                    </div>
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            checked={itemFormData.isFree || false}
+                                            onChange={e => setItemFormData({ ...itemFormData, isFree: e.target.checked })}
+                                            className="sr-only"
+                                        />
+                                        <div className={`w-14 h-8 rounded-full transition-colors duration-200 ${itemFormData.isFree ? 'bg-green-500' : 'bg-gray-300'}`}>
+                                            <div className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-200 ${itemFormData.isFree ? 'translate-x-7' : 'translate-x-1'}`}></div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
                         </div>
 
