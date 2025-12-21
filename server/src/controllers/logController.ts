@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import DailyLog from '../models/DailyLog';
+import ExerciseLog from '../models/ExerciseLog';
 import User from '../models/User';
 import AdditionalInfo from '../models/AdditionalInfo';
 import { updateStreakIfEligible, updateStreakOnFirstMeal, updateUserLastActivity } from '../services/streakService';
@@ -725,7 +726,17 @@ export class LogController {
                 return;
             }
 
-            const { date, burnedCalories } = req.body || {};
+            const {
+                date,
+                burnedCalories,
+                // Optional exercise details for logging
+                activityName,
+                activityDescription,
+                duration,
+                intensity,
+                tips
+            } = req.body || {};
+
             if (!date || typeof date !== 'string') {
                 res.status(400).json({ success: false, message: 'date (YYYY-MM-DD) is required' });
                 return;
@@ -772,6 +783,23 @@ export class LogController {
                 );
             }
 
+            // Save exercise entry to ExerciseLog if exercise details are provided
+            let exerciseEntry = null;
+            if (activityName || activityDescription) {
+                const timeIso = new Date().toISOString();
+                exerciseEntry = await ExerciseLog.create({
+                    userId,
+                    date: sanitizedDate,
+                    activityName: activityName || activityDescription || 'ورزش',
+                    activityDescription: activityDescription || activityName || '',
+                    duration: Math.max(0, Math.round(Number(duration) || 0)),
+                    caloriesBurned: burnedCals,
+                    intensity: intensity || 'متوسط',
+                    tips: Array.isArray(tips) ? tips : [],
+                    timeIso,
+                });
+            }
+
             // Trigger streak update after totals change
             try { await updateStreakIfEligible(userId, sanitizedDate); } catch (_) { }
 
@@ -785,6 +813,7 @@ export class LogController {
                 success: true,
                 data: {
                     log,
+                    exerciseEntry,
                     preferenceEnabled,
                     message: preferenceEnabled
                         ? 'Exercise added and will be included in daily goal'

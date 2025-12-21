@@ -11,6 +11,7 @@ import DeletedUsersPage from './pages/DeletedUsersPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import LogsPage from './pages/LogsPage';
+import ExercisesPage from './pages/ExercisesPage';
 import AppVersionsPage from './pages/AppVersionsPage';
 import TicketsPage from './pages/TicketsPage';
 import TicketDetailPage from './pages/TicketDetailPage';
@@ -29,6 +30,7 @@ const App = () => {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/analytics" element={<AnalyticsPage />} />
                         <Route path="/logs" element={<LogsPage />} />
+                        <Route path="/exercises" element={<ExercisesPage />} />
                         <Route path="/plans" element={<PlansPage />} />
                         <Route path="/offers" element={<OffersPage />} />
                         <Route path="/users" element={<UsersPage />} />
