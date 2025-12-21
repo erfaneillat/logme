@@ -834,7 +834,7 @@ export class LogController {
                 return;
             }
 
-            const { exercise, duration } = req.body || {};
+            const { exercise, duration, date } = req.body || {};
             if (!exercise || typeof exercise !== 'string') {
                 res.status(400).json({ success: false, message: 'exercise description is required' });
                 return;
@@ -844,19 +844,42 @@ export class LogController {
                 return;
             }
 
+            // Use provided date or today's date
+            const today = new Date();
+            const sanitizedDate = date && typeof date === 'string'
+                ? date.slice(0, 10)
+                : today.toISOString().slice(0, 10);
+            const timeIso = new Date().toISOString();
+
             // Check if OpenAI API key is available
             if (!process.env.OPENAI_API_KEY) {
                 // Fallback calculation without AI
                 const fallbackCalories = Math.round(duration * 5); // 5 calories per minute estimate
+                const fallbackData = {
+                    activityName: exercise,
+                    caloriesBurned: fallbackCalories,
+                    duration: duration,
+                    intensity: 'متوسط', // 'Moderate' in Persian
+                    tips: ['این محاسبه تخمینی است', 'برای محاسبه دقیق‌تر وزن خود را تکمیل کنید']
+                };
+
+                // Save exercise entry to ExerciseLog
+                const exerciseEntry = await ExerciseLog.create({
+                    userId,
+                    date: sanitizedDate,
+                    activityName: fallbackData.activityName,
+                    activityDescription: exercise,
+                    duration: duration,
+                    caloriesBurned: fallbackCalories,
+                    intensity: fallbackData.intensity,
+                    tips: fallbackData.tips,
+                    timeIso,
+                });
+
                 res.json({
                     success: true,
-                    data: {
-                        activityName: exercise,
-                        caloriesBurned: fallbackCalories,
-                        duration: duration,
-                        intensity: 'متوسط', // 'Moderate' in Persian
-                        tips: ['این محاسبه تخمینی است', 'برای محاسبه دقیق‌تر وزن خود را تکمیل کنید']
-                    },
+                    data: fallbackData,
+                    exerciseEntry,
                     meta: null
                 });
                 return;
@@ -879,9 +902,23 @@ export class LogController {
                 await User.findByIdAndUpdate(userId, { $inc: { aiCostUsdTotal: cost } }).exec();
             }
 
+            // Save exercise entry to ExerciseLog
+            const exerciseEntry = await ExerciseLog.create({
+                userId,
+                date: sanitizedDate,
+                activityName: analysisResult.data.activityName,
+                activityDescription: exercise,
+                duration: analysisResult.data.duration,
+                caloriesBurned: analysisResult.data.caloriesBurned,
+                intensity: analysisResult.data.intensity,
+                tips: analysisResult.data.tips || [],
+                timeIso,
+            });
+
             res.json({
                 success: true,
                 data: analysisResult.data,
+                exerciseEntry,
                 meta: analysisResult.meta
             });
         } catch (error) {
