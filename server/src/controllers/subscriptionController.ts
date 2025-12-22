@@ -6,6 +6,7 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import { PurchaseVerificationService } from '../services/purchaseVerificationService';
 import { CafeBazaarApiService } from '../services/cafeBazaarApiService';
 import errorLogger from '../services/errorLoggerService';
+import { telegramService } from '../services/telegramService';
 
 export class SubscriptionController {
     // Verify purchase from CafeBazaar
@@ -234,6 +235,23 @@ export class SubscriptionController {
 
             // Log successful purchase for audit
             this.logPurchase(userId, productKey, orderId, purchaseToken);
+
+            // Send Telegram notification
+            try {
+                const user = await User.findById(userId);
+                if (user) {
+                    telegramService.sendSubscriptionNotification(
+                        user.phone,
+                        productKey,
+                        undefined, // Amount not readily available in params, could extract from plan or validation
+                        orderId
+                    ).catch((err: any) => {
+                        errorLogger.error('Failed to send subscription telegram notification', err);
+                    });
+                }
+            } catch (notifyErr) {
+                console.error('Failed to prepare subscription notification:', notifyErr);
+            }
 
             // After successful activation, handle referral reward if applicable
             try {

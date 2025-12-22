@@ -7,6 +7,7 @@ import DeletedUser from '../models/DeletedUser';
 import { validationResult } from 'express-validator';
 import { createSMSService } from '../services/smsService';
 import errorLogger from '../services/errorLoggerService';
+import { telegramService } from '../services/telegramService';
 
 interface AuthRequest extends Request {
   user?: any;
@@ -161,6 +162,7 @@ export class AuthController {
       }
 
       // Mark phone as verified
+      const wasVerified = user.isPhoneVerified;
       user.isPhoneVerified = true;
       user.verificationCode = null as any;
       user.verificationCodeExpires = null as any;
@@ -171,6 +173,14 @@ export class AuthController {
         { userId: user._id, phone: user.phone },
         process.env.JWT_SECRET || 'your-secret-key'
       );
+
+      // Send Telegram notification for new signups
+      if (!wasVerified) {
+        // Run in background, don't await/block response
+        telegramService.sendSignupNotification(user.phone, (user as any)._id.toString()).catch((err: any) => {
+          errorLogger.error('Failed to send signup telegram notification', err);
+        });
+      }
 
       res.json({
         success: true,
