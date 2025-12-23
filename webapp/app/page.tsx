@@ -13,6 +13,7 @@ import SubscriptionPage from './components/SubscriptionPage';
 import Splash from './components/Splash';
 import Onboarding from './components/Onboarding';
 import Login from './components/Login';
+import LoginGlobal from './components/LoginGlobal';
 import Verification from './components/Verification';
 import AdditionalInfo from './components/AdditionalInfo';
 import PlanGeneration from './components/PlanGeneration';
@@ -27,6 +28,7 @@ type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('SPLASH');
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+  const [isGlobal, setIsGlobal] = useState(false);
 
   // Auth State
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -40,6 +42,33 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+      // Determine Market (Runtime Override)
+      const marketParam = searchParams.get('market') || hashParams.get('market');
+      const isGlobalEnv = process.env.NEXT_PUBLIC_MARKET === 'global';
+
+      // If Env is global OR URL param is global -> Global Mode
+      // If Env is NOT global AND URL param is missing/iran -> Iran Mode (Default)
+      if (isGlobalEnv || marketParam === 'global') {
+        console.log('🌍 Switching to Global Market Mode');
+        setIsGlobal(true);
+        document.title = 'Slice';
+        document.documentElement.dir = 'ltr';
+        document.documentElement.lang = 'en';
+        // Remove Vazir font class if present
+        document.documentElement.classList.remove('className'); // cleaning up next/font class if easy, otherwise simple style override works
+        document.body.style.fontFamily = "system-ui, -apple-system, sans-serif";
+      } else {
+        // Default to Iran (revert if needed/ensure defaults)
+        console.log('🇮🇷 Running in Iran Market Mode');
+        setIsGlobal(false);
+        if (document.title === 'Loqme') document.title = 'لقمه';
+        if (document.documentElement.dir === 'ltr') document.documentElement.dir = 'rtl';
+        if (document.documentElement.lang === 'en') document.documentElement.lang = 'fa';
+        // We don't need to re-add Vazir manually as it's in layout, but we ensure style
+        // layout's style attribute might be static, but we can override:
+        // However, if we are in "Default Iran", usually we don't need to touch anything as layout.tsx handled it.
+      }
 
       const hasPayment = searchParams.get('payment') || hashParams.get('payment');
 
@@ -490,6 +519,26 @@ export default function Home() {
   }
 
   if (appState === 'LOGIN') {
+    if (isGlobal) {
+      return (
+        <LoginGlobal
+          onLoginSuccess={(user) => {
+            localStorage.setItem('isLoggedIn', 'true');
+            if (user.hasCompletedAdditionalInfo) {
+              localStorage.setItem('hasCompletedAdditionalInfo', 'true');
+              setAppState('MAIN');
+            } else {
+              localStorage.setItem('hasCompletedAdditionalInfo', 'false');
+              setAppState('ADDITIONAL_INFO');
+            }
+            // Sync token to Flutter for Native features
+            if (user.token && (window as any).FlutterBridge?.setAuthToken) {
+              (window as any).FlutterBridge.setAuthToken(user.token);
+            }
+          }}
+        />
+      );
+    }
     return <Login onPhoneSubmit={handleLoginSubmit} />;
   }
 

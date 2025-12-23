@@ -6,6 +6,7 @@ import { apiService } from '../services/apiService';
 import { newDate } from 'date-fns-jalali';
 import { differenceInYears } from 'date-fns';
 import { useToast } from '../context/ToastContext';
+import { useTranslation } from '../translations';
 
 // --- Types ---
 type Gender = 'male' | 'female' | 'other';
@@ -125,17 +126,18 @@ const BottomButton = ({ onClick, disabled, text = "ادامه" }: { onClick: () 
 // --- Steps ---
 
 const GenderSelection = ({ value, onChange }: { value: Gender | undefined, onChange: (v: Gender) => void }) => {
+    const { t } = useTranslation();
     return (
         <div className="w-full">
             <Header
-                title="جنسیت خود را انتخاب کنید"
-                subtitle="این برای تنظیم برنامه سفارشی شما استفاده خواهد شد."
+                title={t('additionalInfo.gender.title')}
+                subtitle={t('additionalInfo.gender.subtitle')}
                 icon={<Icons.HeaderPerson />}
             />
 
             <div className="w-full px-1">
                 <SelectionCard
-                    title="مرد"
+                    title={t('additionalInfo.gender.male')}
                     icon={<Icons.Male />}
                     isSelected={value === 'male'}
                     onClick={() => onChange('male')}
@@ -144,7 +146,7 @@ const GenderSelection = ({ value, onChange }: { value: Gender | undefined, onCha
                     iconColorClass="text-blue-500"
                 />
                 <SelectionCard
-                    title="زن"
+                    title={t('additionalInfo.gender.female')}
                     icon={<Icons.Female />}
                     isSelected={value === 'female'}
                     onClick={() => onChange('female')}
@@ -153,7 +155,7 @@ const GenderSelection = ({ value, onChange }: { value: Gender | undefined, onCha
                     iconColorClass="text-pink-500"
                 />
                 <SelectionCard
-                    title="سایر"
+                    title={t('additionalInfo.gender.other')}
                     icon={<Icons.Person />}
                     isSelected={value === 'other'}
                     onClick={() => onChange('other')}
@@ -284,6 +286,7 @@ const BirthDateSelection = ({ value, onChange }: any) => {
 };
 
 const WorkoutFrequency = ({ value, onChange }: any) => {
+    const { t } = useTranslation();
     const StepIcons = {
         Dumbbell: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m6.5 6.5 11 11" /><path d="m21 21-1-1" /><path d="m3 3 1 1" /><path d="m18 22 4-4" /><path d="m2 6 4-4" /><path d="m3 10 7-7" /><path d="m14 21 7-7" /></svg>,
         Runner: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="M22 16.92v3a1 1 0 0 1-2.18.51l-8-6.15-2.6 2.37A2 2 0 0 1 7.74 17L5 15.65" /><path d="M12.92 7.74 3.03 5.48" /><path d="M19 12.08 15 8l-3 3-2.15-2.15" /><path d="M16 4a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z" /></svg>,
@@ -335,14 +338,14 @@ const WorkoutFrequency = ({ value, onChange }: any) => {
     return (
         <div className="w-full">
             <Header
-                title="چند بار در هفته ورزش می‌کنید؟"
-                subtitle="این برای تنظیم برنامه سفارشی شما استفاده خواهد شد."
+                title={t('additionalInfo.workout.title')}
+                subtitle={t('additionalInfo.workout.subtitle')}
                 icon={<StepIcons.HeaderDumbbell />}
             />
             <div className="w-full px-1">
                 <WorkoutCard
-                    title="۰ - ۲"
-                    subtitle="گاهی اوقات ورزش می‌کنم"
+                    title={t('additionalInfo.workout.range1.title')}
+                    subtitle={t('additionalInfo.workout.range1.subtitle')}
                     icon={<StepIcons.Dumbbell />}
                     dotsIcon={<StepIcons.Dots2 />}
                     isSelected={value === '0-2'}
@@ -352,8 +355,8 @@ const WorkoutFrequency = ({ value, onChange }: any) => {
                     iconColorClass="text-[#FF6B6B]"
                 />
                 <WorkoutCard
-                    title="۳ - ۵"
-                    subtitle="چند بار در هفته ورزش می‌کنم"
+                    title={t('additionalInfo.workout.range2.title')}
+                    subtitle={t('additionalInfo.workout.range2.subtitle')}
                     icon={<StepIcons.Runner />}
                     dotsIcon={<StepIcons.Dots3 />}
                     isSelected={value === '3-5'}
@@ -363,8 +366,8 @@ const WorkoutFrequency = ({ value, onChange }: any) => {
                     iconColorClass="text-[#1DD1A1]"
                 />
                 <WorkoutCard
-                    title="+۶"
-                    subtitle="ورزشکار متعهد"
+                    title={t('additionalInfo.workout.range3.title')}
+                    subtitle={t('additionalInfo.workout.range3.subtitle')}
                     icon={<StepIcons.Athlete />}
                     dotsIcon={<StepIcons.DotsGrid />}
                     isSelected={value === '6+'}
@@ -380,13 +383,14 @@ const WorkoutFrequency = ({ value, onChange }: any) => {
 
 // 4. Weight & Height
 const WeightHeight = ({ weight, height, onChange }: any) => {
+    const { t } = useTranslation();
     // Generate ranges
     const minWeight = 40, maxWeight = 150;
     const minHeight = 140, maxHeight = 220;
 
-    // We use formatted strings for the wheel: "70 کیلوگرم"
-    const weights = Array.from({ length: maxWeight - minWeight + 1 }, (_, i) => `${minWeight + i} کیلوگرم`);
-    const heights = Array.from({ length: maxHeight - minHeight + 1 }, (_, i) => `${minHeight + i} سانتی‌متر`);
+    // We use formatted strings for the wheel: "70 kg"
+    const weights = Array.from({ length: maxWeight - minWeight + 1 }, (_, i) => `${minWeight + i} ${t('additionalInfo.measurements.kg')}`);
+    const heights = Array.from({ length: maxHeight - minHeight + 1 }, (_, i) => `${minHeight + i} ${t('additionalInfo.measurements.cm')}`);
 
     // Helper to parse value back to number
     const parseValue = (str: string) => parseInt(str.split(' ')[0]);
@@ -395,8 +399,8 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
     const currentWeight = weight || 70;
     const currentHeight = height || 170;
 
-    const weightStr = `${currentWeight} کیلوگرم`;
-    const heightStr = `${currentHeight} سانتی‌متر`;
+    const weightStr = `${currentWeight} ${t('additionalInfo.measurements.kg')}`;
+    const heightStr = `${currentHeight} ${t('additionalInfo.measurements.cm')}`;
 
     const StepIcons = {
         Height: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="M12 5v14M8 9l4-4 4 4M8 15l4 4 4-4" /></svg>, // Vertical double arrow
@@ -410,8 +414,8 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
     return (
         <div className="w-full">
             <Header
-                title="وزن و قد شما چقدر است؟"
-                subtitle="این اطلاعات برای محاسبه BMI و نیازهای کالری روزانه شما استفاده می‌شود"
+                title={t('additionalInfo.measurements.title')}
+                subtitle={t('additionalInfo.measurements.subtitle')}
                 icon={<RealHeaderIcon />}
             />
 
@@ -422,7 +426,7 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
                 {/* Weight Column */}
                 <div className="flex-1 flex flex-col items-center relative z-0">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="font-black text-lg">وزن</span>
+                        <span className="font-black text-lg">{t('additionalInfo.measurements.weight')}</span>
                         <div className="bg-black text-white p-1.5 rounded-[8px] flex items-center justify-center">
                             <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                         </div>
@@ -437,14 +441,14 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
                     </div>
 
                     <div className="bg-black text-white px-5 py-3 rounded-[16px] font-bold text-sm mt-4 shadow-lg shadow-gray-200 min-w-[100px] text-center">
-                        {currentWeight} کیلوگرم
+                        {currentWeight} {t('additionalInfo.measurements.kg')}
                     </div>
                 </div>
 
                 {/* Height Column */}
                 <div className="flex-1 flex flex-col items-center relative z-0">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="font-black text-lg">قد</span>
+                        <span className="font-black text-lg">{t('additionalInfo.measurements.height')}</span>
                         <div className="text-black"><StepIcons.Height /></div>
                     </div>
 
@@ -457,7 +461,7 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
                     </div>
 
                     <div className="bg-black text-white px-5 py-3 rounded-[16px] font-bold text-sm mt-4 shadow-lg shadow-gray-200 min-w-[100px] text-center">
-                        {currentHeight} سانتی‌متر
+                        {currentHeight} {t('additionalInfo.measurements.cm')}
                     </div>
                 </div>
             </div>
@@ -467,7 +471,7 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
 
 // 5. Goal
 const GoalSelection = ({ value, onChange }: any) => {
-
+    const { t } = useTranslation();
     const StepIcons = {
         Target: () => <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>,
         TrendDown: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" /></svg>,
@@ -506,15 +510,15 @@ const GoalSelection = ({ value, onChange }: any) => {
     return (
         <div className="w-full">
             <Header
-                title="هدف شما چیست؟"
-                subtitle="این به ما کمک میکند تا برنامه ای برای مصرف کالری شما ایجاد کنیم"
+                title={t('additionalInfo.goal.title')}
+                subtitle={t('additionalInfo.goal.subtitle')}
                 icon={<StepIcons.Target />}
             />
 
             <div className="w-full px-1">
                 <GoalCard
-                    title="کاهش وزن"
-                    subtitle="کاهش چربی بدن و وزن کلی"
+                    title={t('additionalInfo.goal.lose.title')}
+                    subtitle={t('additionalInfo.goal.lose.subtitle')}
                     icon={<StepIcons.TrendDown />}
                     isSelected={value === 'lose_weight'}
                     onClick={() => onChange('lose_weight')}
@@ -525,8 +529,8 @@ const GoalSelection = ({ value, onChange }: any) => {
                     ringColorClass="border-red-400"
                 />
                 <GoalCard
-                    title="حفظ وزن"
-                    subtitle="حفظ وزن فعلی و ترکیب بدن"
+                    title={t('additionalInfo.goal.maintain.title')}
+                    subtitle={t('additionalInfo.goal.maintain.subtitle')}
                     icon={<StepIcons.Minus />}
                     isSelected={value === 'maintain_weight'}
                     onClick={() => onChange('maintain_weight')}
@@ -537,8 +541,8 @@ const GoalSelection = ({ value, onChange }: any) => {
                     ringColorClass="border-green-400"
                 />
                 <GoalCard
-                    title="افزایش وزن"
-                    subtitle="ساخت عضله و افزایش وزن"
+                    title={t('additionalInfo.goal.gain.title')}
+                    subtitle={t('additionalInfo.goal.gain.subtitle')}
                     icon={<StepIcons.TrendUp />}
                     isSelected={value === 'gain_weight'}
                     onClick={() => onChange('gain_weight')}

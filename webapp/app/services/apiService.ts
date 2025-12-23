@@ -629,6 +629,38 @@ export const apiService = {
         }
     },
 
+    // OAuth Login (Google/Apple)
+    oauthLogin: async (provider: 'google' | 'apple', email: string, name: string | undefined, providerId: string): Promise<User> => {
+        try {
+            const response = await fetch(`${getBaseUrl()}/api/auth/oauth`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ provider, email, name, providerId }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'OAuth login failed');
+            }
+
+            const userData = data.data.user;
+            const token = data.data.token;
+
+            // Save token
+            if (typeof window !== 'undefined' && token) {
+                localStorage.setItem('auth_token', token);
+            }
+
+            return { ...userData, token };
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
     saveAdditionalInfo: async (data: any): Promise<ApiResponse> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;

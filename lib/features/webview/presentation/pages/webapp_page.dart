@@ -123,6 +123,16 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       // Load package info first to ensure it's available for bridge injection
       await _loadPackageInfo();
 
+      // Determine market flavor
+      String market = const String.fromEnvironment('FLUTTER_APP_FLAVOR');
+      if (market.isEmpty) {
+        if (_packageInfo?.packageName.contains('global') ?? false) {
+          market = 'global';
+        } else {
+          market = 'iran';
+        }
+      }
+
       // Get the auth token from secure storage
       const storage = FlutterSecureStorage();
       final token = await storage.read(key: 'auth_token');
@@ -162,7 +172,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
               }
 
               // Inject Flutter bridge for native features
-              _injectFlutterBridge();
+              _injectFlutterBridge(market);
 
               // Delay hiding splash to ensure content is rendered
               Future.delayed(const Duration(milliseconds: 300), () {
@@ -289,11 +299,15 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
         });
       }
 
-      // Build the URL with the token as a query parameter if available
-      String webappUrl = _webappBaseUrl;
+      // Build the URL with the token and market as query parameters
+      final uri = Uri.parse(_webappBaseUrl);
+      final queryParams = Map<String, String>.from(uri.queryParameters);
       if (token != null) {
-        webappUrl = '$_webappBaseUrl?token=$token';
+        queryParams['token'] = token;
       }
+      queryParams['market'] = market;
+
+      final webappUrl = uri.replace(queryParameters: queryParams).toString();
 
       await _controller.loadRequest(Uri.parse(webappUrl));
 
@@ -383,7 +397,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
   }
 
   /// Injects a Flutter bridge for native features communication
-  Future<void> _injectFlutterBridge() async {
+  Future<void> _injectFlutterBridge(String market) async {
     try {
       final version = _packageInfo?.version ?? '1.0.0';
       final buildNumber = _packageInfo?.buildNumber ?? '1';
@@ -397,6 +411,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             version: '$version',
             buildNumber: '$buildNumber',
             platform: '$platform',
+            market: '$market',
             
             // Called when webapp needs to share content
             share: function(text, url) {
@@ -434,7 +449,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             }
           };
           
-          console.log('FlutterBridge initialized with CafeBazaar payment support. Version: $version+$buildNumber');
+          console.log('FlutterBridge initialized with CafeBazaar payment support. Version: $version+$buildNumber, Market: $market');
         })();
       ''');
     } catch (e) {

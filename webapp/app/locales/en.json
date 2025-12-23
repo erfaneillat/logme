@@ -1,0 +1,220 @@
+{
+    "onboarding": {
+        "page1": {
+            "title": "Transform Your Body",
+            "subtitle": "Today is the best time to start working towards your dream body",
+            "weightGoal": "Weight Goal",
+            "weightValue": "60 kg"
+        },
+        "page2": {
+            "title": "Calorie Tracking Made Easy",
+            "subtitle": "Just snap a quick photo of your meal and we'll do the rest"
+        },
+        "page3": {
+            "title": "Deep Nutrition Analysis",
+            "subtitle": "We'll keep you informed about your food choices and their nutritional content",
+            "protein": "Protein",
+            "carbs": "Carbs",
+            "fat": "Fat"
+        },
+        "next": "Next",
+        "finish": "Get Started"
+    },
+    "login": {
+        "welcome": "Welcome to\nSlice",
+        "phonePlaceholder": "+1 234 567 8900",
+        "phoneError": "Please enter a valid phone number",
+        "continue": "Continue",
+        "terms": "By using this app, you agree to our Terms of Service and Privacy Policy"
+    },
+    "common": {
+        "error": "An error occurred",
+        "loading": "Loading..."
+    },
+    "additionalInfo": {
+        "gender": {
+            "title": "Select your gender",
+            "subtitle": "This helps us adjust your custom plan.",
+            "male": "Male",
+            "female": "Female",
+            "other": "Other"
+        },
+        "birth": {
+            "title": "When were you born?",
+            "subtitle": "This is used to calculate your age and metabolism.",
+            "month": "Month",
+            "day": "Day",
+            "year": "Year"
+        },
+        "workout": {
+            "title": "How often do you exercise?",
+            "subtitle": "We need this to calculate your energy expenditure.",
+            "range1": {
+                "title": "0 - 2",
+                "subtitle": "I exercise occasionally"
+            },
+            "range2": {
+                "title": "3 - 5",
+                "subtitle": "I exercise a few times a week"
+            },
+            "range3": {
+                "title": "6+",
+                "subtitle": "Committed athlete"
+            }
+        },
+        "measurements": {
+            "title": "What are your height and weight?",
+            "subtitle": "Used for BMI and calorie calculations.",
+            "weight": "Weight",
+            "height": "Height",
+            "kg": "kg",
+            "cm": "cm"
+        },
+        "goal": {
+            "title": "What is your goal?",
+            "subtitle": "This helps us create a calorie plan for you.",
+            "lose": {
+                "title": "Lose Weight",
+                "subtitle": "Reduce body fat and overall weight"
+            },
+            "maintain": {
+                "title": "Maintain Weight",
+                "subtitle": "Keep current weight and body composition"
+            },
+            "gain": {
+                "title": "Gain Weight",
+                "subtitle": "Build muscle and increase weight"
+            }
+        },
+        "longterm": {
+            "lose": {
+                "title": "Slice creates sustainable weight loss",
+                "subtitle": "Our method provides consistent results"
+            },
+            "maintain": {
+                "title": "Slice helps you maintain your weight",
+                "subtitle": "Our method provides long-term results"
+            },
+            "gain": {
+                "title": "Slice helps you gain weight healthily",
+                "subtitle": "Our approach ensures consistent muscle building"
+            },
+            "chart": {
+                "traditional": "Traditional Diet",
+                "ourApp": "Our App",
+                "yourWeight": "Your Weight"
+            },
+            "successRate": "Success Rate with Slice"
+        },
+        "target": {
+            "lose": {
+                "title": "Lose Weight",
+                "subtitle": "Select your target weight for weight loss"
+            },
+            "maintain": {
+                "title": "Maintain Weight",
+                "subtitle": "Select your target weight for maintenance"
+            },
+            "gain": {
+                "title": "Gain Weight",
+                "subtitle": "Select your target weight for weight gain"
+            },
+            "currentWeight": "Current Weight",
+            "targetWeight": "Target Weight",
+            "error": {
+                "lose": "Target must be less than current weight",
+                "gain": "Target must be greater than current weight",
+                "maintain": "Target must be equal to current weight"
+            }
+        },
+        "motivational": {
+            "action": {
+                "lose": "Lose",
+                "gain": "Gain",
+                "maintain": "Maintain"
+            },
+            "levels": {
+                "easy": "Not hard at all!",
+                "medium": "Challenging but possible!",
+                "hard": "Requires strong will!"
+            },
+            "maintainTitle": "Maintaining current weight\nis a smart decision!",
+            "maintainText": "95% of our users successfully maintain their weight for years.",
+            "realistic": "is a realistic goal.",
+            "feedback": "90% of users say the change is clear after using Slice."
+        },
+        "speed": {
+            "title": "How fast do you want to reach your goal?",
+            "subtitle": "Choose your preferred pace. Slower is more sustainable.",
+            "slow": {
+                "label": "Slow & Steady"
+            },
+            "moderate": {
+                "label": "Moderate Speed"
+            },
+            "fast": {
+                "label": "Fast Track"
+            }
+        },
+        "barriers": {
+            "title": "What stops you from reaching your goals?",
+            "subtitle": "Select all that apply to help us personalize your experience",
+            "options": {
+                "consistency": "Lack of consistency",
+                "habits": "Unhealthy eating habits",
+                "support": "Lack of support",
+                "schedule": "Busy schedule",
+                "ideas": "Lack of meal ideas"
+            }
+        },
+        "diet": {
+            "title": "Do you follow a specific diet?",
+            "subtitle": "This helps us customize food recommendations",
+            "options": {
+                "standard": "Standard",
+                "pescatarian": "Pescatarian",
+                "vegetarian": "Vegetarian",
+                "vegan": "Vegan"
+            }
+        },
+        "accomplishment": {
+            "title": "What do you want to achieve?",
+            "subtitle": "Select your main motivation",
+            "options": {
+                "eat_healthier": "Eat and live healthier",
+                "boost_energy": "Boost energy and mood",
+                "stay_motivated": "Stay motivated and consistent",
+                "feel_better": "Feel better about my body"
+            }
+        },
+        "transition": {
+            "title": "You have amazing potential\nto reach your goal",
+            "chartTitle": "Your Weight Changes",
+            "days": {
+                "3": "3 Days",
+                "7": "7 Days",
+                "30": "30 Days"
+            },
+            "gainMsg": "Based on Slice data, healthy weight gain usually accelerates after the first week.",
+            "loseMsg": "Based on Slice data, weight loss is usually faster in the first weeks and then stabilizes.",
+            "maintainMsg": "Maintaining current weight indicates a healthy and sustainable lifestyle."
+        },
+        "referral": {
+            "title": "Enter Referral Code",
+            "subtitle": "(Optional)\nYou can skip this step",
+            "discount": "Get 70% OFF by entering a referral code!",
+            "placeholder": "Referral Code",
+            "hint": "Enter the code carefully in English letters"
+        },
+        "trust": {
+            "title": "Thank you for trusting us!",
+            "subtitle": "Let's personalize Slice for you...",
+            "securityTitle": "Your privacy and security are important to us.",
+            "securityText": "We promise your personal data will always remain confidential and secure."
+        },
+        "buttons": {
+            "continue": "Continue",
+            "finish": "Finish"
+        }
+    }
+}
