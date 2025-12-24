@@ -29,7 +29,6 @@ interface AdditionalInfoData {
     barriers?: string[];
     dietType?: Diet;
     accomplishment?: Accomplishment;
-    referralCode?: string;
 }
 
 // --- Icons ---
@@ -39,6 +38,7 @@ const Icons = {
     Person: () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>,
     Check: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"></polyline></svg>,
     ChevronLeft: ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`w-5 h-5 ${className || ''}`}><polyline points="15 18 9 12 15 6"></polyline></svg>,
+    ChevronRight: ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`w-5 h-5 ${className || ''}`}><polyline points="9 18 15 12 9 6"></polyline></svg>,
     HeaderPerson: () => <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-10 h-10"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
 };
 
@@ -76,6 +76,7 @@ const SelectionCard = ({
     gradientClass?: string,
     iconColorClass?: string
 }) => {
+    const { isRTL } = useTranslation();
     return (
         <motion.button
             onClick={onClick}
@@ -95,7 +96,7 @@ const SelectionCard = ({
             </div>
 
             {/* Title (Center) */}
-            <div className="flex-1 text-right pr-4">
+            <div className={`flex-1 ${isRTL ? 'text-right pr-4' : 'text-left pl-4'}`}>
                 <span className={`text-lg font-bold ${isSelected ? 'text-white' : 'text-gray-800'}`}>
                     {title}
                 </span>
@@ -110,18 +111,21 @@ const SelectionCard = ({
     );
 };
 
-const BottomButton = ({ onClick, disabled, text = "ادامه" }: { onClick: () => void, disabled?: boolean, text?: string }) => (
-    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#F8F9FB] via-[#F8F9FB] to-transparent z-20">
-        <button
-            onClick={onClick}
-            disabled={disabled}
-            className={`w-full h-14 bg-black text-white rounded-[20px] font-bold text-lg flex items-center justify-center gap-2 shadow-lg shadow-gray-300 transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100`}
-        >
-            <Icons.ChevronLeft />
-            <span>{text}</span>
-        </button>
-    </div>
-);
+const BottomButton = ({ onClick, disabled, text = "ادامه" }: { onClick: () => void, disabled?: boolean, text?: string }) => {
+    const { isRTL } = useTranslation();
+    return (
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#F8F9FB] via-[#F8F9FB] to-transparent z-20">
+            <button
+                onClick={onClick}
+                disabled={disabled}
+                className={`w-full h-14 bg-black text-white rounded-[20px] font-bold text-lg flex items-center justify-center gap-2 shadow-lg shadow-gray-300 transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100`}
+            >
+                <span>{text}</span>
+                {isRTL ? <Icons.ChevronLeft /> : <Icons.ChevronRight />}
+            </button>
+        </div>
+    );
+};
 
 // --- Steps ---
 
@@ -234,19 +238,48 @@ const ScrollWheel = ({ items, value, onChange }: { items: (string | number)[]; v
 };
 
 // 2. Birth Date (iOS Style Picker)
+// 2. Birth Date (iOS Style Picker)
 const BirthDateSelection = ({ value, onChange }: any) => {
-    const years = Array.from({ length: 90 }, (_, i) => 1313 + i).reverse();
-    const months = [
-        "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-        "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"
-    ];
+    const { t, isRTL } = useTranslation();
+
+    // Determine calendar system based on direction/locale
+    const isJalali = isRTL;
+
+    // Generate years range
+    // Jalali: 1313 to 1403 (approx 90 years)
+    // Gregorian: 1940 to 2015 (approx 75 years)
+    const startYear = isJalali ? 1313 : 1940;
+    const yearCount = isJalali ? 90 : 85;
+    const years = Array.from({ length: yearCount }, (_, i) => startYear + i).reverse();
+
+    const months = t('additionalInfo.birth.months', { returnObjects: true }) as string[];
     const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
-    const val = value || { day: 26, month: 2, year: 1380 };
-    const currentMonthName = months[val.month - 1];
+    // Default value logic
+    // Jalali default: 1380/2/26
+    // Gregorian default: 2000/1/1
+    const defaultVal = isJalali
+        ? { day: 26, month: 2, year: 1380 }
+        : { day: 1, month: 1, year: 2000 };
+
+    const val = value || defaultVal;
+
+    // Ensure value implies valid date type for the mode if switching locales, 
+    // though usually user sticks to one locale. 
+    // If we have a year like 1380 but we are in Gregorian mode, we should probably reset or convert.
+    // simpler heuristic: if year < 1800 and !isJalali -> reset to default
+    // if year > 1800 and isJalali -> reset to default
+    const currentYearVal = val.year;
+    const isYearJalali = currentYearVal < 1500;
+
+    const effectiveVal = (isJalali && !isYearJalali) || (!isJalali && isYearJalali)
+        ? defaultVal
+        : val;
+
+    const currentMonthName = months[effectiveVal.month - 1] || months[0];
 
     const setPart = (part: string, v: any) => {
-        let newVal = { ...val };
+        let newVal = { ...effectiveVal };
         if (part === 'month') {
             newVal.month = months.indexOf(v) + 1;
         } else {
@@ -258,26 +291,30 @@ const BirthDateSelection = ({ value, onChange }: any) => {
     return (
         <div className="w-full">
             <Header
-                title="تاریخ تولد شما چه زمانی است؟"
-                subtitle="این برای تنظیم برنامه سفارشی شما استفاده خواهد شد."
+                title={t('additionalInfo.birth.title')}
+                subtitle={t('additionalInfo.birth.subtitle')}
                 icon={<svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>}
             />
 
-            <div className="bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 w-full">
+            <div className="bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 w-full" dir="ltr">
                 <div className="flex justify-between mb-4 px-4 text-sm font-bold text-gray-800">
-                    <span className="flex-1 text-center">ماه</span>
-                    <span className="flex-1 text-center">روز</span>
-                    <span className="flex-1 text-center">سال</span>
+                    {/* Order: Month Day Year (Typical US/Global) or Year Month Day? */}
+                    {/* Let's stick to Month - Day - Year for Global, Year - Month - Day for Jalali might be better but let's see existing order */}
+                    {/* Existing code was just 3 flex items. The labels overhead were Month Day Year (LTR reading). */}
+
+                    <span className="flex-1 text-center">{t('additionalInfo.birth.month')}</span>
+                    <span className="flex-1 text-center">{t('additionalInfo.birth.day')}</span>
+                    <span className="flex-1 text-center">{t('additionalInfo.birth.year')}</span>
                 </div>
                 <div className="flex gap-2 h-[250px] w-full relative">
                     <div className="flex-1 relative">
                         <ScrollWheel items={months} value={currentMonthName} onChange={(v) => setPart('month', v)} />
                     </div>
                     <div className="flex-1 relative">
-                        <ScrollWheel items={days} value={val.day} onChange={(v) => setPart('day', v)} />
+                        <ScrollWheel items={days} value={effectiveVal.day} onChange={(v) => setPart('day', v)} />
                     </div>
                     <div className="flex-1 relative">
-                        <ScrollWheel items={years} value={val.year} onChange={(v) => setPart('year', v)} />
+                        <ScrollWheel items={years} value={effectiveVal.year} onChange={(v) => setPart('year', v)} />
                     </div>
                 </div>
             </div>
@@ -286,7 +323,7 @@ const BirthDateSelection = ({ value, onChange }: any) => {
 };
 
 const WorkoutFrequency = ({ value, onChange }: any) => {
-    const { t } = useTranslation();
+    const { t, isRTL } = useTranslation();
     const StepIcons = {
         Dumbbell: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m6.5 6.5 11 11" /><path d="m21 21-1-1" /><path d="m3 3 1 1" /><path d="m18 22 4-4" /><path d="m2 6 4-4" /><path d="m3 10 7-7" /><path d="m14 21 7-7" /></svg>,
         Runner: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="M22 16.92v3a1 1 0 0 1-2.18.51l-8-6.15-2.6 2.37A2 2 0 0 1 7.74 17L5 15.65" /><path d="M12.92 7.74 3.03 5.48" /><path d="M19 12.08 15 8l-3 3-2.15-2.15" /><path d="M16 4a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z" /></svg>,
@@ -313,7 +350,7 @@ const WorkoutFrequency = ({ value, onChange }: any) => {
             </div>
 
             {/* Center: Texts */}
-            <div className="flex-1 text-right pr-4 flex flex-col justify-center">
+            <div className={`flex-1 ${isRTL ? 'text-right pr-4' : 'text-left pl-4'} flex flex-col justify-center`}>
                 <span className={`text-2xl font-black mb-1 ${isSelected ? 'text-white' : 'text-gray-900'}`}>{title}</span>
                 <span className={`text-[11px] font-bold ${isSelected ? 'text-white/90' : 'text-gray-400'}`}>{subtitle}</span>
             </div>
@@ -382,29 +419,138 @@ const WorkoutFrequency = ({ value, onChange }: any) => {
 };
 
 // 4. Weight & Height
-const WeightHeight = ({ weight, height, onChange }: any) => {
-    const { t } = useTranslation();
-    // Generate ranges
-    const minWeight = 40, maxWeight = 150;
-    const minHeight = 140, maxHeight = 220;
+const WeightHeight = ({ weight, height, onChange, unitSystem, setUnitSystem }: any) => {
+    const { t, isRTL } = useTranslation();
 
-    // We use formatted strings for the wheel: "70 kg"
-    const weights = Array.from({ length: maxWeight - minWeight + 1 }, (_, i) => `${minWeight + i} ${t('additionalInfo.measurements.kg')}`);
-    const heights = Array.from({ length: maxHeight - minHeight + 1 }, (_, i) => `${minHeight + i} ${t('additionalInfo.measurements.cm')}`);
 
-    // Helper to parse value back to number
-    const parseValue = (str: string) => parseInt(str.split(' ')[0]);
+    // Constants
+    const KG_TO_LB = 2.20462;
+    const CM_TO_INCH = 0.393701;
 
-    // Defaults
-    const currentWeight = weight || 70;
-    const currentHeight = height || 170;
+    // Ranges
+    // Metric
+    const minWeightKg = 40, maxWeightKg = 150;
+    const minHeightCm = 140, maxHeightCm = 220;
 
-    const weightStr = `${currentWeight} ${t('additionalInfo.measurements.kg')}`;
-    const heightStr = `${currentHeight} ${t('additionalInfo.measurements.cm')}`;
+    // Imperial (Derived approx)
+    const minWeightLb = 90, maxWeightLb = 330;
+    const minHeightIn = 55; // ~140cm
+    const maxHeightIn = 87; // ~220cm
+
+    // Helpers
+    const kgToLb = (kg: number) => Math.round(kg * KG_TO_LB);
+    const lbToKg = (lb: number) => Math.round(lb / KG_TO_LB);
+
+    const cmToFtIn = (cm: number) => {
+        const totalIn = cm * CM_TO_INCH;
+        const ft = Math.floor(totalIn / 12);
+        const inch = Math.round(totalIn % 12);
+        return { ft, inch };
+    };
+
+    const ftInToCm = (ft: number, inch: number) => {
+        return Math.round((ft * 12 + inch) / CM_TO_INCH);
+    };
+
+    const formatFtIn = (ft: number, inch: number) => `${ft}' ${inch}"`;
+
+
+    // Generate arrays
+    const weightsMetric = Array.from({ length: maxWeightKg - minWeightKg + 1 }, (_, i) => `${minWeightKg + i} ${t('additionalInfo.measurements.kg')}`);
+    const heightsMetric = Array.from({ length: maxHeightCm - minHeightCm + 1 }, (_, i) => `${minHeightCm + i} ${t('additionalInfo.measurements.cm')}`);
+
+    const weightsImperial = Array.from({ length: maxWeightLb - minWeightLb + 1 }, (_, i) => `${minWeightLb + i} ${t('additionalInfo.measurements.lb')}`);
+
+    // Generate height strings for Imperial: 4' 7" to 7' 3"
+    // We iterate inches
+    const heightsImperial = [];
+    for (let i = minHeightIn; i <= maxHeightIn; i++) {
+        const ft = Math.floor(i / 12);
+        const inch = i % 12;
+        heightsImperial.push(formatFtIn(ft, inch));
+    }
+
+
+    // Current Values (Internal handled in Metric mostly, converted for display)
+    // weight is in kg, height is in cm coming from props
+    const currentWeightKg = weight || 70;
+    const currentHeightCm = height || 170;
+
+    // Display Values
+    let weightValueStr = '';
+    let heightValueStr = '';
+
+    if (unitSystem === 'metric') {
+        weightValueStr = `${currentWeightKg} ${t('additionalInfo.measurements.kg')}`;
+        heightValueStr = `${currentHeightCm} ${t('additionalInfo.measurements.cm')}`;
+    } else {
+        const lb = kgToLb(currentWeightKg);
+        weightValueStr = `${lb} ${t('additionalInfo.measurements.lb')}`;
+
+        const { ft, inch } = cmToFtIn(currentHeightCm);
+        heightValueStr = formatFtIn(ft, inch);
+    }
+
+    const handleWeightChange = (valStr: string) => {
+        if (unitSystem === 'metric') {
+            const val = parseInt(valStr.split(' ')[0]);
+            onChange('weight', val);
+        } else {
+            const val = parseInt(valStr.split(' ')[0]); // "150 lb" -> 150
+            onChange('weight', lbToKg(val));
+        }
+    };
+
+    const handleHeightChange = (valStr: string) => {
+        if (unitSystem === 'metric') {
+            const val = parseInt(valStr.split(' ')[0]);
+            onChange('height', val);
+        } else {
+            // parse "5' 10""
+            const matches = valStr.match(/(\d+)'\s*(\d+)/);
+            if (matches) {
+                const ft = parseInt(matches[1]);
+                const inch = parseInt(matches[2]);
+                onChange('height', ftInToCm(ft, inch));
+            }
+        }
+    };
+
+    // Toggle Button Component
+    const Toggle = () => (
+        <div className="flex bg-gray-100 p-1 rounded-xl mb-6 relative">
+            {/* Slider Background */}
+            <motion.div
+                className="absolute top-1 bottom-1 bg-white rounded-lg shadow-sm z-0"
+                initial={false}
+                animate={{
+                    left: unitSystem === 'metric' ? '4px' : '50%',
+                    right: unitSystem === 'metric' ? '50%' : '4px',
+                    width: 'calc(50% - 4px)' // Ensures exact half/half fitting
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
+
+            <button
+                onClick={() => setUnitSystem('metric')}
+                className={`flex-1 py-1.5 text-sm font-semibold rounded-lg relative z-10 transition-colors ${unitSystem === 'metric' ? 'text-gray-900' : 'text-gray-500'
+                    }`}
+            >
+                {t('additionalInfo.measurements.metric')}
+            </button>
+            <button
+                onClick={() => setUnitSystem('imperial')}
+                className={`flex-1 py-1.5 text-sm font-semibold rounded-lg relative z-10 transition-colors ${unitSystem === 'imperial' ? 'text-gray-900' : 'text-gray-500'
+                    }`}
+            >
+                {t('additionalInfo.measurements.imperial')}
+            </button>
+        </div>
+    );
 
     const StepIcons = {
-        Height: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="M12 5v14M8 9l4-4 4 4M8 15l4 4 4-4" /></svg>, // Vertical double arrow
-        Weight: () => <svg viewBox="0 0 24 24" fill="white" stroke="currentColor" strokeWidth="0" className="w-3 h-3"><circle cx="12" cy="12" r="4" /></svg> // Simple dot or specific icon
+        Height: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="M12 5v14M8 9l4-4 4 4M8 15l4 4 4-4" /></svg>,
+        Weight: () => <svg viewBox="0 0 24 24" fill="white" stroke="currentColor" strokeWidth="0" className="w-3 h-3"><circle cx="12" cy="12" r="4" /></svg>
     };
 
     const RealHeaderIcon = () => (
@@ -419,7 +565,13 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
                 icon={<RealHeaderIcon />}
             />
 
-            <div className="w-full bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 flex relative overflow-hidden">
+            <div className="w-full flex justify-center px-6">
+                <div className="w-full max-w-[200px]">
+                    <Toggle />
+                </div>
+            </div>
+
+            <div className="w-full bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 flex relative overflow-hidden" dir="ltr">
                 {/* Divider */}
                 <div className="absolute top-6 bottom-6 left-1/2 w-[1px] bg-gray-100 -translate-x-1/2 z-10"></div>
 
@@ -434,14 +586,14 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
 
                     <div className="h-[250px] w-full relative">
                         <ScrollWheel
-                            items={weights}
-                            value={weightStr}
-                            onChange={(v) => onChange('weight', parseValue(v))}
+                            items={unitSystem === 'metric' ? weightsMetric : weightsImperial}
+                            value={weightValueStr}
+                            onChange={(v) => handleWeightChange(v)}
                         />
                     </div>
 
                     <div className="bg-black text-white px-5 py-3 rounded-[16px] font-bold text-sm mt-4 shadow-lg shadow-gray-200 min-w-[100px] text-center">
-                        {currentWeight} {t('additionalInfo.measurements.kg')}
+                        {weightValueStr}
                     </div>
                 </div>
 
@@ -454,14 +606,14 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
 
                     <div className="h-[250px] w-full relative">
                         <ScrollWheel
-                            items={heights}
-                            value={heightStr}
-                            onChange={(v) => onChange('height', parseValue(v))}
+                            items={unitSystem === 'metric' ? heightsMetric : heightsImperial}
+                            value={heightValueStr}
+                            onChange={(v) => handleHeightChange(v)}
                         />
                     </div>
 
                     <div className="bg-black text-white px-5 py-3 rounded-[16px] font-bold text-sm mt-4 shadow-lg shadow-gray-200 min-w-[100px] text-center">
-                        {currentHeight} {t('additionalInfo.measurements.cm')}
+                        {heightValueStr}
                     </div>
                 </div>
             </div>
@@ -471,7 +623,7 @@ const WeightHeight = ({ weight, height, onChange }: any) => {
 
 // 5. Goal
 const GoalSelection = ({ value, onChange }: any) => {
-    const { t } = useTranslation();
+    const { t, isRTL } = useTranslation();
     const StepIcons = {
         Target: () => <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>,
         TrendDown: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" /></svg>,
@@ -494,7 +646,7 @@ const GoalSelection = ({ value, onChange }: any) => {
             </div>
 
             {/* Center: Text */}
-            <div className="flex-1 text-right pr-4 flex flex-col">
+            <div className={`flex-1 ${isRTL ? 'text-right pr-4' : 'text-left pl-4'} flex flex-col`}>
                 <span className="text-lg font-bold text-gray-900">{title}</span>
                 <span className="text-xs text-gray-800 font-medium">{subtitle}</span>
             </div>
@@ -559,13 +711,14 @@ const GoalSelection = ({ value, onChange }: any) => {
 
 // 6. Long Term Results (Chart showing sustainable weight loss)
 const LongTermResults = ({ goal }: { goal: string | undefined }) => {
+    const { t } = useTranslation();
     // Determine content based on goal
     const isMaintain = goal === 'maintain_weight';
     const isGain = goal === 'gain_weight';
 
-    let title = "لقمه کاهش وزن پایدار ایجاد می‌کند";
-    let subtitle = "روش ما نتایج ثابت و پایدار ارائه می‌دهد";
-    let successRate = "٪۹۵";
+    let title = t('additionalInfo.longterm.lose.title');
+    let subtitle = t('additionalInfo.longterm.lose.subtitle');
+    let successRate = "95%";
 
     // Default Lose Weight settings
     let appData = [20, 15, 12, 10, 5, 2]; // Descending
@@ -576,29 +729,29 @@ const LongTermResults = ({ goal }: { goal: string | undefined }) => {
     let badgeTextColor = "text-green-500";
 
     if (isMaintain) {
-        title = "لقمه به شما کمک می‌کند تا وزن خود را حفظ کنید";
-        subtitle = "روش ما نتایج پایدار و بلندمدت ارائه می‌دهد";
+        title = t('additionalInfo.longterm.maintain.title');
+        subtitle = t('additionalInfo.longterm.maintain.subtitle');
         appData = [20, 21, 19, 20, 21, 20];
         appColor = "#fbbf24"; // Amber
         appBgClass = "bg-amber-100";
         appTextClass = "text-amber-700";
         appDotClass = "bg-amber-500";
-        successRate = "٪۹۸";
+        successRate = "98%";
         badgeTextColor = "text-gray-900";
     } else if (isGain) {
-        title = "لقمه به شما کمک می‌کند تا وزن خود را به طور سالم افزایش دهید";
-        subtitle = "رویکرد ما تضمین می‌کند که عضله‌سازی مداوم داشته باشید";
+        title = t('additionalInfo.longterm.gain.title');
+        subtitle = t('additionalInfo.longterm.gain.subtitle');
         appData = [20, 25, 30, 35, 40, 45]; // Ascending
         appColor = "#3b82f6"; // Blue
         appBgClass = "bg-blue-100";
         appTextClass = "text-blue-700";
         appDotClass = "bg-blue-500";
-        successRate = "٪۹۲";
+        successRate = "92%";
         badgeTextColor = "text-gray-900";
     }
 
     // SVG Chart Data - Traditional Diet (red/unstable) vs Our App
-    const months = ['ماه ۱', 'ماه ۲', 'ماه ۳', 'ماه ۴', 'ماه ۵', 'ماه ۶'];
+    const months = [1, 2, 3, 4, 5, 6].map(m => `${t('additionalInfo.birth.month')} ${m}`);
     // Traditional: yo-yo pattern (same for all)
     const traditionalData = [20, 30, 15, 28, 18, 25];
 
@@ -638,14 +791,14 @@ const LongTermResults = ({ goal }: { goal: string | undefined }) => {
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                             <span className="w-3 h-3 bg-red-400 rounded-full"></span>
-                            <span className="text-xs text-gray-500 font-medium">رژیم سنتی</span>
+                            <span className="text-xs text-gray-500 font-medium">{t('additionalInfo.longterm.chart.traditional')}</span>
                         </div>
                         <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${appBgClass}`}>
                             <span className={`w-2 h-2 rounded-full ${appDotClass}`}></span>
-                            <span className={`text-xs font-bold ${appTextClass}`}>اپلیکیشن ما</span>
+                            <span className={`text-xs font-bold ${appTextClass}`}>{t('additionalInfo.longterm.chart.ourApp')}</span>
                         </div>
                     </div>
-                    <span className="font-bold text-gray-800">وزن شما</span>
+                    <span className="font-bold text-gray-800">{t('additionalInfo.longterm.chart.yourWeight')}</span>
                 </div>
 
                 {/* SVG Chart */}
@@ -725,7 +878,7 @@ const LongTermResults = ({ goal }: { goal: string | undefined }) => {
 
             {/* Success Rate Badge */}
             <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex items-center justify-center gap-3">
-                <span className="text-lg font-bold text-gray-800">نرخ موفقیت با لقمه</span>
+                <span className="text-lg font-bold text-gray-800">{t('additionalInfo.longterm.successRate')}</span>
                 <span className={`text-2xl font-black ${badgeTextColor}`}>{successRate}</span>
             </div>
         </div>
@@ -813,14 +966,39 @@ const DataRuler = ({ value, min = 30, max = 200, onChange, indicatorColor = "bg-
 };
 
 // 7. Target Weight
-const TargetWeight = ({ value, onChange, goal, currentWeight }: any) => {
+const TargetWeight = ({ value, onChange, goal, currentWeight, unitSystem }: any) => {
+    const { t } = useTranslation();
     const isGain = goal === 'gain_weight';
     const isMaintain = goal === 'maintain_weight';
 
-    const title = isGain ? "افزایش وزن" : isMaintain ? "تثبیت وزن" : "کاهش وزن";
-    const subtitle = isGain ? "وزن هدف خود را برای افزایش وزن انتخاب کنید"
-        : isMaintain ? "وزن هدف خود را برای تثبیت وزن انتخاب کنید"
-            : "وزن هدف خود را برای کاهش وزن انتخاب کنید";
+    // Conversion constants (duplicated for simplicity or move to top)
+    const KG_TO_LB = 2.20462;
+    const kgToLb = (kg: number) => Math.round(kg * KG_TO_LB);
+    const lbToKg = (lb: number) => Math.round(lb / KG_TO_LB);
+
+    // Display Values
+    const isImperial = unitSystem === 'imperial';
+    const currentWeightDisplay = isImperial ? kgToLb(currentWeight || 0) : (currentWeight || 0);
+    const targetWeightDisplay = isImperial ? kgToLb(value || 70) : (value || 70);
+    const unitLabel = isImperial ? t('additionalInfo.measurements.lb') : t('additionalInfo.measurements.kg');
+
+    // Ruler Range
+    const minVal = isImperial ? 90 : 40; // 40kg ~ 90lb
+    const maxVal = isImperial ? 330 : 150; // 150kg ~ 330lb
+
+    const handleRulerChange = (val: number) => {
+        if (isImperial) {
+            onChange(lbToKg(val));
+        } else {
+            onChange(val);
+        }
+    };
+
+
+    const title = isGain ? t('additionalInfo.target.gain.title') : isMaintain ? t('additionalInfo.target.maintain.title') : t('additionalInfo.target.lose.title');
+    const subtitle = isGain ? t('additionalInfo.target.gain.subtitle')
+        : isMaintain ? t('additionalInfo.target.maintain.subtitle')
+            : t('additionalInfo.target.lose.subtitle');
 
     const boxBg = isGain ? "bg-blue-50 border-blue-100"
         : isMaintain ? "bg-amber-50 border-amber-100"
@@ -852,25 +1030,25 @@ const TargetWeight = ({ value, onChange, goal, currentWeight }: any) => {
 
             {/* Target Weight Display Box */}
             <div className={`${boxBg} rounded-[32px] p-8 text-center border-2 mb-6 shadow-sm transition-colors duration-500`}>
-                <span className="text-gray-500 text-sm font-medium block mb-2">وزن هدف</span>
+                <span className="text-gray-500 text-sm font-medium block mb-2">{t('additionalInfo.target.targetWeight')}</span>
                 <div className="flex justify-center items-baseline gap-2 dir-ltr">
-                    <span className={`text-6xl font-black ${textColor} tracking-tight`}>{value || 70}</span>
-                    <span className="text-gray-400 font-bold text-xl">kg</span>
+                    <span className={`text-6xl font-black ${textColor} tracking-tight`}>{targetWeightDisplay}</span>
+                    <span className="text-gray-400 font-bold text-xl">{unitLabel}</span>
                 </div>
             </div>
 
             {/* Current Weight Info */}
             <div className="bg-gray-100 rounded-2xl p-4 flex justify-center items-center gap-2 mb-8 text-gray-500 shadow-inner">
-                <span className="text-[15px] font-medium">وزن فعلی {currentWeight} kg</span>
+                <span className="text-[15px] font-medium">{t('additionalInfo.target.currentWeight')} {currentWeightDisplay} {unitLabel}</span>
                 <svg className="w-5 h-5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
             </div>
 
             {/* Horizontal Ruler */}
             <DataRuler
-                value={value || 70}
-                min={40}
-                max={150}
-                onChange={onChange}
+                value={targetWeightDisplay}
+                min={minVal}
+                max={maxVal}
+                onChange={handleRulerChange}
                 indicatorColor={indicatorColor}
             />
 
@@ -878,9 +1056,9 @@ const TargetWeight = ({ value, onChange, goal, currentWeight }: any) => {
             {(() => {
                 if (!value || !currentWeight) return null;
                 let error = "";
-                if (goal === 'lose_weight' && value >= currentWeight) error = "برای کاهش وزن، هدف باید کمتر از وزن فعلی باشد";
-                if (goal === 'gain_weight' && value <= currentWeight) error = "برای افزایش وزن، هدف باید بیشتر از وزن فعلی باشد";
-                if (goal === 'maintain_weight' && value !== currentWeight) error = "برای تثبیت، هدف باید برابر وزن فعلی باشد";
+                if (goal === 'lose_weight' && value >= currentWeight) error = t('additionalInfo.target.error.lose');
+                if (goal === 'gain_weight' && value <= currentWeight) error = t('additionalInfo.target.error.gain');
+                if (goal === 'maintain_weight' && value !== currentWeight) error = t('additionalInfo.target.error.maintain');
 
                 if (error) {
                     return (
@@ -896,7 +1074,8 @@ const TargetWeight = ({ value, onChange, goal, currentWeight }: any) => {
 };
 
 // 8. Motivational / Feasibility Feedback
-const MotivationalStep = ({ goal, weight, targetWeight }: any) => {
+const MotivationalStep = ({ goal, weight, targetWeight, unitSystem }: any) => {
+    const { t } = useTranslation();
     const isGain = goal === 'gain_weight';
     const isMaintain = goal === 'maintain_weight';
 
@@ -906,39 +1085,51 @@ const MotivationalStep = ({ goal, weight, targetWeight }: any) => {
     const diff = Math.abs(targetWeight - weight).toFixed(1);
 
     // Text Logic
-    let actionText = "کاهش";
+    let actionText = t('additionalInfo.motivational.action.lose');
     let colorClass = "text-amber-400"; // Default orange/brownish from image
 
     if (isGain) {
-        actionText = "افزایش";
+        actionText = t('additionalInfo.motivational.action.gain');
         colorClass = "text-amber-400";
     } else if (isMaintain) {
-        actionText = "تثبیت";
+        actionText = t('additionalInfo.motivational.action.maintain');
         colorClass = "text-blue-400";
     }
 
+    // Conversion Helpers for display
+    const KG_TO_LB = 2.20462;
+    const kgToLbVal = (kg: number) => (kg * KG_TO_LB);
+
+    const isImperial = unitSystem === 'imperial';
+
+    // Convert difference if imperial
+    const diffDisplayVal = isImperial ? kgToLbVal(Math.abs(targetWeight - weight)) : Math.abs(targetWeight - weight);
+    const diffNode = diffDisplayVal.toFixed(1);
+    const unitLabel = isImperial ? t('additionalInfo.measurements.lb') : t('additionalInfo.measurements.kg');
+
+
     // Feasibility Logic (Simple rules for demo)
-    // < 5kg: Easy / Realistic
-    // 5-10kg: Challenge / Doable
-    // > 10kg: Ambitious
+    // < 5kg (11lb): Easy / Realistic
+    // 5-10kg (11-22lb): Challenge / Doable
+    // > 10kg (22lb): Ambitious
 
-    let difficulty = "اصلاً سخت نیست!";
-    const numDiff = parseFloat(diff);
+    // Logic is based on underlying KG difference (Math.abs(targetWeight - weight))
+    let difficulty = t('additionalInfo.motivational.levels.easy');
+    const numDiffKg = parseFloat(diff);
 
-    if (numDiff > 15) difficulty = "نیاز به اراده قوی دارد!";
-    else if (numDiff > 8) difficulty = "چالش‌برانگیز اما ممکن!";
+    if (numDiffKg > 15) difficulty = t('additionalInfo.motivational.levels.hard');
+    else if (numDiffKg > 8) difficulty = t('additionalInfo.motivational.levels.medium');
+
 
     // Maintain variation
     if (isMaintain) {
         return (
             <div className="w-full flex flex-col items-center justify-center text-center px-4 mt-8 pt-10">
-                <div className="text-3xl font-black leading-loose text-gray-900 mb-8">
-                    تثبیت وزن فعلی
-                    <br />
-                    یک تصمیم <span className="text-blue-500">هوشمندانه</span> است!
+                <div className="text-3xl font-black leading-loose text-gray-900 mb-8 whitespace-pre-line">
+                    {t('additionalInfo.motivational.maintainTitle')}
                 </div>
                 <p className="text-gray-500 text-lg leading-relaxed max-w-xs">
-                    ۹۵٪ از کاربران ما با موفقیت وزن خود را برای سال‌ها ثابت نگه داشته‌اند.
+                    {t('additionalInfo.motivational.maintainText')}
                 </p>
             </div>
         );
@@ -947,38 +1138,48 @@ const MotivationalStep = ({ goal, weight, targetWeight }: any) => {
     return (
         <div className="w-full flex flex-col items-center justify-center text-center px-4 mt-8 pt-10">
             <div className="text-3xl font-black leading-loose text-gray-900 mb-8 md:text-4xl">
-                {actionText} <span className={`${colorClass} mx-1 dir-ltr inline-block`}>{diff} kg</span> کیلوگرم
+                {actionText} <span className={`${colorClass} mx-1 dir-ltr inline-block`}>{diffNode} {unitLabel}</span>
                 <br />
-                یک هدف واقع‌بینانه است.
+                {t('additionalInfo.motivational.realistic')}
                 <br />
                 {difficulty}
             </div>
 
             <p className="text-gray-500 text-lg leading-relaxed max-w-xs font-medium">
-                ۹۰٪ از کاربران می‌گویند که تغییر پس از استفاده از لقمه واضح است و بازگشت آسان نیست.
+                {t('additionalInfo.motivational.feedback')}
             </p>
         </div>
     );
 };
 
 // 9. Speed Selection
-const SpeedSelection = ({ value, onChange, goal }: any) => {
+const SpeedSelection = ({ value, onChange, goal, unitSystem }: any) => {
+    const { t, isRTL } = useTranslation();
     const isGain = goal === 'gain_weight';
+    const isImperial = unitSystem === 'imperial';
+
+    const KG_TO_LB = 2.20462;
+    // Helper to format speed
+    const formatSpeed = (kgAmount: string) => {
+        if (!isImperial) return kgAmount;
+        const lbVal = parseFloat(kgAmount) * KG_TO_LB;
+        // round to 1 decimal
+        return lbVal.toFixed(1);
+    };
+    const unitLabel = isImperial ? t('additionalInfo.measurements.lb') : t('additionalInfo.measurements.kg');
 
     // Texts
-    const title = "چقدر سریع می‌خواهید به هدف خود برسید؟";
-    const subtitle = isGain
-        ? "سرعت مورد نظر خود را برای افزایش وزن انتخاب کنید. سرعت کمتر پایدارتر است."
-        : "سرعت مورد نظر خود را برای کاهش وزن انتخاب کنید. سرعت کمتر پایدارتر است.";
+    const title = t('additionalInfo.speed.title');
+    const subtitle = t('additionalInfo.speed.subtitle');
 
     const options = isGain ? [
-        { key: 'slow', amount: '0.1', label: 'آرام و پیوسته', iconType: 'walk', color: 'orange' },
-        { key: 'moderate', amount: '0.8', label: 'سرعت متوسط', iconType: 'run', color: 'blue' },
-        { key: 'fast', amount: '1.5', label: 'مسیر سریع', iconType: 'bolt', color: 'yellow' },
+        { key: 'slow', amount: '0.1', label: t('additionalInfo.speed.slow.label'), iconType: 'walk', color: 'orange' },
+        { key: 'moderate', amount: '0.8', label: t('additionalInfo.speed.moderate.label'), iconType: 'run', color: 'blue' },
+        { key: 'fast', amount: '1.5', label: t('additionalInfo.speed.fast.label'), iconType: 'bolt', color: 'yellow' },
     ] : [
-        { key: 'slow', amount: '0.5', label: 'آرام و پیوسته', iconType: 'walk', color: 'orange' },
-        { key: 'moderate', amount: '0.7', label: 'سرعت متوسط', iconType: 'run', color: 'blue' },
-        { key: 'fast', amount: '1.0', label: 'مسیر سریع', iconType: 'bolt', color: 'yellow' },
+        { key: 'slow', amount: '0.5', label: t('additionalInfo.speed.slow.label'), iconType: 'walk', color: 'orange' },
+        { key: 'moderate', amount: '0.7', label: t('additionalInfo.speed.moderate.label'), iconType: 'run', color: 'blue' },
+        { key: 'fast', amount: '1.0', label: t('additionalInfo.speed.fast.label'), iconType: 'bolt', color: 'yellow' },
     ];
 
     const Dot = ({ active }: { active: boolean }) => (
@@ -1012,7 +1213,7 @@ const SpeedSelection = ({ value, onChange, goal }: any) => {
                         <div
                             key={opt.key}
                             onClick={() => onChange(opt.key)}
-                            className={`relative w-full p-5 rounded-[24px] flex items-center justify-between cursor-pointer border-2 transition-all duration-300
+                            className={`relative w-full p-5 rounded-[24px] flex ${isRTL ? '' : 'flex-row-reverse'} items-center justify-between cursor-pointer border-2 transition-all duration-300
                                 ${isSelected
                                     ? 'bg-[#9D5416] border-[#9D5416] text-white shadow-lg shadow-orange-900/20 scale-[1.02]'
                                     : 'bg-white border-gray-50 text-gray-900 shadow-sm hover:border-orange-100 hover:bg-gray-50'
@@ -1040,7 +1241,7 @@ const SpeedSelection = ({ value, onChange, goal }: any) => {
                             {/* Center Text */}
                             <div className="flex-1 text-center">
                                 <div className={`text-xl font-black mb-1 dir-ltr inline-block ${isSelected ? 'text-white' : 'text-gray-900'}`}>
-                                    kg {opt.amount}
+                                    {unitLabel} {formatSpeed(opt.amount)}
                                 </div>
                                 <div className={`text-xs font-medium ${isSelected ? 'text-white/80' : 'text-gray-400'}`}>
                                     {opt.label}
@@ -1079,12 +1280,13 @@ const SpeedSelection = ({ value, onChange, goal }: any) => {
 
 // 10. Barriers Selection
 const BarriersSelection = ({ value = [], onChange }: any) => {
+    const { t, isRTL } = useTranslation();
     const options = [
-        { key: 'consistency', label: 'کمبود استمرار', icon: '📉' },
-        { key: 'habits', label: 'عادات غذایی ناسالم', icon: '🍔' },
-        { key: 'support', label: 'کمبود حمایت', icon: '👥' },
-        { key: 'schedule', label: 'برنامه شلوغ', icon: '⏰' },
-        { key: 'ideas', label: 'کمبود ایده برای وعده‌ها', icon: '🍽️' },
+        { key: 'consistency', label: t('additionalInfo.barriers.options.consistency'), icon: '📉' },
+        { key: 'habits', label: t('additionalInfo.barriers.options.habits'), icon: '🍔' },
+        { key: 'support', label: t('additionalInfo.barriers.options.support'), icon: '👥' },
+        { key: 'schedule', label: t('additionalInfo.barriers.options.schedule'), icon: '⏰' },
+        { key: 'ideas', label: t('additionalInfo.barriers.options.ideas'), icon: '🍽️' },
     ];
 
     const toggle = (key: string) => {
@@ -1098,8 +1300,8 @@ const BarriersSelection = ({ value = [], onChange }: any) => {
     return (
         <div className="w-full">
             <Header
-                title="چه چیزهایی مانع رسیدن شما به اهدافتان می‌شود؟"
-                subtitle="همه موارد مربوطه را انتخاب کنید تا به ما کمک کنید تجربه شما را شخصی‌سازی کنیم"
+                title={t('additionalInfo.barriers.title')}
+                subtitle={t('additionalInfo.barriers.subtitle')}
                 icon={<span className="text-3xl">🧠</span>}
             />
             <div className="flex flex-col gap-3">
@@ -1109,7 +1311,7 @@ const BarriersSelection = ({ value = [], onChange }: any) => {
                         <div
                             key={opt.key}
                             onClick={() => toggle(opt.key)}
-                            className={`w-full p-3 rounded-[20px] flex items-center justify-between cursor-pointer border-2 transition-all duration-300
+                            className={`w-full p-3 rounded-[20px] flex ${isRTL ? '' : 'flex-row-reverse'} items-center justify-between cursor-pointer border-2 transition-all duration-300
                                 ${isSelected
                                     ? 'bg-blue-50 border-blue-500 shadow-sm scale-[1.01]'
                                     : 'bg-white border-gray-100 shadow-sm hover:border-gray-200'
@@ -1124,7 +1326,7 @@ const BarriersSelection = ({ value = [], onChange }: any) => {
                             </div>
 
                             {/* Middle: Text */}
-                            <div className="flex-1 text-right pr-4 text-base font-bold text-gray-800">
+                            <div className={`flex-1 ${isRTL ? 'text-right pr-4' : 'text-left pl-4'} text-base font-bold text-gray-800`}>
                                 {opt.label}
                             </div>
 
@@ -1142,18 +1344,19 @@ const BarriersSelection = ({ value = [], onChange }: any) => {
 
 // 11. Diet Selection
 const DietSelection = ({ value, onChange }: any) => {
+    const { t, isRTL } = useTranslation();
     const options = [
-        { key: 'standard', label: 'معمولی', icon: '🍴', color: 'bg-orange-100 text-orange-500' },
-        { key: 'pescatarian', label: 'ماهی‌خوار', icon: '🐟', color: 'bg-blue-100 text-blue-500' },
-        { key: 'vegetarian', label: 'گیاه‌خوار', icon: '🍎', color: 'bg-green-100 text-green-500' },
-        { key: 'vegan', label: 'وگان', icon: '🍃', color: 'bg-green-100 text-green-600' },
+        { key: 'standard', label: t('additionalInfo.diet.options.standard'), icon: '🍴', color: 'bg-orange-100 text-orange-500' },
+        { key: 'pescatarian', label: t('additionalInfo.diet.options.pescatarian'), icon: '🐟', color: 'bg-blue-100 text-blue-500' },
+        { key: 'vegetarian', label: t('additionalInfo.diet.options.vegetarian'), icon: '🍎', color: 'bg-green-100 text-green-500' },
+        { key: 'vegan', label: t('additionalInfo.diet.options.vegan'), icon: '🍃', color: 'bg-green-100 text-green-600' },
     ];
 
     return (
         <div className="w-full">
             <Header
-                title="آیا رژیم غذایی خاصی دنبال می‌کنید؟"
-                subtitle="این به ما کمک می‌کند تا توصیه‌های غذایی شما را شخصی‌سازی کنیم"
+                title={t('additionalInfo.diet.title')}
+                subtitle={t('additionalInfo.diet.subtitle')}
                 icon={<span className="text-3xl">🍽️</span>}
             />
             <div className="flex flex-col gap-3">
@@ -1163,7 +1366,7 @@ const DietSelection = ({ value, onChange }: any) => {
                         <div
                             key={opt.key}
                             onClick={() => onChange(opt.key)}
-                            className={`w-full p-4 rounded-[20px] flex items-center justify-between cursor-pointer border-2 transition-all duration-300
+                            className={`w-full p-4 rounded-[20px] flex ${isRTL ? '' : 'flex-row-reverse'} items-center justify-between cursor-pointer border-2 transition-all duration-300
                                 ${isSelected
                                     ? 'bg-blue-50 border-blue-500 shadow-sm'
                                     : 'bg-white border-gray-100 shadow-sm hover:border-gray-200'
@@ -1178,7 +1381,7 @@ const DietSelection = ({ value, onChange }: any) => {
                             </div>
 
                             {/* Middle: Text */}
-                            <div className="flex-1 text-right pr-4 text-base font-bold text-gray-800">
+                            <div className={`flex-1 ${isRTL ? 'text-right pr-4' : 'text-left pl-4'} text-base font-bold text-gray-800`}>
                                 {opt.label}
                             </div>
 
@@ -1196,18 +1399,19 @@ const DietSelection = ({ value, onChange }: any) => {
 
 // 12. Accomplishment Selection
 const AccomplishmentSelection = ({ value, onChange }: any) => {
+    const { t, isRTL } = useTranslation();
     const options = [
-        { key: 'eat_healthier', label: 'سالم‌تر غذا بخورید و زندگی کنید', icon: '🍏', color: 'bg-green-100 text-green-600' },
-        { key: 'boost_energy', label: 'انرژی و روحیه خود را تقویت کنم', icon: '☀️', color: 'bg-yellow-100 text-yellow-600' },
-        { key: 'stay_motivated', label: 'انگیزه و ثبات خود را حفظ کنم', icon: '💪', color: 'bg-blue-100 text-blue-600' },
-        { key: 'feel_better', label: 'احساس بهتری نسبت به بدنم داشته باشم', icon: '🧘‍♀️', color: 'bg-purple-100 text-purple-600' },
+        { key: 'eat_healthier', label: t('additionalInfo.accomplishment.options.eat_healthier'), icon: '🍏', color: 'bg-green-100 text-green-600' },
+        { key: 'boost_energy', label: t('additionalInfo.accomplishment.options.boost_energy'), icon: '☀️', color: 'bg-yellow-100 text-yellow-600' },
+        { key: 'stay_motivated', label: t('additionalInfo.accomplishment.options.stay_motivated'), icon: '💪', color: 'bg-blue-100 text-blue-600' },
+        { key: 'feel_better', label: t('additionalInfo.accomplishment.options.feel_better'), icon: '🧘‍♀️', color: 'bg-purple-100 text-purple-600' },
     ];
 
     return (
         <div className="w-full">
             <Header
-                title="چه چیزی می‌خواهید به دست آورید؟"
-                subtitle="انگیزه اصلی خود را انتخاب کنید تا به ما کمک کنید تجربه شما را شخصی‌سازی کنیم"
+                title={t('additionalInfo.accomplishment.title')}
+                subtitle={t('additionalInfo.accomplishment.subtitle')}
                 icon={<span className="text-3xl">🧠</span>}
             />
             <div className="flex flex-col gap-3">
@@ -1217,7 +1421,7 @@ const AccomplishmentSelection = ({ value, onChange }: any) => {
                         <div
                             key={opt.key}
                             onClick={() => onChange(opt.key)}
-                            className={`w-full p-4 rounded-[20px] flex items-center justify-between cursor-pointer border-2 transition-all duration-300
+                            className={`w-full p-4 rounded-[20px] flex ${isRTL ? '' : 'flex-row-reverse'} items-center justify-between cursor-pointer border-2 transition-all duration-300
                                 ${isSelected
                                     ? 'bg-blue-50 border-blue-500 shadow-sm'
                                     : 'bg-white border-gray-100 shadow-sm hover:border-gray-200'
@@ -1232,7 +1436,7 @@ const AccomplishmentSelection = ({ value, onChange }: any) => {
                             </div>
 
                             {/* Middle: Text */}
-                            <div className="flex-1 text-right pr-4 text-base font-bold text-gray-800 leading-tight">
+                            <div className={`flex-1 ${isRTL ? 'text-right pr-4' : 'text-left pl-4'} text-base font-bold text-gray-800 leading-tight`}>
                                 {opt.label}
                             </div>
 
@@ -1250,6 +1454,7 @@ const AccomplishmentSelection = ({ value, onChange }: any) => {
 
 // 13. Goal Transition Chart (Motivational Break)
 const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
+    const { t } = useTranslation();
     const isGain = goal === 'gain_weight';
     const isLose = goal === 'lose_weight';
 
@@ -1260,29 +1465,29 @@ const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
         textColor: 'text-blue-700',
         chartPath: "M10 90 Q 150 70, 290 30",
         points: [{ x: 10, y: 90 }, { x: 150, y: 60 }, { x: 290, y: 30 }],
-        message: "براساس داده‌های لقمه، با تغذیه و تمرین منظم، افزایش وزن سالم معمولاً پس از هفته اول سرعت می‌گیرد."
+        message: t('additionalInfo.transition.gainMsg')
     } : isLose ? {
         color: '#22C55E', // Green
         bgColor: 'bg-green-50',
         textColor: 'text-green-700',
         chartPath: "M10 10 Q 150 50, 290 90",
         points: [{ x: 10, y: 10 }, { x: 150, y: 50 }, { x: 290, y: 90 }],
-        message: "براساس داده‌های لقمه، کاهش وزن معمولاً در هفته‌های اول سریع‌تر است و سپس پایدار می‌شود."
+        message: t('additionalInfo.transition.loseMsg')
     } : {
         color: '#F59E0B', // Amber
         bgColor: 'bg-amber-50',
         textColor: 'text-amber-700',
         chartPath: "M10 50 L 290 50",
         points: [{ x: 10, y: 50 }, { x: 150, y: 50 }, { x: 290, y: 50 }],
-        message: "حفظ وزن فعلی نشان‌دهنده سبک زندگی سالم و پایدار شماست."
+        message: t('additionalInfo.transition.maintainMsg')
     };
 
     return (
         <div className="w-full flex flex-col items-center gap-6 pt-4">
             {/* Top Motivational Box */}
             <div className="w-full bg-gray-200 rounded-[32px] p-8 text-center shadow-inner">
-                <h1 className="text-2xl font-black text-gray-800 leading-snug">
-                    تو پتانسیل فوق‌العاده‌ای داری<br />که هدفت رو محقق کنی
+                <h1 className="text-2xl font-black text-gray-800 leading-snug whitespace-pre-line">
+                    {t('additionalInfo.transition.title')}
                 </h1>
             </div>
 
@@ -1290,7 +1495,7 @@ const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
             <div className="w-full bg-white rounded-[32px] p-6 shadow-xl shadow-gray-200/50 border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
                     <div className={`w-1 h-6 rounded-full ${isGain ? 'bg-blue-500' : isLose ? 'bg-green-500' : 'bg-amber-500'}`}></div>
-                    <h2 className="text-xl font-bold text-gray-800 flex-1 px-3 text-right">تغییرات وزن شما</h2>
+                    <h2 className="text-xl font-bold text-gray-800 flex-1 px-3 text-right">{t('additionalInfo.transition.chartTitle')}</h2>
                 </div>
 
                 {/* Chart Area */}
@@ -1334,9 +1539,9 @@ const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
 
                 {/* X-Axis Labels */}
                 <div className="flex justify-between text-xs text-gray-400 font-bold px-2 mb-6">
-                    <span>۳ روز</span>
-                    <span>۷ روز</span>
-                    <span>۳۰ روز</span>
+                    <span>{t('additionalInfo.transition.days.3')}</span>
+                    <span>{t('additionalInfo.transition.days.7')}</span>
+                    <span>{t('additionalInfo.transition.days.30')}</span>
                 </div>
 
                 {/* Info Box */}
@@ -1350,54 +1555,11 @@ const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
     );
 };
 
-// 14. Referral Code Input
-const ReferralCodeInput = ({ value, onChange }: any) => {
-    return (
-        <div className="w-full">
-            <Header
-                title="کد معرفی را وارد کنید"
-                subtitle={`(اختیاری)\nمی‌توانید این مرحله را رد کنید`}
-                icon={<span className="text-3xl">🎟️</span>}
-            />
 
-            {/* Discount Notification */}
-            <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-                className="w-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-[24px] p-5 mb-8 flex items-center justify-center shadow-lg shadow-indigo-200 relative overflow-hidden group cursor-default"
-            >
-                <div className="absolute inset-0 bg-white/10 blur-xl group-hover:bg-white/20 transition-colors"></div>
-                <div className="relative z-10 flex items-center gap-4">
-                    <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm">
-                        <span className="text-2xl">🎁</span>
-                    </div>
-                    <p className="text-white font-bold text-sm leading-relaxed text-right">
-                        با وارد کردن کد معرف، <br />
-                        <span className="text-[#fbbf24] font-black text-lg shadow-black drop-shadow-sm">۷۰٪ تخفیف</span> ویژه دریافت کنید!
-                    </p>
-                </div>
-            </motion.div>
-
-            <div className="relative">
-                <input
-                    type="text"
-                    value={value || ''}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder="کد معرفی"
-                    className="w-full h-20 rounded-[24px] bg-white border-2 border-gray-100 px-6 text-center text-2xl font-bold text-gray-800 placeholder-gray-300 focus:border-black focus:ring-4 focus:ring-black/5 focus:outline-none transition-all shadow-sm"
-                    dir="ltr"
-                />
-            </div>
-            <p className="text-center text-xs text-gray-400 mt-4 font-medium opacity-60">
-                کد را با دقت و حروف انگلیسی وارد کنید
-            </p>
-        </div>
-    );
-};
 
 // 15. Trust Intro (Final Step)
 const TrustIntro = () => {
+    const { t } = useTranslation();
     return (
         <div className="w-full flex flex-col items-center pt-8">
             {/* Handshake Icon with Ring */}
@@ -1409,9 +1571,9 @@ const TrustIntro = () => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-black text-gray-900 mb-4 text-center">از اعتماد شما ممنونیم!</h1>
+            <h1 className="text-3xl font-black text-gray-900 mb-4 text-center">{t('additionalInfo.trust.title')}</h1>
             <p className="text-gray-500 text-lg text-center mb-12 px-6">
-                بیایید لقمه را مخصوص شما شخصی‌سازی کنیم...
+                {t('additionalInfo.trust.subtitle')}
             </p>
 
             {/* Privacy Card */}
@@ -1419,9 +1581,9 @@ const TrustIntro = () => {
                 <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mb-4 text-2xl border border-gray-100">
                     🔒
                 </div>
-                <h3 className="font-bold text-gray-900 mb-3 text-lg">حریم خصوصی و امنیت شما برای ما مهم است.</h3>
+                <h3 className="font-bold text-gray-900 mb-3 text-lg">{t('additionalInfo.trust.securityTitle')}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed font-medium">
-                    قول می‌دهیم اطلاعات شخصی شما همواره محرمانه و امن بماند.
+                    {t('additionalInfo.trust.securityText')}
                 </p>
             </div>
         </div>
@@ -1454,7 +1616,9 @@ const SimpleStep = ({ title, subtitle, icon, value, onChange, options }: any) =>
 
 
 export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
+    const { t, isRTL } = useTranslation();
     const [step, setStep] = useState(0);
+    const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
     const [formData, setFormData] = useState<AdditionalInfoData>({
         dietType: 'standard', // Default
         val: { day: 26, month: 2, year: 1380 }, // birthDate Default
@@ -1501,7 +1665,7 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
         'gender', 'birth', 'workout', 'measurements', 'goal',
         ...(showLongterm ? ['longterm'] : []),
         'target', 'motivational', // motivation step always after target
-        ...(showSpeed ? ['speed'] : []), 'barriers', 'diet', 'accomplishment', 'transition', 'referral', 'trust'
+        ...(showSpeed ? ['speed'] : []), 'barriers', 'diet', 'accomplishment', 'transition', 'trust'
     ];
 
     const currentStepId = stepsList[step];
@@ -1516,17 +1680,17 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
             case 'workout':
                 return <WorkoutFrequency value={formData.workoutFrequency} onChange={(v: any) => updateData('workoutFrequency', v)} />;
             case 'measurements':
-                return <WeightHeight weight={formData.weight || 70} height={formData.height || 170} onChange={(k: string, v: any) => updateData(k, v)} />;
+                return <WeightHeight weight={formData.weight || 70} height={formData.height || 170} onChange={(k: string, v: any) => updateData(k, v)} unitSystem={unitSystem} setUnitSystem={setUnitSystem} />;
             case 'goal':
                 return <GoalSelection value={formData.weightGoal} onChange={(v: any) => updateData('weightGoal', v)} />;
             case 'longterm':
                 return <LongTermResults goal={formData.weightGoal} />;
             case 'target':
-                return <TargetWeight value={formData.targetWeight} currentWeight={formData.weight} goal={formData.weightGoal} onChange={(v: any) => updateData('targetWeight', v)} />;
+                return <TargetWeight value={formData.targetWeight} currentWeight={formData.weight} goal={formData.weightGoal} onChange={(v: any) => updateData('targetWeight', v)} unitSystem={unitSystem} />;
             case 'motivational':
-                return <MotivationalStep goal={formData.weightGoal} weight={formData.weight} targetWeight={formData.targetWeight} />;
+                return <MotivationalStep goal={formData.weightGoal} weight={formData.weight} targetWeight={formData.targetWeight} unitSystem={unitSystem} />;
             case 'speed':
-                return <SpeedSelection value={formData.weightLossSpeed} onChange={(v: any) => updateData('weightLossSpeed', v)} goal={formData.weightGoal} />;
+                return <SpeedSelection value={formData.weightLossSpeed} onChange={(v: any) => updateData('weightLossSpeed', v)} goal={formData.weightGoal} unitSystem={unitSystem} />;
             case 'barriers':
                 return <BarriersSelection value={formData.barriers || []} onChange={(v: any) => updateData('barriers', v)} />;
             case 'diet':
@@ -1535,8 +1699,6 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
                 return <AccomplishmentSelection value={formData.accomplishment} onChange={(v: any) => updateData('accomplishment', v)} />;
             case 'transition':
                 return <GoalTransitionChart goal={formData.weightGoal || 'lose_weight'} />;
-            case 'referral':
-                return <ReferralCodeInput value={formData.referralCode} onChange={(v: any) => updateData('referralCode', v)} />;
             case 'trust':
                 return <TrustIntro />;
             default:
@@ -1565,7 +1727,6 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
             case 'diet': return !!formData.dietType;
             case 'accomplishment': return !!formData.accomplishment;
             case 'transition': return true;
-            case 'referral': return true;
             case 'trust': return true;
             default: return false;
         }
@@ -1579,11 +1740,18 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
                 // Calculate age
                 let age = formData.age;
                 if (!age && formData.birthDate) {
-                    // Create a standard Date object from Jalali input
-                    // date-fns-jalali's newDate takes (year, monthIndex, day) in Jalali and returns standard Date
-                    const birthDateGeo = newDate(formData.birthDate.year, formData.birthDate.month - 1, formData.birthDate.day);
-                    const today = new Date();
+                    // Create a standard Date object based on calendar system
+                    let birthDateGeo;
 
+                    if (isRTL) {
+                        // Jalali Input -> Convert to Gregorian using date-fns-jalali
+                        birthDateGeo = newDate(formData.birthDate.year, formData.birthDate.month - 1, formData.birthDate.day);
+                    } else {
+                        // Gregorian Input -> Standard Date constructor
+                        birthDateGeo = new Date(formData.birthDate.year, formData.birthDate.month - 1, formData.birthDate.day);
+                    }
+
+                    const today = new Date();
                     age = differenceInYears(today, birthDateGeo);
                 }
 
@@ -1624,13 +1792,17 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
                 onFinish();
             } catch (err: any) {
                 console.error(err);
-                showToast(err.message || 'خطا در ثبت اطلاعات.', 'error');
+                showToast(err.message || t('common.error'), 'error');
                 setIsSubmitting(false);
             }
         } else {
             nextStep();
         }
     };
+
+    const nextText = step === stepsList.length - 1
+        ? (isSubmitting ? t('common.loading') : t('additionalInfo.buttons.finish'))
+        : t('additionalInfo.buttons.continue');
 
     return (
         <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center relative overflow-hidden">
@@ -1663,7 +1835,7 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
             <BottomButton
                 onClick={handleNext}
                 disabled={!isStepValid() || isSubmitting}
-                text={step === stepsList.length - 1 ? (isSubmitting ? "در حال ثبت..." : "ثبت") : "ادامه"}
+                text={nextText}
             />
 
             {step > 0 && (
@@ -1671,7 +1843,7 @@ export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
                     onClick={prevStep}
                     className="fixed top-6 right-6 z-40 p-2 bg-white/50 backdrop-blur-md rounded-full shadow-sm text-gray-500 hover:bg-white"
                 >
-                    <Icons.ChevronLeft className="rotate-180" />
+                    <Icons.ChevronLeft className="rtl:rotate-0 ltr:rotate-180" />
                 </button>
             )}
 

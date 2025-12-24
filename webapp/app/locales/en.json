@@ -27,9 +27,268 @@
         "continue": "Continue",
         "terms": "By using this app, you agree to our Terms of Service and Privacy Policy"
     },
+    "verification": {
+        "title": "Enter Code",
+        "subtitle": "We've sent a verification code to {{phone}}. Please enter it below.",
+        "success": "New code sent.",
+        "errorInvalid": "The entered code is incorrect or has expired",
+        "errorGeneric": "An error occurred. Please try again",
+        "verify": "Verify",
+        "resendPrompt": "Didn't receive the code?",
+        "resendAction": "Resend Code",
+        "resendTimer": "Resend in {{seconds}}s"
+    },
+    "planGeneration": {
+        "title": "We're preparing\neverything for you",
+        "currentMessage": "Personalizing recommendations...",
+        "calculatingBMR": "Calculating BMR...",
+        "calculatingTDEE": "Calculating TDEE...",
+        "adjustingMacros": "Adjusting macros...",
+        "almostReady": "Almost ready!",
+        "recommendationsFor": "Daily recommendations for",
+        "retry": "Retry",
+        "checklist": {
+            "calories": "Calories",
+            "carbs": "Carbohydrates",
+            "protein": "Protein",
+            "fats": "Fats",
+            "healthScore": "Health Score"
+        },
+        "errors": {
+            "loginAgain": "Please log in again",
+            "generic": "Error generating plan"
+        }
+    },
+    "planSummary": {
+        "congrats": "Congratulations!",
+        "ready": "Your custom plan is ready!",
+        "dailyRecommendation": "Daily Recommendation",
+        "editAnytime": "You can edit this anytime",
+        "metrics": {
+            "calories": "Calories",
+            "carbs": "Carbs",
+            "protein": "Protein",
+            "fats": "Fats"
+        },
+        "finish": "Finish",
+        "errors": {
+            "fetchError": "Error fetching plan",
+            "usingDefaults": "Could not update from server. Showing default values."
+        }
+    },
+    "header": {
+        "appName": "Slice",
+        "streakDays": "days"
+    },
+    "dashboard": {
+        "aiAnalyzing": "AI analyzing...",
+        "pullToRefresh": "Pull to refresh",
+        "releaseToRefresh": "Release to refresh",
+        "updating": "Updating...",
+        "remaining": "Remaining",
+        "consumed": "Consumed",
+        "burned": "Burned",
+        "exercise": "Exercise",
+        "fromYesterday": "from yesterday",
+        "nutrients": {
+            "fat": "Fat",
+            "carbs": "Carbs",
+            "protein": "Protein",
+            "unit": "g"
+        },
+        "recent": "Recently Eaten",
+        "noFood": "No food logged yet",
+        "logFirst": "Log your first meal",
+        "calories": "Calories"
+    },
     "common": {
         "error": "An error occurred",
         "loading": "Loading..."
+    },
+    "addFood": {
+        "title": "Add Meal",
+        "subtitle": "Select your meal logging method",
+        "gallery": {
+            "title": "Gallery",
+            "subtitle": "Pick image"
+        },
+        "camera": {
+            "title": "Camera",
+            "subtitle": "Take photo"
+        },
+        "text": {
+            "title": "Text",
+            "subtitle": "Type manual"
+        },
+        "favorites": {
+            "title": "Favorites",
+            "subtitle": "Common meals"
+        },
+        "preview": {
+            "title": "Confirm Image",
+            "descriptionLabel": "Description (Optional)",
+            "placeholder": "Example: This is a mix of rice, stew, and salad...",
+            "tip": "💡 Describing a mixed meal helps with more accurate analysis",
+            "startAnalysis": "Start Analysis"
+        },
+        "textInput": {
+            "title": "Food Description",
+            "placeholder": "Example: One chicken kabob with rice and tomato...",
+            "analyze": "Analyze Text"
+        },
+        "analyzing": {
+            "title": "AI is checking...",
+            "subtitle": "Identifying calories and macros"
+        },
+        "result": {
+            "healthScore": "Health Score",
+            "calories": "Calories",
+            "protein": "Protein",
+            "carbs": "Carbs",
+            "fat": "Fat",
+            "addToPlan": "Add to Plan",
+            "cancel": "Cancel",
+            "unit": "g"
+        },
+        "favoritesList": {
+            "emptyTitle": "No favorite foods yet",
+            "emptySubtitle": "Tap the ❤️ button on foods to add them to your favorites",
+            "loading": "Loading..."
+        },
+        "errors": {
+            "analysis": "Analysis error. Please try again.",
+            "add": "Error adding food. Please try again."
+        }
+    },
+    "addExercise": {
+        "title": "Log Exercise",
+        "subtitle": "Calculate and log calories burned",
+        "typeLabel": "Exercise type or activity",
+        "typePlaceholder": "Example: 30 minutes running...",
+        "durationLabel": "Duration (minutes)",
+        "durationPlaceholder": "Example: 30",
+        "minutes": "mins",
+        "smartCalculation": {
+            "title": "Smart Calculation",
+            "subtitle": "AI calculates calories based on type and duration"
+        },
+        "calculateButton": "Calculate Calories",
+        "analyzing": {
+            "title": "Calculating...",
+            "subtitle": "AI is analyzing activity and calculating calories"
+        },
+        "result": {
+            "duration": "Duration",
+            "intensity": "Intensity",
+            "caloriesLabel": "Calories Burned",
+            "unit": "kcal",
+            "tipsTitle": "Exercise Tips",
+            "saveButton": "Log Exercise",
+            "backButton": "Back",
+            "manualEdit": "Edit Calories Manually",
+            "useAI": "Use AI Calculation"
+        },
+        "suggestions": {
+            "running": "Running",
+            "walking": "Walking",
+            "cycling": "Cycling",
+            "swimming": "Swimming",
+            "weight": "Weights",
+            "yoga": "Yoga"
+        },
+        "errors": {
+            "emptyType": "Enter exercise type",
+            "invalidDuration": "Enter valid duration",
+            "invalidCalories": "Enter valid calories",
+            "analysis": "Analysis error",
+            "save": "Error logging exercise"
+        }
+    },
+    "streakModal": {
+        "title": "Your Streak",
+        "streakDays": "{{count}} days in a row",
+        "description": "Log your meals every day to\nincrease your streak!",
+        "continueButton": "Continue",
+        "dayLetters": [
+            "S",
+            "M",
+            "T",
+            "W",
+            "T",
+            "F",
+            "S"
+        ]
+    },
+    "updateDialog": {
+        "title": "New Update Available",
+        "message": "Please update the app to use the latest features.",
+        "updateButton": "Update Now",
+        "laterButton": "Later"
+    },
+    "weightHistory": {
+        "title": "Weight History",
+        "empty": "No weight logs yet",
+        "latestRecord": "Latest Record",
+        "totalChange": "Total Change",
+        "noChange": "No change",
+        "stable": "Stable",
+        "kg": "kg",
+        "kgFull": "kg",
+        "relativeDates": {
+            "today": "Today",
+            "yesterday": "Yesterday",
+            "daysAgo": "{{count}} days ago",
+            "weeksAgo": "{{count}} weeks ago",
+            "monthsAgo": "{{count}} months ago",
+            "yearsAgo": "{{count}} years ago"
+        }
+    },
+    "chat": {
+        "suggestionsRow1": [
+            "Give me some food options",
+            "What should I eat today?",
+            "Suggest a healthy meal",
+            "Low calorie food options",
+            "Healthy breakfast ideas",
+            "What to eat with remaining calories?",
+            "Suggest a light dinner",
+            "Healthy snack ideas",
+            "High protein food suggestions"
+        ],
+        "suggestionsRow2": [
+            "Give me a light weekly plan",
+            "Create a plan based on my goal",
+            "Weekly shopping list",
+            "Diet plan for weight loss",
+            "Muscle building diet",
+            "Budget-friendly meal plan",
+            "Quick and healthy meals",
+            "Useful fruits for dieting"
+        ],
+        "welcomeMessage": "Hello! 👋 I'm Dorsa, your nutrition coach. Ask me anything about diet, nutrition, or your calories. I'm here to help! 🥗",
+        "dorsa": "Dorsa",
+        "dorsaSub": "Your Nutrition & Diet Coach",
+        "placeholder": "Write your message...",
+        "imageSent": "Image sent",
+        "loading": "Loading...",
+        "loadingHistory": "Loading chat history...",
+        "errors": {
+            "dailyLimit": "Daily message limit reached. Get a subscription to continue.",
+            "sendFailed": "Failed to send message. Please try again."
+        },
+        "subscriptionButton": "Get Subscription",
+        "closeButton": "Close"
+    },
+    "dateHeader": {
+        "days": [
+            "S",
+            "S",
+            "M",
+            "T",
+            "W",
+            "T",
+            "F"
+        ]
     },
     "additionalInfo": {
         "gender": {
@@ -44,7 +303,21 @@
             "subtitle": "This is used to calculate your age and metabolism.",
             "month": "Month",
             "day": "Day",
-            "year": "Year"
+            "year": "Year",
+            "months": [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+            ]
         },
         "workout": {
             "title": "How often do you exercise?",
@@ -68,7 +341,12 @@
             "weight": "Weight",
             "height": "Height",
             "kg": "kg",
-            "cm": "cm"
+            "cm": "cm",
+            "lb": "lb",
+            "ft": "ft",
+            "in": "in",
+            "metric": "Metric",
+            "imperial": "Imperial"
         },
         "goal": {
             "title": "What is your goal?",
@@ -199,13 +477,6 @@
             "loseMsg": "Based on Slice data, weight loss is usually faster in the first weeks and then stabilizes.",
             "maintainMsg": "Maintaining current weight indicates a healthy and sustainable lifestyle."
         },
-        "referral": {
-            "title": "Enter Referral Code",
-            "subtitle": "(Optional)\nYou can skip this step",
-            "discount": "Get 70% OFF by entering a referral code!",
-            "placeholder": "Referral Code",
-            "hint": "Enter the code carefully in English letters"
-        },
         "trust": {
             "title": "Thank you for trusting us!",
             "subtitle": "Let's personalize Slice for you...",
@@ -216,5 +487,153 @@
             "continue": "Continue",
             "finish": "Finish"
         }
+    },
+    "splash": {
+        "appName": "Slice",
+        "tagline": "Your Intelligent Nutrition Assistant",
+        "checking": "Checking for updates...",
+        "downloading": "Downloading new version...",
+        "installing": "Installing new version..."
+    },
+    "loginGlobal": {
+        "welcome": "Welcome to Slice",
+        "subtitle": "Track your nutrition with AI-powered food analysis",
+        "google": "Continue with Google",
+        "apple": "Continue with Apple",
+        "termsPrefix": "By continuing, you agree to our",
+        "termsLink": "Terms of Service",
+        "privacyLink": "Privacy Policy",
+        "and": "and"
+    },
+    "analysis": {
+        "title": "Analysis & Stats",
+        "recordNewWeight": "Record New Weight",
+        "changeWeightGoal": "Change Weight Goal",
+        "recordWeight": "Record Weight",
+        "updateGoal": "Update Goal",
+        "enterCurrentWeight": "Enter your current weight",
+        "enterGoalWeight": "Enter your target weight",
+        "weightGoalEdit": "Weight Goal (Edit)",
+        "onTrackLose": "On track to lose",
+        "onTrackGain": "On track to gain",
+        "current": "Current",
+        "start": "Start",
+        "trend": "Trends",
+        "months3": "3 Months",
+        "months6": "6 Months",
+        "noDataChart": "Not enough data to display chart",
+        "bmiIndex": "BMI Index",
+        "bmiStatus": {
+            "unknown": "Unknown",
+            "underweight": "Underweight",
+            "normal": "Normal",
+            "overweight": "Overweight",
+            "obese": "Obese",
+            "healthy": "Healthy",
+            "excess": "Excess"
+        },
+        "calorieIntake7Days": "Calorie Intake (Last 7 Days)"
+    },
+    "kitchen": {
+        "title": "Kitchen",
+        "subtitle": "Delicious and healthy suggestions for you",
+        "searchPlaceholder": "Search foods...",
+        "itemsCount": "items",
+        "seeAll": "See All",
+        "more": "More",
+        "notAvailable": {
+            "title": "Kitchen Not Available",
+            "message": "Currently there are no items to display or you don't have access."
+        },
+        "notFound": {
+            "title": "No items found",
+            "search": "No results found for your search",
+            "emptyCategory": "No foods added to this category yet"
+        },
+        "smartChef": {
+            "title": "Smart Chef",
+            "description": "Tell me what ingredients you have, and I'll tell you what to cook!",
+            "button": "Request Recipe"
+        },
+        "saved": {
+            "title": "Saved Items",
+            "count": "recipes",
+            "empty": {
+                "title": "No saved items yet",
+                "message": "Save your favorite recipes to find them easily later"
+            }
+        },
+        "card": {
+            "difficulty": {
+                "easy": "Easy",
+                "medium": "Medium",
+                "hard": "Hard"
+            },
+            "nutrients": {
+                "protein": "Protein",
+                "carbs": "Carbs",
+                "fat": "Fat"
+            }
+        },
+        "detail": {
+            "calories": "Calories",
+            "ingredients": "Ingredients",
+            "instructions": "Instructions",
+            "premium": {
+                "title": "Premium Members Only",
+                "subtitle": "Get a subscription to view"
+            },
+            "soon": "Recipe coming soon",
+            "addToLog": "Add to Log"
+        }
+    },
+    "personalDetails": {
+        "title": "Personal Details",
+        "gender": "Gender",
+        "genderLabel": "Gender",
+        "birthDate": "Birth Date",
+        "birthDateLabel": "Birth Date",
+        "height": "Height",
+        "heightLabel": "Height (cm)",
+        "weight": "Current Weight",
+        "weightLabel": "Weight (kg)",
+        "targetWeight": "Target Weight",
+        "targetWeightLabel": "Target Weight (kg)",
+        "goal": "Goal",
+        "goalLabel": "Goal",
+        "notSet": "Not set",
+        "cm": "cm",
+        "kg": "kg",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "loseWeight": "Lose Weight",
+        "maintainWeight": "Maintain Weight",
+        "gainWeight": "Gain Weight",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving...",
+        "selectedDate": "Selected date",
+        "updateError": "Failed to update information",
+        "dateLabels": {
+            "month": "Month",
+            "day": "Day",
+            "year": "Year"
+        },
+        "months": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ]
     }
 }

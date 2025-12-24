@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslation } from '../translations';
 
 interface HeaderProps {
     streakCount?: number;
@@ -38,6 +39,17 @@ const Header: React.FC<HeaderProps> = ({
     onSubscriptionClick,
     onStreakClick
 }) => {
+    const { t, isRTL } = useTranslation();
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
+    // App name and streak days from translations
+    const appName = t('header.appName');
+    const streakDays = t('header.streakDays');
+
     // Animation state for crown
     const [crownAnimating, setCrownAnimating] = useState(false);
 
@@ -62,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="relative w-10 h-10">
                         <Image
                             src="/app/loqme_logo.png"
-                            alt="لقمه"
+                            alt={appName}
                             fill
                             className="object-contain drop-shadow-sm"
                         />
@@ -70,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="absolute inset-0 w-10 h-10 bg-gradient-to-br from-orange-400/20 to-amber-400/20 rounded-full blur-md -z-10" />
                     </div>
                     <h1 className="text-xl font-black text-gray-800 tracking-tight">
-                        لقمه
+                        {appName}
                     </h1>
                 </div>
 
@@ -129,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({
 
                         {/* Streak Count */}
                         <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors duration-200">
-                            {toPersianNumbers(streakCount)} روز
+                            {formatNumber(streakCount)} {streakDays}
                         </span>
                     </button>
                 </div>

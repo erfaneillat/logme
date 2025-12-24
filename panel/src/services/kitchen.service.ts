@@ -283,6 +283,55 @@ class KitchenService {
             };
         }
     }
+
+    async translateCategory(
+        token: string,
+        categoryId: string,
+        targetLanguage: string
+    ): Promise<{
+        success: boolean;
+        message?: string;
+        translatedCount?: number;
+        errorCount?: number;
+        category?: KitchenCategory;
+    }> {
+        try {
+            // Long timeout for translation (5 minutes)
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/translate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ categoryId, targetLanguage }),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeout);
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to translate category');
+            }
+
+            const data = await response.json();
+            return {
+                success: data.success,
+                message: data.message,
+                translatedCount: data.translatedCount,
+                errorCount: data.errorCount,
+                category: data.category
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to translate category',
+            };
+        }
+    }
 }
 
 export const kitchenService = new KitchenService();

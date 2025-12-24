@@ -4,7 +4,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiService, AdditionalInfo } from '../services/apiService';
 import { format, getYear, getMonth, getDate, newDate } from 'date-fns-jalali';
+import { format as formatGregorian } from 'date-fns';
 import { useToast } from '../context/ToastContext';
+import { useTranslation } from '../translations';
 
 interface PersonalDetailsPageProps {
     onClose: () => void;
@@ -75,15 +77,21 @@ const ScrollWheel = ({ items, value, onChange }: { items: (string | number)[]; v
     );
 };
 
-// --- Jalali Date Picker ---
+// --- Date Picker (supports both Jalali and Gregorian) ---
 interface JalaliDate { day: number; month: number; year: number }
 
-const JalaliDatePicker = ({ value, onChange }: { value: JalaliDate, onChange: (val: JalaliDate) => void }) => {
-    const years = Array.from({ length: 90 }, (_, i) => 1313 + i).reverse();
-    const months = [
-        "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-        "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"
-    ];
+interface DatePickerProps {
+    value: JalaliDate;
+    onChange: (val: JalaliDate) => void;
+    months: string[];
+    labels: { month: string; day: string; year: string };
+    isJalali?: boolean;
+}
+
+const DatePicker = ({ value, onChange, months, labels, isJalali = true }: DatePickerProps) => {
+    const years = isJalali
+        ? Array.from({ length: 90 }, (_, i) => 1313 + i).reverse()
+        : Array.from({ length: 90 }, (_, i) => 1934 + i).reverse();
     const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
     const currentMonthName = months[value.month - 1] || months[0];
@@ -101,9 +109,9 @@ const JalaliDatePicker = ({ value, onChange }: { value: JalaliDate, onChange: (v
     return (
         <div className="bg-white rounded-[20px] border border-gray-100 w-full overflow-hidden">
             <div className="flex justify-between mb-2 mt-4 px-4 text-xs font-bold text-gray-400">
-                <span className="flex-1 text-center">ماه</span>
-                <span className="flex-1 text-center">روز</span>
-                <span className="flex-1 text-center">سال</span>
+                <span className="flex-1 text-center">{labels.month}</span>
+                <span className="flex-1 text-center">{labels.day}</span>
+                <span className="flex-1 text-center">{labels.year}</span>
             </div>
             <div className="flex gap-2 h-[200px] w-full relative">
                 <div className="flex-1 relative">
@@ -162,16 +170,25 @@ const DetailRow = ({
 );
 
 const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) => {
+    const { t, isRTL } = useTranslation();
     const [info, setInfo] = useState<AdditionalInfo | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     // Edit Modal State
     const [editingField, setEditingField] = useState<{ key: keyof AdditionalInfo; label: string; type: 'number' | 'text' | 'date' | 'select' | 'gender' | 'goal'; options?: string[] } | null>(null);
     const [editValue, setEditValue] = useState<string | number>(''); // For text/number inputs
-    const [jalaliDate, setJalaliDate] = useState<JalaliDate>({ year: 1380, month: 1, day: 1 }); // For date picker
+    const [dateValue, setDateValue] = useState<JalaliDate>({ year: isRTL ? 1380 : 2000, month: 1, day: 1 }); // For date picker
 
     const [isSaving, setIsSaving] = useState(false);
     const { showToast } = useToast();
+
+    // Get months from translations
+    const months = t('personalDetails.months', { returnObjects: true }) as string[];
+    const dateLabels = {
+        month: t('personalDetails.dateLabels.month'),
+        day: t('personalDetails.dateLabels.day'),
+        year: t('personalDetails.dateLabels.year')
+    };
 
     useEffect(() => {
         fetchInfo();
@@ -194,15 +211,25 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
         let val = info[key];
 
         if (type === 'date' && typeof val === 'string') {
-            // Parse ISO string to Jalali parts
+            // Parse ISO string to date parts
             try {
                 const date = new Date(val);
                 if (!isNaN(date.getTime())) {
-                    setJalaliDate({
-                        year: getYear(date),
-                        month: getMonth(date) + 1,
-                        day: getDate(date)
-                    });
+                    if (isRTL) {
+                        // Jalali date
+                        setDateValue({
+                            year: getYear(date),
+                            month: getMonth(date) + 1,
+                            day: getDate(date)
+                        });
+                    } else {
+                        // Gregorian date
+                        setDateValue({
+                            year: date.getFullYear(),
+                            month: date.getMonth() + 1,
+                            day: date.getDate()
+                        });
+                    }
                 }
             } catch (e) {
                 console.error("Error parsing date:", e);
@@ -221,12 +248,14 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
             let val: any;
 
             if (editingField.type === 'date') {
-                // Convert Jalali parts back to Date object
+                // Convert date parts back to Date object
                 try {
-                    const dateObj = newDate(jalaliDate.year, jalaliDate.month - 1, jalaliDate.day);
-                    // Use format to get ISO string YYYY-MM-DD for API
-                    // Be careful with newDate, it might create local time.
-                    // Ideally send ISO string at noon to avoid timezone shifts affecting day
+                    let dateObj: Date;
+                    if (isRTL) {
+                        dateObj = newDate(dateValue.year, dateValue.month - 1, dateValue.day);
+                    } else {
+                        dateObj = new Date(dateValue.year, dateValue.month - 1, dateValue.day);
+                    }
                     dateObj.setHours(12, 0, 0, 0);
                     val = dateObj.toISOString().split('T')[0];
                 } catch (e) {
@@ -246,29 +275,41 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
             setEditingField(null);
         } catch (error) {
             console.error('Failed to update info:', error);
-            showToast('خطا در بروزرسانی اطلاعات', 'error');
+            showToast(t('personalDetails.updateError'), 'error');
         } finally {
             setIsSaving(false);
         }
     };
 
     const getGenderLabel = (g?: string) => {
-        if (!g) return 'تعیین نشده';
+        if (!g) return t('personalDetails.notSet');
         const lower = g.toLowerCase();
-        if (lower === 'male' || lower === 'm') return 'مرد';
-        if (lower === 'female' || lower === 'f') return 'زن';
-        return 'سایر';
+        if (lower === 'male' || lower === 'm') return t('personalDetails.male');
+        if (lower === 'female' || lower === 'f') return t('personalDetails.female');
+        return t('personalDetails.other');
     };
 
-    const formatJalaliDate = (dateStr?: string) => {
-        if (!dateStr) return 'تعیین نشده';
+    const formatDateDisplay = (dateStr?: string) => {
+        if (!dateStr) return t('personalDetails.notSet');
         try {
             const date = new Date(dateStr);
             if (isNaN(date.getTime())) return dateStr;
-            return format(date, 'd MMMM yyyy');
+            if (isRTL) {
+                return format(date, 'd MMMM yyyy');
+            } else {
+                return formatGregorian(date, 'MMMM d, yyyy');
+            }
         } catch (e) {
             return dateStr;
         }
+    };
+
+    const getGoalLabel = (goal?: string) => {
+        if (!goal) return t('personalDetails.notSet');
+        if (goal === 'lose_weight') return t('personalDetails.loseWeight');
+        if (goal === 'gain_weight') return t('personalDetails.gainWeight');
+        if (goal === 'maintain_weight') return t('personalDetails.maintainWeight');
+        return t('personalDetails.notSet');
     };
 
     return (
@@ -278,6 +319,7 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center p-0 sm:p-4"
             onClick={onClose}
+            dir={isRTL ? 'rtl' : 'ltr'}
         >
             <motion.div
                 initial={{ y: "100%" }}
@@ -292,7 +334,7 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
                     <div className="w-8"></div>
                     <div className="flex flex-col items-center">
                         <div className="w-10 h-1 bg-gray-200 rounded-full mb-3 sm:hidden"></div>
-                        <h2 className="text-lg font-black text-gray-800">اطلاعات شخصی</h2>
+                        <h2 className="text-lg font-black text-gray-800">{t('personalDetails.title')}</h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -316,42 +358,42 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
                         <>
                             <DetailRow
                                 icon="👫"
-                                label="جنسیت"
+                                label={t('personalDetails.gender')}
                                 value={getGenderLabel(info?.gender)}
-                                onEdit={() => handleEdit('gender', 'جنسیت', 'gender')}
+                                onEdit={() => handleEdit('gender', t('personalDetails.genderLabel'), 'gender')}
                             />
                             <DetailRow
                                 icon="🎂"
-                                label="تاریخ تولد"
-                                value={formatJalaliDate(info?.birthDate)}
-                                onEdit={() => handleEdit('birthDate', 'تاریخ تولد', 'date')}
+                                label={t('personalDetails.birthDate')}
+                                value={formatDateDisplay(info?.birthDate)}
+                                onEdit={() => handleEdit('birthDate', t('personalDetails.birthDateLabel'), 'date')}
                             />
                             <DetailRow
                                 icon="📏"
-                                label="قد"
-                                value={info?.height ? `${info.height}` : 'تعیین نشده'}
-                                subValue={info?.height ? 'سانتی‌متر' : ''}
-                                onEdit={() => handleEdit('height', 'قد (سانتی‌متر)', 'number')}
+                                label={t('personalDetails.height')}
+                                value={info?.height ? `${info.height}` : t('personalDetails.notSet')}
+                                subValue={info?.height ? t('personalDetails.cm') : ''}
+                                onEdit={() => handleEdit('height', t('personalDetails.heightLabel'), 'number')}
                             />
                             <DetailRow
                                 icon="⚖️"
-                                label="وزن فعلی"
-                                value={info?.weight ? `${info.weight}` : 'تعیین نشده'}
-                                subValue={info?.weight ? 'کیلوگرم' : ''}
-                                onEdit={() => handleEdit('weight', 'وزن (کیلوگرم)', 'number')}
+                                label={t('personalDetails.weight')}
+                                value={info?.weight ? `${info.weight}` : t('personalDetails.notSet')}
+                                subValue={info?.weight ? t('personalDetails.kg') : ''}
+                                onEdit={() => handleEdit('weight', t('personalDetails.weightLabel'), 'number')}
                             />
                             <DetailRow
                                 icon="🎯"
-                                label="وزن هدف"
-                                value={info?.targetWeight ? `${info.targetWeight}` : 'تعیین نشده'}
-                                subValue={info?.targetWeight ? 'کیلوگرم' : ''}
-                                onEdit={() => handleEdit('targetWeight', 'وزن هدف (کیلوگرم)', 'number')}
+                                label={t('personalDetails.targetWeight')}
+                                value={info?.targetWeight ? `${info.targetWeight}` : t('personalDetails.notSet')}
+                                subValue={info?.targetWeight ? t('personalDetails.kg') : ''}
+                                onEdit={() => handleEdit('targetWeight', t('personalDetails.targetWeightLabel'), 'number')}
                             />
                             <DetailRow
                                 icon="🚩"
-                                label="هدف"
-                                value={info?.weightGoal === 'lose_weight' ? 'کاهش وزن' : info?.weightGoal === 'gain_weight' ? 'افزایش وزن' : info?.weightGoal === 'maintain_weight' ? 'حفظ وزن' : 'تعیین نشده'}
-                                onEdit={() => handleEdit('weightGoal', 'هدف', 'goal')}
+                                label={t('personalDetails.goal')}
+                                value={getGoalLabel(info?.weightGoal)}
+                                onEdit={() => handleEdit('weightGoal', t('personalDetails.goalLabel'), 'goal')}
                             />
                         </>
                     )}
@@ -377,7 +419,7 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
-                            <h3 className="text-xl font-black text-gray-800 mb-6">ویرایش {editingField.label}</h3>
+                            <h3 className="text-xl font-black text-gray-800 mb-6">{t('personalDetails.edit')} {editingField.label}</h3>
 
                             {editingField.type === 'gender' ? (
                                 <div className="flex gap-3 mb-8">
@@ -387,16 +429,16 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
                                             onClick={() => setEditValue(g)}
                                             className={`flex-1 py-4 rounded-xl border-2 font-bold transition-all ${editValue === g ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-gray-200 text-gray-500'}`}
                                         >
-                                            {g === 'male' ? 'مرد' : 'زن'}
+                                            {g === 'male' ? t('personalDetails.male') : t('personalDetails.female')}
                                         </button>
                                     ))}
                                 </div>
                             ) : editingField.type === 'goal' ? (
                                 <div className="flex flex-col gap-3 mb-8">
                                     {[
-                                        { val: 'lose_weight', label: 'کاهش وزن' },
-                                        { val: 'maintain_weight', label: 'حفظ وزن' },
-                                        { val: 'gain_weight', label: 'افزایش وزن' }
+                                        { val: 'lose_weight', label: t('personalDetails.loseWeight') },
+                                        { val: 'maintain_weight', label: t('personalDetails.maintainWeight') },
+                                        { val: 'gain_weight', label: t('personalDetails.gainWeight') }
                                     ].map(g => (
                                         <button
                                             key={g.val}
@@ -409,12 +451,15 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
                                 </div>
                             ) : editingField.type === 'date' ? (
                                 <div className="mb-8">
-                                    <JalaliDatePicker
-                                        value={jalaliDate}
-                                        onChange={setJalaliDate}
+                                    <DatePicker
+                                        value={dateValue}
+                                        onChange={setDateValue}
+                                        months={months}
+                                        labels={dateLabels}
+                                        isJalali={isRTL}
                                     />
                                     <p className="text-center text-xs text-gray-400 mt-3 font-medium">
-                                        تاریخ انتخاب شده: {jalaliDate.year}/{jalaliDate.month}/{jalaliDate.day}
+                                        {t('personalDetails.selectedDate')}: {dateValue.year}/{dateValue.month}/{dateValue.day}
                                     </p>
                                 </div>
                             ) : (
@@ -435,14 +480,14 @@ const PersonalDetailsPage: React.FC<PersonalDetailsPageProps> = ({ onClose }) =>
                                     onClick={() => setEditingField(null)}
                                     className="flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors"
                                 >
-                                    انصراف
+                                    {t('personalDetails.cancel')}
                                 </button>
                                 <button
                                     onClick={saveEdit}
                                     disabled={isSaving}
                                     className="flex-[2] py-4 bg-purple-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-purple-200 hover:bg-purple-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                                 >
-                                    {isSaving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : 'ذخیره'}
+                                    {isSaving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : t('personalDetails.save')}
                                 </button>
                             </div>
                         </motion.div>

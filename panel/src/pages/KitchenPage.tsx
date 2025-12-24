@@ -1,9 +1,16 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { kitchenService } from '../services/kitchen.service';
 import { KitchenCategory } from '../types/kitchen';
 import Sidebar from '../components/Sidebar';
 import KitchenCategoryModal from '../components/KitchenCategoryModal';
+
+const SUPPORTED_LANGUAGES = [
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'fa', name: 'Persian (Farsi)', flag: '🇮🇷' },
+];
 
 const KitchenPage = () => {
     const { token } = useAuth();
@@ -12,6 +19,11 @@ const KitchenPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<KitchenCategory | null>(null);
+
+    // Translation state
+    const [isTranslating, setIsTranslating] = useState<string | null>(null);
+    const [translationProgress, setTranslationProgress] = useState<string>('');
+    const [showTranslateMenu, setShowTranslateMenu] = useState<string | null>(null);
 
     const fetchCategories = async () => {
         if (!token) return;
@@ -64,6 +76,39 @@ const KitchenPage = () => {
         setIsModalOpen(false);
     };
 
+    const handleTranslate = async (categoryId: string, targetLanguage: string) => {
+        if (!token) return;
+
+        setShowTranslateMenu(null);
+        setIsTranslating(categoryId);
+        setTranslationProgress('Starting translation...');
+
+        try {
+            const response = await kitchenService.translateCategory(token, categoryId, targetLanguage);
+
+            if (response.success) {
+                setTranslationProgress(`Done! Translated ${response.translatedCount} items.`);
+                await fetchCategories();
+                setTimeout(() => {
+                    setIsTranslating(null);
+                    setTranslationProgress('');
+                }, 2000);
+            } else {
+                setTranslationProgress(`Error: ${response.message}`);
+                setTimeout(() => {
+                    setIsTranslating(null);
+                    setTranslationProgress('');
+                }, 3000);
+            }
+        } catch (err: any) {
+            setTranslationProgress(`Error: ${err.message}`);
+            setTimeout(() => {
+                setIsTranslating(null);
+                setTranslationProgress('');
+            }, 3000);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex bg-gray-50">
@@ -107,6 +152,7 @@ const KitchenPage = () => {
                         {categories.map((category) => {
                             const subCount = category.subCategories?.length || 0;
                             const totalItems = category.subCategories?.reduce((sum, sub) => sum + (sub.items?.length || 0), 0) || 0;
+                            const isCurrentlyTranslating = isTranslating === category._id;
 
                             return (
                                 <div key={category._id || category.id} className="group relative overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
@@ -142,17 +188,60 @@ const KitchenPage = () => {
                                             </div>
                                         )}
 
+                                        {/* Translation Progress */}
+                                        {isCurrentlyTranslating && (
+                                            <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                                                    <span className="text-xs text-blue-700 font-medium">{translationProgress}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         {/* Action Buttons */}
                                         <div className="mt-4 flex gap-2 pt-4 border-t border-gray-50">
                                             <button
                                                 onClick={() => handleEdit(category)}
                                                 className="flex-1 rounded-lg bg-gray-50 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                                                disabled={isCurrentlyTranslating}
                                             >
                                                 Edit
                                             </button>
+
+                                            {/* Translate Button with Dropdown */}
+                                            <div className="relative flex-1">
+                                                <button
+                                                    onClick={() => setShowTranslateMenu(showTranslateMenu === category._id ? null : category._id!)}
+                                                    className="w-full rounded-lg bg-blue-50 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-100 transition-colors flex items-center justify-center gap-1"
+                                                    disabled={isCurrentlyTranslating}
+                                                >
+                                                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                                                    </svg>
+                                                    Translate
+                                                </button>
+
+                                                {/* Language Dropdown */}
+                                                {showTranslateMenu === category._id && (
+                                                    <div className="absolute bottom-full left-0 right-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                                                        {SUPPORTED_LANGUAGES.map((lang) => (
+                                                            <button
+                                                                key={lang.code}
+                                                                onClick={() => handleTranslate(category._id!, lang.code)}
+                                                                className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 flex items-center gap-2"
+                                                            >
+                                                                <span>{lang.flag}</span>
+                                                                <span>{lang.name}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+
                                             <button
                                                 onClick={() => handleDelete(category._id!)}
                                                 className="flex-1 rounded-lg bg-red-50 py-2 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors"
+                                                disabled={isCurrentlyTranslating}
                                             >
                                                 Delete
                                             </button>

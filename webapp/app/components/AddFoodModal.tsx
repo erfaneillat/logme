@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { apiService, FoodAnalysisResponse, LikedFood, fixImageUrl } from '../services/apiService';
 import { useToast } from '../context/ToastContext';
+import { useTranslation } from '../translations';
 
 interface AddFoodModalProps {
     isOpen: boolean;
@@ -20,6 +21,13 @@ const toPersianNumbers = (num: number | string): string => {
 };
 
 const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood, onStartAnalysis }) => {
+    const { t, isRTL } = useTranslation();
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
     const [view, setView] = useState<ModalView>('menu');
     const [image, setImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -89,7 +97,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
             setAnalysis(result);
             setView('result');
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'خطا در تحلیل. لطفا مجدد تلاش کنید.';
+            const errorMessage = error instanceof Error ? error.message : t('addFood.errors.analysis');
             showToast(errorMessage, 'error');
             setView(image ? 'preview' : 'text');
         }
@@ -120,7 +128,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                 resetAndClose();
             } catch (error) {
                 console.error("Failed to add food:", error);
-                showToast("خطا در ثبت وعده. لطفا مجدد تلاش کنید.", 'error');
+                showToast(t('addFood.errors.add'), 'error');
             }
         }
     };
@@ -174,7 +182,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
             resetAndClose();
         } catch (error) {
             console.error("Failed to add liked food:", error);
-            showToast("خطا در ثبت وعده. لطفا مجدد تلاش کنید.", 'error');
+            showToast(t('addFood.errors.add'), 'error');
         }
     };
 
@@ -183,8 +191,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
     const renderMenu = () => (
         <div className="space-y-6 animate-slide-up">
             <div className="text-center">
-                <h2 className="text-2xl font-black text-gray-800 mb-2">افزودن وعده</h2>
-                <p className="text-gray-400 text-sm">روش ثبت وعده غذایی خود را انتخاب کنید</p>
+                <h2 className="text-2xl font-black text-gray-800 mb-2">{t('addFood.title')}</h2>
+                <p className="text-gray-400 text-sm">{t('addFood.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -198,8 +206,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <span className="font-bold text-gray-800 mb-0.5">گالری</span>
-                    <span className="text-[10px] text-gray-400">انتخاب تصویر</span>
+                    <span className="font-bold text-gray-800 mb-0.5">{t('addFood.gallery.title')}</span>
+                    <span className="text-[10px] text-gray-400">{t('addFood.gallery.subtitle')}</span>
                 </button>
 
                 {/* Camera */}
@@ -213,8 +221,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
-                    <span className="font-bold text-gray-800 mb-0.5">دوربین</span>
-                    <span className="text-[10px] text-gray-400">عکس‌برداری</span>
+                    <span className="font-bold text-gray-800 mb-0.5">{t('addFood.camera.title')}</span>
+                    <span className="text-[10px] text-gray-400">{t('addFood.camera.subtitle')}</span>
                 </button>
 
                 {/* Text Input */}
@@ -227,8 +235,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                     </div>
-                    <span className="font-bold text-gray-800 mb-0.5">نوشتاری</span>
-                    <span className="text-[10px] text-gray-400">تایپ دستی</span>
+                    <span className="font-bold text-gray-800 mb-0.5">{t('addFood.text.title')}</span>
+                    <span className="text-[10px] text-gray-400">{t('addFood.text.subtitle')}</span>
                 </button>
 
                 {/* Favorites */}
@@ -241,8 +249,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                             <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                         </svg>
                     </div>
-                    <span className="font-bold text-gray-800 mb-0.5">محبوب‌ها</span>
-                    <span className="text-[10px] text-gray-400">وعده‌های رایج</span>
+                    <span className="font-bold text-gray-800 mb-0.5">{t('addFood.favorites.title')}</span>
+                    <span className="text-[10px] text-gray-400">{t('addFood.favorites.subtitle')}</span>
                 </button>
             </div>
         </div>
@@ -252,18 +260,18 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
         <div className="space-y-4 animate-slide-up">
             <div className="flex justify-between items-center">
                 <button onClick={() => setView('menu')} className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isRTL ? 'transform rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                 </button>
-                <h2 className="text-xl font-bold text-gray-800">محبوب‌ها</h2>
+                <h2 className="text-xl font-bold text-gray-800">{t('addFood.favorites.title')}</h2>
                 <div className="w-8"></div>
             </div>
 
             {isLoadingLiked ? (
                 <div className="flex flex-col items-center justify-center py-12">
                     <div className="w-12 h-12 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-400 text-sm">در حال بارگذاری...</p>
+                    <p className="text-gray-400 text-sm">{t('addFood.favoritesList.loading')}</p>
                 </div>
             ) : likedFoods.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -272,9 +280,9 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                             <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                         </svg>
                     </div>
-                    <h3 className="font-bold text-gray-700 mb-2">هنوز غذای محبوبی ندارید</h3>
+                    <h3 className="font-bold text-gray-700 mb-2">{t('addFood.favoritesList.emptyTitle')}</h3>
                     <p className="text-sm text-gray-400 max-w-[250px]">
-                        با زدن دکمه ❤️ روی غذاها، آن‌ها را به لیست محبوب‌ها اضافه کنید
+                        {t('addFood.favoritesList.emptySubtitle')}
                     </p>
                 </div>
             ) : (
@@ -283,7 +291,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                         <button
                             key={`${food.title}-${index}`}
                             onClick={() => handleSelectLikedFood(food)}
-                            className="w-full bg-white p-4 rounded-[20px] border border-gray-100 shadow-sm hover:shadow-lg hover:border-pink-200 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center gap-4 text-right"
+                            className={`w-full bg-white p-4 rounded-[20px] border border-gray-100 shadow-sm hover:shadow-lg hover:border-pink-200 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center gap-4 ${isRTL ? 'text-right' : 'text-left'}`}
                         >
                             {/* Food Image or Icon */}
                             <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
@@ -304,22 +312,22 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                                     {food.title}
                                 </h4>
                                 <div className="flex items-center gap-3 text-xs text-gray-400">
-                                    <span className="font-bold text-gray-600">{toPersianNumbers(food.calories)} کالری</span>
+                                    <span className="font-bold text-gray-600">{formatNumber(food.calories)} {t('addFood.result.calories')}</span>
                                     <span className="bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded font-medium">
-                                        P {toPersianNumbers(food.proteinGrams)}
+                                        P {formatNumber(food.proteinGrams)}
                                     </span>
                                     <span className="bg-yellow-50 text-yellow-600 px-1.5 py-0.5 rounded font-medium">
-                                        C {toPersianNumbers(food.carbsGrams)}
+                                        C {formatNumber(food.carbsGrams)}
                                     </span>
                                     <span className="bg-purple-50 text-purple-500 px-1.5 py-0.5 rounded font-medium">
-                                        F {toPersianNumbers(food.fatsGrams)}
+                                        F {formatNumber(food.fatsGrams)}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Arrow */}
                             <div className="shrink-0 text-gray-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isRTL ? 'transform rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                 </svg>
                             </div>
@@ -332,7 +340,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
 
     const renderPreview = () => (
         <div className="space-y-5 animate-slide-up">
-            <h2 className="text-xl font-bold text-gray-800 text-center">تایید تصویر</h2>
+            <h2 className="text-xl font-bold text-gray-800 text-center">{t('addFood.preview.title')}</h2>
             <div className="relative h-56 w-full rounded-[32px] overflow-hidden bg-gray-900 shadow-xl shadow-gray-200">
                 <img src={image!} alt="Preview" className="w-full h-full object-cover" />
                 <button
@@ -351,16 +359,16 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="text-sm font-bold text-gray-700">توضیحات (اختیاری)</span>
+                    <span className="text-sm font-bold text-gray-700">{t('addFood.preview.descriptionLabel')}</span>
                 </div>
                 <textarea
                     value={imageDescription}
                     onChange={(e) => setImageDescription(e.target.value)}
-                    placeholder="مثال: این غذا مخلوط چلو خورشت قیمه با برنج و سالاد است..."
-                    className="w-full bg-white border border-gray-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none text-gray-800 text-right rounded-xl p-3 min-h-[80px] resize-none placeholder-gray-400 text-sm leading-relaxed transition-all"
+                    placeholder={t('addFood.preview.placeholder')}
+                    className={`w-full bg-white border border-gray-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none text-gray-800 ${isRTL ? 'text-right' : 'text-left'} rounded-xl p-3 min-h-[80px] resize-none placeholder-gray-400 text-sm leading-relaxed transition-all`}
                 />
-                <p className="text-xs text-gray-400 mt-2 text-right">
-                    💡 اگر غذا مخلوط یا ترکیبی است، توضیح دادن کمک می‌کند تا تحلیل دقیق‌تری داشته باشید
+                <p className={`text-xs text-gray-400 mt-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('addFood.preview.tip')}
                 </p>
             </div>
 
@@ -368,8 +376,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                 onClick={handleAnalyze}
                 className="w-full py-5 bg-gray-900 text-white rounded-[20px] font-bold text-lg shadow-xl shadow-gray-300 hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2"
             >
-                <span>شروع تحلیل</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                <span>{t('addFood.preview.startAnalysis')}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isRTL ? 'transform rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
             </button>
@@ -380,11 +388,11 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
         <div className="space-y-6 animate-slide-up">
             <div className="flex justify-between items-center">
                 <button onClick={() => setView('menu')} className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isRTL ? 'transform rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                 </button>
-                <h2 className="text-xl font-bold text-gray-800">توضیح غذا</h2>
+                <h2 className="text-xl font-bold text-gray-800">{t('addFood.textInput.title')}</h2>
                 <div className="w-8"></div>
             </div>
 
@@ -392,8 +400,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                 <textarea
                     value={textInput}
                     onChange={(e) => setTextInput(e.target.value)}
-                    placeholder="مثال: یک سیخ کباب کوبیده با برنج و گوجه..."
-                    className="w-full bg-transparent border-none focus:ring-0 outline-none text-gray-800 text-right min-h-[160px] resize-none placeholder-gray-400 text-lg leading-relaxed"
+                    placeholder={t('addFood.textInput.placeholder')}
+                    className={`w-full bg-transparent border-none focus:ring-0 outline-none text-gray-800 ${isRTL ? 'text-right' : 'text-left'} min-h-[160px] resize-none placeholder-gray-400 text-lg leading-relaxed`}
                     autoFocus
                 />
             </div>
@@ -403,7 +411,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                 disabled={!textInput.trim()}
                 className="w-full py-5 bg-orange-500 text-white rounded-[20px] font-bold text-lg shadow-xl shadow-orange-200 hover:bg-orange-600 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-                <span>تحلیل متن</span>
+                <span>{t('addFood.textInput.analyze')}</span>
             </button>
         </div>
     );
@@ -417,8 +425,8 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                     <span className="text-4xl animate-pulse">✨</span>
                 </div>
             </div>
-            <h3 className="text-2xl font-black text-gray-800 mb-2">هوش مصنوعی در حال بررسی...</h3>
-            <p className="text-gray-400 text-base">در حال شناسایی کالری و درشت‌مغذی‌ها</p>
+            <h3 className="text-2xl font-black text-gray-800 mb-2">{t('addFood.analyzing.title')}</h3>
+            <p className="text-gray-400 text-base">{t('addFood.analyzing.subtitle')}</p>
         </div>
     );
 
@@ -430,7 +438,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
                         {analysis.healthScore !== undefined && (
                             <div className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-green-100">
                                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                <span>امتیاز سلامت: {analysis.healthScore}/10</span>
+                                <span>{t('addFood.result.healthScore')}: {formatNumber(analysis.healthScore)}/10</span>
                             </div>
                         )}
                         <h3 className="text-3xl font-black text-gray-800 leading-tight">{analysis.title}</h3>
@@ -438,37 +446,37 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({ isOpen, onClose, onAddFood,
 
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className="bg-gray-50 p-6 rounded-[24px] text-center border border-gray-100 flex flex-col justify-center items-center">
-                            <div className="text-4xl font-black text-gray-900 mb-1">{analysis.calories}</div>
-                            <div className="text-xs text-gray-400 font-bold uppercase tracking-wide">کالری</div>
+                            <div className="text-4xl font-black text-gray-900 mb-1">{formatNumber(analysis.calories)}</div>
+                            <div className="text-xs text-gray-400 font-bold uppercase tracking-wide">{t('addFood.result.calories')}</div>
                         </div>
                         <div className="space-y-2.5">
                             <div className="bg-blue-50 p-3 rounded-[18px] flex justify-between px-4 items-center border border-blue-100">
-                                <span className="text-xs font-bold text-blue-500">پروتئین</span>
-                                <span className="font-bold text-gray-800 text-sm">{analysis.proteinGrams} گرم</span>
+                                <span className="text-xs font-bold text-blue-500">{t('addFood.result.protein')}</span>
+                                <span className="font-bold text-gray-800 text-sm">{formatNumber(analysis.proteinGrams)} {t('addFood.result.unit')}</span>
                             </div>
                             <div className="bg-yellow-50 p-3 rounded-[18px] flex justify-between px-4 items-center border border-yellow-100">
-                                <span className="text-xs font-bold text-yellow-600">کربو</span>
-                                <span className="font-bold text-gray-800 text-sm">{analysis.carbsGrams} گرم</span>
+                                <span className="text-xs font-bold text-yellow-600">{t('addFood.result.carbs')}</span>
+                                <span className="font-bold text-gray-800 text-sm">{formatNumber(analysis.carbsGrams)} {t('addFood.result.unit')}</span>
                             </div>
                             <div className="bg-purple-50 p-3 rounded-[18px] flex justify-between px-4 items-center border border-purple-100">
-                                <span className="text-xs font-bold text-purple-500">چربی</span>
-                                <span className="font-bold text-gray-800 text-sm">{analysis.fatGrams} گرم</span>
+                                <span className="text-xs font-bold text-purple-500">{t('addFood.result.fat')}</span>
+                                <span className="font-bold text-gray-800 text-sm">{formatNumber(analysis.fatGrams)} {t('addFood.result.unit')}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex space-x-3 space-x-reverse">
+                    <div className={`flex space-x-3 ${isRTL ? 'space-x-reverse' : ''}`}>
                         <button
                             onClick={handleConfirm}
                             className="flex-1 py-5 bg-gray-900 text-white rounded-[20px] font-bold text-lg shadow-xl shadow-gray-200 hover:bg-gray-800 transition-all active:scale-95"
                         >
-                            افزودن به برنامه
+                            {t('addFood.result.addToPlan')}
                         </button>
                         <button
                             onClick={() => setView('menu')}
                             className="px-6 py-5 bg-gray-100 text-gray-600 rounded-[20px] font-bold hover:bg-gray-200 transition-colors"
                         >
-                            لغو
+                            {t('addFood.result.cancel')}
                         </button>
                     </div>
                 </>

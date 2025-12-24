@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
+import { useTranslation } from '../translations';
 import { apiService, User } from '../services/apiService';
 
 interface VerificationProps {
@@ -12,6 +12,7 @@ interface VerificationProps {
 }
 
 export default function Verification({ phoneNumber, onBack, onVerify }: VerificationProps) {
+    const { t, isRTL } = useTranslation();
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -44,10 +45,10 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
         try {
             await apiService.sendCode(phoneNumber);
             setCountdown(60);
-            setSuccessMessage('کد جدید ارسال شد.');
+            setSuccessMessage(t('verification.success'));
             setTimeout(() => setSuccessMessage(null), 4000);
         } catch (err: any) {
-            setError(err.message || 'خطا در ارسال مجدد کد');
+            setError(err.message || t('verification.errorGeneric'));
         } finally {
             setIsLoading(false);
         }
@@ -101,11 +102,7 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
                 setCode(newCode);
             }
         } else if (e.key === 'ArrowLeft' && index < 5) {
-            inputs.current[index + 1]?.focus(); // RTL: Left moves to next (visually right if aligned ltr but logical flow?)
-            // Let's stick to logical index: Prev is index-1, Next is index+1. 
-            // In LTR: Left = index-1. In RTL: Left = index+1? 
-            // Actually, for digit inputs, usually we want standard behavior.
-            // Let's rely on browser default Nav or handle standard prev/next.
+            inputs.current[index + 1]?.focus();
         }
     };
 
@@ -119,9 +116,9 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
         } catch (err: any) {
             const msg = err.message || '';
             if (msg.includes('Invalid') || msg.includes('expired')) {
-                setError('کد وارد شده صحیح نمی‌باشد یا منقضی شده است');
+                setError(t('verification.errorInvalid'));
             } else {
-                setError('خطایی رخ داد. لطفا مجددا تلاش کنید');
+                setError(t('verification.errorGeneric'));
             }
         } finally {
             setIsLoading(false);
@@ -130,7 +127,7 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: 20 }} // Slide in from right (RTL sense of forward)
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             className="flex flex-col h-screen bg-white p-6"
@@ -141,29 +138,23 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
                     onClick={onBack}
                     className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /> {/* Arrow pointing Right for RTL Back */}
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-gray-800 ${isRTL ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                 </button>
             </div>
 
             <div className="flex-1 flex flex-col items-start px-2">
                 <h1 className="text-3xl font-bold text-[var(--color-primary)] mb-4">
-                    کد را وارد کنید
+                    {t('verification.title')}
                 </h1>
 
                 <p className="text-gray-600 mb-8 leading-relaxed">
-                    ما یک کد تایید به شماره {phoneNumber} ارسال کردیم. لطفا آن را در زیر وارد کنید.
+                    {t('verification.subtitle').replace('{{phone}}', phoneNumber)}
                 </p>
 
                 {/* OTP Inputs */}
                 <div className="flex gap-3 justify-center w-full mb-12" dir="ltr">
-                    {/* 
-               Using flex-row-reverse and dir='ltr' to make the inputs visually 1-2-3-4-5-6 from Left to Right 
-               which is standard for Numbers even in RTL context usually.
-               Wait, in RTL apps, digits usually run Left-to-Right. 
-               Let's stick to standard LTR arrangement for the digit boxes themselves.
-            */}
                     {[0, 1, 2, 3, 4, 5].map((idx) => (
                         <input
                             key={idx}
@@ -203,19 +194,21 @@ export default function Verification({ phoneNumber, onBack, onVerify }: Verifica
                     {isLoading ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                        'تایید'
+                        t('verification.verify')
                     )}
                 </button>
 
                 {/* Resend Link */}
                 <div className="w-full flex justify-center items-center gap-2 text-sm">
-                    <span className="text-gray-500">کد را دریافت نکردید؟</span>
+                    <span className="text-gray-500">{t('verification.resendPrompt')}</span>
                     <button
                         onClick={handleResend}
                         disabled={countdown > 0}
                         className={`font-bold ${countdown > 0 ? 'text-gray-400' : 'text-[var(--color-secondary)] hover:underline'}`}
                     >
-                        {countdown > 0 ? `ارسال مجدد در ${countdown} ثانیه` : 'ارسال مجدد کد'}
+                        {countdown > 0
+                            ? t('verification.resendTimer').replace('{{seconds}}', countdown.toString())
+                            : t('verification.resendAction')}
                     </button>
                 </div>
 

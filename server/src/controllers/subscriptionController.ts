@@ -241,7 +241,7 @@ export class SubscriptionController {
                 const user = await User.findById(userId);
                 if (user) {
                     telegramService.sendSubscriptionNotification(
-                        user.phone,
+                        user.phone || user.email || 'N/A',
                         productKey,
                         undefined, // Amount not readily available in params, could extract from plan or validation
                         orderId

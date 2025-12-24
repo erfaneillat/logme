@@ -4,39 +4,20 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatMessage } from '../types';
 import { apiService, BASE_URL, fixImageUrl } from '../services/apiService';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from '../translations';
 
 interface ChatPageProps {
     onBack: () => void;
     onSubscriptionClick?: () => void;
 }
 
-// Two rows of quick reply suggestions matching Flutter implementation
-const QUICK_REPLIES_ROW_1 = [
-    "چند تا گزینه غذایی بده",
-    "امروز چی بخورم بهتره؟",
-    "یه غذای سالم پیشنهاد بده",
-    "غذای کم کالری چی بخورم؟",
-    "صبحانه سالم چی بخورم؟",
-    "با کالری باقیمانده چی بخورم؟",
-    "شام سبک پیشنهاد بده",
-    "میان وعده سالم چی بخورم؟",
-    "غذای پرپروتئین پیشنهاد بده",
-];
-
-const QUICK_REPLIES_ROW_2 = [
-    "یه پلن هفتگی سبک و سالم بده",
-    "بر اساس هدف کالری روزانه برام برنامه بنویس",
-    "لیست خرید هفتگی بده",
-    "برنامه غذایی برای لاغری",
-    "رژیم عضله سازی بده",
-    "برنامه غذایی کم هزینه",
-    "غذاهای سریع و سالم",
-    "میوه‌های مفید برای رژیم",
-];
-
-const WELCOME_MESSAGE = 'سلام! 👋 من درسا هستم، مربی تغذیه شما. هر سوالی درباره رژیم غذایی، تغذیه یا کالری‌هاتون دارید، بپرسید. من اینجام که کمکتون کنم! 🥗';
-
 const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
+    const { t, isRTL } = useTranslation();
+
+    const QUICK_REPLIES_ROW_1 = t('chat.suggestionsRow1', { returnObjects: true }) as string[];
+    const QUICK_REPLIES_ROW_2 = t('chat.suggestionsRow2', { returnObjects: true }) as string[];
+    const WELCOME_MESSAGE = t('chat.welcomeMessage');
+
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputText, setInputText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -186,7 +167,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
     const handleSend = async (text: string = inputText) => {
         if (!text.trim() && !attachedImage) return;
 
-        const trimmedText = text.trim() || 'تصویر ارسال شد';
+        const trimmedText = text.trim() || t('chat.imageSent');
         let imageUrl: string | undefined;
 
         // Create user message
@@ -248,11 +229,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                 (err) => {
                     console.error('Stream error:', err);
                     if (err === 'DAILY_MESSAGE_LIMIT_REACHED') {
-                        setError('محدودیت روزانه پیام به پایان رسید. برای ادامه اشتراک تهیه کنید.');
+                        setError(t('chat.errors.dailyLimit'));
                         // Remove the user message
                         setMessages(prev => prev.filter(m => m.id !== userMsg.id));
                     } else {
-                        setError('خطا در ارسال پیام. لطفاً دوباره تلاش کنید.');
+                        setError(t('chat.errors.sendFailed'));
                     }
                     setIsTyping(false);
                     setStreamingText('');
@@ -260,7 +241,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
             );
         } catch (e) {
             console.error('Chat error:', e);
-            setError('خطا در ارسال پیام. لطفاً دوباره تلاش کنید.');
+            setError(t('chat.errors.sendFailed'));
             setIsTyping(false);
             setStreamingText('');
         }
@@ -278,7 +259,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
             day: 'numeric',
             month: 'long',
         };
-        return date.toLocaleDateString('fa-IR', options);
+        return date.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', options);
     };
 
     const shouldShowDateDivider = (currentMsg: ChatMessage, prevMsg: ChatMessage | null): boolean => {
@@ -290,14 +271,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
 
 
     return (
-        <div className="flex flex-col h-screen bg-[#F8F9FB] fixed inset-0 z-50 overflow-hidden">
+        <div className="flex flex-col h-screen bg-[#F8F9FB] fixed inset-0 z-50 overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
             {/* Header */}
             <header className="flex items-center justify-between px-5 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-10 shadow-sm">
                 <button
                     onClick={onBack}
-                    className="p-2 -mr-2 text-gray-800 hover:bg-gray-100 rounded-full transition-colors active:scale-95"
+                    className={`p-2 text-gray-800 hover:bg-gray-100 rounded-full transition-colors active:scale-95 ${isRTL ? '-ml-2' : '-mr-2'}`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isRTL ? '' : 'transform rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </button>
@@ -309,12 +290,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                         </div>
                         <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
                     </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-sm font-black text-gray-900 leading-tight">درسا</h1>
-                        <p className="text-[10px] text-gray-400 font-medium">مربی تغذیه و رژیم شما</p>
+                    <div className={`flex flex-col ${isRTL ? 'text-right' : 'text-left'}`}>
+                        <h1 className="text-sm font-black text-gray-900 leading-tight">{t('chat.dorsa')}</h1>
+                        <p className="text-[10px] text-gray-400 font-medium">{t('chat.dorsaSub')}</p>
                     </div>
                 </div>
-                <button className="p-2 -ml-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+                <button className={`p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors ${isRTL ? '-mr-2' : '-ml-2'}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                     </svg>
@@ -331,14 +312,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                                 onClick={onSubscriptionClick}
                                 className="text-red-700 text-xs font-bold underline bg-red-100/50 px-3 py-1 rounded-full hover:bg-red-100 transition-colors"
                             >
-                                خرید اشتراک
+                                {t('chat.subscriptionButton')}
                             </button>
                         )}
                         <button
                             onClick={() => setError(null)}
                             className="text-red-500 text-xs underline px-2 py-1 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
                         >
-                            بستن
+                            {t('chat.closeButton')}
                         </button>
                     </div>
                 </div>
@@ -354,10 +335,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
 
                 {/* Streaming response - Visual Bottom (DOM First) */}
                 {isTyping && streamingText && (
-                    <div className="flex justify-end w-full animate-fade-in mb-6">
-                        <div className="flex flex-col items-end max-w-[85%]">
-                            <div className="bg-white border border-gray-100 rounded-[24px] rounded-bl-md px-5 py-3.5 shadow-sm">
-                                <div className="text-sm text-gray-800 markdown-content">
+                    <div className={`flex ${isRTL ? 'justify-end' : 'justify-end'} w-full animate-fade-in mb-6`}>
+                        <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-end'} max-w-[85%]`}>
+                            <div className={`bg-white border border-gray-100 rounded-[24px] ${isRTL ? 'rounded-bl-md' : 'rounded-br-md'} px-5 py-3.5 shadow-sm`}>
+                                <div className={`text-sm text-gray-800 markdown-content ${isRTL ? 'text-right' : 'text-left'}`}>
                                     <ReactMarkdown
                                         components={{
                                             p: (props) => <p className="mb-1 last:mb-0 leading-relaxed" {...props} />,
@@ -372,7 +353,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shadow-sm mr-2 flex-shrink-0 self-end mb-1">
+                        <div className={`w-8 h-8 rounded-full overflow-hidden border border-gray-100 shadow-sm ${isRTL ? 'mr-2' : 'ml-2'} flex-shrink-0 self-end mb-1 ${isRTL ? '' : ''}`}>
                             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="AI" className="w-full h-full object-cover" />
                         </div>
                     </div>
@@ -380,9 +361,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
 
                 {/* Typing indicator - Visual Bottom (DOM First) */}
                 {isTyping && !streamingText && (
-                    <div className="flex justify-end w-full animate-fade-in mb-6">
-                        <div className="flex flex-col items-end">
-                            <div className="bg-white border border-gray-100 rounded-[24px] rounded-bl-md px-4 py-3 shadow-sm">
+                    <div className={`flex ${isRTL ? 'justify-end' : 'justify-end'} w-full animate-fade-in mb-6`}>
+                        <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-end'}`}>
+                            <div className={`bg-white border border-gray-100 rounded-[24px] ${isRTL ? 'rounded-bl-md' : 'rounded-br-md'} px-4 py-3 shadow-sm`}>
                                 <div className="flex gap-1 items-center h-5">
                                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
                                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -390,7 +371,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shadow-sm mr-2 flex-shrink-0 mt-1 self-end">
+                        <div className={`w-8 h-8 rounded-full overflow-hidden border border-gray-100 shadow-sm ${isRTL ? 'mr-2' : 'ml-2'} flex-shrink-0 mt-1 self-end ${isRTL ? '' : ''}`}>
                             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="AI" className="w-full h-full object-cover" />
                         </div>
                     </div>
@@ -403,11 +384,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
 
                     return (
                         <React.Fragment key={msg.id}>
-                            <div className={`flex w-full animate-slide-up ${msg.isUser ? 'justify-start' : 'justify-end'}`}>
-                                <div className={`max-w-[85%] flex flex-col ${msg.isUser ? 'items-start' : 'items-end'}`}>
+                            <div className={`flex w-full animate-slide-up ${isRTL ? (msg.isUser ? 'justify-start' : 'justify-end') : (msg.isUser ? 'justify-start' : 'justify-end')}`}>
+                                <div className={`max-w-[85%] flex flex-col ${isRTL ? (msg.isUser ? 'items-start' : 'items-end') : (msg.isUser ? 'items-start' : 'items-end')}`}>
                                     {/* Image attachment */}
                                     {msg.imageUrl && (
-                                        <div className={`mb-2 overflow-hidden rounded-xl ${msg.isUser ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+                                        <div className={`mb-2 overflow-hidden rounded-xl ${msg.isUser ? 'rounded-bl-md' : 'rounded-br-md'}`}>
                                             <img
                                                 src={fixImageUrl(msg.imageUrl)}
                                                 alt="Attached"
@@ -419,17 +400,17 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
 
                                     <div
                                         className={`px-5 py-3.5 text-sm shadow-sm relative group transition-all duration-300 ${msg.isUser
-                                            ? 'bg-gray-900 text-white rounded-[24px] rounded-br-md hover:shadow-md'
-                                            : 'bg-white text-gray-800 border border-gray-100 rounded-[24px] rounded-bl-md hover:shadow-md'
+                                            ? `bg-gray-900 text-white rounded-[24px] ${isRTL ? 'rounded-br-md' : 'rounded-bl-md'} hover:shadow-md`
+                                            : `bg-white text-gray-800 border border-gray-100 rounded-[24px] ${isRTL ? 'rounded-bl-md' : 'rounded-br-md'} hover:shadow-md`
                                             }`}
                                     >
-                                        <div className={`markdown-content ${msg.isUser ? 'text-white' : 'text-gray-800'}`}>
+                                        <div className={`markdown-content ${msg.isUser ? 'text-white' : 'text-gray-800'} ${isRTL ? 'text-right' : 'text-left'}`}>
                                             <ReactMarkdown
                                                 components={{
                                                     p: ({ node, ...props }: any) => <p className="mb-1 last:mb-0 leading-relaxed" {...props} />,
                                                     strong: ({ node, ...props }: any) => <span className="font-bold" {...props} />,
-                                                    ul: ({ node, ...props }: any) => <ul className="list-disc list-inside mb-2" {...props} />,
-                                                    ol: ({ node, ...props }: any) => <ol className="list-decimal list-inside mb-2" {...props} />,
+                                                    ul: ({ node, ...props }: any) => <ul className={`list-disc list-inside mb-2 ${isRTL ? 'text-right' : 'text-left'}`} {...props} />,
+                                                    ol: ({ node, ...props }: any) => <ol className={`list-decimal list-inside mb-2 ${isRTL ? 'text-right' : 'text-left'}`} {...props} />,
                                                     li: ({ node, ...props }: any) => <li className="mb-0.5" {...props} />,
                                                 }}
                                             >
@@ -438,13 +419,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                                         </div>
                                     </div>
 
-                                    <span className="text-[10px] text-gray-400 mt-1 px-1 font-medium">
-                                        {msg.timestamp.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}
+                                    <span className={`text-[10px] text-gray-400 mt-1 px-1 font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                                        {msg.timestamp.toLocaleTimeString(isRTL ? 'fa-IR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>
 
                                 {!msg.isUser && (
-                                    <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shadow-sm mr-2 flex-shrink-0 self-end mb-1">
+                                    <div className={`w-8 h-8 rounded-full overflow-hidden border border-gray-100 shadow-sm ${isRTL ? 'mr-2' : 'ml-2'} flex-shrink-0 self-end mb-1 ${isRTL ? '' : ''}`}>
                                         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="AI" className="w-full h-full object-cover" />
                                     </div>
                                 )}
@@ -466,7 +447,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                     <div className="flex justify-center py-2 mb-4">
                         <div className="bg-gray-100 rounded-full px-4 py-2 flex items-center gap-2">
                             <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-xs text-gray-500">در حال بارگذاری...</span>
+                            <span className="text-xs text-gray-500">{t('chat.loading')}</span>
                         </div>
                     </div>
                 )}
@@ -476,7 +457,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                     <div className="flex justify-center items-center h-full">
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-600 rounded-full animate-spin"></div>
-                            <span className="text-gray-500 text-sm">در حال بارگذاری گفتگو...</span>
+                            <span className="text-gray-500 text-sm">{t('chat.loadingHistory')}</span>
                         </div>
                     </div>
                 )}
@@ -487,9 +468,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
             {/* Footer Area */}
             <div className="bg-white border-t border-gray-100 pt-3 pb-8 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-20">
                 {/* Quick Reply Chips - Two Rows */}
-                <div className="flex flex-col gap-2 px-4 pb-3 mb-1">
+                <div className="flex flex-col gap-2 px-4 pb-3 mb-1" dir={isRTL ? 'rtl' : 'ltr'}>
                     {/* Row 1 */}
-                    <div className="flex overflow-x-auto space-x-2 space-x-reverse no-scrollbar">
+                    <div className={`flex overflow-x-auto ${isRTL ? 'space-x-reverse' : ''} space-x-2 no-scrollbar`}>
                         {QUICK_REPLIES_ROW_1.map((suggestion, index) => (
                             <button
                                 key={`row1-${index}`}
@@ -502,7 +483,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                         ))}
                     </div>
                     {/* Row 2 */}
-                    <div className="flex overflow-x-auto space-x-2 space-x-reverse no-scrollbar">
+                    <div className={`flex overflow-x-auto ${isRTL ? 'space-x-reverse' : ''} space-x-2 no-scrollbar`}>
                         {QUICK_REPLIES_ROW_2.map((suggestion, index) => (
                             <button
                                 key={`row2-${index}`}
@@ -561,9 +542,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="پیام خود را بنویسید..."
+                            placeholder={t('chat.placeholder')}
                             disabled={isTyping}
-                            className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-800 placeholder-gray-400 text-right px-2 disabled:opacity-50"
+                            className={`flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-800 placeholder-gray-400 ${isRTL ? 'text-right' : 'text-left'} px-2 disabled:opacity-50`}
                         />
                     </div>
 
@@ -571,11 +552,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                         onClick={() => handleSend()}
                         disabled={(!inputText.trim() && !attachedImage) || isTyping}
                         className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 transform ${(inputText.trim() || attachedImage) && !isTyping
-                            ? 'bg-gray-900 text-white hover:scale-105 active:scale-95 rotate-0'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed -rotate-90'
+                            ? `bg-gray-900 text-white hover:scale-105 active:scale-95 ${isRTL ? 'rotate-0' : 'rotate-180'}`
+                            : `bg-gray-200 text-gray-400 cursor-not-allowed ${isRTL ? '-rotate-90' : 'rotate-90'}`
                             }`}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isRTL ? 'transform rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
                     </button>

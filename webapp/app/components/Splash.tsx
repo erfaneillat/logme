@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useTranslation } from '../translations';
 
 interface SplashProps {
     onFinish: () => void;
@@ -13,6 +14,7 @@ interface VersionInfo {
 }
 
 export default function Splash({ onFinish }: SplashProps) {
+    const { t } = useTranslation();
     const [isUpdating, setIsUpdating] = useState(false);
     const [updateStatus, setUpdateStatus] = useState<'checking' | 'downloading' | 'installing'>('checking');
 
@@ -104,11 +106,11 @@ export default function Splash({ onFinish }: SplashProps) {
     const getStatusText = () => {
         switch (updateStatus) {
             case 'downloading':
-                return 'در حال دریافت نسخه جدید...';
+                return t('splash.downloading');
             case 'installing':
-                return 'در حال نصب نسخه جدید...';
+                return t('splash.installing');
             default:
-                return 'در حال بررسی بروزرسانی...';
+                return t('splash.checking');
         }
     };
 
@@ -145,7 +147,7 @@ export default function Splash({ onFinish }: SplashProps) {
                     />
                     <Image
                         src="/app/images/loqme_logo.png"
-                        alt="Loqme Logo"
+                        alt={t('splash.appName')}
                         fill
                         className="object-contain"
                         priority
@@ -158,7 +160,7 @@ export default function Splash({ onFinish }: SplashProps) {
                     transition={{ delay: 0.5, duration: 0.5 }}
                     className="text-2xl font-bold text-gray-800"
                 >
-                    لقمه
+                    {t('splash.appName')}
                 </motion.h1>
 
                 {/* Update Status */}

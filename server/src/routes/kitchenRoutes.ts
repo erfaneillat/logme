@@ -20,7 +20,8 @@ import {
     compressImagesForCategory,
     recordKitchenItemClick,
     getKitchenAnalytics,
-    getItemClickHistory
+    getItemClickHistory,
+    translateKitchenItems
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -97,6 +98,9 @@ router.post('/generate-image', authenticateAdmin, generateImageForItem);
 
 // Image compression route
 router.post('/compress-images', authenticateAdmin, compressImagesForCategory);
+
+// Translation route
+router.post('/translate', authenticateAdmin, translateKitchenItems);
 
 // User saved items routes
 router.get('/saved', authenticateToken, getSavedKitchenItems);

@@ -754,3 +754,172 @@ export const getItemClickHistory = async (req: Request, res: Response) => {
         });
     }
 };
+
+/**
+ * Translate all kitchen items in a category to a target language using OpenAI
+ */
+export const translateKitchenItems = async (req: Request, res: Response) => {
+    try {
+        const { categoryId, targetLanguage } = req.body;
+
+        if (!categoryId || !targetLanguage) {
+            return res.status(400).json({
+                success: false,
+                message: 'Category ID and target language are required'
+            });
+        }
+
+        // Validate target language
+        const supportedLanguages = ['en', 'fa'];
+        if (!supportedLanguages.includes(targetLanguage)) {
+            return res.status(400).json({
+                success: false,
+                message: `Unsupported language. Supported: ${supportedLanguages.join(', ')}`
+            });
+        }
+
+        const category = await KitchenCategory.findById(categoryId);
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+
+        // Check if OpenAI key is configured
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({
+                success: false,
+                message: 'OpenAI API key not configured'
+            });
+        }
+
+        const OpenAI = require('openai');
+        const openai = new OpenAI({ apiKey });
+
+        const languageNames: { [key: string]: string } = {
+            'en': 'English',
+            'fa': 'Persian (Farsi)'
+        };
+
+        let translatedCount = 0;
+        let errorCount = 0;
+
+        // Process each subcategory
+        for (let subIndex = 0; subIndex < category.subCategories.length; subIndex++) {
+            const subcategory = category.subCategories[subIndex];
+            if (!subcategory) continue;
+
+            // Translate subcategory title
+            try {
+                const subTitlePrompt = `Translate the following food category name to ${languageNames[targetLanguage]}. Return ONLY the translated text, nothing else:
+"${subcategory.title}"`;
+
+                const subTitleResponse = await openai.chat.completions.create({
+                    model: 'gpt-4o-mini',
+                    messages: [{ role: 'user', content: subTitlePrompt }],
+                    max_tokens: 100,
+                    temperature: 0.3
+                });
+
+                const translatedSubTitle = subTitleResponse.choices?.[0]?.message?.content?.trim();
+                if (translatedSubTitle) {
+                    category.subCategories[subIndex]!.title = translatedSubTitle.replace(/^["']|["']$/g, '');
+                }
+            } catch (err) {
+                console.error(`Error translating subcategory title: ${subcategory.title}`, err);
+                errorCount++;
+            }
+
+            // Process each item in the subcategory
+            for (let itemIndex = 0; itemIndex < subcategory.items.length; itemIndex++) {
+                const item = subcategory.items[itemIndex];
+                if (!item) continue;
+
+                try {
+                    // Build translation request for the item
+                    const itemData = {
+                        name: item.name,
+                        instructions: item.instructions || '',
+                        ingredients: item.ingredients?.map(ing => ({ name: ing.name, amount: ing.amount })) || []
+                    };
+
+                    const prompt = `Translate the following food item data to ${languageNames[targetLanguage]}. Keep the JSON structure, only translate the text values. Return ONLY valid JSON:
+${JSON.stringify(itemData, null, 2)}`;
+
+                    const response = await openai.chat.completions.create({
+                        model: 'gpt-4o-mini',
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 2000,
+                        temperature: 0.3
+                    });
+
+                    const translatedContent = response.choices?.[0]?.message?.content?.trim();
+                    if (translatedContent) {
+                        // Parse the JSON response
+                        const cleanJson = translatedContent.replace(/```json\n?|```\n?/g, '').trim();
+                        const translatedData = JSON.parse(cleanJson);
+
+                        // Update item with translated data
+                        if (translatedData.name) {
+                            category.subCategories[subIndex]!.items[itemIndex]!.name = translatedData.name;
+                        }
+                        if (translatedData.instructions) {
+                            category.subCategories[subIndex]!.items[itemIndex]!.instructions = translatedData.instructions;
+                        }
+                        if (translatedData.ingredients && Array.isArray(translatedData.ingredients)) {
+                            category.subCategories[subIndex]!.items[itemIndex]!.ingredients = translatedData.ingredients;
+                        }
+
+                        translatedCount++;
+                        console.log(`Translated: ${item.name} → ${translatedData.name}`);
+                    }
+                } catch (err) {
+                    console.error(`Error translating item: ${item.name}`, err);
+                    errorCount++;
+                }
+
+                // Add a small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        }
+
+        // Also translate the category title
+        try {
+            const catTitlePrompt = `Translate the following food category name to ${languageNames[targetLanguage]}. Return ONLY the translated text, nothing else:
+"${category.title}"`;
+
+            const catTitleResponse = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [{ role: 'user', content: catTitlePrompt }],
+                max_tokens: 100,
+                temperature: 0.3
+            });
+
+            const translatedCatTitle = catTitleResponse.choices?.[0]?.message?.content?.trim();
+            if (translatedCatTitle) {
+                category.title = translatedCatTitle.replace(/^["']|["']$/g, '');
+            }
+        } catch (err) {
+            console.error(`Error translating category title: ${category.title}`, err);
+            errorCount++;
+        }
+
+        // Save the updated category
+        await category.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Translation complete. Translated ${translatedCount} items with ${errorCount} errors.`,
+            translatedCount,
+            errorCount,
+            category
+        });
+
+    } catch (error) {
+        console.error('Translate kitchen items error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error translating kitchen items',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BASE_URL } from '../services/apiService';
+import { useTranslation } from '../translations';
 
 interface PlanSummaryProps {
     onComplete: () => void;
@@ -36,11 +37,11 @@ const MetricCard = ({ icon, label, value, progress, color, bgColor, delay }: Met
             className="bg-white rounded-[24px] p-5 border border-gray-100 shadow-lg shadow-gray-100/50 flex flex-col"
         >
             {/* Header */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className={`flex items-center gap-2 mb-4`}>
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${bgColor}`}>
                     {icon}
                 </div>
-                <span className="font-bold text-gray-800 text-sm">{label}</span>
+                <span className="font-bold text-gray-800 text-sm whitespace-nowrap">{label}</span>
             </div>
 
             {/* Ring Progress */}
@@ -90,6 +91,7 @@ const MetricCard = ({ icon, label, value, progress, color, bgColor, delay }: Met
 };
 
 export default function PlanSummary({ onComplete }: PlanSummaryProps) {
+    const { t, dir, isRTL } = useTranslation();
     const [plan, setPlan] = useState<PlanData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -99,7 +101,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
             try {
                 const token = localStorage.getItem('auth_token');
                 if (!token) {
-                    throw new Error('لطفا دوباره وارد شوید');
+                    throw new Error(t('planSummary.errors.loginAgain'));
                 }
 
                 const response = await fetch(`${BASE_URL}/api/plan/latest`, {
@@ -113,7 +115,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
 
                 if (!response.ok) {
                     const data = await response.json();
-                    throw new Error(data.message || 'خطا در دریافت برنامه');
+                    throw new Error(data.message || t('planSummary.errors.fetchError'));
                 }
 
                 const data = await response.json();
@@ -140,7 +142,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
         };
 
         fetchPlan();
-    }, []);
+    }, [t]);
 
     // Calculate ratios for progress rings
     const calculateRatio = (grams: number, multiplier: number, total: number) => {
@@ -153,16 +155,16 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-[#F8F9FB] flex items-center justify-center" dir="rtl">
+            <div className="min-h-screen bg-[#F8F9FB] flex items-center justify-center" dir={dir}>
                 <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#F8F9FB] flex flex-col" dir="rtl">
+        <div className="min-h-screen bg-[#F8F9FB] flex flex-col" dir={dir}>
             {/* Main Content */}
-            <div className="flex-1 px-6 pt-12 pb-32 overflow-y-auto">
+            <div className="flex-1 px-6 pt-12 pb-32 overflow-y-auto no-scrollbar">
                 {/* Success Icon */}
                 <motion.div
                     className="flex justify-center mb-8"
@@ -195,8 +197,8 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                 >
-                    <h1 className="text-4xl font-black text-gray-900 mb-3">تبریک</h1>
-                    <p className="text-lg text-gray-500 font-medium">برنامه سفارشی شما آماده است!</p>
+                    <h1 className="text-4xl font-black text-gray-900 mb-3">{t('planSummary.congrats')}</h1>
+                    <p className="text-lg text-gray-500 font-medium">{t('planSummary.ready')}</p>
                 </motion.div>
 
                 {/* Daily Recommendation Card */}
@@ -209,16 +211,16 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                     {/* Card Header */}
                     <div className="flex items-center gap-3 mb-2">
                         <span className="text-2xl">🍽️</span>
-                        <h2 className="text-xl font-black text-gray-900">توصیه روزانه</h2>
+                        <h2 className="text-xl font-black text-gray-900">{t('planSummary.dailyRecommendation')}</h2>
                     </div>
-                    <p className="text-gray-400 text-sm mb-6 font-medium">هر زمان می‌توانید آن را ویرایش کنید</p>
+                    <p className="text-gray-400 text-sm mb-6 font-medium">{t('planSummary.editAnytime')}</p>
 
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-2 gap-4">
                         {/* Calories */}
                         <MetricCard
                             icon={<span className="text-lg">🔥</span>}
-                            label="کالری"
+                            label={t('planSummary.metrics.calories')}
                             value={plan?.calories.toString() || '0'}
                             progress={1}
                             color="#1F2937"
@@ -229,7 +231,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                         {/* Carbs */}
                         <MetricCard
                             icon={<span className="text-lg">🌾</span>}
-                            label="کربوهیدرات"
+                            label={t('planSummary.metrics.carbs')}
                             value={`${plan?.carbsGrams || 0}g`}
                             progress={carbsRatio}
                             color="#F97316"
@@ -240,7 +242,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                         {/* Protein */}
                         <MetricCard
                             icon={<span className="text-lg">⚡</span>}
-                            label="پروتئین"
+                            label={t('planSummary.metrics.protein')}
                             value={`${plan?.proteinGrams || 0}g`}
                             progress={proteinRatio}
                             color="#EF4444"
@@ -251,7 +253,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                         {/* Fat */}
                         <MetricCard
                             icon={<span className="text-lg">💧</span>}
-                            label="چربی"
+                            label={t('planSummary.metrics.fats')}
                             value={`${plan?.fatsGrams || 0}g`}
                             progress={fatsRatio}
                             color="#3B82F6"
@@ -268,7 +270,7 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
-                        داده‌ها از سرور دریافت نشد. مقادیر پیش‌فرض نمایش داده شده است.
+                        {t('planSummary.errors.usingDefaults')}
                     </motion.div>
                 )}
             </div>
@@ -284,8 +286,8 @@ export default function PlanSummary({ onComplete }: PlanSummaryProps) {
                     whileTap={{ scale: 0.98 }}
                 >
                     <span className="flex items-center justify-center gap-2">
-                        ثبت
-                        <svg className="w-5 h-5 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        {t('planSummary.finish')}
+                        <svg className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="15 18 9 12 15 6" />
                         </svg>
                     </span>

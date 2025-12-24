@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BASE_URL } from '../services/apiService';
+import { useTranslation } from '../translations';
 
 interface PlanGenerationProps {
     onComplete: () => void;
@@ -11,30 +12,32 @@ interface PlanGenerationProps {
 
 interface ChecklistItem {
     key: string;
-    label: string;
+    labelKey: string;
     threshold: number; // Progress percentage when this item completes
 }
 
-const CHECKLIST_ITEMS: ChecklistItem[] = [
-    { key: 'calories', label: 'کالری', threshold: 30 },
-    { key: 'carbs', label: 'کربوهیدرات', threshold: 55 },
-    { key: 'protein', label: 'پروتئین', threshold: 80 },
-    { key: 'fats', label: 'چربی', threshold: 90 },
-    { key: 'health_score', label: 'امتیاز سلامت', threshold: 100 },
-];
-
-const STEP_MESSAGES = [
-    { threshold: 10, message: 'در حال محاسبه BMR...' },
-    { threshold: 30, message: 'در حال محاسبه TDEE...' },
-    { threshold: 55, message: 'در حال تنظیم ماکروها...' },
-    { threshold: 80, message: 'در حال شخصی‌سازی توصیه‌ها...' },
-    { threshold: 100, message: 'تقریباً آماده!' },
-];
-
 export default function PlanGeneration({ onComplete, onError }: PlanGenerationProps) {
+    const { t, dir } = useTranslation();
+
+    const CHECKLIST_ITEMS: ChecklistItem[] = [
+        { key: 'calories', labelKey: 'planGeneration.checklist.calories', threshold: 30 },
+        { key: 'carbs', labelKey: 'planGeneration.checklist.carbs', threshold: 55 },
+        { key: 'protein', labelKey: 'planGeneration.checklist.protein', threshold: 80 },
+        { key: 'fats', labelKey: 'planGeneration.checklist.fats', threshold: 90 },
+        { key: 'health_score', labelKey: 'planGeneration.checklist.healthScore', threshold: 100 },
+    ];
+
+    const STEP_MESSAGES = [
+        { threshold: 10, messageKey: 'planGeneration.calculatingBMR' },
+        { threshold: 30, messageKey: 'planGeneration.calculatingTDEE' },
+        { threshold: 55, messageKey: 'planGeneration.adjustingMacros' },
+        { threshold: 80, messageKey: 'planGeneration.currentMessage' },
+        { threshold: 100, messageKey: 'planGeneration.almostReady' },
+    ];
+
     const [progress, setProgress] = useState(0);
     const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
-    const [currentMessage, setCurrentMessage] = useState('در حال شخصی‌سازی توصیه‌ها...');
+    const [currentMessage, setCurrentMessage] = useState(t('planGeneration.currentMessage'));
     const [isGenerating, setIsGenerating] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -46,7 +49,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('لطفا دوباره وارد شوید');
+                throw new Error(t('planGeneration.errors.loginAgain'));
             }
 
             const response = await fetch(`${BASE_URL}/api/plan/generate`, {
@@ -60,7 +63,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.message || 'خطا در ایجاد برنامه');
+                throw new Error(data.message || t('planGeneration.errors.generic'));
             }
 
             // Mark generation complete - allow progress to go to 100
@@ -102,7 +105,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
                 // Update step message
                 const stepMessage = STEP_MESSAGES.findLast(s => next >= s.threshold);
                 if (stepMessage) {
-                    setCurrentMessage(stepMessage.message);
+                    setCurrentMessage(t(stepMessage.messageKey));
                 }
 
                 // Complete when reaching 100%
@@ -120,7 +123,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [isGenerating, onComplete]);
+    }, [isGenerating, onComplete, t]);
 
     // Retry handler
     const handleRetry = () => {
@@ -135,7 +138,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
     const circumference = 2 * Math.PI * 80;
 
     return (
-        <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center justify-between px-6 py-12" dir="rtl">
+        <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center justify-between px-6 py-12" dir={dir}>
 
             {/* Top Section */}
             <div className="flex flex-col items-center w-full">
@@ -208,10 +211,8 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                    <h1 className="text-3xl font-black text-gray-900 leading-snug mb-3">
-                        در حال آماده‌سازی
-                        <br />
-                        همه‌چیز برای شما هستیم
+                    <h1 className="text-3xl font-black text-gray-900 leading-snug mb-3 whitespace-pre-line">
+                        {t('planGeneration.title')}
                     </h1>
                 </motion.div>
 
@@ -239,7 +240,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
             >
                 <div className="bg-white rounded-[28px] p-7 shadow-xl shadow-gray-200/60 border border-gray-100/80">
                     <h2 className="text-xl font-black text-gray-900 mb-6">
-                        توصیه روزانه برای
+                        {t('planGeneration.recommendationsFor')}
                     </h2>
 
                     <div className="flex flex-col gap-5">
@@ -280,15 +281,14 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
                                                     strokeLinejoin="round"
                                                 >
                                                     <polyline points="20 6 9 17 4 12" />
-                                                </motion.svg>
-                                            )}
+                                                </motion.svg>)}
                                         </AnimatePresence>
                                     </motion.div>
 
                                     {/* Label */}
                                     <span className={`text-lg font-bold transition-all duration-300 ${isCompleted ? 'text-gray-900' : 'text-gray-300'
                                         }`}>
-                                        • {item.label}
+                                        • {t(item.labelKey)}
                                     </span>
                                 </motion.div>
                             );
@@ -312,7 +312,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
                                 onClick={handleRetry}
                                 className="w-full py-5 bg-gray-900 text-white font-black text-lg rounded-2xl hover:bg-gray-800 active:scale-[0.98] transition-all shadow-lg shadow-gray-900/20"
                             >
-                                تلاش مجدد
+                                {t('planGeneration.retry')}
                             </button>
                         </motion.div>
                     )}

@@ -13,14 +13,14 @@ const translations: Record<Locale, TranslationStructure> = {
 };
 
 // Helper function to get nested translation
-function getNestedValue(obj: any, path: string): string {
+function getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((prev, curr) => {
         return prev ? prev[curr] : null;
     }, obj) || path;
 }
 
 // Standalone t function (useful when outside hook)
-export function t(key: string, locale: Locale): string {
+export function t(key: string, locale: Locale): any {
     const dict = translations[locale];
     return getNestedValue(dict, key);
 }
@@ -53,7 +53,7 @@ export function useTranslation() {
         setLocale(getLocale());
     }, []);
 
-    const translate = (key: string) => t(key, locale);
+    const translate = (key: string, options?: { returnObjects?: boolean }) => t(key, locale);
 
     return {
         t: translate,

@@ -6,12 +6,11 @@ import { format } from 'date-fns-jalali';
 import { faIR } from 'date-fns/locale';
 import { useToast } from '../context/ToastContext';
 
+import { useTranslation } from '../translations';
+
 // --- Text Utility ---
-const toPersianDigits = (num: number | string | undefined | null): string => {
-    if (num === undefined || num === null) return '';
-    const str = num.toString();
-    return str.replace(/[0-9]/g, (d) => String.fromCharCode(d.charCodeAt(0) + 1728));
-};
+// Removed global toPersianDigits to use instance-aware formatNumber
+
 
 // --- Sub-Components ---
 
@@ -25,6 +24,7 @@ interface LogWeightModalProps {
 }
 
 const LogWeightModal: React.FC<LogWeightModalProps> = ({ isOpen, mode, onClose, onSave, initialWeight }) => {
+    const { t } = useTranslation();
     const [weight, setWeight] = useState<string>('');
     const [saving, setSaving] = useState(false);
 
@@ -50,8 +50,8 @@ const LogWeightModal: React.FC<LogWeightModalProps> = ({ isOpen, mode, onClose, 
         }
     };
 
-    const title = mode === 'current' ? 'ثبت وزن جدید' : 'تغییر هدف وزنی';
-    const buttonText = mode === 'current' ? 'ثبت وزن' : 'بروزرسانی هدف';
+    const title = mode === 'current' ? t('analysis.recordNewWeight') : t('analysis.changeWeightGoal');
+    const buttonText = mode === 'current' ? t('analysis.recordWeight') : t('analysis.updateGoal');
 
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4 bg-black/60 backdrop-blur-sm"
@@ -86,8 +86,8 @@ const LogWeightModal: React.FC<LogWeightModalProps> = ({ isOpen, mode, onClose, 
 
                     <p className="text-center text-gray-400 text-sm font-medium">
                         {mode === 'current'
-                            ? 'وزن فعلی خود را وارد کنید'
-                            : 'وزنی که می‌خواهید به آن برسید را وارد کنید'
+                            ? t('analysis.enterCurrentWeight')
+                            : t('analysis.enterGoalWeight')
                         }
                     </p>
 
@@ -208,6 +208,16 @@ const AnalysisPage: React.FC = () => {
     const [weightRange, setWeightRange] = useState<'3m' | '6m' | '1y'>('3m');
     const [modalState, setModalState] = useState<{ isOpen: boolean; mode: 'current' | 'goal' }>({ isOpen: false, mode: 'current' });
     const { showToast } = useToast();
+    const { t, isRTL } = useTranslation();
+
+    const formatNumber = useCallback((num: number | string | undefined | null) => {
+        if (num === undefined || num === null) return '';
+        const str = num.toString();
+        if (isRTL) {
+            return str.replace(/[0-9]/g, (d) => String.fromCharCode(d.charCodeAt(0) + 1728));
+        }
+        return str;
+    }, [isRTL]);
 
     // Helpers
     const getRangeDate = useCallback((range: '3m' | '6m' | '1y') => {
@@ -296,14 +306,14 @@ const AnalysisPage: React.FC = () => {
     // 2. BMI
     const heightM = (additionalInfo?.height ?? 0) / 100;
     const bmi = heightM > 0 ? (currentWeight / (heightM * heightM)) : 0;
-    let bmiStatus = 'نامشخص';
+    let bmiStatus = t('analysis.bmiStatus.unknown');
     let bmiColor = 'text-gray-500';
     let bmiBg = 'bg-gray-50';
     if (bmi > 0) {
-        if (bmi < 18.5) { bmiStatus = 'کم‌وزن'; bmiColor = 'text-blue-500'; bmiBg = 'bg-blue-50'; }
-        else if (bmi < 25) { bmiStatus = 'نرمال'; bmiColor = 'text-green-500'; bmiBg = 'bg-green-50'; }
-        else if (bmi < 30) { bmiStatus = 'اضافه وزن'; bmiColor = 'text-orange-500'; bmiBg = 'bg-orange-50'; }
-        else { bmiStatus = 'چاق'; bmiColor = 'text-red-500'; bmiBg = 'bg-red-50'; }
+        if (bmi < 18.5) { bmiStatus = t('analysis.bmiStatus.underweight'); bmiColor = 'text-blue-500'; bmiBg = 'bg-blue-50'; }
+        else if (bmi < 25) { bmiStatus = t('analysis.bmiStatus.normal'); bmiColor = 'text-green-500'; bmiBg = 'bg-green-50'; }
+        else if (bmi < 30) { bmiStatus = t('analysis.bmiStatus.overweight'); bmiColor = 'text-orange-500'; bmiBg = 'bg-orange-50'; }
+        else { bmiStatus = t('analysis.bmiStatus.obese'); bmiColor = 'text-red-500'; bmiBg = 'bg-red-50'; }
     }
 
     // 3. Charts Preparation
@@ -311,7 +321,7 @@ const AnalysisPage: React.FC = () => {
         if (weightHistory.length < 2) {
             return (
                 <div className="h-[180px] flex items-center justify-center text-gray-400 text-sm font-medium bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                    داده‌های کافی برای نمایش نمودار موجود نیست
+                    {t('analysis.noDataChart')}
                 </div>
             );
         }
@@ -335,8 +345,13 @@ const AnalysisPage: React.FC = () => {
         // Labels
         const startDate = new Date(weightHistory[0].date);
         const endDate = new Date(weightHistory[weightHistory.length - 1].date);
-        const startLabel = format(startDate, 'd MMMM', { locale: faIR });
-        const endLabel = format(endDate, 'd MMMM', { locale: faIR });
+
+        const formatDate = (date: Date) => {
+            return date.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'long' });
+        };
+
+        const startLabel = formatDate(startDate);
+        const endLabel = formatDate(endDate);
 
         return (
             <div className="relative w-full h-[180px]" dir="ltr">
@@ -361,8 +376,8 @@ const AnalysisPage: React.FC = () => {
                         <circle key={i} cx={p.x} cy={p.y} r={4} fill="white" stroke="#3B82F6" strokeWidth={2} />
                     ))}
 
-                    <text x={0} y={chartHeight + 25} textAnchor="start" className="text-[10px] fill-gray-400 font-bold" style={{ fontFamily: 'Vazirmatn' }}>{toPersianDigits(startLabel)}</text>
-                    <text x={chartWidth} y={chartHeight + 25} textAnchor="end" className="text-[10px] fill-gray-400 font-bold" style={{ fontFamily: 'Vazirmatn' }}>{toPersianDigits(endLabel)}</text>
+                    <text x={0} y={chartHeight + 25} textAnchor="start" className="text-[10px] fill-gray-400 font-bold" style={{ fontFamily: isRTL ? 'Vazirmatn' : 'inherit' }}>{formatNumber(startLabel)}</text>
+                    <text x={chartWidth} y={chartHeight + 25} textAnchor="end" className="text-[10px] fill-gray-400 font-bold" style={{ fontFamily: isRTL ? 'Vazirmatn' : 'inherit' }}>{formatNumber(endLabel)}</text>
                 </svg>
             </div>
         );
@@ -377,7 +392,7 @@ const AnalysisPage: React.FC = () => {
             const dateStr = d.toISOString().split('T')[0];
             const log = weeklyLogs.find(l => l.date === dateStr);
             days.push({
-                label: format(d, 'EE', { locale: faIR }).charAt(0),
+                label: d.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { weekday: 'narrow' }),
                 val: log ? log.caloriesConsumed : 0,
                 isToday: i === 0
             });
@@ -415,10 +430,10 @@ const AnalysisPage: React.FC = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h1 className={`text-3xl font-black text-gray-900 transition-all duration-500 transform ${animate ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
-                        آمار و تحلیل
+                        {t('analysis.title')}
                     </h1>
                     <div className={`text-sm font-bold text-gray-400 bg-gray-100 px-3 py-1 rounded-full transition-all duration-700 ${animate ? 'opacity-100' : 'opacity-0'}`}>
-                        {toPersianDigits(format(new Date(), 'yyyy/MM/dd', { locale: faIR }))}
+                        {formatNumber(new Date().toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }))}
                     </div>
                 </div>
 
@@ -430,29 +445,29 @@ const AnalysisPage: React.FC = () => {
                                 className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1 cursor-pointer hover:text-blue-500 transition-colors"
                                 onClick={() => openModal('goal')}
                             >
-                                هدف وزنی (ویرایش)
+                                {t('analysis.weightGoalEdit')}
                             </p>
                             <h2
                                 className="text-4xl font-black text-gray-900 flex items-baseline gap-1 cursor-pointer"
                                 onClick={() => openModal('goal')}
                             >
-                                {toPersianDigits(goalWeight)}
-                                <span className="text-base text-gray-400 font-bold">کیلوگرم</span>
+                                {formatNumber(goalWeight)}
+                                <span className="text-base text-gray-400 font-bold">{t('weightHistory.kg')}</span>
                             </h2>
                         </div>
                         <div className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-xs font-bold h-fit border border-blue-100">
-                            {isLosing ? 'در مسیر کاهش' : 'در مسیر افزایش'}
+                            {isLosing ? t('analysis.onTrackLose') : t('analysis.onTrackGain')}
                         </div>
                     </div>
 
                     <div className="mb-6 flex items-center justify-between">
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl font-bold text-gray-800">{toPersianDigits(currentWeight)}</p>
-                            <p className="text-xs text-gray-400 font-bold">فعلی</p>
+                            <p className="text-2xl font-bold text-gray-800">{formatNumber(currentWeight)}</p>
+                            <p className="text-xs text-gray-400 font-bold">{t('analysis.current')}</p>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl font-bold text-gray-300">{toPersianDigits(startWeight)}</p>
-                            <p className="text-xs text-gray-300 font-bold">شروع</p>
+                            <p className="text-2xl font-bold text-gray-300">{formatNumber(startWeight)}</p>
+                            <p className="text-xs text-gray-300 font-bold">{t('analysis.start')}</p>
                         </div>
                     </div>
 
@@ -472,23 +487,23 @@ const AnalysisPage: React.FC = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
-                        ثبت وزن جدید
+                        {t('analysis.recordNewWeight')}
                     </button>
                 </div>
 
                 {/* Weight Chart Card */}
                 <div className={`bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 transition-all duration-700 delay-100 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-gray-900">روند تغییرات</h3>
+                        <h3 className="text-lg font-bold text-gray-900">{t('analysis.trend')}</h3>
                         <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
                             <button
                                 onClick={() => setWeightRange('3m')}
                                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${weightRange === '3m' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-                            >۳ ماه</button>
+                            >{t('analysis.months3')}</button>
                             <button
                                 onClick={() => setWeightRange('6m')}
                                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${weightRange === '6m' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-                            >۶ ماه</button>
+                            >{t('analysis.months6')}</button>
                         </div>
                     </div>
                     {renderWeightChart()}
@@ -497,7 +512,7 @@ const AnalysisPage: React.FC = () => {
                 {/* BMI Card */}
                 <div className={`bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 transition-all duration-700 delay-200 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold text-gray-900">شاخص BMI</h3>
+                        <h3 className="text-lg font-bold text-gray-900">{t('analysis.bmiIndex')}</h3>
                         <div className={`w-auto px-3 h-10 rounded-2xl flex items-center justify-center font-bold text-sm border ${bmiBg} ${bmiColor} bg-opacity-50 border-opacity-20`}>
                             {bmiStatus}
                         </div>
@@ -508,7 +523,7 @@ const AnalysisPage: React.FC = () => {
                             <span className="text-8xl font-black tracking-tighter">BMI</span>
                         </div>
                         <h2 className="text-5xl font-black text-gray-900 tracking-tight relative z-10">
-                            {bmi > 0 ? toPersianDigits(bmi.toFixed(1)) : '--'}
+                            {bmi > 0 ? formatNumber(bmi.toFixed(1)) : '--'}
                         </h2>
                     </div>
 
@@ -523,17 +538,17 @@ const AnalysisPage: React.FC = () => {
                         )}
                     </div>
                     <div className="flex justify-between text-[10px] font-bold text-gray-400">
-                        <span>کم‌وزن</span>
-                        <span>سالم</span>
-                        <span>اضافه</span>
-                        <span>چاق</span>
+                        <span>{t('analysis.bmiStatus.underweight')}</span>
+                        <span>{t('analysis.bmiStatus.healthy')}</span>
+                        <span>{t('analysis.bmiStatus.excess')}</span>
+                        <span>{t('analysis.bmiStatus.obese')}</span>
                     </div>
                 </div>
 
                 {/* Nutrition Chart */}
                 <div className={`bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 transition-all duration-700 delay-300 transform ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-gray-900">دریافت کالری (۷ روز اخیر)</h3>
+                        <h3 className="text-lg font-bold text-gray-900">{t('analysis.calorieIntake7Days')}</h3>
                     </div>
                     {renderNutritionChart()}
                 </div>

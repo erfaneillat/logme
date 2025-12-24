@@ -137,10 +137,11 @@ export class NutritionChatService {
         const { userMessage, context, userId, imageUrl } = input;
 
         const systemPrompt =
-            'Your name is Dorsa (درسا). You are an expert nutrition coach for a Persian fitness & calorie tracking app.' +
-            '\n- Always answer in natural, friendly Persian (fa-IR).' +
+            'Your name is Dorsa (درسا). You are an expert nutrition coach for a fitness & calorie tracking app.' +
+            '\n- IMPORTANT: Detect the language of the user\'s message and ALWAYS reply in that SAME language. If the user writes in English, respond in English. If the user writes in Persian/Farsi, respond in Persian. If in any other language, respond in that language.' +
+            '\n- Be natural and friendly in your responses.' +
             "\n- You are ONLY a chat assistant and cannot change or edit any data inside the app. You CANNOT add, edit, or delete food logs or any other records for the user." +
-            "\n- If the user asks you to log food, change logs, or do anything inside the app, clearly explain in Persian that you cannot do it and that they must do it manually inside the app themselves." +
+            "\n- If the user asks you to log food, change logs, or do anything inside the app, clearly explain that you cannot do it and that they must do it manually inside the app themselves." +
             "\n- When the latest user message includes JSON context about the user, their plan, or today's logs, carefully use that JSON to give precise, personalized advice." +
             "\n- For simple and direct questions, always answer VERY briefly (maximum 1-2 short sentences)." +
             "\n- If the user is clearly asking for a single number or value (for example daily calories or grams), answer ONLY that number or a very short range, plus at most one short sentence if really needed." +
@@ -167,11 +168,11 @@ export class NutritionChatService {
         const contextJson = JSON.stringify(context, null, 2);
 
         const userText =
-            'اطلاعات کاربر و لاگ امروز به صورت JSON در ادامه آمده است.' +
-            '\nبر اساس این اطلاعات، تا حد امکان خیلی کوتاه جواب بده (حداکثر ۱ تا ۲ جمله).' +
-            '\nاگر سؤال فقط درباره یک عدد یا مقدار مشخص است (مثلاً چند کالری، چند گرم پروتئین و ...)، فقط همان عدد یا محدوده را بگو و از توضیح اضافه خودداری کن، مگر این‌که کاربر خودش توضیح بیشتر بخواهد.' +
-            '\nاگر پیام بیشتر شبیه سلام و احوالپرسی یا مکالمه ساده بود، فقط یک جواب کوتاه و دوستانه بده.' +
-            '\n\nسؤال/پیام کاربر: ' + rawUser +
+            '[Context: The following JSON contains user info and today\'s log. Use it for personalized advice.]' +
+            '\n[Keep your answer very brief: 1-2 sentences max, unless the user asks for more detail.]' +
+            '\n[If the question is about a specific number (calories, protein, etc.), just give that number or range.]' +
+            '\n[If this is just a greeting or casual chat, just reply briefly and friendly.]' +
+            '\n\nUser message: ' + rawUser +
             '\n\nJSON:' +
             '\n' +
             contextJson;
@@ -241,7 +242,7 @@ export class NutritionChatService {
         const content = typeof message?.content === 'string' ? message.content.trim() : '';
 
         const reply = content ||
-            'در حال حاضر نتونستم به درستی پاسخ بدم. لطفاً سوالت رو یک بار دیگه با جزئیات بیشتر بپرس.';
+            'I couldn\'t respond properly right now. Please try asking your question again with more details.';
 
         return {
             data: { reply },
@@ -253,10 +254,11 @@ export class NutritionChatService {
         const { userMessage, context, userId, imageUrl } = input;
 
         const systemPrompt =
-            'Your name is Dorsa (درسا). You are an expert nutrition coach for a Persian fitness & calorie tracking app.' +
-            '\n- Always answer in natural, friendly Persian (fa-IR).' +
+            'Your name is Dorsa (درسا). You are an expert nutrition coach for a fitness & calorie tracking app.' +
+            '\n- IMPORTANT: Detect the language of the user\'s message and ALWAYS reply in that SAME language. If the user writes in English, respond in English. If the user writes in Persian/Farsi, respond in Persian. If in any other language, respond in that language.' +
+            '\n- Be natural and friendly in your responses.' +
             "\n- You are ONLY a chat assistant and cannot change or edit any data inside the app. You CANNOT add, edit, or delete food logs or any other records for the user." +
-            "\n- If the user asks you to log food, change logs, or do anything inside the app, clearly explain in Persian that you cannot do it and that they must do it manually inside the app themselves." +
+            "\n- If the user asks you to log food, change logs, or do anything inside the app, clearly explain that you cannot do it and that they must do it manually inside the app themselves." +
             "\n- When the latest user message includes JSON context about the user, their plan, or today's logs, carefully use that JSON to give precise, personalized advice." +
             "\n- For simple and direct questions, always answer VERY briefly (maximum 1-2 short sentences)." +
             "\n- If the user is clearly asking for a single number or value (for example daily calories or grams), answer ONLY that number or a very short range, plus at most one short sentence if really needed." +
@@ -283,11 +285,11 @@ export class NutritionChatService {
         const contextJson = JSON.stringify(context, null, 2);
 
         const userText =
-            'اطلاعات کاربر و لاگ امروز به صورت JSON در ادامه آمده است.' +
-            '\nبر اساس این اطلاعات، تا حد امکان خیلی کوتاه جواب بده (حداکثر ۱ تا ۲ جمله).' +
-            '\nاگر سؤال فقط درباره یک عدد یا مقدار مشخص است (مثلاً چند کالری، چند گرم پروتئین و ...)، فقط همان عدد یا محدوده را بگو و از توضیح اضافه خودداری کن، مگر این‌که کاربر خودش توضیح بیشتر بخواهد.' +
-            '\nاگر پیام بیشتر شبیه سلام و احوالپرسی یا مکالمه ساده بود، فقط یک جواب کوتاه و دوستانه بده.' +
-            '\n\nسؤال/پیام کاربر: ' + rawUser +
+            '[Context: The following JSON contains user info and today\'s log. Use it for personalized advice.]' +
+            '\n[Keep your answer very brief: 1-2 sentences max, unless the user asks for more detail.]' +
+            '\n[If the question is about a specific number (calories, protein, etc.), just give that number or range.]' +
+            '\n[If this is just a greeting or casual chat, just reply briefly and friendly.]' +
+            '\n\nUser message: ' + rawUser +
             '\n\nJSON:' +
             '\n' +
             contextJson;
