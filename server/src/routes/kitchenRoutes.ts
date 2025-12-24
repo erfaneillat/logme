@@ -21,7 +21,8 @@ import {
     recordKitchenItemClick,
     getKitchenAnalytics,
     getItemClickHistory,
-    translateKitchenItems
+    updateCategoryWithJson,
+    getCategoryLanguageStats
 } from '../controllers/kitchenController';
 import { authenticateToken, authenticateAdmin } from '../middleware/authMiddleware';
 
@@ -99,8 +100,11 @@ router.post('/generate-image', authenticateAdmin, generateImageForItem);
 // Image compression route
 router.post('/compress-images', authenticateAdmin, compressImagesForCategory);
 
-// Translation route
-router.post('/translate', authenticateAdmin, translateKitchenItems);
+// Update from JSON route
+router.post('/update-json', authenticateAdmin, updateCategoryWithJson);
+
+// Language stats route
+router.get('/categories/:categoryId/language-stats', authenticateAdmin, getCategoryLanguageStats);
 
 // User saved items routes
 router.get('/saved', authenticateToken, getSavedKitchenItems);

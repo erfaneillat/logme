@@ -2012,6 +2012,7 @@ export const apiService = {
     saveKitchenItem: async (item: {
         kitchenItemId: string;
         name: string;
+        name_fa?: string;
         calories: number;
         protein: number;
         carbs: number;
@@ -2020,7 +2021,9 @@ export const apiService = {
         prepTime: string;
         difficulty: string;
         ingredients?: any[];
+        ingredients_fa?: any[];
         instructions?: string;
+        instructions_fa?: string;
     }): Promise<{ saved: boolean }> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;

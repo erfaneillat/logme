@@ -635,5 +635,129 @@
             "November",
             "December"
         ]
+    },
+    "settings": {
+        "title": "Settings",
+        "editName": "Edit Name",
+        "dearUser": "Dear User",
+        "subscription": {
+            "title": "Premium Subscription",
+            "subtitle": "Unlimited access to all features",
+            "buy": "Buy Subscription",
+            "active": "Subscription is active",
+            "expiresOn": "Expires on",
+            "fullAccess": "Full Access",
+            "statusActive": "Active"
+        },
+        "quickActions": {
+            "title": "Quick Actions",
+            "personalDetails": "Personal Details",
+            "personalDetailsSub": "Profile & Details",
+            "adjustMacros": "Adjust Macros",
+            "adjustMacrosSub": "Nutritional Goals",
+            "goalAndWeight": "Goal & Weight",
+            "goalAndWeightSub": "Track Progress",
+            "weightHistory": "Weight History",
+            "weightHistorySub": "View Trends"
+        },
+        "preferences": {
+            "title": "Preferences",
+            "addBurned": "Add Burned Calories",
+            "addBurnedSub": "Add burned calories to daily goal",
+            "rollover": "Rollover Remaining Calories",
+            "rolloverSub": "Rollover up to 200 calories from yesterday"
+        },
+        "support": {
+            "title": "Support & Legal",
+            "privacy": "Privacy Policy",
+            "tickets": "Support Tickets",
+            "contact": "Contact Us",
+            "deleteAccount": "Delete Account"
+        },
+        "logout": "Logout",
+        "version": "Version",
+        "modals": {
+            "logoutTitle": "Logout",
+            "logoutDesc": "Are you sure you want to log out?",
+            "cancel": "Cancel",
+            "confirmLogout": "Yes, Logout",
+            "editNameTitle": "Edit Name",
+            "yourName": "Your Name",
+            "namePlaceholder": "Enter your name",
+            "saveChanges": "Save Changes",
+            "deleteTitle": "Delete Account",
+            "deleteDesc": "Are you sure you want to delete your account? All your data including history, meal plans, and subscriptions will be deleted and cannot be recovered.",
+            "deleteReason": "Reason for deletion (optional)",
+            "deleting": "Deleting...",
+            "deleteConfirm": "Delete Account"
+        },
+        "toast": {
+            "success": "Settings saved",
+            "error": "Failed to save settings",
+            "deleteError": "Failed to delete account"
+        }
+    },
+    "macros": {
+        "title": "Adjust Macros",
+        "info": "Changing these values directly affects your daily calculator. It is suggested to use the AI automatic calculator.",
+        "calorieGoal": "Calorie Goal",
+        "protein": "Protein",
+        "carbs": "Carbohydrates",
+        "fats": "Fat",
+        "units": {
+            "calories": "cal",
+            "grams": "g"
+        },
+        "autoCalculate": "Auto Calculate",
+        "saveChanges": "Save Changes",
+        "errorSaving": "Error saving changes"
+    },
+    "tickets": {
+        "title": "Support Tickets",
+        "new": "New Ticket",
+        "createNew": "Create New Ticket",
+        "details": "Ticket Details",
+        "ticketBtn": "New Ticket",
+        "emptyTitle": "No tickets yet",
+        "emptySub": "Create a new ticket to contact support.",
+        "subject": "Subject",
+        "subjectPlaceholder": "e.g. Payment issue",
+        "category": "Category",
+        "priority": "Priority",
+        "message": "Your message",
+        "messagePlaceholder": "Write your issue details here...",
+        "addImage": "Add Image",
+        "uploading": "Uploading...",
+        "submit": "Submit Ticket",
+        "submitting": "Submitting...",
+        "replyPlaceholder": "Write your reply...",
+        "sending": "Sending...",
+        "you": "You",
+        "support": "Support",
+        "status": {
+            "open": "Open",
+            "in_progress": "In Progress",
+            "resolved": "Resolved",
+            "closed": "Closed"
+        },
+        "categories": {
+            "general": "General",
+            "technical": "Technical",
+            "billing": "Billing & Subscription",
+            "feature_request": "Feature Request",
+            "bug_report": "Bug Report",
+            "other": "Other"
+        },
+        "priorities": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High",
+            "urgent": "Urgent"
+        },
+        "toast": {
+            "uploadError": "Image upload failed",
+            "createError": "Error creating ticket",
+            "sendError": "Error sending message"
+        }
     }
 }

@@ -284,51 +284,96 @@ class KitchenService {
         }
     }
 
-    async translateCategory(
+    async updateCategoryWithJson(
         token: string,
         categoryId: string,
-        targetLanguage: string
+        jsonContent: string,
+        language: 'en' | 'fa' = 'en'
     ): Promise<{
         success: boolean;
         message?: string;
-        translatedCount?: number;
-        errorCount?: number;
         category?: KitchenCategory;
+        processedCount?: number;
     }> {
         try {
-            // Long timeout for translation (5 minutes)
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+            // Parse JSON here to ensure it's valid before sending, although server will also checking
+            let items;
+            try {
+                items = JSON.parse(jsonContent);
+                if (!Array.isArray(items)) throw new Error('Input must be an array');
+            } catch (e) {
+                throw new Error('Invalid JSON format');
+            }
 
-            const response = await fetch(`${API_BASE_URL}${this.basePath}/translate`, {
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/update-json`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ categoryId, targetLanguage }),
-                signal: controller.signal
+                body: JSON.stringify({ categoryId, items, language }),
             });
-
-            clearTimeout(timeout);
 
             if (!response.ok) {
                 const err = await response.json();
-                throw new Error(err.message || 'Failed to translate category');
+                throw new Error(err.message || 'Failed to update category');
             }
 
             const data = await response.json();
             return {
                 success: data.success,
                 message: data.message,
-                translatedCount: data.translatedCount,
-                errorCount: data.errorCount,
-                category: data.category
+                category: data.category,
+                processedCount: data.processedCount
             };
         } catch (error: any) {
             return {
                 success: false,
-                message: error.message || 'Failed to translate category',
+                message: error.message || 'Failed to update category',
+            };
+        }
+    }
+
+    async getCategoryLanguageStats(
+        token: string,
+        categoryId: string
+    ): Promise<{
+        success: boolean;
+        message?: string;
+        stats?: {
+            totalItems: number;
+            itemsWithEnglish: number;
+            itemsWithFarsi: number;
+            itemsWithBoth: number;
+            englishOnly: number;
+            farsiOnly: number;
+            hasEnglishData: boolean;
+            hasFarsiData: boolean;
+        };
+    }> {
+        try {
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/categories/${categoryId}/language-stats`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to get language stats');
+            }
+
+            const data = await response.json();
+            return {
+                success: data.success,
+                stats: data.stats
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to get language stats',
             };
         }
     }

@@ -8,6 +8,7 @@ export interface IIngredient {
 export interface IKitchenItem {
     id?: string;
     name: string;
+    name_fa?: string; // Farsi translation
     calories: number;
     protein: number;
     carbs: number;
@@ -17,17 +18,21 @@ export interface IKitchenItem {
     prepTime: string; // e.g., "15 min"
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: IIngredient[]; // List of ingredients with amounts
+    ingredients_fa?: IIngredient[]; // Farsi ingredients
     instructions?: string; // How to prepare/cook
+    instructions_fa?: string; // Farsi instructions
     isFree?: boolean; // If true, no subscription required to view details
 }
 
 export interface IKitchenSubCategory {
     title: string;
+    title_fa?: string;
     items: IKitchenItem[];
 }
 
 export interface IKitchenCategory extends Document {
     title: string;
+    title_fa?: string;
     subCategories: IKitchenSubCategory[];
     isActive: boolean;
     order: number;
@@ -42,6 +47,7 @@ const IngredientSchema = new Schema({
 
 const KitchenItemSchema = new Schema({
     name: { type: String, required: true },
+    name_fa: { type: String },
     calories: { type: Number, required: true },
     protein: { type: Number, required: true },
     carbs: { type: Number, required: true },
@@ -51,17 +57,21 @@ const KitchenItemSchema = new Schema({
     prepTime: { type: String, required: true },
     difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true, default: 'medium' },
     ingredients: { type: [IngredientSchema], default: [] },
+    ingredients_fa: { type: [IngredientSchema], default: [] },
     instructions: { type: String, default: '' },
+    instructions_fa: { type: String },
     isFree: { type: Boolean, default: false }
 });
 
 const KitchenSubCategorySchema = new Schema({
     title: { type: String, required: true },
+    title_fa: { type: String },
     items: [KitchenItemSchema]
 });
 
 const KitchenCategorySchema = new Schema({
     title: { type: String, required: true },
+    title_fa: { type: String },
     subCategories: [KitchenSubCategorySchema],
     isActive: { type: Boolean, default: true },
     order: { type: Number, default: 0 }

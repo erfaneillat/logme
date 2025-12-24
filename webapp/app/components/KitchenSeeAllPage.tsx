@@ -13,6 +13,7 @@ interface KitchenItem {
     _id?: string;
     id?: string;
     name: string;
+    name_fa?: string;
     calories: number;
     protein: number;
     carbs: number;
@@ -26,6 +27,7 @@ interface KitchenItem {
 
 interface KitchenSeeAllPageProps {
     title: string;
+    title_fa?: string;
     items: KitchenItem[];
     onBack: () => void;
     onItemClick: (item: KitchenItem) => void;
@@ -35,16 +37,41 @@ interface KitchenSeeAllPageProps {
 
 const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
     title,
-    items,
+    title_fa,
     onBack,
-    onItemClick
+    onItemClick,
+    items // Adding items here as well if it was missed or for clarity, though it was in the original
 }) => {
-    const { t, isRTL } = useTranslation();
+    const { t, isRTL, locale } = useTranslation();
 
     const formatNumber = (num: number | string) => {
         if (!isRTL) return String(num);
         const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
         return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    // Helper to get the correct localized name
+    const getLocalizedName = (item: KitchenItem) => {
+        if (locale === 'fa') {
+            return item.name_fa || item.name;
+        } else {
+            if (item.name && /^[a-zA-Z]/.test(item.name)) {
+                return item.name;
+            }
+            return item.name || item.name_fa || 'Unnamed';
+        }
+    };
+
+    // Get localized title for this page
+    const getLocalizedTitle = () => {
+        if (locale === 'fa') {
+            return title_fa || title;
+        } else {
+            if (title && /^[a-zA-Z]/.test(title)) {
+                return title;
+            }
+            return title || title_fa || '';
+        }
     };
 
     const difficultyConfig = {
@@ -66,7 +93,7 @@ const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
                     </svg>
                 </button>
                 <div className="flex-1">
-                    <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+                    <h1 className="text-lg font-bold text-gray-900">{getLocalizedTitle()}</h1>
                     <p className="text-xs text-gray-400">{formatNumber(items.length)} {t('kitchen.itemsCount')}</p>
                 </div>
             </header>
@@ -98,8 +125,9 @@ const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
                                 </div>
 
                                 {/* Info */}
-                                <h3 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2 leading-tight">{item.name}</h3>
-
+                                <h3 className="font-bold text-gray-800 text-sm truncate mb-1">
+                                    {getLocalizedName(item)}
+                                </h3>
                                 {/* Calories & Difficulty */}
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-1">

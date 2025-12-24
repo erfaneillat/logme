@@ -86,6 +86,7 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center p-0 sm:p-4"
             onClick={onClose}
+            dir={isRTL ? 'rtl' : 'ltr'}
         >
             <motion.div
                 initial={{ y: "100%" }}
@@ -130,7 +131,7 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
 
                                 <div className="flex justify-between items-end relative z-10">
-                                    <div className={isRTL ? 'text-right' : 'text-left'}>
+                                    <div className="text-start">
                                         <p className="text-purple-200 text-xs font-bold tracking-wider mb-1">{t('weightHistory.latestRecord')}</p>
                                         <div className="flex items-baseline gap-1">
                                             <h3 className="text-4xl font-black">{formatNumber(latestWeight)}</h3>
@@ -169,10 +170,10 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
                                                 <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center text-xl shrink-0 ${isNeutral ? 'bg-gray-100 text-gray-500' : (isPositive ? 'bg-orange-50 text-orange-500' : 'bg-green-50 text-green-500')}`}>
                                                     ⚖️
                                                 </div>
-                                                <div className={isRTL ? 'text-right' : 'text-left'}>
+                                                <div className="text-start">
                                                     <div className="flex items-center gap-2 mb-0.5">
                                                         <span className="text-lg font-black text-gray-800">{formatNumber(entry.weightKg)}</span>
-                                                        <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-md">kg</span>
+                                                        <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-md">{t('weightHistory.kg')}</span>
                                                     </div>
                                                     <div className="flex flex-col">
                                                         <span className="text-xs font-bold text-gray-700">{getRelativeDate(entry.date)}</span>

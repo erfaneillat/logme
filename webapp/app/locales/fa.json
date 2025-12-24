@@ -636,5 +636,129 @@
             "بهمن",
             "اسفند"
         ]
+    },
+    "settings": {
+        "title": "تنظیمات",
+        "editName": "ویرایش نام",
+        "dearUser": "کاربر عزیز",
+        "subscription": {
+            "title": "اشتراک ویژه",
+            "subtitle": "دسترسی نامحدود به تمام امکانات",
+            "buy": "خرید اشتراک",
+            "active": "اشتراک فعال است",
+            "expiresOn": "انقضا در تاریخ",
+            "fullAccess": "دسترسی کامل",
+            "statusActive": "فعال"
+        },
+        "quickActions": {
+            "title": "اقدامات سریع",
+            "personalDetails": "اطلاعات شخصی",
+            "personalDetailsSub": "پروفایل و جزئیات",
+            "adjustMacros": "تنظیم ماکروها",
+            "adjustMacrosSub": "اهداف تغذیه‌ای",
+            "goalAndWeight": "هدف و وزن فعلی",
+            "goalAndWeightSub": "ردیابی پیشرفت",
+            "weightHistory": "تاریخچه وزن",
+            "weightHistorySub": "مشاهده روندها"
+        },
+        "preferences": {
+            "title": "ترجیحات",
+            "addBurned": "افزودن کالری سوزانده",
+            "addBurnedSub": "افزودن کالری سوزانده به هدف روزانه",
+            "rollover": "انتقال کالری باقی‌مانده",
+            "rolloverSub": "انتقال تا ۲۰۰ کالری باقی‌مانده از دیروز"
+        },
+        "support": {
+            "title": "پشتیبانی و قانونی",
+            "privacy": "سیاست حریم خصوصی",
+            "tickets": "تیکت‌های پشتیبانی",
+            "contact": "تماس با ما",
+            "deleteAccount": "حذف حساب کاربری"
+        },
+        "logout": "خروج",
+        "version": "نسخه",
+        "modals": {
+            "logoutTitle": "خروج از حساب",
+            "logoutDesc": "آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟",
+            "cancel": "انصراف",
+            "confirmLogout": "بله، خروج",
+            "editNameTitle": "ویرایش نام",
+            "yourName": "نام شما",
+            "namePlaceholder": "نام خود را وارد کنید",
+            "saveChanges": "ذخیره تغییرات",
+            "deleteTitle": "حذف حساب کاربری",
+            "deleteDesc": "آیا از حذف حساب خود اطمینان دارید؟ تمام اطلاعات شما شامل تاریخچه، برنامه غذایی و اشتراک‌ها پاک خواهد شد و قابل بازگشت نیست.",
+            "deleteReason": "علت حذف حساب (اختیاری)",
+            "deleting": "در حال حذف...",
+            "deleteConfirm": "حذف حساب"
+        },
+        "toast": {
+            "success": "تنظیمات ذخیره شد",
+            "error": "خطا در ذخیره تنظیمات",
+            "deleteError": "خطا در حذف حساب کاربری"
+        }
+    },
+    "macros": {
+        "title": "تنظیم ماکروها",
+        "info": "تغییر این مقادیر مستقیماً بر محاسبه‌گر روزانه شما تأثیر می‌گذارد. پیشنهاد می‌شود از محاسبه‌گر خودکار هوش مصنوعی استفاده کنید.",
+        "calorieGoal": "هدف کالری",
+        "protein": "پروتئین",
+        "carbs": "کربوهیدرات",
+        "fats": "چربی",
+        "units": {
+            "calories": "کالری",
+            "grams": "گرم"
+        },
+        "autoCalculate": "محاسبه خودکار",
+        "saveChanges": "ذخیره تغییرات",
+        "errorSaving": "خطا در ذخیره تغییرات"
+    },
+    "tickets": {
+        "title": "تیکت‌های پشتیبانی",
+        "new": "تیکت جدید",
+        "createNew": "ثبت تیکت جدید",
+        "details": "جزئیات تیکت",
+        "ticketBtn": "تیکت جدید",
+        "emptyTitle": "هنوز تیکتی ندارید",
+        "emptySub": "برای ارتباط با پشتیبانی، یک تیکت جدید ایجاد کنید.",
+        "subject": "موضوع",
+        "subjectPlaceholder": "مثلاً: مشکل در پرداخت",
+        "category": "دسته‌بندی",
+        "priority": "اولویت",
+        "message": "پیام شما",
+        "messagePlaceholder": "توضیحات کامل مشکل یا درخواست خود را بنویسید...",
+        "addImage": "افزودن تصویر",
+        "uploading": "در حال آپلود...",
+        "submit": "ثبت تیکت",
+        "submitting": "در حال ثبت...",
+        "replyPlaceholder": "پاسخ خود را بنویسید...",
+        "sending": "در حال ارسال...",
+        "you": "شما",
+        "support": "پشتیبانی",
+        "status": {
+            "open": "باز",
+            "in_progress": "در حال بررسی",
+            "resolved": "حل شده",
+            "closed": "بسته شده"
+        },
+        "categories": {
+            "general": "عمومی",
+            "technical": "فنی",
+            "billing": "مالی و اشتراک",
+            "feature_request": "پیشنهاد ویژگی",
+            "bug_report": "گزارش خطا",
+            "other": "سایر"
+        },
+        "priorities": {
+            "low": "کم",
+            "medium": "متوسط",
+            "high": "بالا",
+            "urgent": "فوری"
+        },
+        "toast": {
+            "uploadError": "آپلود تصویر با خطا مواجه شد",
+            "createError": "خطا در ایجاد تیکت",
+            "sendError": "خطا در ارسال پیام"
+        }
     }
 }

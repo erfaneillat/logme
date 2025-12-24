@@ -14,6 +14,7 @@ interface KitchenItem {
     _id?: string;
     id?: string;
     name: string;
+    name_fa?: string;
     calories: number;
     protein: number;
     carbs: number;
@@ -22,7 +23,9 @@ interface KitchenItem {
     prepTime: string;
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[];
+    ingredients_fa?: Ingredient[];
     instructions?: string;
+    instructions_fa?: string;
     isFree?: boolean;
 }
 
@@ -49,12 +52,41 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
 }) => {
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [isSaving, setIsSaving] = useState(false);
-    const { t, isRTL } = useTranslation();
+    const { t, isRTL, locale } = useTranslation();
 
     const formatNumber = (num: number | string) => {
         if (!isRTL) return String(num);
         const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
         return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    // Helper to get the correct localized content
+    const getLocalizedName = () => {
+        if (locale === 'fa') {
+            return item.name_fa || item.name;
+        } else {
+            // English mode: prefer name if it looks English
+            if (item.name && /^[a-zA-Z]/.test(item.name)) {
+                return item.name;
+            }
+            return item.name || item.name_fa || 'Unnamed';
+        }
+    };
+
+    const getLocalizedInstructions = () => {
+        if (locale === 'fa') {
+            return item.instructions_fa || item.instructions;
+        } else {
+            return item.instructions || item.instructions_fa;
+        }
+    };
+
+    const getLocalizedIngredients = () => {
+        if (locale === 'fa') {
+            return item.ingredients_fa && item.ingredients_fa.length > 0 ? item.ingredients_fa : item.ingredients;
+        } else {
+            return item.ingredients || item.ingredients_fa;
+        }
     };
 
     useEffect(() => {
@@ -81,6 +113,7 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 await apiService.saveKitchenItem({
                     kitchenItemId: itemId,
                     name: item.name,
+                    name_fa: item.name_fa,
                     calories: item.calories,
                     protein: item.protein,
                     carbs: item.carbs,
@@ -89,7 +122,9 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                     prepTime: item.prepTime,
                     difficulty: item.difficulty,
                     ingredients: item.ingredients,
-                    instructions: item.instructions
+                    ingredients_fa: item.ingredients_fa,
+                    instructions: item.instructions,
+                    instructions_fa: item.instructions_fa
                 });
                 setIsSaved(true);
                 onSaveToggle?.(item, true);
@@ -113,7 +148,9 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                     </svg>
                 </button>
-                <h1 className={`text-lg font-bold text-gray-900 flex-1 truncate ${isRTL ? 'text-right' : 'text-left'}`}>{item.name}</h1>
+                <h1 className={`text-lg font-bold text-gray-900 flex-1 truncate ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {getLocalizedName()}
+                </h1>
 
                 {/* Save Button in Header */}
                 <button
@@ -199,8 +236,8 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                         <div className="relative">
                             <div className={`bg-gray-50 rounded-2xl p-4 ${!hasSubscription && !item.isFree ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
                                 <div className="space-y-2">
-                                    {item.ingredients.map((ing, idx) => (
-                                        <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                                    {getLocalizedIngredients()?.map((ing, idx) => (
+                                        <div key={idx} className={`flex justify-between items-center py-2 border-b border-gray-100 last:border-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
                                             <span className="text-gray-700 font-medium">{ing.name}</span>
                                             <span className="text-gray-500 font-medium text-sm">{ing.amount}</span>
                                         </div>
@@ -233,7 +270,9 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                         <h3 className={`text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : 'text-left'}`}>{t('kitchen.detail.instructions')}</h3>
                         <div className="relative">
                             <div className={`bg-gray-50 rounded-2xl p-5 ${!hasSubscription && !item.isFree ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
-                                <p className={`text-gray-700 leading-loose whitespace-pre-line ${isRTL ? 'text-right' : 'text-left'}`}>{item.instructions}</p>
+                                <p className={`text-gray-700 leading-loose whitespace-pre-line ${isRTL ? 'text-right' : 'text-left'}`}>
+                                    {getLocalizedInstructions()}
+                                </p>
                             </div>
 
                             {/* Premium Lock Overlay */}

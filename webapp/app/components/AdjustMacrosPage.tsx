@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService, Plan } from '../services/apiService';
 import { useToast } from '../context/ToastContext';
+import { useTranslation } from '../translations';
 
 interface AdjustMacrosPageProps {
     onClose: () => void;
@@ -15,7 +16,7 @@ const MacroInput = ({
     onChange,
     icon,
     color,
-    unit = 'گرم'
+    unit
 }: {
     title: string;
     value: string;
@@ -28,23 +29,24 @@ const MacroInput = ({
         <div className={`w-12 h-12 rounded-[16px] ${color} bg-opacity-10 flex items-center justify-center shrink-0`}>
             {icon}
         </div>
-        <div className="flex-1">
-            <label className="text-xs font-bold text-gray-500 mb-1 block">{title}</label>
+        <div className="flex-1 min-w-0">
+            <label className="text-xs font-bold text-gray-500 mb-1 block truncate">{title}</label>
             <div className="flex items-center gap-2">
                 <input
                     type="number"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-full text-xl font-black text-gray-800 bg-transparent border-none p-0 focus:ring-0 placeholder-gray-300"
+                    className="w-full text-xl font-black text-gray-800 bg-transparent border-none p-0 focus:ring-0 placeholder-gray-300 min-w-0"
                     placeholder="0"
                 />
-                <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-lg border border-gray-100">{unit}</span>
+                <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-lg border border-gray-100 shrink-0">{unit}</span>
             </div>
         </div>
     </div>
 );
 
 const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
+    const { t, isRTL } = useTranslation();
     const [plan, setPlan] = useState<Plan | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -110,7 +112,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
             onClose();
         } catch (error) {
             console.error('Failed to save macros:', error);
-            showToast('خطا در ذخیره تغییرات', 'error');
+            showToast(t('macros.errorSaving'), 'error');
         } finally {
             setIsSaving(false);
         }
@@ -122,6 +124,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center p-0 sm:p-4"
+            dir={isRTL ? 'rtl' : 'ltr'}
             onClick={onClose}
         >
             <motion.div
@@ -137,7 +140,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                     <div className="w-8"></div>
                     <div className="flex flex-col items-center">
                         <div className="w-10 h-1 bg-gray-200 rounded-full mb-3 sm:hidden"></div>
-                        <h2 className="text-lg font-black text-gray-800">تنظیم ماکروها</h2>
+                        <h2 className="text-lg font-black text-gray-800">{t('macros.title')}</h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -154,7 +157,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                     <div className="bg-blue-50 p-4 rounded-[20px] flex gap-3 items-start">
                         <div className="text-xl">💡</div>
                         <p className="text-xs text-blue-700 leading-relaxed font-medium">
-                            تغییر این مقادیر مستقیماً بر محاسبه‌گر روزانه شما تأثیر می‌گذارد. پیشنهاد می‌شود از محاسبه‌گر خودکار هوش مصنوعی استفاده کنید.
+                            {t('macros.info')}
                         </p>
                     </div>
 
@@ -167,10 +170,10 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                     ) : (
                         <div className="grid grid-cols-1 gap-4">
                             <MacroInput
-                                title="هدف کالری"
+                                title={t('macros.calorieGoal')}
                                 value={calories}
                                 onChange={setCalories}
-                                unit="کالری"
+                                unit={t('macros.units.calories')}
                                 color="bg-blue-500 text-blue-600"
                                 icon={
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -180,9 +183,10 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                             />
 
                             <MacroInput
-                                title="پروتئین"
+                                title={t('macros.protein')}
                                 value={protein}
                                 onChange={setProtein}
+                                unit={t('macros.units.grams')}
                                 color="bg-red-500 text-red-600"
                                 icon={
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -192,9 +196,10 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                             />
 
                             <MacroInput
-                                title="کربوهیدرات"
+                                title={t('macros.carbs')}
                                 value={carbs}
                                 onChange={setCarbs}
+                                unit={t('macros.units.grams')}
                                 color="bg-yellow-500 text-yellow-600"
                                 icon={
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -204,9 +209,10 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                             />
 
                             <MacroInput
-                                title="چربی"
+                                title={t('macros.fats')}
                                 value={fats}
                                 onChange={setFats}
+                                unit={t('macros.units.grams')}
                                 color="bg-green-500 text-green-600"
                                 icon={
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -232,7 +238,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                                 </svg>
-                                محاسبه خودکار
+                                {t('macros.autoCalculate')}
                             </>
                         )}
                     </button>
@@ -244,7 +250,7 @@ const AdjustMacrosPage: React.FC<AdjustMacrosPageProps> = ({ onClose }) => {
                         {isSaving ? (
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         ) : (
-                            'ذخیره تغییرات'
+                            t('macros.saveChanges')
                         )}
                     </button>
                 </div>

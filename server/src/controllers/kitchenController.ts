@@ -73,7 +73,7 @@ export const getAdminCategories = async (req: Request, res: Response) => {
 
 export const createCategory = async (req: Request, res: Response) => {
     try {
-        const { title, subCategories, order, isActive } = req.body;
+        const { title, title_fa, subCategories, order, isActive } = req.body;
 
         // Validate request body
         if (!title) {
@@ -82,6 +82,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
         const newCategory = new KitchenCategory({
             title,
+            title_fa: title_fa || '',
             subCategories: subCategories || [],
             order: order || 0,
             isActive: isActive !== undefined ? isActive : true
@@ -97,12 +98,13 @@ export const createCategory = async (req: Request, res: Response) => {
 export const updateCategory = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { title, subCategories, order, isActive } = req.body;
+        const { title, title_fa, subCategories, order, isActive } = req.body;
 
         const updatedCategory = await KitchenCategory.findByIdAndUpdate(
             id,
             {
                 title,
+                title_fa,
                 subCategories,
                 order,
                 isActive
@@ -755,26 +757,19 @@ export const getItemClickHistory = async (req: Request, res: Response) => {
     }
 };
 
+
 /**
- * Translate all kitchen items in a category to a target language using OpenAI
+ * Update a category with content from a JSON array (preserving images and merging languages)
+ * NEW: Does NOT replace existing items - only updates matching items and adds new ones
  */
-export const translateKitchenItems = async (req: Request, res: Response) => {
+export const updateCategoryWithJson = async (req: Request, res: Response) => {
     try {
-        const { categoryId, targetLanguage } = req.body;
+        const { categoryId, items, language = 'en' } = req.body;
 
-        if (!categoryId || !targetLanguage) {
+        if (!categoryId || !items || !Array.isArray(items)) {
             return res.status(400).json({
                 success: false,
-                message: 'Category ID and target language are required'
-            });
-        }
-
-        // Validate target language
-        const supportedLanguages = ['en', 'fa'];
-        if (!supportedLanguages.includes(targetLanguage)) {
-            return res.status(400).json({
-                success: false,
-                message: `Unsupported language. Supported: ${supportedLanguages.join(', ')}`
+                message: 'Category ID and items array are required'
             });
         }
 
@@ -783,142 +778,224 @@ export const translateKitchenItems = async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: 'Category not found' });
         }
 
-        // Check if OpenAI key is configured
-        const apiKey = process.env.OPENAI_API_KEY;
-        if (!apiKey) {
-            return res.status(500).json({
-                success: false,
-                message: 'OpenAI API key not configured'
-            });
-        }
+        // 1. Build a map of ALL existing items by imagePrompt
+        // Also track which subcategory they belong to
+        const existingItemsMap = new Map<string, {
+            item: any,
+            subCatIndex: number,
+            itemIndex: number,
+            subTitle: string,
+            subTitleFa?: string | undefined
+        }>();
 
-        const OpenAI = require('openai');
-        const openai = new OpenAI({ apiKey });
-
-        const languageNames: { [key: string]: string } = {
-            'en': 'English',
-            'fa': 'Persian (Farsi)'
-        };
-
-        let translatedCount = 0;
-        let errorCount = 0;
-
-        // Process each subcategory
-        for (let subIndex = 0; subIndex < category.subCategories.length; subIndex++) {
-            const subcategory = category.subCategories[subIndex];
-            if (!subcategory) continue;
-
-            // Translate subcategory title
-            try {
-                const subTitlePrompt = `Translate the following food category name to ${languageNames[targetLanguage]}. Return ONLY the translated text, nothing else:
-"${subcategory.title}"`;
-
-                const subTitleResponse = await openai.chat.completions.create({
-                    model: 'gpt-4o-mini',
-                    messages: [{ role: 'user', content: subTitlePrompt }],
-                    max_tokens: 100,
-                    temperature: 0.3
-                });
-
-                const translatedSubTitle = subTitleResponse.choices?.[0]?.message?.content?.trim();
-                if (translatedSubTitle) {
-                    category.subCategories[subIndex]!.title = translatedSubTitle.replace(/^["']|["']$/g, '');
-                }
-            } catch (err) {
-                console.error(`Error translating subcategory title: ${subcategory.title}`, err);
-                errorCount++;
-            }
-
-            // Process each item in the subcategory
-            for (let itemIndex = 0; itemIndex < subcategory.items.length; itemIndex++) {
-                const item = subcategory.items[itemIndex];
-                if (!item) continue;
-
-                try {
-                    // Build translation request for the item
-                    const itemData = {
-                        name: item.name,
-                        instructions: item.instructions || '',
-                        ingredients: item.ingredients?.map(ing => ({ name: ing.name, amount: ing.amount })) || []
-                    };
-
-                    const prompt = `Translate the following food item data to ${languageNames[targetLanguage]}. Keep the JSON structure, only translate the text values. Return ONLY valid JSON:
-${JSON.stringify(itemData, null, 2)}`;
-
-                    const response = await openai.chat.completions.create({
-                        model: 'gpt-4o-mini',
-                        messages: [{ role: 'user', content: prompt }],
-                        max_tokens: 2000,
-                        temperature: 0.3
+        category.subCategories.forEach((sub, subIdx) => {
+            sub.items.forEach((item, itemIdx) => {
+                if (item.imagePrompt) {
+                    const key = item.imagePrompt.trim().toLowerCase();
+                    existingItemsMap.set(key, {
+                        item: item,
+                        subCatIndex: subIdx,
+                        itemIndex: itemIdx,
+                        subTitle: sub.title,
+                        subTitleFa: sub.title_fa
                     });
+                }
+            });
+        });
 
-                    const translatedContent = response.choices?.[0]?.message?.content?.trim();
-                    if (translatedContent) {
-                        // Parse the JSON response
-                        const cleanJson = translatedContent.replace(/```json\n?|```\n?/g, '').trim();
-                        const translatedData = JSON.parse(cleanJson);
+        console.log(`[updateCategoryWithJson] Language: ${language}, Found ${existingItemsMap.size} existing items`);
 
-                        // Update item with translated data
-                        if (translatedData.name) {
-                            category.subCategories[subIndex]!.items[itemIndex]!.name = translatedData.name;
-                        }
-                        if (translatedData.instructions) {
-                            category.subCategories[subIndex]!.items[itemIndex]!.instructions = translatedData.instructions;
-                        }
-                        if (translatedData.ingredients && Array.isArray(translatedData.ingredients)) {
-                            category.subCategories[subIndex]!.items[itemIndex]!.ingredients = translatedData.ingredients;
-                        }
+        // Track which items we've processed (to avoid duplicates if needed)
+        const processedPrompts = new Set<string>();
 
-                        translatedCount++;
-                        console.log(`Translated: ${item.name} → ${translatedData.name}`);
-                    }
-                } catch (err) {
-                    console.error(`Error translating item: ${item.name}`, err);
-                    errorCount++;
+        let updatedCount = 0;
+        let addedCount = 0;
+
+        // 2. Process each item from JSON
+        for (const jsonItem of items) {
+            const key = jsonItem.image_prompt ? jsonItem.image_prompt.trim().toLowerCase() : null;
+            if (!key) {
+                console.warn('Skipping item without image_prompt:', jsonItem.name);
+                continue;
+            }
+
+            // Map Difficulty
+            let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
+            if (jsonItem.difficulty === 'آسان' || jsonItem.difficulty === 'Easy' || jsonItem.difficulty === 'easy') difficulty = 'easy';
+            if (jsonItem.difficulty === 'سخت' || jsonItem.difficulty === 'Hard' || jsonItem.difficulty === 'hard') difficulty = 'hard';
+
+            const existing = existingItemsMap.get(key);
+
+            if (existing) {
+                // UPDATE existing item - only update the target language fields
+                const subCat = category.subCategories[existing.subCatIndex];
+                if (!subCat || !subCat.items[existing.itemIndex]) {
+                    console.warn('Item not found at expected index, skipping:', key);
+                    continue;
+                }
+                const dbItem = subCat.items[existing.itemIndex] as any;
+
+                if (language === 'en') {
+                    dbItem.name = jsonItem.name;
+                    dbItem.instructions = jsonItem.instructions || '';
+                    dbItem.ingredients = Array.isArray(jsonItem.ingredients) ? jsonItem.ingredients : [];
+                    // Preserve Farsi fields - they stay unchanged
+                } else if (language === 'fa') {
+                    dbItem.name_fa = jsonItem.name;
+                    dbItem.instructions_fa = jsonItem.instructions || '';
+                    dbItem.ingredients_fa = Array.isArray(jsonItem.ingredients) ? jsonItem.ingredients : [];
+                    // Preserve English fields - they stay unchanged
                 }
 
-                // Add a small delay to avoid rate limiting
-                await new Promise(resolve => setTimeout(resolve, 200));
+                // Update common fields if they seem valid
+                if (jsonItem.nutritional_info?.calories) dbItem.calories = jsonItem.nutritional_info.calories;
+                if (jsonItem.nutritional_info?.protein) dbItem.protein = jsonItem.nutritional_info.protein;
+                if (jsonItem.nutritional_info?.carbs) dbItem.carbs = jsonItem.nutritional_info.carbs;
+                if (jsonItem.nutritional_info?.fat) dbItem.fat = jsonItem.nutritional_info.fat;
+                if (jsonItem.prep_time) dbItem.prepTime = jsonItem.prep_time;
+                dbItem.difficulty = difficulty;
+
+                // Update subcategory title if applicable
+                if (language === 'en' && jsonItem.category) {
+                    (subCat as any).title = jsonItem.category;
+                } else if (language === 'fa' && jsonItem.category) {
+                    (subCat as any).title_fa = jsonItem.category;
+                }
+
+                updatedCount++;
+                processedPrompts.add(key);
+
+            } else {
+                // ADD new item - find or create subcategory
+                const subCatName = jsonItem.category || 'General';
+
+                // Find existing subcategory or create one
+                let targetSubCat = category.subCategories.find(s =>
+                    (language === 'en' && s.title === subCatName) ||
+                    (language === 'fa' && s.title_fa === subCatName)
+                ) as any;
+
+                if (!targetSubCat) {
+                    // Create new subcategory
+                    const newSubCat: any = {
+                        title: language === 'en' ? subCatName : subCatName, // Use as fallback
+                        items: []
+                    };
+                    if (language === 'fa') {
+                        newSubCat.title_fa = subCatName;
+                    }
+                    category.subCategories.push(newSubCat);
+                    targetSubCat = category.subCategories[category.subCategories.length - 1];
+                }
+
+                // Create new item
+                const newItem: any = {
+                    imagePrompt: jsonItem.image_prompt,
+                    image: '🍲', // Placeholder
+                    calories: jsonItem.nutritional_info?.calories || 0,
+                    protein: jsonItem.nutritional_info?.protein || 0,
+                    carbs: jsonItem.nutritional_info?.carbs || 0,
+                    fat: jsonItem.nutritional_info?.fat || 0,
+                    prepTime: jsonItem.prep_time || '15 min',
+                    difficulty: difficulty,
+                    isFree: false
+                };
+
+                if (language === 'en') {
+                    newItem.name = jsonItem.name;
+                    newItem.instructions = jsonItem.instructions || '';
+                    newItem.ingredients = Array.isArray(jsonItem.ingredients) ? jsonItem.ingredients : [];
+                } else if (language === 'fa') {
+                    newItem.name = jsonItem.name; // Fallback for required field
+                    newItem.name_fa = jsonItem.name;
+                    newItem.instructions_fa = jsonItem.instructions || '';
+                    newItem.ingredients_fa = Array.isArray(jsonItem.ingredients) ? jsonItem.ingredients : [];
+                }
+
+                targetSubCat.items.push(newItem);
+                addedCount++;
+                processedPrompts.add(key);
             }
         }
 
-        // Also translate the category title
-        try {
-            const catTitlePrompt = `Translate the following food category name to ${languageNames[targetLanguage]}. Return ONLY the translated text, nothing else:
-"${category.title}"`;
-
-            const catTitleResponse = await openai.chat.completions.create({
-                model: 'gpt-4o-mini',
-                messages: [{ role: 'user', content: catTitlePrompt }],
-                max_tokens: 100,
-                temperature: 0.3
-            });
-
-            const translatedCatTitle = catTitleResponse.choices?.[0]?.message?.content?.trim();
-            if (translatedCatTitle) {
-                category.title = translatedCatTitle.replace(/^["']|["']$/g, '');
-            }
-        } catch (err) {
-            console.error(`Error translating category title: ${category.title}`, err);
-            errorCount++;
-        }
-
-        // Save the updated category
         await category.save();
+
+        console.log(`[updateCategoryWithJson] Updated: ${updatedCount}, Added: ${addedCount}`);
 
         return res.status(200).json({
             success: true,
-            message: `Translation complete. Translated ${translatedCount} items with ${errorCount} errors.`,
-            translatedCount,
-            errorCount,
-            category
+            message: `Updated category (${language}). Updated ${updatedCount} items, Added ${addedCount} new items.`,
+            category,
+            updatedCount,
+            addedCount,
+            processedCount: updatedCount + addedCount
         });
 
     } catch (error) {
-        console.error('Translate kitchen items error:', error);
+        console.error('Update category with JSON error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Error translating kitchen items',
+            message: 'Error updating category',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+
+/**
+ * Get language stats for a category (how many items have EN vs FA data)
+ */
+export const getCategoryLanguageStats = async (req: Request, res: Response) => {
+    try {
+        const { categoryId } = req.params;
+
+        const category = await KitchenCategory.findById(categoryId);
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+
+        let totalItems = 0;
+        let itemsWithEnglish = 0;
+        let itemsWithFarsi = 0;
+        let itemsWithBoth = 0;
+
+        category.subCategories.forEach(sub => {
+            sub.items.forEach(item => {
+                totalItems++;
+
+                // Check English: has name and it's not same as name_fa (indicating it's real English)
+                const hasEnglish = item.name && (!item.name_fa || item.name !== item.name_fa);
+                // Check Farsi
+                const hasFarsi = !!item.name_fa;
+
+                if (hasEnglish && hasFarsi) {
+                    itemsWithBoth++;
+                } else if (hasEnglish) {
+                    itemsWithEnglish++;
+                } else if (hasFarsi) {
+                    itemsWithFarsi++;
+                }
+            });
+        });
+
+        return res.status(200).json({
+            success: true,
+            stats: {
+                totalItems,
+                itemsWithEnglish: itemsWithEnglish + itemsWithBoth,
+                itemsWithFarsi: itemsWithFarsi + itemsWithBoth,
+                itemsWithBoth,
+                englishOnly: itemsWithEnglish,
+                farsiOnly: itemsWithFarsi,
+                hasEnglishData: (itemsWithEnglish + itemsWithBoth) > 0,
+                hasFarsiData: (itemsWithFarsi + itemsWithBoth) > 0
+            }
+        });
+
+    } catch (error) {
+        console.error('Get category language stats error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error getting language stats',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
     }

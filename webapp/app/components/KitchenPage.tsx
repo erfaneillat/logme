@@ -17,6 +17,7 @@ interface KitchenItem {
     _id?: string;
     id?: string;
     name: string;
+    name_fa?: string;
     calories: number;
     protein: number;
     carbs: number;
@@ -25,7 +26,9 @@ interface KitchenItem {
     prepTime: string;
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[];
+    ingredients_fa?: Ingredient[];
     instructions?: string;
+    instructions_fa?: string;
     originalId?: string;
     isFree?: boolean;
 }
@@ -33,6 +36,7 @@ interface KitchenItem {
 interface KitchenSubCategory {
     _id?: string;
     title: string;
+    title_fa?: string;
     items: KitchenItem[];
 }
 
@@ -40,6 +44,7 @@ interface KitchenCategory {
     _id: string;
     id?: string;
     title: string;
+    title_fa?: string;
     subCategories: KitchenSubCategory[];
 }
 
@@ -52,12 +57,30 @@ interface KitchenPageProps {
 }
 
 const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClick }) => {
-    const { t, isRTL } = useTranslation();
+    const { t, isRTL, locale } = useTranslation();
 
     const formatNumber = (num: number | string) => {
         if (!isRTL) return String(num);
         const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
         return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    // Helper to get the correct localized name for an item
+    const getLocalizedName = (item: KitchenItem | KitchenSubCategory | KitchenCategory) => {
+        if (locale === 'fa') {
+            // Farsi mode: prefer name_fa or title_fa, fallback to name/title
+            return (item as any).name_fa || (item as any).title_fa || (item as any).name || (item as any).title;
+        } else {
+            // English mode: prefer name/title if it looks English, otherwise use name_fa/title_fa with fallback
+            const name = (item as any).name || (item as any).title;
+            const nameFa = (item as any).name_fa || (item as any).title_fa;
+            // Check if name is Latin (English) - if first char is ASCII letter
+            if (name && /^[a-zA-Z]/.test(name)) {
+                return name;
+            }
+            // If name looks like Farsi but we have nameFa (unlikely), still prefer non-Farsi looking name
+            return name || nameFa || 'Unnamed';
+        }
     };
 
     const [categories, setCategories] = useState<KitchenCategory[]>([]);
@@ -249,7 +272,9 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClic
             </div>
 
             <div>
-                <h3 className="font-bold text-gray-800 mb-1 truncate text-lg">{item.name}</h3>
+                <h3 className="font-bold text-gray-800 mb-1 truncate text-lg">
+                    {getLocalizedName(item)}
+                </h3>
                 <div className="flex items-center gap-2 mb-3">
                     <span className="text-orange-500 font-extrabold text-sm flex items-center gap-1">
                         🔥 {formatNumber(item.calories)}
@@ -339,7 +364,7 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClic
                                 : 'bg-white text-gray-500 border border-gray-100 hover:bg-gray-50'
                                 }`}
                         >
-                            {cat.title}
+                            {getLocalizedName(cat)}
                         </button>
                     ))}
                 </div>
@@ -379,7 +404,7 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClic
                                 <div className="px-6 mb-4 flex justify-between items-end">
                                     <h2 className="text-lg font-extrabold text-gray-800 flex items-center gap-2">
                                         <span className="w-1 h-6 bg-orange-500 rounded-full inline-block"></span>
-                                        {subCat.title}
+                                        {getLocalizedName(subCat)}
                                         <span className="text-xs font-medium text-gray-400 mr-2">
                                             ({formatNumber(subCat.items.length)} {t('kitchen.itemsCount')})
                                         </span>
@@ -528,7 +553,9 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClic
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h3 className="font-bold text-gray-900 truncate mb-1">{item.name}</h3>
+                                                    <h3 className="font-bold text-gray-900 truncate mb-1">
+                                                        {getLocalizedName(item)}
+                                                    </h3>
                                                     <div className="flex items-center gap-2 text-sm">
                                                         <span className="text-orange-500 font-bold">🔥 {formatNumber(item.calories)}</span>
                                                         <span className="text-gray-300">|</span>
@@ -556,6 +583,7 @@ const KitchenPage: React.FC<KitchenPageProps> = ({ onAddFood, onSubscriptionClic
                     <div className="fixed inset-0 z-50 bg-[#F8F9FB]">
                         <KitchenSeeAllPage
                             title={selectedSubCategory.title}
+                            title_fa={selectedSubCategory.title_fa}
                             items={selectedSubCategory.items}
                             onBack={() => setSelectedSubCategory(null)}
                             onItemClick={(item) => handleItemClick(item, {
