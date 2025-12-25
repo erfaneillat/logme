@@ -101,6 +101,13 @@
         "logFirst": "Log your first meal",
         "calories": "Calories"
     },
+    "navigation": {
+        "home": "Home",
+        "analysis": "Analysis",
+        "kitchen": "Kitchen",
+        "chat": "AI",
+        "profile": "Profile"
+    },
     "common": {
         "error": "An error occurred",
         "loading": "Loading..."
@@ -665,7 +672,11 @@
             "addBurned": "Add Burned Calories",
             "addBurnedSub": "Add burned calories to daily goal",
             "rollover": "Rollover Remaining Calories",
-            "rolloverSub": "Rollover up to 200 calories from yesterday"
+            "rolloverSub": "Rollover up to 200 calories from yesterday",
+            "language": "Language",
+            "languageSub": "Choose your preferred language",
+            "english": "English",
+            "persian": "فارسی"
         },
         "support": {
             "title": "Support & Legal",
@@ -758,6 +769,90 @@
             "uploadError": "Image upload failed",
             "createError": "Error creating ticket",
             "sendError": "Error sending message"
+        }
+    },
+    "subscriptionPrompt": {
+        "title": "We want you to\ntry Slice for free.",
+        "noPaymentDue": "No Payment Due Now",
+        "tryForFree": "Try for $0.00",
+        "priceInfo": "Just $29.99 per year ($2.49/mo)",
+        "reminderTitle": "We'll send you\na reminder before your\nfree trial ends",
+        "continueForFree": "Continue for FREE",
+        "step3": {
+            "title": "Start your 3-day FREE\ntrial to continue.",
+            "timeline": {
+                "today": "Today",
+                "todayDesc": "Unlock all the app's features like AI calorie scanning and more.",
+                "reminder": "In 2 Days - Reminder",
+                "reminderDesc": "We'll send you a reminder that your trial is ending soon.",
+                "billing": "In 3 Days - Billing Starts",
+                "billingDesc": "You'll be charged on {{date}} unless you cancel anytime before."
+            },
+            "plans": {
+                "monthly": "Monthly",
+                "yearly": "Yearly",
+                "mo": "/mo",
+                "yr": "/yr",
+                "threeDaysFree": "3 DAYS FREE"
+            },
+            "button": {
+                "trial": "Start My 3-Day Free Trial",
+                "noTrial": "Start My Journey"
+            },
+            "footer": {
+                "trial": "3 days free, then {{price}} per year ({{monthlyPrice}}/mo)",
+                "noTrial": "Just {{price}} per month"
+            }
+        }
+    },
+    "oneTimeOffer": {
+        "title": "One Time Offer",
+        "subtitle": "You will never see this again",
+        "year": "Year",
+        "lowestPrice": "Lowest price ever",
+        "pricePerYear": "US$29.99 Per Year, you can cancel subscription at anytime",
+        "continue": "Continue",
+        "disclaimer": "The subscription will be charged and automatically renewed 24 hours before expiration. You can cancel anytime in Google Play",
+        "termsOfUse": "Terms of Use",
+        "privacyPolicy": "Privacy policy"
+    },
+    "foodDetail": {
+        "quickEdit": "Quick Edit",
+        "cancel": "Cancel",
+        "save": "Save",
+        "addIngredient": "Add Ingredient",
+        "editIngredient": "Edit Ingredient",
+        "name": "Name",
+        "ingredientName": "Ingredient Name",
+        "calories": "Calories",
+        "protein": "Protein (g)",
+        "fat": "Fat (g)",
+        "carbs": "Carbs (g)",
+        "deleteMeal": {
+            "title": "Delete Meal",
+            "confirm": "Are you sure you want to delete this meal?",
+            "irreversible": "This action cannot be undone.",
+            "deleting": "Deleting...",
+            "button": "Delete",
+            "success": "Meal deleted",
+            "error": "Error deleting meal"
+        },
+        "aiFix": {
+            "title": "Fix with AI",
+            "description": "AI will review your changes and correct calories and nutrients",
+            "placeholder": "Describe the issue...\ne.g. This food was double the size or I only ate half",
+            "analyzing": "AI is analyzing...",
+            "button": "Fix Result"
+        },
+        "healthScore": "Health Score",
+        "saveChanges": "Saved changes for",
+        "portions": "Portions",
+        "totalCalories": "Total Calories",
+        "ingredients": "Ingredients",
+        "add": "Add",
+        "noIngredients": {
+            "title": "No ingredients recorded",
+            "subtitle": "Ingredient details are not available for this food"
         }
     }
 }

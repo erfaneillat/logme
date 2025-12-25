@@ -383,9 +383,13 @@ const AnalysisPage: React.FC = () => {
         );
     };
 
+    // State for active bar tooltip
+    const [activeBar, setActiveBar] = useState<{ index: number; val: number; label: string; date: string } | null>(null);
+    const touchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
     const renderNutritionChart = () => {
-        // Create last 7 days array
-        const days = [];
+        // Create last 7 days array with explicit type
+        const days: Array<{ label: string; fullDate: string; val: number; isToday: boolean }> = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
@@ -393,6 +397,7 @@ const AnalysisPage: React.FC = () => {
             const log = weeklyLogs.find(l => l.date === dateStr);
             days.push({
                 label: d.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { weekday: 'narrow' }),
+                fullDate: d.toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
                 val: log ? log.caloriesConsumed : 0,
                 isToday: i === 0
             });
@@ -400,22 +405,78 @@ const AnalysisPage: React.FC = () => {
 
         const maxCal = Math.max(...days.map(d => d.val), 2000); // at least 2000 scale
 
+        const handleTouchStart = (index: number, day: typeof days[0]) => {
+            // Clear any existing timeout
+            if (touchTimeoutRef.current) {
+                clearTimeout(touchTimeoutRef.current);
+            }
+            // Set active immediately for touch
+            setActiveBar({ index, val: day.val, label: day.label, date: day.fullDate });
+        };
+
+        const handleTouchEnd = () => {
+            // Delay hiding to allow visual feedback
+            touchTimeoutRef.current = setTimeout(() => {
+                setActiveBar(null);
+            }, 1500);
+        };
+
+        const handleMouseEnter = (index: number, day: typeof days[0]) => {
+            setActiveBar({ index, val: day.val, label: day.label, date: day.fullDate });
+        };
+
+        const handleMouseLeave = () => {
+            setActiveBar(null);
+        };
+
         return (
-            <div className="flex items-end justify-between h-48 px-2 space-x-2 space-x-reverse">
-                {days.map((day, i) => {
-                    const heightPct = (day.val / maxCal) * 100;
-                    return (
-                        <div key={i} className="flex flex-col items-center flex-1 group">
-                            <div className="relative w-full flex items-end justify-center h-40 bg-gray-50 rounded-[14px] overflow-hidden border border-gray-50">
-                                <div
-                                    className={`w-full mx-1 rounded-t-[10px] transition-all duration-1000 ease-out ${day.isToday ? 'bg-gray-900 shadow-lg' : 'bg-gray-300'}`}
-                                    style={{ height: animate ? `${heightPct}%` : '0%', transitionDelay: `${400 + (i * 100)}ms` }}
-                                ></div>
-                            </div>
-                            <span className={`text-xs font-bold mt-3 ${day.isToday ? 'text-gray-900' : 'text-gray-400'}`}>{day.label}</span>
+            <div className="relative">
+                {/* Tooltip */}
+                {activeBar && (
+                    <div
+                        className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-xl shadow-xl z-10 animate-fade-in"
+                        style={{
+                            left: `${((activeBar.index + 0.5) / 7) * 100}%`,
+                            transform: 'translateX(-50%)'
+                        }}
+                    >
+                        <div className="text-center">
+                            <p className="text-xs text-gray-400 font-medium mb-0.5">{activeBar.date}</p>
+                            <p className="text-lg font-black">{formatNumber(activeBar.val)} <span className="text-xs font-medium text-gray-400">{t('foodDetail.calories')}</span></p>
                         </div>
-                    );
-                })}
+                        <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-900 rotate-45"></div>
+                    </div>
+                )}
+
+                <div className="flex items-end justify-between h-48 px-2 space-x-2 space-x-reverse">
+                    {days.map((day, i) => {
+                        const heightPct = (day.val / maxCal) * 100;
+                        const isActive = activeBar?.index === i;
+                        return (
+                            <div
+                                key={i}
+                                className="flex flex-col items-center flex-1 group cursor-pointer"
+                                onTouchStart={() => handleTouchStart(i, day)}
+                                onTouchEnd={handleTouchEnd}
+                                onMouseEnter={() => handleMouseEnter(i, day)}
+                                onMouseLeave={handleMouseLeave}
+                            >
+                                <div className={`relative w-full flex items-end justify-center h-40 rounded-[14px] overflow-hidden border transition-all duration-200 ${isActive ? 'bg-blue-50 border-blue-200 scale-105' : 'bg-gray-50 border-gray-50'}`}>
+                                    <div
+                                        className={`w-full mx-1 rounded-t-[10px] transition-all duration-1000 ease-out ${isActive
+                                            ? 'bg-blue-600 shadow-lg'
+                                            : day.isToday
+                                                ? 'bg-gray-900 shadow-lg'
+                                                : 'bg-gray-300'
+                                            }`}
+                                        style={{ height: animate ? `${heightPct}%` : '0%', transitionDelay: `${400 + (i * 100)}ms` }}
+                                    ></div>
+                                </div>
+                                <span className={`text-xs font-bold mt-3 transition-colors ${isActive ? 'text-blue-600' : day.isToday ? 'text-gray-900' : 'text-gray-400'}`}>{day.label}</span>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         );
     };

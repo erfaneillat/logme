@@ -133,10 +133,13 @@ export class FoodController {
 
         let analysis: any;
         try {
-            const options: { signal: AbortSignal; description?: string } = { signal: ac.signal };
+            const options: { signal: AbortSignal; description?: string; locale?: string } = { signal: ac.signal };
             if (description) {
                 options.description = description;
             }
+            // Extract locale from Accept-Language header
+            options.locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+
             analysis = await this.service.analyze(base64, options);
         } catch (err: any) {
             // Abort triggered or other error before persistence
@@ -269,7 +272,9 @@ export class FoodController {
         }
 
         try {
-            const analysis = await this.service.fixAnalysis(originalData, userDescription);
+            // Extract locale from Accept-Language header
+            const locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+            const analysis = await this.service.fixAnalysis(originalData, userDescription, locale);
 
             // Increment user's cumulative AI cost if available
             const userId = req.user?.userId;
@@ -351,7 +356,9 @@ export class FoodController {
         }
 
         try {
-            const analysis = await this.service.analyzeFromDescription(description.trim());
+            // Extract locale from Accept-Language header
+            const locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+            const analysis = await this.service.analyzeFromDescription(description.trim(), locale);
             const analysisData = analysis.data;
 
             // Get the user ID from the authenticated request

@@ -137,3 +137,29 @@
 .animate-scale-up {
   animation: scale-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
+
+@keyframes scan {
+
+  0%,
+  100% {
+    transform: translateY(-80px);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(80px);
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+}
+
+.animate-scan {
+  animation: scan 3s ease-in-out infinite;
+}

@@ -30,6 +30,31 @@ const getApiBaseUrl = (): string => {
 // BASE_URL is evaluated once at module load - may not have injected values yet
 export const getBaseUrl = getApiBaseUrl;
 
+// Get user's preferred locale for API requests (Accept-Language header)
+// Returns the locale code stored in localStorage, defaults based on market
+export const getApiLocale = (): string => {
+    if (typeof window === 'undefined') {
+        return process.env.NEXT_PUBLIC_MARKET === 'global' ? 'en' : 'fa';
+    }
+
+    // Check localStorage for user preference
+    const savedLocale = localStorage.getItem('app_locale');
+    if (savedLocale) {
+        return savedLocale;
+    }
+
+    // Check if global mode
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const marketParam = searchParams.get('market') || hashParams.get('market');
+
+    if (marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global') {
+        return 'en';
+    }
+
+    return 'fa';
+};
+
 // Helper to fix image URLs (handle localhost vs production, development vs Android Emulator)
 export const fixImageUrl = (url?: string): string | undefined => {
     if (!url) return undefined;
@@ -753,7 +778,7 @@ export const apiService = {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    'Accept-Language': 'fa',
+                    'Accept-Language': getApiLocale(),
                 },
                 body: formData,
             });
@@ -791,7 +816,7 @@ export const apiService = {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    'Accept-Language': 'fa',
+                    'Accept-Language': getApiLocale(),
                 },
                 body: JSON.stringify(body),
             });
@@ -998,6 +1023,7 @@ export const apiService = {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
+                    'Accept-Language': getApiLocale(),
                 },
                 body: JSON.stringify({ exercise, duration }),
             });

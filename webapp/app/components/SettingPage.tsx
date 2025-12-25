@@ -139,7 +139,7 @@ interface SettingPageProps {
 }
 
 const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick }) => {
-    const { t, isRTL } = useTranslation();
+    const { t, isRTL, locale, setLocale, isGlobal } = useTranslation();
     const [currentView, setCurrentView] = useState<SettingView>('main');
     const [animate, setAnimate] = useState(false);
 
@@ -512,7 +512,7 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                             <Toggle active={preferences.addBurnedCalories} onChange={() => handlePreferenceChange('addBurnedCalories')} isRTL={isRTL} activeColor="bg-orange-500" />
                         </div>
 
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center pb-4 border-b border-gray-50">
                             <div className="flex-1 me-4">
                                 <div className="flex items-center justify-start gap-2 mb-1">
                                     <span className="text-green-500 bg-green-50 p-1 rounded-lg">↺</span>
@@ -522,6 +522,34 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                             </div>
                             <Toggle active={preferences.rolloverCalories} onChange={() => handlePreferenceChange('rolloverCalories')} isRTL={isRTL} activeColor="bg-green-500" />
                         </div>
+
+                        {/* Language Selector - Only shown in Global mode */}
+                        {isGlobal && (
+                            <div className="flex justify-between items-center">
+                                <div className="flex-1 me-4">
+                                    <div className="flex items-center justify-start gap-2 mb-1">
+                                        <span className="text-blue-500 bg-blue-50 p-1 rounded-lg">🌐</span>
+                                        <h4 className="font-bold text-gray-800 text-sm">{t('settings.preferences.language')}</h4>
+                                    </div>
+                                    <p className="text-xs text-gray-400 ms-8">{t('settings.preferences.languageSub')}</p>
+                                </div>
+                                <div className="relative">
+                                    <select
+                                        value={locale}
+                                        onChange={(e) => setLocale(e.target.value as 'en' | 'fa')}
+                                        className="appearance-none bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm px-4 py-2.5 pe-10 rounded-xl cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    >
+                                        <option value="en">{t('settings.preferences.english')}</option>
+                                        <option value="fa">{t('settings.preferences.persian')}</option>
+                                    </select>
+                                    <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
+                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -11,13 +11,17 @@ interface FoodDetailModalProps {
     onClose: () => void;
 }
 
-// Helper to convert English numbers to Persian/Farsi numerals
-const toPersianNumbers = (num: number | string): string => {
+// Helper to convert English numbers to Persian/Farsi numerals if needed
+const toPersianNumbers = (num: number | string, isRTL: boolean): string => {
+    if (!isRTL) return String(num);
     const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
     return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
 };
 
+import { useTranslation } from '../translations';
+
 const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
+    const { t, isRTL } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isFavorite, setIsFavorite] = useState(false);
@@ -388,7 +392,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                     {/* Current value display */}
                     <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-center border border-gray-100">
                         <span className="text-3xl font-black text-gray-800">
-                            {toPersianNumbers(localValue)}
+                            {toPersianNumbers(localValue, isRTL)}
                         </span>
                     </div>
 
@@ -417,7 +421,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
                     {/* Quick adjust chips */}
                     <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-                        <p className="text-xs font-bold text-gray-400 text-center mb-3">تغییر سریع</p>
+                        <p className="text-xs font-bold text-gray-400 text-center mb-3">{t('foodDetail.quickEdit')}</p>
                         <div className="flex flex-wrap justify-center gap-2">
                             {quickAdjustments.map(delta => (
                                 <button
@@ -428,7 +432,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                         : 'bg-red-50 text-red-600 hover:bg-red-100'
                                         }`}
                                 >
-                                    {delta > 0 ? `+${toPersianNumbers(delta)}` : toPersianNumbers(delta)}
+                                    {delta > 0 ? `+${toPersianNumbers(delta, isRTL)}` : toPersianNumbers(delta, isRTL)}
                                 </button>
                             ))}
                         </div>
@@ -440,13 +444,13 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             onClick={() => setEditDialog(null)}
                             className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors"
                         >
-                            انصراف
+                            {t('foodDetail.cancel')}
                         </button>
                         <button
                             onClick={handleSave}
                             className="flex-[2] py-4 rounded-2xl bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors"
                         >
-                            ذخیره
+                            {t('foodDetail.save')}
                         </button>
                     </div>
                 </div>
@@ -507,32 +511,32 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
                     {/* Title */}
                     <h3 className="text-xl font-black text-center text-gray-800 mb-6">
-                        {ingredientDialog.mode === 'add' ? 'افزودن ماده اولیه' : 'ویرایش ماده اولیه'}
+                        {ingredientDialog.mode === 'add' ? t('foodDetail.addIngredient') : t('foodDetail.editIngredient')}
                     </h3>
 
                     {/* Form */}
                     <div className="space-y-4">
                         {/* Name */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-500 mb-2">نام</label>
+                            <label className="block text-sm font-bold text-gray-500 mb-2">{t('foodDetail.name')}</label>
                             <input
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 text-right font-bold text-gray-800 focus:border-orange-400 focus:outline-none"
-                                placeholder="نام ماده اولیه"
+                                className={`w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 ${isRTL ? 'text-right' : 'text-left'} font-bold text-gray-800 focus:border-orange-400 focus:outline-none`}
+                                placeholder={t('foodDetail.ingredientName')}
                             />
                         </div>
 
                         {/* Calories */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-500 mb-2">کالری</label>
+                            <label className="block text-sm font-bold text-gray-500 mb-2">{t('foodDetail.calories')}</label>
                             <input
                                 type="number"
                                 value={formData.calories}
                                 onChange={(e) => setFormData(prev => ({ ...prev, calories: e.target.value }))}
                                 className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 text-center font-bold text-gray-800 focus:border-orange-400 focus:outline-none"
-                                placeholder="۰"
+                                placeholder={toPersianNumbers('0', isRTL)}
                             />
                         </div>
 
@@ -540,37 +544,37 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                         <div className="grid grid-cols-3 gap-3">
                             {/* Protein */}
                             <div>
-                                <label className="block text-xs font-bold text-blue-500 mb-2 text-center">پروتئین (گرم)</label>
+                                <label className="block text-xs font-bold text-blue-500 mb-2 text-center">{t('foodDetail.protein')}</label>
                                 <input
                                     type="number"
                                     value={formData.proteinGrams}
                                     onChange={(e) => setFormData(prev => ({ ...prev, proteinGrams: e.target.value }))}
                                     className="w-full p-3 bg-blue-50 rounded-xl border border-blue-200 text-center font-bold text-blue-600 focus:border-blue-400 focus:outline-none"
-                                    placeholder="۰"
+                                    placeholder={toPersianNumbers('0', isRTL)}
                                 />
                             </div>
 
                             {/* Fat */}
                             <div>
-                                <label className="block text-xs font-bold text-purple-500 mb-2 text-center">چربی (گرم)</label>
+                                <label className="block text-xs font-bold text-purple-500 mb-2 text-center">{t('foodDetail.fat')}</label>
                                 <input
                                     type="number"
                                     value={formData.fatGrams}
                                     onChange={(e) => setFormData(prev => ({ ...prev, fatGrams: e.target.value }))}
                                     className="w-full p-3 bg-purple-50 rounded-xl border border-purple-200 text-center font-bold text-purple-600 focus:border-purple-400 focus:outline-none"
-                                    placeholder="۰"
+                                    placeholder={toPersianNumbers('0', isRTL)}
                                 />
                             </div>
 
                             {/* Carbs */}
                             <div>
-                                <label className="block text-xs font-bold text-yellow-600 mb-2 text-center">کربو (گرم)</label>
+                                <label className="block text-xs font-bold text-yellow-600 mb-2 text-center">{t('foodDetail.carbs')}</label>
                                 <input
                                     type="number"
                                     value={formData.carbsGrams}
                                     onChange={(e) => setFormData(prev => ({ ...prev, carbsGrams: e.target.value }))}
                                     className="w-full p-3 bg-yellow-50 rounded-xl border border-yellow-200 text-center font-bold text-yellow-600 focus:border-yellow-400 focus:outline-none"
-                                    placeholder="۰"
+                                    placeholder={toPersianNumbers('0', isRTL)}
                                 />
                             </div>
                         </div>
@@ -582,14 +586,14 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             onClick={() => setIngredientDialog(null)}
                             className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors"
                         >
-                            انصراف
+                            {t('foodDetail.cancel')}
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={!formData.name.trim()}
                             className="flex-[2] py-4 rounded-2xl bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            ذخیره
+                            {t('foodDetail.save')}
                         </button>
                     </div>
                 </div>
@@ -621,11 +625,13 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
             setDeleteConfirmDialog({ isOpen: false, isDeleting: false });
             setIsOpen(false);
             setTimeout(onClose, 500);
-            showToast('وعده غذایی حذف شد', 'success');
+            setIsOpen(false);
+            setTimeout(onClose, 500);
+            showToast(t('foodDetail.deleteMeal.success'), 'success');
         } catch (error) {
             console.error('Delete error:', error);
             setDeleteConfirmDialog({ isOpen: false, isDeleting: false });
-            showToast('خطا در حذف وعده', 'error');
+            showToast(t('foodDetail.deleteMeal.error'), 'error');
         }
     };
 
@@ -656,14 +662,14 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
                     {/* Title */}
                     <h3 className="text-xl font-black text-center text-gray-800 mb-2">
-                        حذف وعده غذایی
+                        {t('foodDetail.deleteMeal.title')}
                     </h3>
 
                     {/* Description */}
                     <p className="text-center text-gray-500 text-sm mb-6 leading-relaxed">
-                        آیا از حذف این وعده اطمینان دارید؟
+                        {t('foodDetail.deleteMeal.confirm')}
                         <br />
-                        <span className="text-gray-400">این عمل قابل بازگشت نیست.</span>
+                        <span className="text-gray-400">{t('foodDetail.deleteMeal.irreversible')}</span>
                     </p>
 
                     {/* Food preview */}
@@ -676,8 +682,8 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             )}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-bold text-gray-800 text-sm truncate text-right">{displayFood.name}</p>
-                            <p className="text-xs text-gray-400 text-right">{toPersianNumbers(effectiveCalories)} کالری</p>
+                            <p className={`font-bold text-gray-800 text-sm truncate ${isRTL ? 'text-right' : 'text-left'}`}>{displayFood.name}</p>
+                            <p className={`text-xs text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>{toPersianNumbers(effectiveCalories, isRTL)} {t('foodDetail.calories')}</p>
                         </div>
                     </div>
 
@@ -688,7 +694,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             disabled={deleteConfirmDialog.isDeleting}
                             className="flex-1 py-3.5 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors disabled:opacity-50"
                         >
-                            انصراف
+                            {t('foodDetail.cancel')}
                         </button>
                         <button
                             onClick={executeDelete}
@@ -698,14 +704,14 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             {deleteConfirmDialog.isDeleting ? (
                                 <>
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    <span>در حال حذف...</span>
+                                    <span>{t('foodDetail.deleteMeal.deleting')}</span>
                                 </>
                             ) : (
                                 <>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                                     </svg>
-                                    <span>حذف</span>
+                                    <span>{t('foodDetail.deleteMeal.button')}</span>
                                 </>
                             )}
                         </button>
@@ -759,7 +765,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                     <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-black text-gray-800">اصلاح با هوش مصنوعی</h3>
+                            <h3 className="text-xl font-black text-gray-800">{t('foodDetail.aiFix.title')}</h3>
                         </div>
 
                         {/* Input area */}
@@ -767,17 +773,17 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             <textarea
                                 ref={fixResultTextareaRef}
                                 onChange={(e) => setFixResultIsEmpty(!e.target.value.trim())}
-                                placeholder="مشکل غذا را شرح دهید...&#10;مثلاً: این غذا دو برابر بیشتر بود یا فقط نصف غذا خوردم"
-                                className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 text-right font-medium text-gray-800 focus:border-purple-400 focus:outline-none resize-none h-32"
+                                placeholder={t('foodDetail.aiFix.placeholder')}
+                                className={`w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 ${isRTL ? 'text-right' : 'text-left'} font-medium text-gray-800 focus:border-purple-400 focus:outline-none resize-none h-32`}
                                 disabled={fixResultDialog.isLoading}
-                                dir="rtl"
+                                dir={isRTL ? "rtl" : "ltr"}
                             />
                         </div>
 
                         {/* Info box */}
                         <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 mb-6 border border-purple-100">
-                            <p className="text-sm text-gray-600 text-right leading-relaxed">
-                                🤖 هوش مصنوعی تغییرات شما را بررسی کرده و کالری و مواد مغذی را اصلاح می‌کند
+                            <p className={`text-sm text-gray-600 ${isRTL ? 'text-right' : 'text-left'} leading-relaxed`}>
+                                🤖 {t('foodDetail.aiFix.description')}
                             </p>
                         </div>
 
@@ -788,7 +794,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                 disabled={fixResultDialog.isLoading}
                                 className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors disabled:opacity-50"
                             >
-                                انصراف
+                                {t('foodDetail.cancel')}
                             </button>
                             <button
                                 onClick={() => {
@@ -803,14 +809,14 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                 {fixResultDialog.isLoading ? (
                                     <>
                                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        <span>در حال اصلاح...</span>
+                                        <span>{t('foodDetail.aiFix.analyzing')}</span>
                                     </>
                                 ) : (
                                     <>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
                                         </svg>
-                                        <span>اصلاح کن</span>
+                                        <span>{t('foodDetail.aiFix.button')}</span>
                                     </>
                                 )}
                             </button>
@@ -930,17 +936,17 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             <div className="grid grid-cols-2 gap-4 mb-8">
                                 {/* Quantity Control */}
                                 <div className="bg-white rounded-[24px] p-4 shadow-sm border border-gray-100 flex flex-col items-center justify-center">
-                                    <span className="text-xs font-bold text-gray-400 mb-2">تعداد وعده</span>
+                                    <span className="text-xs font-bold text-gray-400 mb-2">{t('foodDetail.portions')}</span>
                                     <div className="flex items-center gap-4">
                                         <button onClick={() => setQuantity(q => q + 0.25)} className="w-8 h-8 rounded-xl bg-gray-50 text-gray-800 flex items-center justify-center hover:bg-gray-100 font-bold text-lg">+</button>
-                                        <span className="text-xl font-black text-gray-900 w-12 text-center">{toPersianNumbers(quantity)}</span>
+                                        <span className="text-xl font-black text-gray-900 w-12 text-center">{toPersianNumbers(quantity, isRTL)}</span>
                                         <button onClick={() => setQuantity(q => Math.max(0.25, q - 0.25))} className="w-8 h-8 rounded-xl bg-gray-50 text-gray-800 flex items-center justify-center hover:bg-gray-100 font-bold text-lg">-</button>
                                     </div>
                                 </div>
 
                                 {/* Calories Control */}
                                 <div
-                                    onClick={() => openEditDialog('کالری کل', effectiveCalories, (v) => setBaseCalories(Math.round(v / quantity)))}
+                                    onClick={() => openEditDialog(t('foodDetail.totalCalories'), effectiveCalories, (v) => setBaseCalories(Math.round(v / quantity)))}
                                     className="bg-white rounded-[24px] p-4 shadow-sm border border-gray-100 flex flex-col items-center justify-center relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
                                 >
                                     <div className="absolute top-3 left-3 text-gray-300">
@@ -948,10 +954,10 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
                                     </div>
-                                    <span className="text-xs font-bold text-gray-400 mb-1">کالری کل</span>
+                                    <span className="text-xs font-bold text-gray-400 mb-1">{t('foodDetail.totalCalories')}</span>
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-2xl font-black text-gray-900">{toPersianNumbers(effectiveCalories)}</span>
-                                        <span className="text-xs font-bold text-gray-500">کالری</span>
+                                        <span className="text-2xl font-black text-gray-900">{toPersianNumbers(effectiveCalories, isRTL)}</span>
+                                        <span className="text-xs font-bold text-gray-500">{t('foodDetail.calories')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -960,11 +966,11 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                             <div className="grid grid-cols-2 gap-4 mb-8">
                                 {/* Fat */}
                                 <div
-                                    onClick={() => openEditDialog('چربی', effectiveFat, (v) => setBaseFat(Math.round(v / quantity)))}
+                                    onClick={() => openEditDialog(t('dashboard.nutrients.fat'), effectiveFat, (v) => setBaseFat(Math.round(v / quantity)))}
                                     className="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
                                 >
-                                    <span className="text-xs font-bold text-gray-400 mb-2">چربی</span>
-                                    <div className="text-xl font-black text-purple-600 mb-1">{toPersianNumbers(effectiveFat)} <span className="text-xs text-gray-400">گرم</span></div>
+                                    <span className="text-xs font-bold text-gray-400 mb-2">{t('dashboard.nutrients.fat')}</span>
+                                    <div className="text-xl font-black text-purple-600 mb-1">{toPersianNumbers(effectiveFat, isRTL)} <span className="text-xs text-gray-400">{t('dashboard.nutrients.unit')}</span></div>
                                     <div className="w-full h-1.5 bg-purple-50 rounded-full overflow-hidden">
                                         <div className="h-full bg-purple-500 rounded-full" style={{ width: `${Math.min(100, (effectiveFat / 70) * 100)}%` }}></div>
                                     </div>
@@ -977,11 +983,11 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
                                 {/* Protein */}
                                 <div
-                                    onClick={() => openEditDialog('پروتئین', effectiveProtein, (v) => setBaseProtein(Math.round(v / quantity)))}
+                                    onClick={() => openEditDialog(t('dashboard.nutrients.protein'), effectiveProtein, (v) => setBaseProtein(Math.round(v / quantity)))}
                                     className="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
                                 >
-                                    <span className="text-xs font-bold text-gray-400 mb-2">پروتئین</span>
-                                    <div className="text-xl font-black text-blue-600 mb-1">{toPersianNumbers(effectiveProtein)} <span className="text-xs text-gray-400">گرم</span></div>
+                                    <span className="text-xs font-bold text-gray-400 mb-2">{t('dashboard.nutrients.protein')}</span>
+                                    <div className="text-xl font-black text-blue-600 mb-1">{toPersianNumbers(effectiveProtein, isRTL)} <span className="text-xs text-gray-400">{t('dashboard.nutrients.unit')}</span></div>
                                     <div className="w-full h-1.5 bg-blue-50 rounded-full overflow-hidden">
                                         <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, (effectiveProtein / 150) * 100)}%` }}></div>
                                     </div>
@@ -994,25 +1000,25 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
 
                                 {/* Health Score */}
                                 <div className="bg-white p-3 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center justify-center">
-                                    <span className="text-xs font-bold text-gray-400 mb-2">امتیاز سلامت</span>
+                                    <span className="text-xs font-bold text-gray-400 mb-2">{t('foodDetail.healthScore')}</span>
                                     <div className="relative flex items-center justify-center">
                                         <CircularProgress
                                             value={healthScore} max={10} size={50} strokeWidth={5} color="#10B981"
                                             showValue={false}
                                         />
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-lg font-black text-gray-800">{toPersianNumbers(healthScore)}</span>
+                                            <span className="text-lg font-black text-gray-800">{toPersianNumbers(healthScore, isRTL)}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Carbs */}
                                 <div
-                                    onClick={() => openEditDialog('کربوهیدرات', effectiveCarbs, (v) => setBaseCarbs(Math.round(v / quantity)))}
+                                    onClick={() => openEditDialog(t('dashboard.nutrients.carbs'), effectiveCarbs, (v) => setBaseCarbs(Math.round(v / quantity)))}
                                     className="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 flex flex-col items-center relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
                                 >
-                                    <span className="text-xs font-bold text-gray-400 mb-2">کربوهیدرات</span>
-                                    <div className="text-xl font-black text-yellow-600 mb-1">{toPersianNumbers(effectiveCarbs)} <span className="text-xs text-gray-400">گرم</span></div>
+                                    <span className="text-xs font-bold text-gray-400 mb-2">{t('dashboard.nutrients.carbs')}</span>
+                                    <div className="text-xl font-black text-yellow-600 mb-1">{toPersianNumbers(effectiveCarbs, isRTL)} <span className="text-xs text-gray-400">{t('dashboard.nutrients.unit')}</span></div>
                                     <div className="w-full h-1.5 bg-yellow-50 rounded-full overflow-hidden">
                                         <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${Math.min(100, (effectiveCarbs / 250) * 100)}%` }}></div>
                                     </div>
@@ -1032,17 +1038,17 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
                                 </svg>
-                                <span>اصلاح با هوش مصنوعی</span>
+                                <span>{t('foodDetail.aiFix.title')}</span>
                             </button>
 
                             {/* Ingredients Header */}
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-black text-xl text-gray-800">مواد اولیه</h3>
+                                <h3 className="font-black text-xl text-gray-800">{t('foodDetail.ingredients')}</h3>
                                 <button
                                     onClick={handleAddIngredient}
                                     className="text-xs font-bold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-xl hover:bg-orange-100 transition-colors"
                                 >
-                                    + افزودن
+                                    + {t('foodDetail.add')}
                                 </button>
                             </div>
 
@@ -1058,20 +1064,20 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                             <div className="flex justify-between items-start">
                                                 <h4 className="font-bold text-gray-800 text-lg">{item.name}</h4>
                                                 <div className="text-sm font-black text-gray-900 bg-gray-50 px-3 py-1 rounded-lg">
-                                                    {toPersianNumbers(item.calories)} <span className="text-[10px] text-gray-500 font-bold">کالری</span>
+                                                    {toPersianNumbers(item.calories, isRTL)} <span className="text-[10px] text-gray-500 font-bold">{t('foodDetail.calories')}</span>
                                                 </div>
                                             </div>
 
                                             <div className="flex justify-between items-end">
                                                 <div className="flex gap-2">
                                                     <span className="text-[10px] font-bold bg-yellow-50 text-yellow-600 px-2.5 py-1 rounded-lg border border-yellow-100">
-                                                        {toPersianNumbers(item.carbsGrams)} گرم C
+                                                        {toPersianNumbers(item.carbsGrams, isRTL)} {t('dashboard.nutrients.unit')} C
                                                     </span>
                                                     <span className="text-[10px] font-bold bg-purple-50 text-purple-600 px-2.5 py-1 rounded-lg border border-purple-100">
-                                                        {toPersianNumbers(item.fatGrams)} گرم F
+                                                        {toPersianNumbers(item.fatGrams, isRTL)} {t('dashboard.nutrients.unit')} F
                                                     </span>
                                                     <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg border border-blue-100">
-                                                        {toPersianNumbers(item.proteinGrams)} گرم P
+                                                        {toPersianNumbers(item.proteinGrams, isRTL)} {t('dashboard.nutrients.unit')} P
                                                     </span>
                                                 </div>
 
@@ -1101,8 +1107,8 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                             <span className="text-3xl">🥗</span>
                                         </div>
-                                        <h4 className="font-bold text-gray-700 mb-1">مواد اولیه ثبت نشده</h4>
-                                        <p className="text-sm text-gray-400">اطلاعات مواد اولیه برای این غذا موجود نیست</p>
+                                        <h4 className="font-bold text-gray-700 mb-1">{t('foodDetail.noIngredients.title')}</h4>
+                                        <p className="text-sm text-gray-400">{t('foodDetail.noIngredients.subtitle')}</p>
                                     </div>
                                 )}
 
@@ -1111,7 +1117,7 @@ const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
                                     className="w-full py-3 border-2 border-dashed border-gray-200 text-gray-400 rounded-[24px] font-bold text-sm hover:border-orange-200 hover:text-orange-500 hover:bg-orange-50 transition-all flex items-center justify-center gap-2"
                                 >
                                     <span>+</span>
-                                    <span>افزودن ماده اولیه</span>
+                                    <span>{t('foodDetail.addIngredient')}</span>
                                 </button>
                             </div>
                         </div>
