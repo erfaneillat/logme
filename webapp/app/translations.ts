@@ -38,7 +38,7 @@ export function isGlobalMode(): boolean {
     return marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global';
 }
 
-// Get locale from localStorage > market (Environment > URL > Default)
+// Get locale from localStorage > FlutterBridge > browser > default
 // In Iran mode, always returns 'fa'. Language selection is only available in global mode.
 export function getLocale(): Locale {
     // In Iran mode, always use Farsi
@@ -50,14 +50,32 @@ export function getLocale(): Locale {
         return 'en'; // Default for global mode on server
     }
 
-    // In global mode, check localStorage for user preference
+    // In global mode, check localStorage for user preference first
     const savedLocale = localStorage.getItem('app_locale');
     if (savedLocale === 'en' || savedLocale === 'fa') {
         return savedLocale;
     }
 
-    // Default to English for global mode
-    return 'en';
+    // Check if FlutterBridge provides device locale (from mobile app)
+    // @ts-ignore
+    const flutterBridge = window.FlutterBridge;
+    if (flutterBridge?.deviceLocale) {
+        const deviceLocale = flutterBridge.deviceLocale as string;
+        // Check if device locale is supported, otherwise default to 'en'
+        const supportedLocale: Locale = (deviceLocale === 'fa' || deviceLocale === 'en') ? deviceLocale : 'en';
+        // Save to localStorage for future use
+        localStorage.setItem('app_locale', supportedLocale);
+        return supportedLocale;
+    }
+
+    // Fallback: Check browser navigator language
+    const browserLang = navigator.language?.split('-')[0] || 'en';
+    const browserLocale: Locale = browserLang === 'fa' ? 'fa' : 'en';
+
+    // Save detected locale to localStorage
+    localStorage.setItem('app_locale', browserLocale);
+
+    return browserLocale;
 }
 
 // Apply locale-specific styles (direction, font, lang attribute)

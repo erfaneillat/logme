@@ -10,6 +10,7 @@ import 'package:cal_ai/services/payment_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
 import 'dart:convert';
+import 'dart:ui' as ui;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:cal_ai/services/fcm_service.dart';
 import 'package:cal_ai/services/api_service_provider.dart';
@@ -403,6 +404,11 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       final buildNumber = _packageInfo?.buildNumber ?? '1';
       final platform = Platform.isAndroid ? 'android' : 'ios';
 
+      // Get device locale (e.g., 'en', 'fa', 'de', etc.)
+      final deviceLocale = ui.PlatformDispatcher.instance.locale;
+      final deviceLanguageCode =
+          deviceLocale.languageCode; // e.g., 'en', 'fa', 'ar'
+
       await _controller.runJavaScript('''
         (function() {
           // Flutter bridge for native features
@@ -412,6 +418,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             buildNumber: '$buildNumber',
             platform: '$platform',
             market: '$market',
+            deviceLocale: '$deviceLanguageCode',
             
             // Called when webapp needs to share content
             share: function(text, url) {
@@ -449,7 +456,21 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             }
           };
           
-          console.log('FlutterBridge initialized with CafeBazaar payment support. Version: $version+$buildNumber, Market: $market');
+          // Set device locale in webapp if not already set
+          // Supported locales: 'en', 'fa'. Default to 'en' if not supported.
+          var supportedLocales = ['en', 'fa'];
+          var savedLocale = localStorage.getItem('app_locale');
+          
+          if (!savedLocale) {
+            var deviceLang = '$deviceLanguageCode';
+            var localeToSet = supportedLocales.includes(deviceLang) ? deviceLang : 'en';
+            localStorage.setItem('app_locale', localeToSet);
+            console.log('[Flutter] Device locale set to webapp:', localeToSet, '(device:', deviceLang, ')');
+          } else {
+            console.log('[Flutter] Locale already saved in webapp:', savedLocale);
+          }
+          
+          console.log('FlutterBridge initialized with CafeBazaar payment support. Version: $version+$buildNumber, Market: $market, DeviceLocale: $deviceLanguageCode');
         })();
       ''');
     } catch (e) {
