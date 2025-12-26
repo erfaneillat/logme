@@ -61,7 +61,7 @@ android {
         global {
             dimension "market"
             applicationId "ir.loqmeapp.application"
-            resValue "string", "app_name", "Loqme"
+            resValue "string", "app_name", "Slice"
         }
     }
 
