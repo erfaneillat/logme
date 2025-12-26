@@ -942,6 +942,17 @@ export const updateCategoryWithJson = async (req: Request, res: Response) => {
 };
 
 /**
+ * Helper function to detect if a string contains Persian/Arabic characters
+ */
+const containsPersian = (text: string): boolean => {
+    if (!text) return false;
+    // Persian Unicode range: \u0600-\u06FF (Arabic block, includes Persian)
+    // Also check for Persian-specific characters: \u0750-\u077F
+    const persianRegex = /[\u0600-\u06FF\u0750-\u077F]/;
+    return persianRegex.test(text);
+};
+
+/**
  * Get language stats for a category (how many items have EN vs FA data)
  */
 export const getCategoryLanguageStats = async (req: Request, res: Response) => {
@@ -962,10 +973,18 @@ export const getCategoryLanguageStats = async (req: Request, res: Response) => {
             sub.items.forEach(item => {
                 totalItems++;
 
-                // Check English: has name and it's not same as name_fa (indicating it's real English)
-                const hasEnglish = item.name && (!item.name_fa || item.name !== item.name_fa);
-                // Check Farsi
-                const hasFarsi = !!item.name_fa;
+                // Check if name field contains Persian (might be legacy data stored as fallback)
+                const nameIsPersian = containsPersian(item.name);
+
+                // Item has English if:
+                // 1. It has a name field that doesn't contain Persian characters, OR
+                // 2. It has name_fa AND name is different from name_fa (meaning name is English)
+                const hasEnglish = item.name && !nameIsPersian && item.name !== item.name_fa;
+
+                // Item has Farsi if:
+                // 1. It has name_fa field, OR
+                // 2. The name field contains Persian characters (legacy fallback data)
+                const hasFarsi = !!item.name_fa || nameIsPersian;
 
                 if (hasEnglish && hasFarsi) {
                     itemsWithBoth++;
