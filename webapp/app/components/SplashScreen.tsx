@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useTranslation } from '../translations';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -9,6 +10,7 @@ interface SplashScreenProps {
 }
 
 export default function SplashScreen({ onComplete, duration = 2500 }: SplashScreenProps) {
+  const { t } = useTranslation();
   const [isAnimating, setIsAnimating] = useState(true);
   const [showTagline, setShowTagline] = useState(false);
 
@@ -83,7 +85,7 @@ export default function SplashScreen({ onComplete, duration = 2500 }: SplashScre
           <div className="relative animate-bounce-subtle">
             <Image
               src="/app/loqme_logo.png"
-              alt="لقمه"
+              alt={t('splash.appName')}
               width={140}
               height={140}
               className="drop-shadow-2xl"
@@ -99,7 +101,7 @@ export default function SplashScreen({ onComplete, duration = 2500 }: SplashScre
             textShadow: '0 0 40px rgba(255,165,0,0.5), 0 0 80px rgba(255,165,0,0.3)',
           }}
         >
-          لقمه
+          {t('splash.appName')}
         </h1>
 
         {/* Tagline */}
@@ -107,7 +109,7 @@ export default function SplashScreen({ onComplete, duration = 2500 }: SplashScre
           className={`text-gray-400 text-lg mt-4 transition-all duration-700 ${showTagline ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             }`}
         >
-          دستیار هوشمند تغذیه شما
+          {t('splash.tagline')}
         </p>
 
         {/* Loading Indicator */}

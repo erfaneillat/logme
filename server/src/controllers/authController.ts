@@ -24,9 +24,11 @@ export class AuthController {
     this.getProfile = this.getProfile.bind(this);
     this.updateProfile = this.updateProfile.bind(this);
     this.refreshToken = this.refreshToken.bind(this);
-    this.refreshToken = this.refreshToken.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
     this.trackAppOpen = this.trackAppOpen.bind(this);
+    this.activateOneTimeOffer = this.activateOneTimeOffer.bind(this);
+    // OAuth methods
+    this.oauthLogin = this.oauthLogin.bind(this);
   }
 
   // Track app open
@@ -177,7 +179,7 @@ export class AuthController {
       // Send Telegram notification for new signups
       if (!wasVerified) {
         // Run in background, don't await/block response
-        telegramService.sendSignupNotification(user.phone, (user as any)._id.toString()).catch((err: any) => {
+        telegramService.sendSignupNotification(user.phone || 'Unknown', (user as any)._id.toString()).catch((err: any) => {
           errorLogger.error('Failed to send signup telegram notification', err);
         });
       }
@@ -445,6 +447,146 @@ export class AuthController {
         success: false,
         message: 'Failed to delete account. Please try again.'
       });
+    }
+  }
+
+  // OAuth Login (Google/Apple)
+  // The client verifies the token with Google/Apple and sends us the user info
+  async oauthLogin(req: Request, res: Response): Promise<void> {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+        return;
+      }
+
+      const { provider, email, name, providerId } = req.body;
+
+      if (!provider || !email || !providerId) {
+        res.status(400).json({
+          success: false,
+          message: 'Missing required fields: provider, email, providerId'
+        });
+        return;
+      }
+
+      if (!['google', 'apple'].includes(provider)) {
+        res.status(400).json({
+          success: false,
+          message: 'Invalid provider. Must be google or apple.'
+        });
+        return;
+      }
+
+      // Check if user exists by email or providerId
+      let user = await User.findOne({
+        $or: [
+          { email: email.toLowerCase() },
+          { providerId: providerId, authProvider: provider }
+        ]
+      });
+
+      const isNewUser = !user;
+
+      if (user) {
+        // Existing user - update provider info if needed
+        if (!user.providerId) {
+          user.providerId = providerId;
+          user.authProvider = provider;
+        }
+        user.isEmailVerified = true;
+        if (name && !user.name) {
+          user.name = name;
+        }
+        await user.save();
+      } else {
+        // Create new user
+        user = new User({
+          email: email.toLowerCase(),
+          name: name || undefined,
+          authProvider: provider,
+          providerId: providerId,
+          isEmailVerified: true,
+          isPhoneVerified: false, // No phone for OAuth users
+        });
+        await user.save();
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        process.env.JWT_SECRET || 'your-secret-key'
+      );
+
+      // Send Telegram notification for new signups
+      if (isNewUser) {
+        telegramService.sendSignupNotification(
+          user.email || 'OAuth User',
+          (user as any)._id.toString()
+        ).catch((err: any) => {
+          errorLogger.error('Failed to send OAuth signup telegram notification', err);
+        });
+      }
+
+      errorLogger.info(`OAuth login successful via ${provider}`, req, { email: user.email, isNewUser });
+
+      res.json({
+        success: true,
+        message: isNewUser ? 'Account created successfully' : 'Login successful',
+        data: {
+          token,
+          user: {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            isEmailVerified: user.isEmailVerified,
+            hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
+            hasGeneratedPlan: user.hasGeneratedPlan
+          }
+        }
+      });
+    } catch (error) {
+      errorLogger.error('OAuth login error', error as Error, req, { provider: req.body.provider, email: req.body.email });
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+  // Activate one-time offer (1 hour timer)
+  async activateOneTimeOffer(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+        return;
+      }
+
+      // If already active and valid (future), return existing
+      if (user.oneTimeOfferExpiresAt && new Date(user.oneTimeOfferExpiresAt) > new Date()) {
+        res.json({
+          success: true,
+          data: { expiresAt: user.oneTimeOfferExpiresAt }
+        });
+        return;
+      }
+
+      // Set to 1 hour from now
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+      user.oneTimeOfferExpiresAt = expiresAt;
+      await user.save();
+
+      res.json({
+        success: true,
+        data: { expiresAt }
+      });
+    } catch (error) {
+      errorLogger.error('Activate offer error', error as Error, req, { userId: req.user?.userId });
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
 }

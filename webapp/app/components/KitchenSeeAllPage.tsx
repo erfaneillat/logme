@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { useTranslation } from '../translations';
 import KitchenItemImage from './KitchenItemImage';
 
 interface Ingredient {
@@ -12,6 +13,7 @@ interface KitchenItem {
     _id?: string;
     id?: string;
     name: string;
+    name_fa?: string;
     calories: number;
     protein: number;
     carbs: number;
@@ -25,31 +27,61 @@ interface KitchenItem {
 
 interface KitchenSeeAllPageProps {
     title: string;
+    title_fa?: string;
     items: KitchenItem[];
     onBack: () => void;
     onItemClick: (item: KitchenItem) => void;
 }
 
-// Helper to convert English numbers to Persian/Farsi numerals
-const toPersianNumbers = (num: number | string): string => {
-    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
-};
+
 
 const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
     title,
-    items,
+    title_fa,
     onBack,
-    onItemClick
+    onItemClick,
+    items // Adding items here as well if it was missed or for clarity, though it was in the original
 }) => {
+    const { t, isRTL, locale } = useTranslation();
+
+    const formatNumber = (num: number | string) => {
+        if (!isRTL) return String(num);
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    // Helper to get the correct localized name
+    const getLocalizedName = (item: KitchenItem) => {
+        if (locale === 'fa') {
+            return item.name_fa || item.name;
+        } else {
+            if (item.name && /^[a-zA-Z]/.test(item.name)) {
+                return item.name;
+            }
+            return item.name || item.name_fa || 'Unnamed';
+        }
+    };
+
+    // Get localized title for this page
+    const getLocalizedTitle = () => {
+        if (locale === 'fa') {
+            return title_fa || title;
+        } else {
+            if (title && /^[a-zA-Z]/.test(title)) {
+                return title;
+            }
+            return title || title_fa || '';
+        }
+    };
+
     const difficultyConfig = {
-        easy: { label: 'آسان', color: 'bg-green-50 text-green-600' },
-        medium: { label: 'متوسط', color: 'bg-amber-50 text-amber-600' },
-        hard: { label: 'سخت', color: 'bg-red-50 text-red-600' }
+        easy: { label: t('kitchen.card.difficulty.easy'), color: 'bg-green-50 text-green-600' },
+        medium: { label: t('kitchen.card.difficulty.medium'), color: 'bg-amber-50 text-amber-600' },
+        hard: { label: t('kitchen.card.difficulty.hard'), color: 'bg-red-50 text-red-600' }
     };
 
     return (
-        <div className="h-full flex flex-col bg-[#F8F9FB]" dir="rtl">
+        <div className="h-full flex flex-col bg-[#F8F9FB]" dir={isRTL ? "rtl" : "ltr"}>
             {/* Header */}
             <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl px-5 py-4 flex items-center gap-4 border-b border-gray-100">
                 <button
@@ -61,8 +93,8 @@ const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
                     </svg>
                 </button>
                 <div className="flex-1">
-                    <h1 className="text-lg font-bold text-gray-900">{title}</h1>
-                    <p className="text-xs text-gray-400">{toPersianNumbers(items.length)} مورد</p>
+                    <h1 className="text-lg font-bold text-gray-900">{getLocalizedTitle()}</h1>
+                    <p className="text-xs text-gray-400">{formatNumber(items.length)} {t('kitchen.itemsCount')}</p>
                 </div>
             </header>
 
@@ -93,13 +125,14 @@ const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
                                 </div>
 
                                 {/* Info */}
-                                <h3 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2 leading-tight">{item.name}</h3>
-
+                                <h3 className="font-bold text-gray-800 text-sm truncate mb-1">
+                                    {getLocalizedName(item)}
+                                </h3>
                                 {/* Calories & Difficulty */}
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-1">
                                         <span className="text-orange-500 text-sm">🔥</span>
-                                        <span className="text-sm font-bold text-gray-700">{toPersianNumbers(item.calories)}</span>
+                                        <span className="text-sm font-bold text-gray-700">{formatNumber(item.calories)}</span>
                                     </div>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${difficulty.color}`}>
                                         {difficulty.label}
@@ -110,15 +143,15 @@ const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
                                 <div className="flex justify-between text-[10px] text-gray-500">
                                     <div className="flex items-center gap-1">
                                         <span>🥩</span>
-                                        <span>{toPersianNumbers(item.protein)}g</span>
+                                        <span>{formatNumber(item.protein)}g</span>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <span>🌾</span>
-                                        <span>{toPersianNumbers(item.carbs)}g</span>
+                                        <span>{formatNumber(item.carbs)}g</span>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <span>🧈</span>
-                                        <span>{toPersianNumbers(item.fat)}g</span>
+                                        <span>{formatNumber(item.fat)}g</span>
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +165,7 @@ const KitchenSeeAllPage: React.FC<KitchenSeeAllPageProps> = ({
                         <svg className="w-16 h-16 text-gray-300 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5" />
                         </svg>
-                        <p className="text-gray-400 text-sm">موردی یافت نشد</p>
+                        <p className="text-gray-400 text-sm">{t('kitchen.notFound.title')}</p>
                     </div>
                 )}
             </div>

@@ -10,9 +10,13 @@ import KitchenPage from './components/KitchenPage';
 import ChatPage from './components/ChatPage';
 import SettingPage from './components/SettingPage';
 import SubscriptionPage from './components/SubscriptionPage';
+import SubscriptionPromptModal from './components/SubscriptionPromptModal';
+import OneTimeOfferModal from './components/OneTimeOfferModal';
+import OneTimeOfferWidget from './components/OneTimeOfferWidget';
 import Splash from './components/Splash';
 import Onboarding from './components/Onboarding';
 import Login from './components/Login';
+import LoginGlobal from './components/LoginGlobal';
 import Verification from './components/Verification';
 import AdditionalInfo from './components/AdditionalInfo';
 import PlanGeneration from './components/PlanGeneration';
@@ -20,13 +24,17 @@ import PlanSummary from './components/PlanSummary';
 import PaymentResultModal from './components/PaymentResultModal';
 import { FoodItem } from './types';
 import { apiService, User, FoodAnalysisResponse, UserProfile } from './services/apiService';
+import { useTranslation } from './translations';
+import { isSubscriptionError } from './constants/errorCodes';
 
 type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings' | 'subscription' | 'kitchen';
 type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL_INFO' | 'PLAN_GENERATION' | 'PLAN_SUMMARY' | 'MAIN';
 
 export default function Home() {
+  const { t } = useTranslation();
   const [appState, setAppState] = useState<AppState>('SPLASH');
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+  const [isGlobal, setIsGlobal] = useState(false);
 
   // Auth State
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -34,12 +42,42 @@ export default function Home() {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+  const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
+  const [showOneTimeOffer, setShowOneTimeOffer] = useState(false);
+  const [offerExpiresAt, setOfferExpiresAt] = useState<string | null>(null);
 
   // Move skip-splash logic to useEffect to avoid hydration mismatch
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+      // Determine Market (Runtime Override)
+      const marketParam = searchParams.get('market') || hashParams.get('market');
+      const isGlobalEnv = process.env.NEXT_PUBLIC_MARKET === 'global';
+
+      // If Env is global OR URL param is global -> Global Mode
+      // If Env is NOT global AND URL param is missing/iran -> Iran Mode (Default)
+      if (isGlobalEnv || marketParam === 'global') {
+        console.log('🌍 Switching to Global Market Mode');
+        setIsGlobal(true);
+        document.title = 'Slice';
+        document.documentElement.dir = 'ltr';
+        document.documentElement.lang = 'en';
+        // Remove Vazir font class if present
+        document.documentElement.classList.remove('className'); // cleaning up next/font class if easy, otherwise simple style override works
+        document.body.style.fontFamily = "system-ui, -apple-system, sans-serif";
+      } else {
+        // Default to Iran (revert if needed/ensure defaults)
+        console.log('🇮🇷 Running in Iran Market Mode');
+        setIsGlobal(false);
+        if (document.title === 'Loqme') document.title = 'لقمه';
+        if (document.documentElement.dir === 'ltr') document.documentElement.dir = 'rtl';
+        if (document.documentElement.lang === 'en') document.documentElement.lang = 'fa';
+        // We don't need to re-add Vazir manually as it's in layout, but we ensure style
+        // layout's style attribute might be static, but we can override:
+        // However, if we are in "Default Iran", usually we don't need to touch anything as layout.tsx handled it.
+      }
 
       const hasPayment = searchParams.get('payment') || hashParams.get('payment');
 
@@ -103,7 +141,62 @@ export default function Home() {
   // Kitchen Access State
   const [showKitchenTab, setShowKitchenTab] = useState(false);
 
+  const handleGlobalPurchase = (plan: 'monthly' | 'yearly') => {
+    console.log('Global Purchase initiated for plan:', plan);
 
+    if (typeof window !== 'undefined' && (window as any).FlutterBridge && (window as any).FlutterBridge.purchaseGlobal) {
+      (window as any).FlutterBridge.purchaseGlobal(plan)
+        .then((result: any) => {
+          console.log('Purchase Result:', result);
+          if (result && result.success) {
+            showNotification('Subscription activated successfully!', 'success');
+            // Refresh dashboard to reflect new status
+            setDashboardRefreshTrigger(prev => prev + 1);
+
+            // Close modals
+            setShowSubscriptionPrompt(false);
+            setShowOneTimeOffer(false);
+
+            if (currentView === 'subscription') {
+              navigateToView('dashboard');
+            }
+          } else {
+            showNotification(result?.message || 'Purchase failed', 'error');
+          }
+        })
+        .catch((err: any) => {
+          console.error('Purchase error:', err);
+          showNotification(err.message || 'Purchase failed', 'error');
+        });
+    } else {
+      console.warn('FlutterBridge.purchaseGlobal not available - are you in the app?');
+      showNotification('Purchase is only available in the mobile app', 'info');
+    }
+  };
+
+  const handleOneTimeOfferPurchase = () => {
+    console.log('One Time Offer purchase initiated');
+    // Mark as purchased/dismissed so it won't show again
+    sessionStorage.setItem('one_time_offer_dismissed', 'true');
+    setShowOneTimeOffer(false);
+    setOfferExpiresAt(null); // Clear the widget
+    // Use the specific offering/product identifier for the one-time offer
+    handleGlobalPurchase('yearlyoff' as any); // Cast to any to bypass literal type check if needed, or update type definition
+  };
+
+  const handleSubscriptionClose = () => {
+    // For global users, check if we should show the one-time offer
+    if (isGlobal) {
+      const hasSeenOffer = sessionStorage.getItem('one_time_offer_dismissed');
+      // Don't show if dismissed OR if currently active (widget is shown)
+      if (!hasSeenOffer && !offerExpiresAt) {
+        // Show the one-time offer modal instead of just closing
+        setShowOneTimeOffer(true);
+        return;
+      }
+    }
+    navigateBack();
+  };
 
   // State for dashboard refresh
   const [dashboardRefreshTrigger, setDashboardRefreshTrigger] = useState(0);
@@ -151,6 +244,55 @@ export default function Home() {
     };
     checkKitchenAccess();
   }, [appState, currentView, navigateToView]);
+
+  // Check subscription status for global users and show prompt if needed
+  // Only shows ONCE - after first signup, not on every app open
+  useEffect(() => {
+    const checkSubscriptionForGlobalUsers = async () => {
+      // Only check when user enters MAIN state in global mode
+      if (appState !== 'MAIN' || !isGlobal) return;
+
+      // Check if we've already shown this prompt (persisted across sessions)
+      const hasShownPrompt = localStorage.getItem('global_subscription_prompt_shown');
+      if (hasShownPrompt) return;
+
+      try {
+        const subscriptionStatus = await apiService.getSubscriptionStatus();
+
+        // Show prompt if user doesn't have an active subscription
+        if (!subscriptionStatus?.isActive) {
+          setShowSubscriptionPrompt(true);
+          // Mark as shown permanently (persists across sessions)
+          localStorage.setItem('global_subscription_prompt_shown', 'true');
+        }
+      } catch (error) {
+        console.error('Error checking subscription status:', error);
+      }
+    };
+
+    checkSubscriptionForGlobalUsers();
+  }, [appState, isGlobal]);
+
+  // Check for active one-time offer
+  useEffect(() => {
+    const checkOffer = async () => {
+      if (appState !== 'MAIN') return;
+      try {
+        const profile = await apiService.getUserProfile();
+        if (profile?.oneTimeOfferExpiresAt) {
+          const expires = new Date(profile.oneTimeOfferExpiresAt);
+          if (expires > new Date()) {
+            setOfferExpiresAt(profile.oneTimeOfferExpiresAt);
+          } else {
+            setOfferExpiresAt(null);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to check offer status", e);
+      }
+    };
+    checkOffer();
+  }, [appState, dashboardRefreshTrigger]); // Re-check on dashboard refresh logic
 
   const openFoodDetail = useCallback((food: any) => {
     // Push new state with modal identifier
@@ -454,14 +596,16 @@ export default function Home() {
     } catch (error: any) {
       console.error("Background analysis failed:", error);
 
-      const errorMessage = error.message || "متاسفانه تحلیل غذا با خطا مواجه شد.";
+      const errorMessage = error.message || t('errors.analysisGeneric');
+      const errorCode = error.code;
 
-      // Show notification for all errors
-      showNotification(errorMessage, 'error');
-
-      // Check if error is related to subscription limits - navigate to subscription page
-      if (errorMessage.includes('محدودیت') || errorMessage.includes('limit') || errorMessage.includes('اشتراک') || errorMessage.includes('رایگان')) {
+      // Check if error is subscription-related using error code
+      if (isSubscriptionError(errorCode)) {
+        // For subscription errors, just navigate to subscription page without showing notification
         navigateToView('subscription');
+      } else {
+        // Show notification only for non-subscription errors
+        showNotification(errorMessage, 'error');
       }
 
       setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));
@@ -475,8 +619,19 @@ export default function Home() {
   };
 
   const handleLogout = () => {
+    // Clear all auth-related localStorage items
     localStorage.removeItem('isLoggedIn');
-    // localStorage.removeItem('hasOnboarded'); // Keep onboarding status
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('hasCompletedAdditionalInfo');
+    // Keep onboarding status: localStorage.removeItem('hasOnboarded');
+
+    // Notify Flutter to clear the native stored token
+    if ((window as any).FlutterPayment) {
+      (window as any).FlutterPayment.postMessage(JSON.stringify({
+        action: 'logout'
+      }));
+    }
+
     setAppState('LOGIN');
     navigateToView('dashboard');
   };
@@ -490,6 +645,26 @@ export default function Home() {
   }
 
   if (appState === 'LOGIN') {
+    if (isGlobal) {
+      return (
+        <LoginGlobal
+          onLoginSuccess={(user) => {
+            localStorage.setItem('isLoggedIn', 'true');
+            if (user.hasCompletedAdditionalInfo) {
+              localStorage.setItem('hasCompletedAdditionalInfo', 'true');
+              setAppState('MAIN');
+            } else {
+              localStorage.setItem('hasCompletedAdditionalInfo', 'false');
+              setAppState('ADDITIONAL_INFO');
+            }
+            // Sync token to Flutter for Native features
+            if (user.token && (window as any).FlutterBridge?.setAuthToken) {
+              (window as any).FlutterBridge.setAuthToken(user.token);
+            }
+          }}
+        />
+      );
+    }
     return <Login onPhoneSubmit={handleLoginSubmit} />;
   }
 
@@ -526,6 +701,8 @@ export default function Home() {
           refreshTrigger={dashboardRefreshTrigger}
           pendingAnalyses={pendingAnalyses}
           onSubscriptionClick={() => navigateToView('subscription')}
+          offerExpiresAt={offerExpiresAt}
+          onOfferClick={() => setShowOneTimeOffer(true)}
         />
       )}
 
@@ -575,7 +752,15 @@ export default function Home() {
       )}
 
       {currentView === 'subscription' && (
-        <SubscriptionPage onBack={navigateBack} />
+        isGlobal ? (
+          <SubscriptionPromptModal
+            isOpen={true}
+            onClose={handleSubscriptionClose}
+            onPurchase={handleGlobalPurchase}
+          />
+        ) : (
+          <SubscriptionPage onBack={navigateBack} />
+        )
       )}
 
       {currentView === 'settings' && (
@@ -611,6 +796,37 @@ export default function Home() {
         errorCode={paymentResult.errorCode}
       />
 
+      <SubscriptionPromptModal
+        isOpen={showSubscriptionPrompt}
+        onClose={() => {
+          setShowSubscriptionPrompt(false);
+          // Show one-time offer if user hasn't seen it and no active offer
+          if (isGlobal) {
+            const hasSeenOffer = sessionStorage.getItem('one_time_offer_dismissed');
+            if (!hasSeenOffer && !offerExpiresAt) {
+              setShowOneTimeOffer(true);
+            }
+          }
+        }}
+        onPurchase={(plan) => {
+          handleGlobalPurchase(plan);
+          setShowSubscriptionPrompt(false);
+        }}
+      />
+
+      {/* One Time Offer Modal - Shows when global users close subscription without purchasing */}
+      <OneTimeOfferModal
+        isOpen={showOneTimeOffer}
+        onClose={() => {
+          sessionStorage.setItem('one_time_offer_dismissed', 'true');
+          setShowOneTimeOffer(false);
+          navigateBack();
+        }}
+        onPurchase={handleOneTimeOfferPurchase}
+      />
+
+
+
       {/* Modern Floating Navigation - Hidden when in Chat or Subscription view */}
       {/* Floating Action Button (FAB) - Only on Dashboard */}
       {currentView === 'dashboard' && (
@@ -638,7 +854,7 @@ export default function Home() {
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                 </svg>
               </div>
-              {currentView === 'dashboard' && <span className="text-[9px] font-bold text-orange-500 mt-0.5 animate-fade-in truncate w-full text-center">خانه</span>}
+              {currentView === 'dashboard' && <span className="text-[9px] font-bold text-orange-500 mt-0.5 animate-fade-in truncate w-full text-center">{t('navigation.home')}</span>}
             </button>
           </div>
 
@@ -652,7 +868,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              {currentView === 'analysis' && <span className="text-[9px] font-bold text-blue-500 mt-0.5 animate-fade-in truncate w-full text-center">تحلیل</span>}
+              {currentView === 'analysis' && <span className="text-[9px] font-bold text-blue-500 mt-0.5 animate-fade-in truncate w-full text-center">{t('navigation.analysis')}</span>}
             </button>
           </div>
 
@@ -668,7 +884,7 @@ export default function Home() {
                     <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 10-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
                   </svg>
                 </div>
-                {currentView === 'kitchen' && <span className="text-[9px] font-bold text-green-500 mt-0.5 animate-fade-in truncate w-full text-center">آشپزخانه</span>}
+                {currentView === 'kitchen' && <span className="text-[9px] font-bold text-green-500 mt-0.5 animate-fade-in truncate w-full text-center">{t('navigation.kitchen')}</span>}
               </button>
             </div>
           )}
@@ -683,7 +899,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               </div>
-              {currentView === 'chat' && <span className="text-[9px] font-bold text-indigo-500 mt-0.5 animate-fade-in truncate w-full text-center">هوش‌مصنوعی</span>}
+              {currentView === 'chat' && <span className="text-[9px] font-bold text-indigo-500 mt-0.5 animate-fade-in truncate w-full text-center">{t('navigation.chat')}</span>}
             </button>
           </div>
 
@@ -697,7 +913,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              {currentView === 'settings' && <span className="text-[9px] font-bold text-purple-500 mt-0.5 animate-fade-in truncate w-full text-center">پروفایل</span>}
+              {currentView === 'settings' && <span className="text-[9px] font-bold text-purple-500 mt-0.5 animate-fade-in truncate w-full text-center">{t('navigation.profile')}</span>}
             </button>
           </div>
         </div>

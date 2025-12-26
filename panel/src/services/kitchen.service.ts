@@ -283,6 +283,100 @@ class KitchenService {
             };
         }
     }
+
+    async updateCategoryWithJson(
+        token: string,
+        categoryId: string,
+        jsonContent: string,
+        language: 'en' | 'fa' = 'en'
+    ): Promise<{
+        success: boolean;
+        message?: string;
+        category?: KitchenCategory;
+        processedCount?: number;
+    }> {
+        try {
+            // Parse JSON here to ensure it's valid before sending, although server will also checking
+            let items;
+            try {
+                items = JSON.parse(jsonContent);
+                if (!Array.isArray(items)) throw new Error('Input must be an array');
+            } catch (e) {
+                throw new Error('Invalid JSON format');
+            }
+
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/update-json`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ categoryId, items, language }),
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to update category');
+            }
+
+            const data = await response.json();
+            return {
+                success: data.success,
+                message: data.message,
+                category: data.category,
+                processedCount: data.processedCount
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to update category',
+            };
+        }
+    }
+
+    async getCategoryLanguageStats(
+        token: string,
+        categoryId: string
+    ): Promise<{
+        success: boolean;
+        message?: string;
+        stats?: {
+            totalItems: number;
+            itemsWithEnglish: number;
+            itemsWithFarsi: number;
+            itemsWithBoth: number;
+            englishOnly: number;
+            farsiOnly: number;
+            hasEnglishData: boolean;
+            hasFarsiData: boolean;
+        };
+    }> {
+        try {
+            const response = await fetch(`${API_BASE_URL}${this.basePath}/categories/${categoryId}/language-stats`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to get language stats');
+            }
+
+            const data = await response.json();
+            return {
+                success: data.success,
+                stats: data.stats
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Failed to get language stats',
+            };
+        }
+    }
 }
 
 export const kitchenService = new KitchenService();

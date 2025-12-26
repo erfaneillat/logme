@@ -1,30 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { t, getLocale, Locale } from '../translations';
 
 interface OnboardingData {
     id: number;
     image: string;
-    title: string;
-    subtitle: string;
-    Overlay: React.FC;
+    titleKey: string;
+    subtitleKey: string;
+    Overlay: React.FC<{ locale: Locale }>;
 }
 
-const WeightGoalOverlay = () => (
+const WeightGoalOverlay = ({ locale }: { locale: Locale }) => (
     <motion.div
-        initial={{ x: -50, opacity: 0 }}
+        initial={{ x: locale === 'en' ? 50 : -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ delay: 0.3, type: "spring" }}
-        className="absolute top-1/4 left-8 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-xl"
+        className={`absolute top-1/4 ${locale === 'en' ? 'left-8' : 'right-8'} bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-xl`}
     >
-        <div className="text-white/80 text-sm mb-1">هدف وزنی</div>
-        <div className="text-white text-3xl font-bold">۶۰ کیلوگرم</div>
+        <div className="text-white/80 text-sm mb-1">{t('onboarding.page1.weightGoal', locale)}</div>
+        <div className="text-white text-3xl font-bold">{t('onboarding.page1.weightValue', locale)}</div>
     </motion.div>
 );
 
-const CameraOverlay = () => (
+const CameraOverlay = ({ locale }: { locale: Locale }) => (
     <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -45,11 +46,11 @@ const CameraOverlay = () => (
     </motion.div>
 );
 
-const NutritionOverlay = () => {
+const NutritionOverlay = ({ locale }: { locale: Locale }) => {
     const bubbles = [
-        { label: 'پروتئین', value: '35g', color: 'text-red-400', top: '10%', left: '10%', delay: 0.3 },
-        { label: 'کربوهیدرات', value: '35g', color: 'text-orange-400', top: '25%', right: '15%', delay: 0.5 },
-        { label: 'چربی', value: '35g', color: 'text-blue-400', top: '45%', left: '15%', delay: 0.7 },
+        { labelKey: 'onboarding.page3.protein', value: '35g', color: 'text-red-400', top: '10%', left: locale === 'en' ? '10%' : undefined, right: locale === 'fa' ? '10%' : undefined, delay: 0.3 },
+        { labelKey: 'onboarding.page3.carbs', value: '35g', color: 'text-orange-400', top: '25%', right: locale === 'en' ? '15%' : undefined, left: locale === 'fa' ? '15%' : undefined, delay: 0.5 },
+        { labelKey: 'onboarding.page3.fat', value: '35g', color: 'text-blue-400', top: '45%', left: locale === 'en' ? '15%' : undefined, right: locale === 'fa' ? '15%' : undefined, delay: 0.7 },
     ];
 
     return (
@@ -63,7 +64,7 @@ const NutritionOverlay = () => {
                     style={{ top: b.top, left: b.left, right: b.right }}
                     className="absolute bg-black/60 backdrop-blur-md p-3 rounded-2xl border border-white/10 shadow-lg"
                 >
-                    <div className={`${b.color} text-xs font-bold mb-0.5`}>{b.label}</div>
+                    <div className={`${b.color} text-xs font-bold mb-0.5`}>{t(b.labelKey, locale)}</div>
                     <div className="text-white text-lg font-bold">{b.value}</div>
                 </motion.div>
             ))}
@@ -75,22 +76,22 @@ const PAGES: OnboardingData[] = [
     {
         id: 0,
         image: '/app/images/man-onboarding.jpg',
-        title: 'بدنت را متحول کن',
-        subtitle: 'امروز بهترین زمان برای شروع به کار برای رسیدن به بدن رویایی خود است',
+        titleKey: 'onboarding.page1.title',
+        subtitleKey: 'onboarding.page1.subtitle',
         Overlay: WeightGoalOverlay
     },
     {
         id: 1,
         image: '/app/images/food-onboarding.jpg',
-        title: 'ردیابی کالری آسان شد',
-        subtitle: 'فقط یک عکس سریع از وعده غذایی خود بگیرید و ما بقیه کارها را انجام خواهیم داد',
+        titleKey: 'onboarding.page2.title',
+        subtitleKey: 'onboarding.page2.subtitle',
         Overlay: CameraOverlay
     },
     {
         id: 2,
         image: '/app/images/food-onboarding.jpg',
-        title: 'تجزیه و تحلیل عمیق تغذیه',
-        subtitle: 'ما شما را در مورد انتخاب های غذایی و محتوای غذایی آنها مطلع خواهیم کرد',
+        titleKey: 'onboarding.page3.title',
+        subtitleKey: 'onboarding.page3.subtitle',
         Overlay: NutritionOverlay
     }
 ];
@@ -98,6 +99,13 @@ const PAGES: OnboardingData[] = [
 export default function Onboarding({ onFinish }: { onFinish: () => void }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(0);
+    const [locale, setLocale] = useState<Locale>('fa');
+
+    useEffect(() => {
+        setLocale(getLocale());
+    }, []);
+
+    const isRTL = locale === 'fa';
 
     const nextStep = () => {
         if (currentIndex < PAGES.length - 1) {
@@ -117,24 +125,35 @@ export default function Onboarding({ onFinish }: { onFinish: () => void }) {
 
     const handleDragEnd = (event: any, info: any) => {
         const SWIPE_THRESHOLD = 50;
-        // RTL Logic:
-        // Swipe Right (Positive X) -> Next (User drags current slide to right to reveal next one from left)
-        // Swipe Left (Negative X) -> Prev
-        if (info.offset.x > SWIPE_THRESHOLD) {
-            nextStep();
-        } else if (info.offset.x < -SWIPE_THRESHOLD) {
-            prevStep();
+        if (isRTL) {
+            // RTL Logic:
+            // Swipe Right (Positive X) -> Next
+            // Swipe Left (Negative X) -> Prev
+            if (info.offset.x > SWIPE_THRESHOLD) {
+                nextStep();
+            } else if (info.offset.x < -SWIPE_THRESHOLD) {
+                prevStep();
+            }
+        } else {
+            // LTR Logic:
+            // Swipe Left (Negative X) -> Next
+            // Swipe Right (Positive X) -> Prev
+            if (info.offset.x < -SWIPE_THRESHOLD) {
+                nextStep();
+            } else if (info.offset.x > SWIPE_THRESHOLD) {
+                prevStep();
+            }
         }
     };
 
     const currentData = PAGES[currentIndex];
 
-    // RTL Animation Variants
-    // Next Step (direction = 1): Enter from Left (-300), Exit to Right (300)
-    // Prev Step (direction = -1): Enter from Right (300), Exit to Left (-300)
+    // Animation Variants (direction-aware)
     const variants = {
         enter: (direction: number) => ({
-            x: direction > 0 ? -300 : 300,
+            x: isRTL
+                ? (direction > 0 ? -300 : 300)
+                : (direction > 0 ? 300 : -300),
             opacity: 0
         }),
         center: {
@@ -144,7 +163,9 @@ export default function Onboarding({ onFinish }: { onFinish: () => void }) {
         },
         exit: (direction: number) => ({
             zIndex: 0,
-            x: direction < 0 ? -300 : 300, // direction < 0 (back) -> exit to left (reversed from LTR)
+            x: isRTL
+                ? (direction < 0 ? -300 : 300)
+                : (direction < 0 ? 300 : -300),
             opacity: 0
         })
     };
@@ -181,7 +202,7 @@ export default function Onboarding({ onFinish }: { onFinish: () => void }) {
                         {/* Dark overlay for text readability if needed, though we use bottom sheet */}
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
 
-                        <currentData.Overlay />
+                        <currentData.Overlay locale={locale} />
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -199,8 +220,8 @@ export default function Onboarding({ onFinish }: { onFinish: () => void }) {
                             transition={{ duration: 0.3 }}
                             className="flex flex-col items-center gap-4 mt-4"
                         >
-                            <h2 className="text-2xl font-bold text-[var(--color-primary)]">{currentData.title}</h2>
-                            <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{currentData.subtitle}</p>
+                            <h2 className="text-2xl font-bold text-[var(--color-primary)]">{t(currentData.titleKey, locale)}</h2>
+                            <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{t(currentData.subtitleKey, locale)}</p>
                         </motion.div>
                     </AnimatePresence>
                 </div>
@@ -222,12 +243,12 @@ export default function Onboarding({ onFinish }: { onFinish: () => void }) {
                         whileTap={{ scale: 0.95 }}
                         whileHover={{ scale: 1.02 }}
                         onClick={nextStep}
-                        className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                        className={`w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
                     >
-                        {currentIndex === PAGES.length - 1 ? 'پایان' : 'بعدی'}
+                        {currentIndex === PAGES.length - 1 ? t('onboarding.finish', locale) : t('onboarding.next', locale)}
                         {currentIndex !== PAGES.length - 1 && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                             </svg>
                         )}
                     </motion.button>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService';
+import { useTranslation } from '../translations';
 import KitchenItemImage from './KitchenItemImage';
 
 interface Ingredient {
@@ -13,6 +14,7 @@ interface KitchenItem {
     _id?: string;
     id?: string;
     name: string;
+    name_fa?: string;
     calories: number;
     protein: number;
     carbs: number;
@@ -21,7 +23,9 @@ interface KitchenItem {
     prepTime: string;
     difficulty: 'easy' | 'medium' | 'hard';
     ingredients?: Ingredient[];
+    ingredients_fa?: Ingredient[];
     instructions?: string;
+    instructions_fa?: string;
     isFree?: boolean;
 }
 
@@ -35,11 +39,7 @@ interface KitchenItemDetailPageProps {
     onSubscriptionClick?: () => void;
 }
 
-// Helper to convert English numbers to Persian/Farsi numerals
-const toPersianNumbers = (num: number | string): string => {
-    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
-};
+
 
 const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
     item,
@@ -52,15 +52,51 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
 }) => {
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [isSaving, setIsSaving] = useState(false);
+    const { t, isRTL, locale } = useTranslation();
+
+    const formatNumber = (num: number | string) => {
+        if (!isRTL) return String(num);
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    // Helper to get the correct localized content
+    const getLocalizedName = () => {
+        if (locale === 'fa') {
+            return item.name_fa || item.name;
+        } else {
+            // English mode: prefer name if it looks English
+            if (item.name && /^[a-zA-Z]/.test(item.name)) {
+                return item.name;
+            }
+            return item.name || item.name_fa || 'Unnamed';
+        }
+    };
+
+    const getLocalizedInstructions = () => {
+        if (locale === 'fa') {
+            return item.instructions_fa || item.instructions;
+        } else {
+            return item.instructions || item.instructions_fa;
+        }
+    };
+
+    const getLocalizedIngredients = () => {
+        if (locale === 'fa') {
+            return item.ingredients_fa && item.ingredients_fa.length > 0 ? item.ingredients_fa : item.ingredients;
+        } else {
+            return item.ingredients || item.ingredients_fa;
+        }
+    };
 
     useEffect(() => {
         setIsSaved(initialIsSaved);
     }, [initialIsSaved]);
 
     const difficultyConfig = {
-        easy: { label: 'آسان', color: 'text-green-600 bg-green-50' },
-        medium: { label: 'متوسط', color: 'text-amber-600 bg-amber-50' },
-        hard: { label: 'سخت', color: 'text-red-600 bg-red-50' }
+        easy: { label: t('kitchen.card.difficulty.easy'), color: 'text-green-600 bg-green-50' },
+        medium: { label: t('kitchen.card.difficulty.medium'), color: 'text-amber-600 bg-amber-50' },
+        hard: { label: t('kitchen.card.difficulty.hard'), color: 'text-red-600 bg-red-50' }
     };
 
     const difficulty = difficultyConfig[item.difficulty] || difficultyConfig.medium;
@@ -77,6 +113,7 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 await apiService.saveKitchenItem({
                     kitchenItemId: itemId,
                     name: item.name,
+                    name_fa: item.name_fa,
                     calories: item.calories,
                     protein: item.protein,
                     carbs: item.carbs,
@@ -85,7 +122,9 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                     prepTime: item.prepTime,
                     difficulty: item.difficulty,
                     ingredients: item.ingredients,
-                    instructions: item.instructions
+                    ingredients_fa: item.ingredients_fa,
+                    instructions: item.instructions,
+                    instructions_fa: item.instructions_fa
                 });
                 setIsSaved(true);
                 onSaveToggle?.(item, true);
@@ -98,7 +137,7 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
     };
 
     return (
-        <div className="h-full flex flex-col bg-white" dir="rtl">
+        <div className="h-full flex flex-col bg-white" dir={isRTL ? "rtl" : "ltr"}>
             {/* Minimal Header */}
             <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl px-4 py-4 flex items-center gap-4">
                 <button
@@ -109,7 +148,9 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                     </svg>
                 </button>
-                <h1 className="text-lg font-bold text-gray-900 flex-1 text-right truncate">{item.name}</h1>
+                <h1 className={`text-lg font-bold text-gray-900 flex-1 truncate ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {getLocalizedName()}
+                </h1>
 
                 {/* Save Button in Header */}
                 <button
@@ -152,7 +193,7 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 <div className="px-6 flex items-center justify-center gap-4 mb-8">
                     <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full">
                         <span className="text-lg">⏱️</span>
-                        <span className="font-semibold text-gray-700">{toPersianNumbers(item.prepTime)}</span>
+                        <span className="font-semibold text-gray-700">{formatNumber(item.prepTime)}</span>
                     </div>
                     <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${difficulty.color}`}>
                         <span className="font-semibold">{difficulty.label}</span>
@@ -161,8 +202,8 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
 
                 {/* Calories - Big & Bold */}
                 <div className="px-6 mb-8 text-center">
-                    <div className="text-6xl font-black text-gray-900">{toPersianNumbers(item.calories)}</div>
-                    <div className="text-gray-500 font-medium mt-1">کالری</div>
+                    <div className="text-6xl font-black text-gray-900">{formatNumber(item.calories)}</div>
+                    <div className="text-gray-500 font-medium mt-1">{t('kitchen.detail.calories')}</div>
                 </div>
 
                 {/* Macros - Minimal Row */}
@@ -170,20 +211,20 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                     <div className="flex justify-between items-center max-w-sm mx-auto">
                         <div className="text-center flex-1">
                             <div className="text-2xl mb-1">🥩</div>
-                            <div className="text-xl font-bold text-gray-900">{toPersianNumbers(item.protein)}</div>
-                            <div className="text-xs text-gray-400 font-medium">پروتئین</div>
+                            <div className="text-xl font-bold text-gray-900">{formatNumber(item.protein)}</div>
+                            <div className="text-xs text-gray-400 font-medium">{t('kitchen.card.nutrients.protein')}</div>
                         </div>
                         <div className="w-px h-12 bg-gray-200"></div>
                         <div className="text-center flex-1">
                             <div className="text-2xl mb-1">🌾</div>
-                            <div className="text-xl font-bold text-gray-900">{toPersianNumbers(item.carbs)}</div>
-                            <div className="text-xs text-gray-400 font-medium">کربوهیدرات</div>
+                            <div className="text-xl font-bold text-gray-900">{formatNumber(item.carbs)}</div>
+                            <div className="text-xs text-gray-400 font-medium">{t('kitchen.card.nutrients.carbs')}</div>
                         </div>
                         <div className="w-px h-12 bg-gray-200"></div>
                         <div className="text-center flex-1">
                             <div className="text-2xl mb-1">🧈</div>
-                            <div className="text-xl font-bold text-gray-900">{toPersianNumbers(item.fat)}</div>
-                            <div className="text-xs text-gray-400 font-medium">چربی</div>
+                            <div className="text-xl font-bold text-gray-900">{formatNumber(item.fat)}</div>
+                            <div className="text-xs text-gray-400 font-medium">{t('kitchen.card.nutrients.fat')}</div>
                         </div>
                     </div>
                 </div>
@@ -191,12 +232,12 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 {/* Ingredients Section */}
                 {item.ingredients && item.ingredients.length > 0 && (
                     <div className="px-6 mb-6">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 text-right">مواد لازم</h3>
+                        <h3 className={`text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : 'text-left'}`}>{t('kitchen.detail.ingredients')}</h3>
                         <div className="relative">
                             <div className={`bg-gray-50 rounded-2xl p-4 ${!hasSubscription && !item.isFree ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
                                 <div className="space-y-2">
-                                    {item.ingredients.map((ing, idx) => (
-                                        <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                                    {getLocalizedIngredients()?.map((ing, idx) => (
+                                        <div key={idx} className={`flex justify-between items-center py-2 border-b border-gray-100 last:border-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
                                             <span className="text-gray-700 font-medium">{ing.name}</span>
                                             <span className="text-gray-500 font-medium text-sm">{ing.amount}</span>
                                         </div>
@@ -215,8 +256,8 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                         </svg>
                                     </div>
-                                    <p className="text-sm font-bold text-gray-800">ویژه اعضای پرمیوم</p>
-                                    <p className="text-xs text-gray-500 mt-1">برای مشاهده اشتراک تهیه کنید</p>
+                                    <p className="text-sm font-bold text-gray-800">{t('kitchen.detail.premium.title')}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{t('kitchen.detail.premium.subtitle')}</p>
                                 </div>
                             )}
                         </div>
@@ -226,10 +267,12 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 {/* Instructions Section */}
                 {item.instructions && (
                     <div className="px-6 mb-6">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 text-right">طرز تهیه</h3>
+                        <h3 className={`text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 ${isRTL ? 'text-right' : 'text-left'}`}>{t('kitchen.detail.instructions')}</h3>
                         <div className="relative">
                             <div className={`bg-gray-50 rounded-2xl p-5 ${!hasSubscription && !item.isFree ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
-                                <p className="text-gray-700 text-right leading-loose whitespace-pre-line">{item.instructions}</p>
+                                <p className={`text-gray-700 leading-loose whitespace-pre-line ${isRTL ? 'text-right' : 'text-left'}`}>
+                                    {getLocalizedInstructions()}
+                                </p>
                             </div>
 
                             {/* Premium Lock Overlay */}
@@ -243,8 +286,8 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                         </svg>
                                     </div>
-                                    <p className="text-sm font-bold text-gray-800">ویژه اعضای پرمیوم</p>
-                                    <p className="text-xs text-gray-500 mt-1">برای مشاهده اشتراک تهیه کنید</p>
+                                    <p className="text-sm font-bold text-gray-800">{t('kitchen.detail.premium.title')}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{t('kitchen.detail.premium.subtitle')}</p>
                                 </div>
                             )}
                         </div>
@@ -254,7 +297,7 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                 {/* No content placeholder */}
                 {(!item.ingredients || item.ingredients.length === 0) && !item.instructions && (
                     <div className="px-6 text-center py-8">
-                        <p className="text-gray-400 text-sm">دستور پخت بزودی اضافه می‌شود</p>
+                        <p className="text-gray-400 text-sm">{t('kitchen.detail.soon')}</p>
                     </div>
                 )}
             </div>
@@ -268,7 +311,7 @@ const KitchenItemDetailPage: React.FC<KitchenItemDetailPageProps> = ({
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                     </svg>
-                    <span>افزودن به گزارش</span>
+                    <span>{t('kitchen.detail.addToLog')}</span>
                 </button>
             </div>
         </div>

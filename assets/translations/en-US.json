@@ -43,7 +43,7 @@
     "next": "Next",
     "finish": "Finish",
     "submit": "Submit",
-    "app_title": "Loqme",
+    "app_title": "Slice",
     "page_not_found": "Page Not Found",
     "page_not_found_message": "The page you are looking for does not exist.",
     "go_home": "Go Home",
@@ -82,7 +82,7 @@
         "token_invalid": "Your session is invalid. Please log in again."
     },
     "login": {
-        "welcome_title": "Welcome to Loqme",
+        "welcome_title": "Welcome to Slice",
         "subtitle": "Enter your phone number to get started",
         "phone_hint": "Enter your phone number",
         "continue": "Continue",
@@ -118,7 +118,7 @@
     "home": {
         "title": "Home",
         "welcome": "Welcome back!",
-        "welcome_message": "You're successfully logged in to Loqme. Start tracking your nutrition and achieving your health goals.",
+        "welcome_message": "You're successfully logged in to Slice. Start tracking your nutrition and achieving your health goals.",
         "user_info": "User Information",
         "phone": "Phone: {}",
         "name": "Name: {}",
@@ -311,10 +311,10 @@
         "payment_title": "Payment Terms",
         "payment_content": "Some services may require payment. You agree to provide current, complete, and accurate purchase and account information.",
         "liability_title": "Limitation of Liability",
-        "liability_content": "In no event shall Loqme, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, punitive, consequential or special damages.",
+        "liability_content": "In no event shall Slice, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, punitive, consequential or special damages.",
         "contact_title": "Contact Information",
         "contact_content": "Questions about the Terms of Service should be sent to us at support@laghmeh.app.",
-        "footer_title": "Thank you for using Loqme",
+        "footer_title": "Thank you for using Slice",
         "footer_content": "By continuing to use our service, you agree to these terms and conditions."
     },
     "privacy": {
@@ -640,22 +640,22 @@
         "activity_level_required": "Please select your activity level",
         "weight_goal_required": "Please select your weight goal",
         "workout_frequency_required": "Please select your workout frequency",
-        "long_term_results_title": "Loqme creates long-term results",
-        "long_term_results_subtitle": "See how Loqme compares to traditional diets",
+        "long_term_results_title": "Slice creates long-term results",
+        "long_term_results_subtitle": "See how Slice compares to traditional diets",
         "your_weight": "Your weight",
         "traditional_diet": "Traditional diet",
-        "laghmeh": "Loqme",
+        "laghmeh": "Slice",
         "month_1": "Month 1",
         "month_6": "Month 6",
-        "success_rate": "80% of Loqme users maintain their weight loss even 6 months later",
-        "success_rate_with_value": "{} success rate with Loqme",
+        "success_rate": "80% of Slice users maintain their weight loss even 6 months later",
+        "success_rate_with_value": "{} success rate with Slice",
         "next": "Next",
         "our_app": "Our App",
-        "weight_loss_title": "Loqme creates sustainable weight loss",
+        "weight_loss_title": "Slice creates sustainable weight loss",
         "weight_loss_subtitle": "See how our method provides steady, lasting results",
-        "weight_gain_title": "Loqme helps you gain weight healthily",
+        "weight_gain_title": "Slice helps you gain weight healthily",
         "weight_gain_subtitle": "Our approach ensures consistent muscle building",
-        "weight_maintain_title": "Loqme helps you maintain your weight",
+        "weight_maintain_title": "Slice helps you maintain your weight",
         "weight_maintain_subtitle": "Our method provides stable, long-term results",
         "choose_weight": "Choose your desired weight?",
         "choose_weight_subtitle": "Select your target weight to help us create your personalized plan",
@@ -673,7 +673,7 @@
         "motivational_gaining_prefix": "Gaining ",
         "motivational_suffix": " kg is a realistic target.\nIt's not hard at all!",
         "motivational_maintain_title": "Maintaining your current weight\nis a great choice!\nYou're already on the right track!",
-        "motivational_testimonial": "90% of users say that the change is obvious after using Loqme and it is not easy to rebound.",
+        "motivational_testimonial": "90% of users say that the change is obvious after using Slice and it is not easy to rebound.",
         "continue": "Continue",
         "weight_loss_speed_title": "How fast do you want to reach your goal?",
         "weight_gain_speed_title": "How fast do you want to reach your goal?",
@@ -714,9 +714,9 @@
         "days_3": "3 Days",
         "days_7": "7 Days",
         "days_30": "30 Days",
-        "weight_transition_desc_lose": "Based on Loqme's historical data, weight loss is usually delayed at first, but after 7 days, you can burn fat like crazy!",
-        "weight_transition_desc_gain": "Based on Loqme's historical data, healthy weight gain accelerates after the first week with consistent nutrition and training.",
-        "weight_transition_desc_maintain": "Based on Loqme's historical data, maintaining weight shows stable trends with small fluctuations.",
+        "weight_transition_desc_lose": "Based on Slice's historical data, weight loss is usually delayed at first, but after 7 days, you can burn fat like crazy!",
+        "weight_transition_desc_gain": "Based on Slice's historical data, healthy weight gain accelerates after the first week with consistent nutrition and training.",
+        "weight_transition_desc_maintain": "Based on Slice's historical data, maintaining weight shows stable trends with small fluctuations.",
         "trust_title": "Thank you for trusting us!",
         "trust_subtitle": "Now let's personalize logme for you...",
         "privacy_title": "Your privacy and security matter to us.",
@@ -837,37 +837,37 @@
         "testimonials": [
             {
                 "name": "Mona",
-                "text": "I used to have to type in every single food item with calorie counter apps, it was really exhausting. I installed Loqme, just took a photo and it told me everything. Much more accurate than I thought!"
+                "text": "I used to have to type in every single food item with calorie counter apps, it was really exhausting. I installed Slice, just took a photo and it told me everything. Much more accurate than I thought!"
             },
             {
                 "name": "Niloofar",
-                "text": "I always forgot to log my meals and my diet would fall apart. But with Loqme everything is automated. I just take a photo and see my progress every day, that's what keeps me going."
+                "text": "I always forgot to log my meals and my diet would fall apart. But with Slice everything is automated. I just take a photo and see my progress every day, that's what keeps me going."
             },
             {
                 "name": "Nima",
-                "text": "After a month of using Loqme, seeing my progress on the chart really made me happy. Being able to see your journey is the biggest motivation."
+                "text": "After a month of using Slice, seeing my progress on the chart really made me happy. Being able to see your journey is the biggest motivation."
             },
             {
                 "name": "Pedram",
-                "text": "The best part of Loqme for me is the advanced chart. I can see exactly how many percent closer I got to my weight goal during the week."
+                "text": "The best part of Slice for me is the advanced chart. I can see exactly how many percent closer I got to my weight goal during the week."
             },
             {
                 "name": "Ramin",
-                "text": "I feel like I have a little coach in my pocket! Every time I eat a new food, Loqme analyzes it and guides me on how to eat more balanced."
+                "text": "I feel like I have a little coach in my pocket! Every time I eat a new food, Slice analyzes it and guides me on how to eat more balanced."
             },
             {
                 "name": "Elnaz",
-                "text": "The fact that it recognizes Iranian food is amazing, Loqme even correctly identified stew and rice 😅 Very accurate and practical."
+                "text": "The fact that it recognizes Iranian food is amazing, Slice even correctly identified stew and rice 😅 Very accurate and practical."
             },
             {
                 "name": "Mitra",
-                "text": "I was always looking for a simple way to understand what I'm eating without calculations and searching. Loqme is exactly that. I feel like finally an app designed for real people!"
+                "text": "I was always looking for a simple way to understand what I'm eating without calculations and searching. Slice is exactly that. I feel like finally an app designed for real people!"
             }
         ]
     },
     "update": {
         "title": "Update Available",
-        "message": "A new version of Loqme is available with improvements and bug fixes. Please update to continue using the app.",
+        "message": "A new version of Slice is available with improvements and bug fixes. Please update to continue using the app.",
         "button_update": "Update Now",
         "button_later": "Later"
     },

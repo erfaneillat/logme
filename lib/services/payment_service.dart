@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_poolakey/flutter_poolakey.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
 import 'api_service.dart';
 import 'api_service_provider.dart';
@@ -23,8 +25,17 @@ class PaymentService {
   static const String _rsaPublicKey =
       'MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDLYqEpaWeTklUBlRiRLrAmpB2/YGIX2NWCWZBhkTBlabQq29d+cMetKLh94f3Zqfe+DJzGLi2+lVIAOGhLx3bRHNvN+UNVV3CxxtfgmQJoSlm8q9hoHxm6R9fj2WGRbryrWRWo1llSvA7ca1xEDJay6xZorRIskfn4VA/A4fl8p+gPxlC5aeiyNTQgRLqi1PcJcupU9MHN17Tr95esIZFWimNLEUY578lJNDMjJGMCAwEAAQ==';
 
+  // RevenueCat API Keys - REPLACE WITH REAL KEYS
+  static const String _rcGoogleKey = 'goog_rOqdbpqAOHrTOuAxMHWqyEBbkHX';
+  static const String _rcAppleKey = 'appl_PLACEHOLDER_KEY';
+
   PaymentService(this._apiService, this._ref) {
-    _initializePayment();
+    _initAll();
+  }
+
+  Future<void> _initAll() async {
+    await _initializePayment(); // Cafe Bazaar
+    await _initializeRevenueCat(); // RevenueCat
   }
 
   Future<void> _initializePayment() async {
@@ -76,6 +87,19 @@ class PaymentService {
     } catch (e) {
       debugPrint('Failed to initialize payment service: $e');
       _isInitialized = false;
+    }
+  }
+
+  Future<void> _initializeRevenueCat() async {
+    try {
+      if (Platform.isAndroid) {
+        await Purchases.configure(PurchasesConfiguration(_rcGoogleKey));
+      } else if (Platform.isIOS) {
+        await Purchases.configure(PurchasesConfiguration(_rcAppleKey));
+      }
+      debugPrint('RevenueCat initialized successfully');
+    } catch (e) {
+      debugPrint('Failed to initialize RevenueCat: $e');
     }
   }
 
@@ -518,6 +542,128 @@ class PaymentService {
         return 'Billing not initialized';
       default:
         return 'Unknown error occurred';
+    }
+  }
+
+  /// Purchase via RevenueCat
+  Future<PurchaseResult> purchaseRevenueCat(String productIdentifier) async {
+    try {
+      debugPrint('Purchasing via RevenueCat: $productIdentifier');
+
+      // Fetch offerings
+      try {
+        final offerings = await Purchases.getOfferings();
+        debugPrint(
+            'RC Offerings fetched: current=${offerings.current}, all=${offerings.all}');
+        if (offerings.current != null) {
+          debugPrint(
+              'RC Current Offering Packages: ${offerings.current!.availablePackages.map((p) => '${p.identifier}:${p.storeProduct.identifier}').join(', ')}');
+        }
+
+        if (offerings.current == null) {
+          debugPrint('No current offering configured in RevenueCat');
+          return PurchaseResult(
+              success: false, message: 'No offerings available');
+        }
+
+        // Find the package matching the identifier
+        Package? package;
+
+        // 1. Try to find in Current Offering first (Common Case)
+        if (offerings.current != null &&
+            offerings.current!.availablePackages.isNotEmpty) {
+          try {
+            package = offerings.current!.availablePackages.firstWhere((p) =>
+                p.identifier == productIdentifier ||
+                p.storeProduct.identifier == productIdentifier);
+          } catch (_) {
+            // Not found in current
+          }
+        }
+
+        // 2. If not found, and we have a specific offering identifier (e.g. 'yearlyoff')
+        // We can try to look up that specific offering directly if the productIdentifier matches an offering ID logic
+        // OR we just iterate all offerings to find a matching package identifier.
+        if (package == null) {
+          // Special case for 'yearlyoff' which seems to be an OFFERING name in the screenshots
+          // but the user might pass it as productIdentifier.
+          // In the screenshot: Offering = 'yearlyoff', Package = 'monthly' (which wraps 'yearlyoff:yearlyoff')
+
+          if (productIdentifier == 'yearlyoff') {
+            final specialOffering = offerings.all['yearlyoff'];
+            if (specialOffering != null &&
+                specialOffering.availablePackages.isNotEmpty) {
+              // Assuming we want the first available package in this special offering
+              package = specialOffering.availablePackages.first;
+            }
+          }
+        }
+
+        // 3. Last Resort Fallback for standard keys
+        if (package == null && offerings.current != null) {
+          if (productIdentifier == 'monthly') {
+            package = offerings.current!.monthly;
+          } else if (productIdentifier == 'yearly') {
+            package = offerings.current!.annual;
+          }
+        }
+
+        if (package == null) {
+          return PurchaseResult(success: false, message: 'Product not found');
+        }
+
+        debugPrint(
+            'Initiating purchase for package: ${package.identifier}, Product ID: ${package.storeProduct.identifier}');
+        final customerInfo = await Purchases.purchasePackage(package);
+
+        // Verify entitlement
+        final isPro =
+            customerInfo.entitlements.all['premium']?.isActive ?? false;
+
+        if (isPro) {
+          // Sync with backend
+          await _verifyRevenueCatBackend(customerInfo.originalAppUserId);
+
+          // Trigger refresh
+          final notifier =
+              _ref.read(subscriptionRefreshTriggerProvider.notifier);
+          notifier.state = notifier.state + 1;
+
+          return PurchaseResult(
+              success: true,
+              message: 'Subscription activated',
+              orderId: customerInfo.originalAppUserId);
+        } else {
+          return PurchaseResult(
+              success: false,
+              message: 'Purchase succeeded but entitlement not active');
+        }
+      } on PlatformException catch (e) {
+        var errorCode = PurchasesErrorHelper.getErrorCode(e);
+        if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+          return PurchaseResult(
+              success: false, message: 'User cancelled purchase');
+        }
+        return PurchaseResult(
+            success: false, message: e.message ?? 'Unknown error');
+      }
+    } catch (e) {
+      return PurchaseResult(success: false, message: 'Error: $e');
+    }
+  }
+
+  Future<bool> _verifyRevenueCatBackend(String appUserId) async {
+    try {
+      // Send to backend to let it know to sync/update user status
+      final response = await _apiService
+          .post('/api/subscription/verify-revenuecat', data: {
+        'appUserId': appUserId,
+        'platform': Platform.isIOS ? 'ios' : 'android'
+      });
+      return response['success'] == true;
+    } catch (e) {
+      debugPrint('Backend sync failed: $e');
+      return false;
     }
   }
 }

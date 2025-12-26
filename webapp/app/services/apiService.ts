@@ -30,6 +30,72 @@ const getApiBaseUrl = (): string => {
 // BASE_URL is evaluated once at module load - may not have injected values yet
 export const getBaseUrl = getApiBaseUrl;
 
+// Check if app is running in global mode (mirrors translations.ts logic)
+const isGlobalMarketMode = (): boolean => {
+    if (typeof window === 'undefined') {
+        return process.env.NEXT_PUBLIC_MARKET === 'global';
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const marketParam = searchParams.get('market') || hashParams.get('market');
+
+    return marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global';
+};
+
+// Get user's preferred locale for API requests (Accept-Language header)
+// Mirrors getLocale() from translations.ts for consistency
+// In Iran mode: ALWAYS returns 'fa'
+// In Global mode: checks localStorage > FlutterBridge > browser > defaults to 'en'
+export const getApiLocale = (): string => {
+    // In Iran mode, always use Farsi - this is the key fix
+    if (!isGlobalMarketMode()) {
+        return 'fa';
+    }
+
+    // For global mode, check for user preference
+    if (typeof window === 'undefined') {
+        return 'en'; // Default for global mode on server
+    }
+
+    // Check localStorage for user preference
+    const savedLocale = localStorage.getItem('app_locale');
+    if (savedLocale === 'en' || savedLocale === 'fa') {
+        return savedLocale;
+    }
+
+    // Check if FlutterBridge provides device locale (from mobile app)
+    // @ts-ignore
+    const flutterBridge = (window as any).FlutterBridge;
+    if (flutterBridge?.deviceLocale) {
+        const deviceLocale = flutterBridge.deviceLocale as string;
+        return (deviceLocale === 'fa' || deviceLocale === 'en') ? deviceLocale : 'en';
+    }
+
+    // Fallback: Check browser navigator language
+    const browserLang = navigator.language?.split('-')[0] || 'en';
+    return browserLang === 'fa' ? 'fa' : 'en';
+};
+
+// Get market identifier for API requests (X-Market header)
+// Returns 'global' for global market, 'ir' for Iran market
+export const getApiMarket = (): string => {
+    if (typeof window === 'undefined') {
+        return process.env.NEXT_PUBLIC_MARKET === 'global' ? 'global' : 'ir';
+    }
+
+    // Check if global mode via URL params
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const marketParam = searchParams.get('market') || hashParams.get('market');
+
+    if (marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global') {
+        return 'global';
+    }
+
+    return 'ir';
+};
+
 // Helper to fix image URLs (handle localhost vs production, development vs Android Emulator)
 export const fixImageUrl = (url?: string): string | undefined => {
     if (!url) return undefined;
@@ -98,6 +164,7 @@ export interface User {
     name?: string;
     hasCompletedAdditionalInfo?: boolean;
     token?: string;
+    oneTimeOfferExpiresAt?: string;
     [key: string]: any;
 }
 
@@ -149,6 +216,7 @@ export interface UserProfile {
     name?: string;
     streakCount: number;
     hasCompletedAdditionalInfo?: boolean;
+    oneTimeOfferExpiresAt?: string;
     createdAt?: string;
 }
 
@@ -527,6 +595,7 @@ export const apiService = {
                 streakCount: user.streakCount || 0,
                 hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
                 createdAt: user.createdAt,
+                oneTimeOfferExpiresAt: user.oneTimeOfferExpiresAt,
             };
         } catch (error: any) {
             console.error('getUserProfile error:', error);
@@ -629,6 +698,38 @@ export const apiService = {
         }
     },
 
+    // OAuth Login (Google/Apple)
+    oauthLogin: async (provider: 'google' | 'apple', email: string, name: string | undefined, providerId: string): Promise<User> => {
+        try {
+            const response = await fetch(`${getBaseUrl()}/api/auth/oauth`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ provider, email, name, providerId }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'OAuth login failed');
+            }
+
+            const userData = data.data.user;
+            const token = data.data.token;
+
+            // Save token
+            if (typeof window !== 'undefined' && token) {
+                localStorage.setItem('auth_token', token);
+            }
+
+            return { ...userData, token };
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
     saveAdditionalInfo: async (data: any): Promise<ApiResponse> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
@@ -701,6 +802,32 @@ export const apiService = {
         }
     },
 
+    activateOneTimeOffer: async (): Promise<{ expiresAt: string } | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/auth/activate-offer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to activate offer');
+            }
+
+            return data.data; // { expiresAt: "..." }
+        } catch (error) {
+            console.error('activateOneTimeOffer error:', error);
+            return null;
+        }
+    },
+
     // Food Analysis APIs (matching Flutter implementation)
     analyzeFoodImage: async (imageFile: File, date?: string, description?: string): Promise<FoodAnalysisResponse> => {
         try {
@@ -716,12 +843,14 @@ export const apiService = {
                 formData.append('description', description.trim());
             }
 
+            console.log(`[analyzeFoodImage] Using locale: ${getApiLocale()}, market: ${getApiMarket()}`);
             const response = await fetch(`${getBaseUrl()}/api/food/analyze`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    'Accept-Language': 'fa',
+                    'Accept-Language': getApiLocale(),
+                    'X-Market': getApiMarket(),
                 },
                 body: formData,
             });
@@ -729,11 +858,25 @@ export const apiService = {
             const data = await response.json();
 
             if (!response.ok) {
-                // Handle free tier limit
-                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
-                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                // Handle subscription required for global users
+                if (response.status === 429 && data.error === 'subscription_required') {
+                    const error = new Error(data.message || 'Subscription required') as Error & { code?: string };
+                    error.code = 'SUBSCRIPTION_REQUIRED';
+                    throw error;
                 }
-                throw new Error(data.error || data.message || 'خطا در تحلیل تصویر');
+                // Handle free tier limit - use error code
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    const error = new Error(data.messageFa || data.message || 'Daily limit reached') as Error & { code?: string };
+                    error.code = 'DAILY_ANALYSIS_LIMIT_REACHED';
+                    throw error;
+                }
+                // Check for code in response
+                if (data.code) {
+                    const error = new Error(data.message || data.error || 'Analysis error') as Error & { code?: string };
+                    error.code = data.code;
+                    throw error;
+                }
+                throw new Error(data.error || data.message || 'Error analyzing image');
             }
 
             return data.data;
@@ -759,7 +902,8 @@ export const apiService = {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    'Accept-Language': 'fa',
+                    'Accept-Language': getApiLocale(),
+                    'X-Market': getApiMarket(),
                 },
                 body: JSON.stringify(body),
             });
@@ -767,11 +911,25 @@ export const apiService = {
             const data = await response.json();
 
             if (!response.ok) {
-                // Handle free tier limit
-                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
-                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                // Handle subscription required for global users
+                if (response.status === 429 && data.error === 'subscription_required') {
+                    const error = new Error(data.message || 'Subscription required') as Error & { code?: string };
+                    error.code = 'SUBSCRIPTION_REQUIRED';
+                    throw error;
                 }
-                throw new Error(data.error || data.message || 'خطا در تحلیل متن');
+                // Handle free tier limit - use error code
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    const error = new Error(data.messageFa || data.message || 'Daily limit reached') as Error & { code?: string };
+                    error.code = 'DAILY_ANALYSIS_LIMIT_REACHED';
+                    throw error;
+                }
+                // Check for code in response
+                if (data.code) {
+                    const error = new Error(data.message || data.error || 'Analysis error') as Error & { code?: string };
+                    error.code = data.code;
+                    throw error;
+                }
+                throw new Error(data.error || data.message || 'Error analyzing text');
             }
 
             return data.data;
@@ -966,6 +1124,7 @@ export const apiService = {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
+                    'Accept-Language': getApiLocale(),
                 },
                 body: JSON.stringify({ exercise, duration }),
             });
@@ -1980,6 +2139,7 @@ export const apiService = {
     saveKitchenItem: async (item: {
         kitchenItemId: string;
         name: string;
+        name_fa?: string;
         calories: number;
         protein: number;
         carbs: number;
@@ -1988,7 +2148,9 @@ export const apiService = {
         prepTime: string;
         difficulty: string;
         ingredients?: any[];
+        ingredients_fa?: any[];
         instructions?: string;
+        instructions_fa?: string;
     }): Promise<{ saved: boolean }> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;

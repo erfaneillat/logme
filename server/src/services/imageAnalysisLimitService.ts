@@ -5,18 +5,27 @@ import { getTomorrowJalaliPersian, getCurrentTimePersian } from '../utils/jalali
 // Maximum daily analyses allowed for free users
 // Maximum daily analyses allowed for free users
 const FREE_USER_DAILY_LIMIT = process.env.NODE_ENV === 'production' ? 2 : 100;
+// Global users have 0 free analyses - must subscribe
+const GLOBAL_FREE_USER_DAILY_LIMIT = 0;
 
 export class ImageAnalysisLimitService {
     /**
      * Check if a free user has reached their daily image analysis limit
      * Returns { canAnalyze: boolean, remaining: number, nextResetTime: Date }
+     * @param userId - The user's ID
+     * @param _ignoredDate - Ignored, server date is used
+     * @param isGlobal - If true, uses stricter limit (0 for free users, must subscribe)
      */
-    static async checkAndTrackAnalysis(userId: string, _ignoredDate?: string): Promise<{
+    static async checkAndTrackAnalysis(userId: string, _ignoredDate?: string, isGlobal: boolean = false): Promise<{
         canAnalyze: boolean;
         remaining: number;
         nextResetTime: Date;
         message?: string;
+        requiresSubscription?: boolean;
     }> {
+        // Determine the applicable limit based on market
+        const applicableLimit = isGlobal ? GLOBAL_FREE_USER_DAILY_LIMIT : FREE_USER_DAILY_LIMIT;
+
         try {
             // Check if user has active subscription
             const activeSubscription = await Subscription.findOne({
@@ -34,7 +43,21 @@ export class ImageAnalysisLimitService {
                 };
             }
 
-            // User is free tier - check daily limit
+            // For global users with no subscription, immediately require subscription
+            if (isGlobal) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+
+                return {
+                    canAnalyze: false,
+                    remaining: 0,
+                    nextResetTime: tomorrow,
+                    requiresSubscription: true,
+                };
+            }
+
+            // User is free tier (non-global) - check daily limit
             // Always use SERVER LOCAL date (YYYY-MM-DD) for limiting, ignoring any client-provided date
             const now = new Date();
             const y = now.getFullYear();
@@ -49,7 +72,7 @@ export class ImageAnalysisLimitService {
                 { upsert: true, new: true }
             );
 
-            const remaining = Math.max(0, FREE_USER_DAILY_LIMIT - (limit?.analysisCount || 0));
+            const remaining = Math.max(0, applicableLimit - (limit?.analysisCount || 0));
             const canAnalyze = remaining > 0;
 
             // Get next reset time (tomorrow at midnight)
@@ -64,7 +87,15 @@ export class ImageAnalysisLimitService {
             };
         } catch (error) {
             console.error('Error checking analysis limit:', error);
-            // Default to allowing on error (fail-open)
+            // Default to allowing on error (fail-open) for non-global, but block for global
+            if (isGlobal) {
+                return {
+                    canAnalyze: false,
+                    remaining: 0,
+                    nextResetTime: new Date(),
+                    requiresSubscription: true,
+                };
+            }
             return {
                 canAnalyze: true,
                 remaining: FREE_USER_DAILY_LIMIT,
@@ -142,5 +173,14 @@ export class ImageAnalysisLimitService {
      */
     static getEnglishErrorMessage(tomorrowDate: string): string {
         return `You've reached your daily limit (2 images) 🎯\nResets tomorrow: ${tomorrowDate}\nSubscribe for unlimited analysis 🚀`;
+    }
+
+    /**
+     * Get error message for global users who need to subscribe
+     * @param lang - Language code ('en' for English, other codes for localized versions)
+     */
+    static getGlobalSubscriptionRequiredMessage(lang: string = 'en'): string {
+        // For global market, always return English message
+        return `🔒 Subscription Required\n\nTo use AI-powered food analysis, please subscribe to unlock this feature.\n\n✨ Get unlimited food analysis\n📊 Track your nutrition effortlessly`;
     }
 }

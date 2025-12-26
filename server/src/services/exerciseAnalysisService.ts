@@ -10,6 +10,8 @@ export interface ExerciseAnalysisMeta {
     costUsd: number | null;
 }
 
+type SupportedLocale = 'fa' | 'en' | 'ar' | 'tr' | 'de' | 'fr' | 'es';
+
 export interface ExerciseAnalysisResponse {
     data: ExerciseAnalysisResult;
     meta: ExerciseAnalysisMeta | null;
@@ -34,12 +36,27 @@ export class ExerciseAnalysisService {
         this.client = new OpenAI({ apiKey });
     }
 
+    private getLanguageName(locale: string): string {
+        const map: Record<string, string> = {
+            'fa': 'PERSIAN (fa-IR)',
+            'en': 'ENGLISH',
+            'ar': 'ARABIC',
+            'tr': 'TURKISH',
+            'de': 'GERMAN',
+            'fr': 'FRENCH',
+            'es': 'SPANISH'
+        };
+        return map[locale] || 'ENGLISH';
+    }
+
     public async analyzeExercise(
         activityDescription: string,
         duration: number,
-        userWeight?: number
+        userWeight?: number,
+        locale: string = 'fa'
     ): Promise<ExerciseAnalysisResponse> {
         const weightInfo = userWeight ? `User weight: ${userWeight} kg.` : 'User weight is not provided - use average adult weight (70kg) for calculations.';
+        const langName = this.getLanguageName(locale);
 
         const prompt = `Analyze the exercise/activity and calculate calories burned.
 
@@ -50,11 +67,11 @@ ${weightInfo}
 Calculate the calories burned and return ONLY JSON (no extra text) with keys: activityName, caloriesBurned, duration, intensity, tips.
 
 Rules: 
-- activityName: Clean name in Persian (fa-IR) 
+- activityName: Clean name in ${langName} 
 - caloriesBurned: Integer number based on duration and estimated intensity
 - duration: Same as input (${duration})
-- intensity: One of "کم", "متوسط", "زیاد" (Low, Moderate, High in Persian)
-- tips: Array of 2-3 helpful tips in Persian about the exercise
+- intensity: One of "Low", "Moderate", "High" translated to ${langName}
+- tips: Array of 2-3 helpful tips in ${langName} about the exercise
 
 Base calculations on standard MET (Metabolic Equivalent) values:
 - Walking: 3.0-4.0 METs
@@ -121,7 +138,7 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
         const choice = chat.choices?.[0];
         const message = (choice?.message ?? {}) as any;
         const structured = message?.parsed;
-        const fallbackResult = this.buildFallbackResult(activityDescription, duration, userWeight);
+        const fallbackResult = this.buildFallbackResult(activityDescription, duration, locale, userWeight);
         let parsed: ExerciseAnalysisResult;
 
         if (structured && typeof structured === 'object') {
@@ -179,7 +196,7 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
         parsed.activityName = parsed.activityName || activityDescription;
         parsed.caloriesBurned = Math.max(0, Math.round(Number(parsed.caloriesBurned) || 0));
         parsed.duration = Math.max(0, Math.round(Number(parsed.duration) || duration));
-        parsed.intensity = parsed.intensity || 'متوسط';
+        parsed.intensity = parsed.intensity || (locale === 'fa' ? 'متوسط' : 'Moderate');
         parsed.tips = Array.isArray(parsed.tips) ? parsed.tips : [];
 
         // Sanity check for calories - ensure it's reasonable
@@ -192,22 +209,28 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
         return { data: parsed, meta };
     }
 
-    private buildFallbackResult(activityDescription: string, duration: number, userWeight?: number): ExerciseAnalysisResult {
+    private buildFallbackResult(activityDescription: string, duration: number, locale: string, userWeight?: number): ExerciseAnalysisResult {
         const met = this.estimateMet(activityDescription);
         const weight = userWeight ?? 70;
         const calories = Math.round(met * weight * (duration / 60));
-        const intensity = this.mapMetToIntensity(met);
+        const intensity = this.mapMetToIntensity(met, locale);
+
+        const tips = locale === 'fa' ? [
+            'قبل از شروع ورزش بدن را گرم کنید',
+            'در طول فعالیت آب کافی بنوشید',
+            'شدت تمرین را متناسب با توان خود تنظیم کنید',
+        ] : [
+            'Warm up before starting exercise',
+            'Stay hydrated during activity',
+            'Adjust intensity according to your ability',
+        ];
 
         return {
-            activityName: this.getPersianActivityName(activityDescription),
+            activityName: this.getActivityName(activityDescription, locale),
             caloriesBurned: Math.max(calories, 0),
             duration,
             intensity,
-            tips: [
-                'قبل از شروع ورزش بدن را گرم کنید',
-                'در طول فعالیت آب کافی بنوشید',
-                'شدت تمرین را متناسب با توان خود تنظیم کنید',
-            ],
+            tips,
         };
     }
 
@@ -226,27 +249,30 @@ Provide realistic calorie estimates based on typical exercise intensities.`;
         return 4.5; // default moderate activity
     }
 
-    private mapMetToIntensity(met: number): string {
-        if (met < 4) return 'کم';
-        if (met > 8) return 'زیاد';
-        return 'متوسط';
+    private mapMetToIntensity(met: number, locale: string): string {
+        const isFa = locale === 'fa';
+        if (met < 4) return isFa ? 'کم' : 'Low';
+        if (met > 8) return isFa ? 'زیاد' : 'High';
+        return isFa ? 'متوسط' : 'Moderate';
     }
 
     private includesAny(haystack: string, needles: string[]): boolean {
         return needles.some((needle) => haystack.includes(needle));
     }
 
-    private getPersianActivityName(activityDescription: string): string {
+    private getActivityName(activityDescription: string, locale: string): string {
         const activity = activityDescription.toLowerCase();
-        if (this.includesAny(activity, ['run', 'running', 'دویدن'])) return 'دویدن';
-        if (this.includesAny(activity, ['walk', 'walking', 'پیاده'])) return 'پیاده روی';
-        if (this.includesAny(activity, ['cycle', 'cycling', 'bike', 'دوچرخه'])) return 'دوچرخه سواری';
-        if (this.includesAny(activity, ['swim', 'swimming', 'شنا'])) return 'شنا کردن';
-        if (this.includesAny(activity, ['strength', 'weight', 'resistance', 'وزنه'])) return 'تمرین قدرتی';
-        if (this.includesAny(activity, ['yoga', 'pilates', 'یوگا', 'پیلاتس'])) return 'یوگا';
-        if (this.includesAny(activity, ['football', 'soccer', 'فوتبال'])) return 'فوتبال';
-        if (this.includesAny(activity, ['basketball', 'بسکتبال'])) return 'بسکتبال';
-        if (this.includesAny(activity, ['tennis', 'تنیس'])) return 'تنیس';
+        const isFa = locale === 'fa';
+
+        if (this.includesAny(activity, ['run', 'running', 'دویدن'])) return isFa ? 'دویدن' : 'Running';
+        if (this.includesAny(activity, ['walk', 'walking', 'پیاده'])) return isFa ? 'پیاده روی' : 'Walking';
+        if (this.includesAny(activity, ['cycle', 'cycling', 'bike', 'دوچرخه'])) return isFa ? 'دوچرخه سواری' : 'Cycling';
+        if (this.includesAny(activity, ['swim', 'swimming', 'شنا'])) return isFa ? 'شنا کردن' : 'Swimming';
+        if (this.includesAny(activity, ['strength', 'weight', 'resistance', 'وزنه'])) return isFa ? 'تمرین قدرتی' : 'Strength Training';
+        if (this.includesAny(activity, ['yoga', 'pilates', 'یوگا', 'پیلاتس'])) return isFa ? 'یوگا' : 'Yoga';
+        if (this.includesAny(activity, ['football', 'soccer', 'فوتبال'])) return isFa ? 'فوتبال' : 'Football';
+        if (this.includesAny(activity, ['basketball', 'بسکتبال'])) return isFa ? 'بسکتبال' : 'Basketball';
+        if (this.includesAny(activity, ['tennis', 'تنیس'])) return isFa ? 'تنیس' : 'Tennis';
         return activityDescription;
     }
 }

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Header from './Header';
+import { useTranslation } from '../translations';
 
 interface DayItem {
     day: string;
@@ -10,8 +11,7 @@ interface DayItem {
 }
 
 // Generate date strip dynamically
-const generateDays = (): DayItem[] => {
-    const jalaliDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+const generateDays = (dayNames: string[]): DayItem[] => {
     const today = new Date();
     const todayDate = today.getDate();
 
@@ -25,7 +25,7 @@ const generateDays = (): DayItem[] => {
         const jalaliIndex = (dayOfWeek + 1) % 7;
 
         return {
-            day: jalaliDays[jalaliIndex],
+            day: dayNames[jalaliIndex],
             date: date,
             isToday: dayOffset === 0,
         };
@@ -45,7 +45,20 @@ const DateHeader: React.FC<DateHeaderProps> = ({
     onSubscriptionClick,
     onStreakClick,
 }) => {
-    const [days] = useState<DayItem[]>(generateDays);
+    const { t, isRTL } = useTranslation();
+
+    // Conditional number formatting based on locale
+    const toPersianNumbers = (num: number | string): string => {
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
+    const dayNames = t('dateHeader.days', { returnObjects: true }) as string[];
+    const [days] = useState<DayItem[]>(() => generateDays(dayNames));
     const [selectedDate, setSelectedDate] = useState<number>(() => {
         const today = days.find(d => d.isToday);
         return today?.date ?? days[3]?.date ?? 0;
@@ -94,7 +107,7 @@ const DateHeader: React.FC<DateHeaderProps> = ({
                   text-sm font-semibold
                   ${isSelected ? 'text-gray-900' : 'text-gray-500'}
                 `}>
-                                    {item.date}
+                                    {formatNumber(item.date)}
                                 </span>
 
                                 {/* Today indicator dot */}

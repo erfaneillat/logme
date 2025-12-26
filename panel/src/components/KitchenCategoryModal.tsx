@@ -15,6 +15,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<Partial<KitchenCategory>>({
         title: '',
+        title_fa: '',
         isActive: true,
         order: 0,
         subCategories: []
@@ -24,6 +25,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     const [editingSubCatIndex, setEditingSubCatIndex] = useState<number | null>(null);
     const [subCatFormData, setSubCatFormData] = useState<Partial<KitchenSubCategory>>({
         title: '',
+        title_fa: '',
         items: []
     });
     const [isSubCatModalOpen, setIsSubCatModalOpen] = useState(false);
@@ -59,6 +61,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
         if (initialData) {
             setFormData({
                 title: initialData.title,
+                title_fa: initialData.title_fa || '',
                 isActive: initialData.isActive,
                 order: initialData.order,
                 subCategories: initialData.subCategories || []
@@ -66,6 +69,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
         } else {
             setFormData({
                 title: '',
+                title_fa: '',
                 isActive: true,
                 order: 0,
                 subCategories: []
@@ -128,7 +132,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     // SubCategory handlers
     const handleAddSubCategory = () => {
         setEditingSubCatIndex(null);
-        setSubCatFormData({ title: '', items: [] });
+        setSubCatFormData({ title: '', title_fa: '', items: [] });
         setIsSubCatModalOpen(true);
     };
 
@@ -584,19 +588,40 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                 <div className="p-6 overflow-y-auto flex-1">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Category Info */}
-                        <div className="flex flex-col md:flex-row gap-6 items-start">
-                            <div className="flex-1 w-full">
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Category Title</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                    <span className="px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded text-[10px] font-bold">EN</span>
+                                    English Title
+                                </label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-black focus:ring-1 focus:ring-black transition-all bg-gray-50 focus:bg-white text-lg font-semibold"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-lg font-semibold"
                                     placeholder="e.g. Breakfast, Lunch, Dinner"
                                 />
                             </div>
-                            <div className="w-full md:w-28">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                    <span className="px-1.5 py-0.5 bg-green-100 text-green-600 rounded text-[10px] font-bold">FA</span>
+                                    Farsi Title (فارسی)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.title_fa}
+                                    onChange={(e) => setFormData({ ...formData, title_fa: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all bg-gray-50 focus:bg-white text-lg font-semibold text-right"
+                                    placeholder="مثلاً صبحانه، ناهار، شام"
+                                    dir="rtl"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Order and Active Settings Row */}
+                        <div className="flex flex-wrap items-center gap-6">
+                            <div className="w-28">
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Order</label>
                                 <input
                                     type="number"
@@ -605,7 +630,7 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-black focus:ring-black transition-all bg-gray-50 focus:bg-white text-center font-bold"
                                 />
                             </div>
-                            <div className="pt-8">
+                            <div className="pt-6">
                                 <label className="flex items-center space-x-3 cursor-pointer select-none px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors">
                                     <input
                                         type="checkbox"
@@ -799,16 +824,35 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
                         </div>
 
                         <div className="p-6 overflow-y-auto flex-1">
-                            {/* Subcategory Title */}
-                            <div className="mb-6">
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Subcategory Title</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-black focus:ring-1 focus:ring-black outline-none transition-all font-bold text-lg"
-                                    value={subCatFormData.title || ''}
-                                    onChange={e => setSubCatFormData({ ...subCatFormData, title: e.target.value })}
-                                    placeholder="e.g. Protein-rich, Fast, Low-calorie"
-                                />
+                            {/* Subcategory Titles - EN & FA */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <span className="px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded text-[10px] font-bold">EN</span>
+                                        English Title
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all font-bold text-lg"
+                                        value={subCatFormData.title || ''}
+                                        onChange={e => setSubCatFormData({ ...subCatFormData, title: e.target.value })}
+                                        placeholder="e.g. Protein-rich, Fast"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <span className="px-1.5 py-0.5 bg-green-100 text-green-600 rounded text-[10px] font-bold">FA</span>
+                                        Farsi Title (فارسی)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition-all font-bold text-lg text-right"
+                                        value={subCatFormData.title_fa || ''}
+                                        onChange={e => setSubCatFormData({ ...subCatFormData, title_fa: e.target.value })}
+                                        placeholder="پروتئینی، سریع"
+                                        dir="rtl"
+                                    />
+                                </div>
                             </div>
 
                             {/* Items within subcategory */}

@@ -27,6 +27,11 @@ router.post('/validate-cafebazaar', authenticate, (req, res) =>
     subscriptionController.validateCafeBazaarPurchase(req, res)
 );
 
+// Verify with RevenueCat
+router.post('/verify-revenuecat', authenticate, (req, res) =>
+    subscriptionController.verifyRevenueCat(req, res)
+);
+
 // Check subscription status with Cafe Bazaar API
 router.post('/check-subscription-status', authenticate, (req, res) =>
     subscriptionController.checkCafeBazaarSubscriptionStatus(req, res)

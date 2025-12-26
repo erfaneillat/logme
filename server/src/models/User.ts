@@ -3,10 +3,14 @@ import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
   email?: string;
-  phone: string;
+  phone?: string; // Optional for OAuth users
   name?: string;
   password?: string;
+  // Authentication provider info
+  authProvider: 'phone' | 'google' | 'apple' | 'email';
+  providerId?: string; // OAuth provider's user ID
   isPhoneVerified: boolean;
+  isEmailVerified: boolean;
   isAdmin?: boolean; // Admin access flag
   hasCompletedAdditionalInfo: boolean;
   hasGeneratedPlan: boolean;
@@ -22,6 +26,7 @@ export interface IUser extends Document {
   lastActivity?: Date; // timestamp of last user activity
   lastPlatform?: 'web' | 'ios' | 'android' | 'unknown'; // Platform of last activity
   appVersion?: string;
+  oneTimeOfferExpiresAt?: Date;
   // User preferences
   addBurnedCalories?: boolean; // whether to add burned calories to daily goal
   rolloverCalories?: boolean; // whether to rollover remaining calories
@@ -47,8 +52,9 @@ const userSchema = new Schema<IUser>(
     },
     phone: {
       type: String,
-      required: [true, 'Phone number is required'],
+      required: false, // Optional for OAuth users
       unique: true,
+      sparse: true, // Allow null/undefined for OAuth users
       trim: true,
     },
     name: {
@@ -64,7 +70,21 @@ const userSchema = new Schema<IUser>(
       minlength: [6, 'Password must be at least 6 characters long'],
       select: false,
     },
+    authProvider: {
+      type: String,
+      enum: ['phone', 'google', 'apple', 'email'],
+      default: 'phone',
+    },
+    providerId: {
+      type: String,
+      required: false,
+      sparse: true,
+    },
     isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isEmailVerified: {
       type: Boolean,
       default: false,
     },
@@ -156,6 +176,10 @@ const userSchema = new Schema<IUser>(
     },
     appVersion: {
       type: String,
+      required: false,
+    },
+    oneTimeOfferExpiresAt: {
+      type: Date,
       required: false,
     },
   },

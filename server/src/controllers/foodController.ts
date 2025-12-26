@@ -47,11 +47,30 @@ export class FoodController {
 
         // Check daily analysis limit for free users
         if (userId) {
-            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate);
+            // Detect if this is a global market request via X-Market header
+            const marketHeader = req.headers['x-market'] as string | undefined;
+            const isGlobal = marketHeader === 'global';
+
+            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate, isGlobal);
 
             if (!limitCheck.canAnalyze) {
                 const tomorrowDate = ImageAnalysisLimitService.getTomorrowDateFormatted();
-                // Detect language from Accept-Language header or default to English
+
+                // For global users, return subscription required message
+                if (isGlobal || limitCheck.requiresSubscription) {
+                    const message = ImageAnalysisLimitService.getGlobalSubscriptionRequiredMessage('en');
+                    res.status(429).json({
+                        success: false,
+                        error: 'subscription_required',
+                        code: 'SUBSCRIPTION_REQUIRED',
+                        message: message,
+                        needsSubscription: true,
+                        timestamp: new Date()
+                    });
+                    return;
+                }
+
+                // For non-global users (Iran), return daily limit message
                 const lang = req.headers['accept-language']?.includes('fa') ? 'fa' : 'en';
                 const message = lang === 'fa'
                     ? ImageAnalysisLimitService.getPersianErrorMessage()
@@ -133,10 +152,17 @@ export class FoodController {
 
         let analysis: any;
         try {
-            const options: { signal: AbortSignal; description?: string } = { signal: ac.signal };
+            const options: { signal: AbortSignal; description?: string; locale?: string } = { signal: ac.signal };
             if (description) {
                 options.description = description;
             }
+            // Extract locale from Accept-Language header
+            const acceptLanguage = req.headers['accept-language'];
+            const marketHeader = req.headers['x-market'] as string | undefined;
+            const isGlobal = marketHeader === 'global';
+            options.locale = acceptLanguage?.includes('fa') ? 'fa' : acceptLanguage?.split(',')[0] || 'en';
+            console.log(`[FoodController] Analyze Request - Accept-Language: ${acceptLanguage}, Detected Locale: ${options.locale}, Market Global: ${isGlobal}`);
+
             analysis = await this.service.analyze(base64, options);
         } catch (err: any) {
             // Abort triggered or other error before persistence
@@ -269,7 +295,9 @@ export class FoodController {
         }
 
         try {
-            const analysis = await this.service.fixAnalysis(originalData, userDescription);
+            // Extract locale from Accept-Language header
+            const locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+            const analysis = await this.service.fixAnalysis(originalData, userDescription, locale);
 
             // Increment user's cumulative AI cost if available
             const userId = req.user?.userId;
@@ -324,11 +352,30 @@ export class FoodController {
 
         // Check daily analysis limit for free users
         if (userId) {
-            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate);
+            // Detect if this is a global market request via X-Market header
+            const marketHeader = req.headers['x-market'] as string | undefined;
+            const isGlobal = marketHeader === 'global';
+
+            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate, isGlobal);
 
             if (!limitCheck.canAnalyze) {
                 const tomorrowDate = ImageAnalysisLimitService.getTomorrowDateFormatted();
-                // Detect language from Accept-Language header or default to English
+
+                // For global users, return subscription required message
+                if (isGlobal || limitCheck.requiresSubscription) {
+                    const message = ImageAnalysisLimitService.getGlobalSubscriptionRequiredMessage('en');
+                    res.status(429).json({
+                        success: false,
+                        error: 'subscription_required',
+                        code: 'SUBSCRIPTION_REQUIRED',
+                        message: message,
+                        needsSubscription: true,
+                        timestamp: new Date()
+                    });
+                    return;
+                }
+
+                // For non-global users (Iran), return daily limit message
                 const lang = req.headers['accept-language']?.includes('fa') ? 'fa' : 'en';
                 const message = lang === 'fa'
                     ? ImageAnalysisLimitService.getPersianErrorMessage()
@@ -351,7 +398,9 @@ export class FoodController {
         }
 
         try {
-            const analysis = await this.service.analyzeFromDescription(description.trim());
+            // Extract locale from Accept-Language header
+            const locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+            const analysis = await this.service.analyzeFromDescription(description.trim(), locale);
             const analysisData = analysis.data;
 
             // Get the user ID from the authenticated request

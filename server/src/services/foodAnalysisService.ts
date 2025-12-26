@@ -104,11 +104,25 @@ export class FoodAnalysisService {
         return params;
     }
 
-    private improveImagePrompt(description?: string): string {
+    private getLanguageName(locale: string): string {
+        const map: Record<string, string> = {
+            'fa': 'FARSI',
+            'en': 'ENGLISH',
+            'ar': 'ARABIC',
+            'tr': 'TURKISH',
+            'de': 'GERMAN',
+            'fr': 'FRENCH',
+            'es': 'SPANISH'
+        };
+        return map[locale] || 'ENGLISH';
+    }
+
+    private improveImagePrompt(description?: string, locale: string = 'fa'): string {
+        const langName = this.getLanguageName(locale);
         let basePrompt = `You are the advanced AI Nutritionist and Computer Vision Engine for "Loqme".
 
 ### CORE PROTOCOLS:
-1. Language: Process logic in ENGLISH, output user-facing text in PERSIAN.
+1. Language: Process logic in ENGLISH, output user-facing text in ${langName}.
 2. Output Format: Return ONLY a valid JSON object.
 3. Aggregation Rule: Sum up all nutritional values for the total meal.
 
@@ -126,9 +140,10 @@ CRITICAL: Use "Gravity Physics" to distinguish Sangak from Taftoon/Lavash.
 IMPORTANT: First check if this image contains FOOD. If the image does not contain food (e.g., objects, people, landscapes, text, etc.), return {"isFood": false, "error": "This image does not contain food. Please take a photo of your meal."}.
 
 If the image contains food, return the following JSON structure:
-Required JSON keys: isFood (true), title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
+Required JSON keys: isFood (true), title (string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
 Rules:
-- Strings MUST be Persian (fa-IR). No emoji.
+- Strings MUST be ${langName}. No emoji.
+- The 'title' field MUST be in ${langName} (Translated/Localized). Do not use English names.
 - All numbers MUST be numeric integers (no units, no text).
 - Ensure calorie consistency: calories ≈ proteinGrams*4 + carbsGrams*4 + fatGrams*9 (±20%). Prefer adjusting macros first; then adjust calories if still off.
 - Portions: default 1 if unclear.
@@ -149,11 +164,12 @@ IMPORTANT: Use this description as a hint to better identify ingredients and est
         return basePrompt;
     }
 
-    private improveTextPrompt(description: string): string {
+    private improveTextPrompt(description: string, locale: string = 'fa'): string {
+        const langName = this.getLanguageName(locale);
         return `You are the advanced AI Nutritionist Engine for "Loqme".
 
 ### CORE PROTOCOLS:
-1. Language: Process logic in ENGLISH, output user-facing text in PERSIAN (fa-IR).
+1. Language: Process logic in ENGLISH, output user-facing text in ${langName}.
 2. Output Format: Return ONLY a valid JSON object.
 3. Aggregation Rule: Sum up all nutritional values for the total meal.
 
@@ -184,7 +200,7 @@ CRITICAL: Accurately identify the food from the user's description.
     * "نون" = bread (colloquial for نان)
 
 ### PHASE 2: NUTRITIONAL CALCULATION
-* Use standard nutritional databases for Persian foods.
+* Use standard nutritional databases.
 * For composite dishes (e.g., "چلو خورشت"), calculate components separately then aggregate.
 * Default cooking oil: 1-2 tbsp per portion unless specified.
 * Rice absorption: Account for cooked weight (~3x dry weight).
@@ -192,10 +208,11 @@ CRITICAL: Accurately identify the food from the user's description.
 ### PHASE 3: VALIDATION & OUTPUT
 User's food description: "${description}"
 
-Required JSON keys: title (fa-IR string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (fa-IR string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
+Required JSON keys: title (string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
 
 Rules:
-- Strings MUST be Persian (fa-IR). No emoji.
+- Strings MUST be ${langName}. No emoji.
+- The 'title' field MUST be in ${langName} (Translated/Localized). Do not use English names.
 - All numbers MUST be numeric integers (no units, no text).
 - Ensure calorie consistency: calories ≈ proteinGrams*4 + carbsGrams*4 + fatGrams*9 (±20%). Prefer adjusting macros first; then adjust calories if still off.
 - Portions: Infer from description, default 1 if unclear.
@@ -316,8 +333,9 @@ Rules:
         return result;
     }
 
-    public async analyze(base64Image: string, options?: { signal?: AbortSignal; description?: string }): Promise<FoodAnalysisResponse> {
-        const prompt = this.improveImagePrompt(options?.description);
+    public async analyze(base64Image: string, options?: { signal?: AbortSignal; description?: string; locale?: string }): Promise<FoodAnalysisResponse> {
+        const locale = options?.locale || 'fa';
+        const prompt = this.improveImagePrompt(options?.description, locale);
 
         const { base64, mime } = await this.compressBase64Image(base64Image);
         const imageUrl = `data:${mime};base64,${base64}`;
@@ -435,7 +453,8 @@ Rules:
         return Math.max(0, Math.min(10, Math.round(raw)));
     }
 
-    public async fixAnalysis(originalData: any, userDescription: string): Promise<FoodAnalysisResponse> {
+    public async fixAnalysis(originalData: any, userDescription: string, locale: string = 'fa'): Promise<FoodAnalysisResponse> {
+        const langName = this.getLanguageName(locale);
         const prompt = `Fix the food analysis based on user feedback and output STRICT JSON only.
 
 Original analysis:
@@ -443,10 +462,11 @@ ${JSON.stringify(originalData, null, 2)}
 
 User feedback: "${userDescription}"
 
-Return the same JSON keys: title (fa-IR), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, items with name (fa-IR), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)).
+Return the same JSON keys: title, calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, items with name, calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)).
 Rules:
-- IMPORTANT: If the current title is inaccurate or vague, REPLACE it with a correct and specific Persian title.
-- Strings Persian (fa-IR). Numbers are integers.
+- IMPORTANT: If the current title is inaccurate or vague, REPLACE it with a correct and specific title in ${langName}.
+- Strings MUST be ${langName}. No emoji.
+- The 'title' field MUST be in ${langName} (Translated/Localized). Do not use English names.
 - Ensure calories ≈ protein*4 + carbs*4 + fat*9 (±20%). Prefer adjusting macros first; then calories if needed.
 - Portions default to 1 if unclear.
 - No explanations, no extra keys.`;
@@ -515,8 +535,8 @@ Rules:
         return { data: parsed, meta };
     }
 
-    public async analyzeFromDescription(description: string): Promise<FoodAnalysisResponse> {
-        const prompt = this.improveTextPrompt(description);
+    public async analyzeFromDescription(description: string, locale: string = 'fa'): Promise<FoodAnalysisResponse> {
+        const prompt = this.improveTextPrompt(description, locale);
 
         const baseParams = {
             model: this.model,

@@ -8,6 +8,7 @@ import NutrientCard from './NutrientCard';
 import StreakModal from './StreakModal';
 import OfferBanner from './OfferBanner';
 import { apiService, DailyLog, DailyLogItem, Plan, UserProfile, Offer, getBaseUrl, fixImageUrl } from '../services/apiService';
+import { useTranslation } from '../translations';
 
 // Helper to format date as YYYY-MM-DD (Gregorian for API)
 const formatDate = (date: Date): string => {
@@ -17,9 +18,14 @@ const formatDate = (date: Date): string => {
     return `${year}-${month}-${day}`;
 };
 
-// Helper to get Jalali day of month
+// Helper to get Jalali day of month (for Persian calendar)
 const getJalaliDayOfMonth = (date: Date): number => {
     return getJalaliDate(date);
+};
+
+// Helper to get Gregorian day of month (for global mode)
+const getGregorianDayOfMonth = (date: Date): number => {
+    return date.getDate();
 };
 
 // Helper to convert English numbers to Persian/Farsi numerals
@@ -52,9 +58,11 @@ interface DashboardProps {
         startTime: number;
     }[];
     onSubscriptionClick: () => void;
+    offerExpiresAt?: string | null;
+    onOfferClick?: () => void;
 }
 
-const PendingFoodItem = ({ item }: { item: NonNullable<DashboardProps['pendingAnalyses']>[number] }) => (
+const PendingFoodItem = ({ item, t }: { item: NonNullable<DashboardProps['pendingAnalyses']>[number], t: (key: string) => any }) => (
     <div className="bg-white p-4 rounded-[28px] shadow-sm border border-orange-100 relative overflow-hidden animate-slide-up-item group">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-50/30 to-transparent animate-shimmer" style={{ animationDuration: '2s' }}></div>
         <div className="flex gap-4 items-center relative z-10">
@@ -74,7 +82,7 @@ const PendingFoodItem = ({ item }: { item: NonNullable<DashboardProps['pendingAn
                 <div className="h-4 w-3/4 bg-gray-50 rounded animate-pulse"></div>
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-orange-600 animate-pulse">
-                        هوش مصنوعی لقمه در حال تحلیل...
+                        {t('dashboard.aiAnalyzing')}
                     </span>
                     <img
                         src="/app/images/loqme_logo.png"
@@ -178,7 +186,18 @@ const DateStripSkeleton = () => (
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [], onSubscriptionClick }) => {
+const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [], onSubscriptionClick, offerExpiresAt, onOfferClick }) => {
+    const { t, isRTL } = useTranslation();
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
+    // Conditional day of month based on locale
+    const getDayOfMonth = (date: Date): number => {
+        return isRTL ? getJalaliDayOfMonth(date) : getGregorianDayOfMonth(date);
+    };
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [dateRange] = useState<Date[]>(() => generateDateRange());
     const [visibleDates, setVisibleDates] = useState<Date[]>([]);
@@ -289,13 +308,13 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
         fetchData(false);
     };
 
-    // Jalali day names - mapped to JavaScript getDay()
+    // Day names - mapped to JavaScript getDay()
     // getDay(): 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
-    // Persian:  ی=Sunday, د=Monday, س=Tuesday, چ=Wednesday, پ=Thursday, ج=Friday, ش=Saturday
     const getDayName = (date: Date) => {
-        const dayNames = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش']; // Index 0=Sunday, 6=Saturday
+        const persianDayNames = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش']; // Persian: ی=Sunday, ش=Saturday
+        const englishDayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; // English: S=Sunday, S=Saturday
         const dayOfWeek = date.getDay(); // 0-6 (Sunday-Saturday)
-        return dayNames[dayOfWeek];
+        return isRTL ? persianDayNames[dayOfWeek] : englishDayNames[dayOfWeek];
     };
 
     // Calculate remaining values with preferences applied
@@ -432,7 +451,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             🍕
                         </div>
                         <span className="text-xs text-gray-400 font-medium">
-                            {isRefreshing ? 'در حال بروزرسانی...' : pullDistance >= 50 ? 'رها کنید' : 'بکشید برای بروزرسانی'}
+                            {isRefreshing ? t('dashboard.updating') : pullDistance >= 50 ? t('dashboard.releaseToRefresh') : t('dashboard.pullToRefresh')}
                         </span>
                     </div>
                 </div>
@@ -457,8 +476,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                     }
                 `}</style>
 
-                {/* Offer Banner - Server filters out used offers */}
-                {activeOffer && (
+                {/* Offer Banner - Only shown for Persian users, server filters out used offers */}
+                {isRTL && activeOffer && (
                     <OfferBanner
                         offer={activeOffer}
                         userCreatedAt={userProfile?.createdAt}
@@ -474,6 +493,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                     isLoading={isLoading}
                     onSubscriptionClick={onSubscriptionClick}
                     onStreakClick={handleStreakClick}
+                    offerExpiresAt={offerExpiresAt}
+                    onOfferClick={onOfferClick}
                 />
 
                 {/* Date Strip */}
@@ -503,7 +524,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         {getDayName(date)}
                                     </button>
                                     <span className={`text-sm font-semibold ${isSelected ? 'text-gray-900' : 'text-gray-500'}`}>
-                                        {toPersianNumbers(getJalaliDayOfMonth(date))}
+                                        {formatNumber(getDayOfMonth(date))}
                                     </span>
                                     {isTodayDate && (
                                         <div className={`w-1.5 h-1.5 rounded-full -mt-0.5 ${isSelected ? 'bg-orange-500' : 'bg-orange-400'}`} />
@@ -530,13 +551,13 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                     <div className="bg-white rounded-[32px] p-6 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center justify-between mb-6 relative overflow-hidden">
                         <div className="absolute -left-10 -top-10 w-40 h-40 bg-orange-50 rounded-full blur-3xl opacity-60"></div>
                         <div className="flex-1 relative z-10">
-                            <div className="text-gray-500 font-semibold text-sm mb-1">کالری باقیمانده</div>
+                            <div className="text-gray-500 font-semibold text-sm mb-1">{t('dashboard.remaining')}</div>
                             <div className="text-5xl font-black text-gray-800 tracking-tight leading-tight">
-                                {toPersianNumbers(caloriesRemaining)}
+                                {formatNumber(caloriesRemaining)}
                             </div>
                             <div className="mt-4 flex items-center gap-2 flex-wrap">
                                 <div className="px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-bold border border-orange-100">
-                                    {toPersianNumbers(percentConsumed)}٪ مصرف شده
+                                    {formatNumber(percentConsumed)}{isRTL ? '٪' : '%'} {t('dashboard.consumed')}
                                 </div>
                                 {dailyLog && dailyLog.burnedCalories > 0 ? (
                                     <button
@@ -546,7 +567,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                                         </svg>
-                                        <span>{toPersianNumbers(dailyLog.burnedCalories)} سوزانده</span>
+                                        <span>{formatNumber(dailyLog.burnedCalories)} {t('dashboard.burned')}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                                         </svg>
@@ -559,7 +580,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                                         </svg>
-                                        <span>ورزش</span>
+                                        <span>{t('dashboard.exercise')}</span>
                                     </button>
                                 )}
                                 {/* Rollover calories indicator */}
@@ -568,7 +589,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                                         </svg>
-                                        <span>+{toPersianNumbers(rolloverCaloriesAmount)} از دیروز</span>
+                                        <span>+{formatNumber(rolloverCaloriesAmount)} {t('dashboard.fromYesterday')}</span>
                                     </div>
                                 )}
                             </div>
@@ -597,28 +618,31 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                 ) : (
                     <div className="grid grid-cols-3 gap-3 mb-8">
                         <NutrientCard
-                            label="چربی"
+                            label={t('dashboard.nutrients.fat')}
                             value={consumed.fat}
                             total={goals.fatsGrams}
-                            unit="گرم"
+                            unit={t('dashboard.nutrients.unit')}
                             color="#EAB308"
                             icon={<FatIcon />}
+                            isRTL={isRTL}
                         />
                         <NutrientCard
-                            label="کربو"
+                            label={t('dashboard.nutrients.carbs')}
                             value={consumed.carbs}
                             total={goals.carbsGrams}
-                            unit="گرم"
+                            unit={t('dashboard.nutrients.unit')}
                             color="#F59E0B"
                             icon={<CarbsIcon />}
+                            isRTL={isRTL}
                         />
                         <NutrientCard
-                            label="پروتئین"
+                            label={t('dashboard.nutrients.protein')}
                             value={consumed.protein}
                             total={goals.proteinGrams}
-                            unit="گرم"
+                            unit={t('dashboard.nutrients.unit')}
                             color="#EF4444"
                             icon={<ProteinIcon />}
+                            isRTL={isRTL}
                         />
                     </div>
                 )}
@@ -626,7 +650,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                 {/* Recently Eaten Section */}
                 <div className="mb-6">
                     <div className="flex justify-between items-center mb-4 px-1">
-                        <h3 className="text-xl font-bold text-gray-800">اخیرأ خورده شده‌ها</h3>
+                        <h3 className="text-xl font-bold text-gray-800">{t('dashboard.recent')}</h3>
                         <button
                             onClick={handleRefresh}
                             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -648,16 +672,16 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                             <div className="w-16 h-16 bg-gray-50 group-hover:bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors">
                                 <span className="text-3xl grayscale group-hover:grayscale-0 transition-all duration-300">📸</span>
                             </div>
-                            <h4 className="font-bold text-gray-700 mb-1">هنوز غذایی ثبت نشده</h4>
+                            <h4 className="font-bold text-gray-700 mb-1">{t('dashboard.noFood')}</h4>
                             <p className="text-sm text-gray-400 max-w-[200px] mx-auto">
-                                اولین وعده غذایی خود را ثبت کنید
+                                {t('dashboard.logFirst')}
                             </p>
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {/* Pending Analyses */}
                             {pendingAnalyses.map((item) => (
-                                <PendingFoodItem key={item.id} item={item} />
+                                <PendingFoodItem key={item.id} item={item} t={t} />
                             ))}
 
                             {foods.map((food, index) => (
@@ -677,21 +701,21 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                                         </div>
                                         <div className="flex-1 min-w-0 flex flex-col justify-between h-24 py-0.5">
                                             <div className="flex justify-between items-start w-full">
-                                                <h4 className="font-black text-gray-800 text-base leading-tight line-clamp-2 pl-2 text-right w-full ml-2 group-hover:text-orange-600 transition-colors">
+                                                <h4 className={`font-black text-gray-800 text-base leading-tight line-clamp-2 ${isRTL ? 'pl-2 text-right ml-2' : 'pr-2 text-left mr-2'} w-full group-hover:text-orange-600 transition-colors`}>
                                                     {food.name}
                                                 </h4>
                                                 <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-lg shrink-0 tabular-nums">
-                                                    {food.timestamp.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}
+                                                    {food.timestamp.toLocaleTimeString(isRTL ? 'fa-IR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
                                             <div className="flex flex-col gap-0.5 mt-auto">
-                                                <div className="text-lg font-black text-gray-900 text-right leading-none mb-1">
-                                                    {toPersianNumbers(food.calories)} <span className="text-[10px] font-bold text-gray-400">کالری</span>
+                                                <div className={`text-lg font-black text-gray-900 ${isRTL ? 'text-right' : 'text-left'} leading-none mb-1`}>
+                                                    {formatNumber(food.calories)} <span className="text-[10px] font-bold text-gray-400">{t('dashboard.calories')}</span>
                                                 </div>
-                                                <div className="flex gap-1 justify-end flex-nowrap overflow-hidden">
-                                                    <MacroPill value={toPersianNumbers(food.protein)} label="گرم" color="text-red-600" bg="bg-red-50" icon="🥩" />
-                                                    <MacroPill value={toPersianNumbers(food.carbs)} label="گرم" color="text-amber-600" bg="bg-amber-50" icon="🌾" />
-                                                    <MacroPill value={toPersianNumbers(food.fat)} label="گرم" color="text-yellow-600" bg="bg-yellow-50" icon="🧈" />
+                                                <div className={`flex gap-1 ${isRTL ? 'justify-end' : 'justify-start'} flex-nowrap overflow-hidden`}>
+                                                    <MacroPill value={formatNumber(food.protein)} label={t('dashboard.nutrients.unit')} color="text-red-600" bg="bg-red-50" icon="🥩" />
+                                                    <MacroPill value={formatNumber(food.carbs)} label={t('dashboard.nutrients.unit')} color="text-amber-600" bg="bg-amber-50" icon="🌾" />
+                                                    <MacroPill value={formatNumber(food.fat)} label={t('dashboard.nutrients.unit')} color="text-yellow-600" bg="bg-yellow-50" icon="🧈" />
                                                 </div>
                                             </div>
                                         </div>

@@ -889,11 +889,15 @@ export class LogController {
             const additionalInfo = await AdditionalInfo.findOne({ userId }).select('weight');
             const userWeight = additionalInfo?.weight;
 
+            // Extract locale from Accept-Language header
+            const locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+
             // Analyze exercise using AI
             const analysisResult = await this.getExerciseAnalysisService().analyzeExercise(
                 exercise,
                 duration,
-                userWeight
+                userWeight,
+                locale
             );
 
             // Increment user's cumulative AI cost if available

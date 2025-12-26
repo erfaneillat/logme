@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useTranslation } from '../translations';
 
 interface StreakModalProps {
     isOpen: boolean;
@@ -30,6 +31,13 @@ const StreakModal: React.FC<StreakModalProps> = ({
     streakCount,
     completedDates = [],
 }) => {
+    const { t, isRTL } = useTranslation();
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
     // Generate last 7 days
     const [last7Days, setLast7Days] = useState<{
         date: Date;
@@ -56,12 +64,12 @@ const StreakModal: React.FC<StreakModalProps> = ({
 
             // Get day of week (0 = Sunday)
             const dayOfWeek = date.getDay();
-            // Map to Persian days: Sunday=ی, Monday=د, Tuesday=س, Wednesday=چ, Thursday=پ, Friday=ج, Saturday=ش
-            const dayNames = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش']; // Index 0=Sunday, 6=Saturday
+            // Map to days from translation
+            const dayLetters = t('streakModal.dayLetters', { returnObjects: true }) as string[];
 
             days.push({
                 date,
-                dayLetter: dayNames[dayOfWeek],
+                dayLetter: dayLetters[dayOfWeek],
                 isCompleted: completedSet.has(dateStr),
                 isToday: i === 0,
             });
@@ -100,16 +108,16 @@ const StreakModal: React.FC<StreakModalProps> = ({
                                     <div className="relative w-8 h-8">
                                         <Image
                                             src="/app/loqme_logo.png"
-                                            alt="لقمه"
+                                            alt={t('header.appName')}
                                             fill
                                             className="object-contain"
                                         />
                                     </div>
-                                    <span className="text-base font-bold text-gray-800">لقمه</span>
+                                    <span className="text-base font-bold text-gray-800">{t('header.appName')}</span>
                                 </div>
                                 <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
                                     <FireIcon className="h-4 w-4 text-orange-500" />
-                                    <span className="text-sm font-bold text-gray-700">{toPersianNumbers(streakCount)}</span>
+                                    <span className="text-sm font-bold text-gray-700">{formatNumber(streakCount)}</span>
                                 </div>
                             </div>
 
@@ -134,7 +142,7 @@ const StreakModal: React.FC<StreakModalProps> = ({
                                 transition={{ delay: 0.3 }}
                                 className="text-2xl font-black text-orange-500 text-center mb-2"
                             >
-                                رکورد شما
+                                {t('streakModal.title')}
                             </motion.h2>
 
                             {/* Streak Count */}
@@ -144,7 +152,7 @@ const StreakModal: React.FC<StreakModalProps> = ({
                                 transition={{ delay: 0.35 }}
                                 className="text-lg font-semibold text-gray-700 text-center mb-6"
                             >
-                                {toPersianNumbers(streakCount)} روز متوالی
+                                {t('streakModal.streakDays').replace('{{count}}', formatNumber(streakCount))}
                             </motion.p>
 
                             {/* Week Days */}
@@ -181,9 +189,12 @@ const StreakModal: React.FC<StreakModalProps> = ({
                                 transition={{ delay: 0.45 }}
                                 className="text-sm text-gray-600 text-center mb-6 leading-relaxed"
                             >
-                                هر روز که وعده غذایی خود را ثبت کنید،
-                                <br />
-                                رکورد شما افزایش می‌یابد!
+                                {t('streakModal.description').split('\n').map((line: string, i: number) => (
+                                    <React.Fragment key={i}>
+                                        {line}
+                                        {i < t('streakModal.description').split('\n').length - 1 && <br />}
+                                    </React.Fragment>
+                                ))}
                             </motion.p>
 
                             {/* Continue Button */}
@@ -196,7 +207,7 @@ const StreakModal: React.FC<StreakModalProps> = ({
                                     hover:bg-gray-800 active:scale-[0.98] transition-all duration-200
                                     shadow-lg shadow-gray-900/20"
                             >
-                                ادامه
+                                {t('streakModal.continueButton')}
                             </motion.button>
                         </div>
                     </motion.div>

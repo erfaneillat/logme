@@ -1,6 +1,6 @@
 {
     "header": {
-        "title": "لقمه - Calorie Counter AI",
+        "title": "Slice - Calorie Counter AI",
         "subtitle": "Your Smart Nutrition Assistant",
         "nav": {
             "howItWorks": "How it works",
@@ -11,7 +11,7 @@
     "hero": {
         "title": "Track Calories",
         "titleHighlight": "in a Snap",
-        "description": "Hey there! Meet لقمه – your friendly AI companion that makes calorie tracking super easy and fun! 📸 Just snap a quick photo of your meal or scan a barcode, and voilà! You'll instantly get all the calories, nutrients, and personalized tips you need. We'll keep you motivated with gentle reminders, so you can reach your health goals without any stress! 💪✨",
+        "description": "Hey there! Meet Slice – your friendly AI companion that makes calorie tracking super easy and fun! 📸 Just snap a quick photo of your meal or scan a barcode, and voilà! You'll instantly get all the calories, nutrients, and personalized tips you need. We'll keep you motivated with gentle reminders, so you can reach your health goals without any stress! 💪✨",
         "download": {
             "appStore": "Download on the",
             "appStoreTitle": "Download for iOS",
@@ -24,12 +24,12 @@
         },
         "socialProof": {
             "users": "Over 10,000",
-            "trust": "happy users love لقمه"
+            "trust": "happy users love Slice"
         }
     },
     "howItWorks": {
-        "title": "How Does لقمه Work?",
-        "description": "It's incredibly simple! 😊 Just take a quick photo of your food, and لقمه does all the magic! Our smart AI uses your phone's camera to understand exactly what you're eating and how much. We've trained it on thousands of delicious meals, so it knows the difference between a slice of pizza and a salad! 🍕🥗 Then, like a friendly nutritionist, it tells you everything you need to know: calories, protein, carbs, fat, and more!",
+        "title": "How Does Slice Work?",
+        "description": "It's incredibly simple! 😊 Just take a quick photo of your food, and Slice does all the magic! Our smart AI uses your phone's camera to understand exactly what you're eating and how much. We've trained it on thousands of delicious meals, so it knows the difference between a slice of pizza and a salad! 🍕🥗 Then, like a friendly nutritionist, it tells you everything you need to know: calories, protein, carbs, fat, and more!",
         "cta": "Let's Get Started! 🚀",
         "nutrition": {
             "carbs": "CARBS",
@@ -38,8 +38,8 @@
         }
     },
     "accuracy": {
-        "title": "How Accurate Is لقمه?",
-        "description": "Great question! لقمه is super accurate – about 90% of the time! 🎯 Sure, when you have a super complex meal with tons of ingredients, it might need a tiny bit of help, but that's totally okay! You can always use our friendly \"Describe\" feature or scan barcodes for packaged foods. And if something doesn't look quite right? Just tap \"Fix results\" and help us learn! We love getting better! 💕",
+        "title": "How Accurate Is Slice?",
+        "description": "Great question! Slice is super accurate – about 90% of the time! 🎯 Sure, when you have a super complex meal with tons of ingredients, it might need a tiny bit of help, but that's totally okay! You can always use our friendly \"Describe\" feature or scan barcodes for packaged foods. And if something doesn't look quite right? Just tap \"Fix results\" and help us learn! We love getting better! 💕",
         "comparison": {
             "generalPopulation": {
                 "title": "General Population",
@@ -47,7 +47,7 @@
                 "accuracy": "45%"
             },
             "calz": {
-                "title": "لقمه - Calorie Counter AI",
+                "title": "Slice - Calorie Counter AI",
                 "description": "predicts the nutritional value of food with consistent accuracy over",
                 "accuracy": "90%"
             },
@@ -75,7 +75,7 @@
     "contact": {
         "title": "Get In Touch",
         "subtitle": "We'd love to hear from you!",
-        "description": "Have questions about لقمه? Want to share feedback? Or just want to say hello? We'd love to hear from you!",
+        "description": "Have questions about Slice? Want to share feedback? Or just want to say hello? We'd love to hear from you!",
         "form": {
             "name": "Your Name",
             "email": "Your Email",
@@ -95,7 +95,7 @@
     },
     "footer": {
         "brand": {
-            "title": "لقمه",
+            "title": "Slice",
             "subtitle": "Calorie Counter AI",
             "description": "Your smart nutrition assistant for effortless calorie tracking."
         },
@@ -120,14 +120,14 @@
             "googlePlay": "GET IT ON",
             "googlePlayTitle": "Google Play"
         },
-        "copyright": "© 2024 لقمه - Calorie Counter AI. All rights reserved."
+        "copyright": "© 2024 Slice - Calorie Counter AI. All rights reserved."
     },
     "privacyPolicy": {
         "title": "Privacy Policy",
         "lastUpdated": "Last Updated: January 15, 2025",
         "introduction": {
             "title": "Introduction",
-            "content": "At لقمه, we respect your privacy and are committed to protecting your personal information. This privacy policy explains how we collect, use, and protect your information. By using our services, you agree to this policy."
+            "content": "At Slice, we respect your privacy and are committed to protecting your personal information. This privacy policy explains how we collect, use, and protect your information. By using our services, you agree to this policy."
         },
         "dataCollection": {
             "title": "Data Collection",
@@ -218,6 +218,52 @@
             "email": "Email",
             "phone": "Phone",
             "address": "Address"
+        }
+    },
+    "termsOfUse": {
+        "title": "Terms of Use",
+        "lastUpdated": "Last Updated: January 15, 2025",
+        "introduction": {
+            "title": "Introduction",
+            "content": "Welcome to Slice. By using our website and mobile application, you agree to these terms of use. If you do not agree with any part of these terms, please do not use our services."
+        },
+        "usageLicense": {
+            "title": "Use License",
+            "content": "Permission is granted to temporarily download one copy of the materials (information or software) on the Slice app for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title.",
+            "modify": "Under this license you may not modify or copy the materials.",
+            "commercial": "Use the materials for any commercial purpose, or for any public display (commercial or non-commercial).",
+            "reverseEngineer": "Attempt to decompile or reverse engineer any software contained on the Slice app.",
+            "copyright": "Remove any copyright or other proprietary notations from the materials.",
+            "transfer": "Transfer the materials to another person or 'mirror' the materials on any other server."
+        },
+        "disclaimer": {
+            "title": "Disclaimer",
+            "content": "The materials on the Slice app are provided on an 'as is' basis. Slice makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.",
+            "medical": "The content provided by Slice is for informational purposes only and is not intended as medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition."
+        },
+        "limitations": {
+            "title": "Limitations",
+            "content": "In no event shall Slice or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on the Slice app, even if Slice or a Slice authorized representative has been notified orally or in writing of the possibility of such damage."
+        },
+        "accuracy": {
+            "title": "Accuracy of Materials",
+            "content": "The materials appearing on the Slice app could include technical, typographical, or photographic errors. Slice does not warrant that any of the materials on its app are accurate, complete, or current. Slice may make changes to the materials contained on its app at any time without notice. However, Slice does not make any commitment to update the materials."
+        },
+        "links": {
+            "title": "Links",
+            "content": "Slice has not reviewed all of the sites linked to its app and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by Slice of the site. Use of any such linked website is at the user's own risk."
+        },
+        "modifications": {
+            "title": "Modifications",
+            "content": "Slice may revise these terms of use for its app at any time without notice. By using this app you are agreeing to be bound by the then current version of these terms of use."
+        },
+        "governingLaw": {
+            "title": "Governing Law",
+            "content": "These terms and conditions are governed by and construed in accordance with the laws of Iran and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location."
+        },
+        "contact": {
+            "title": "Contact Us",
+            "content": "If you have any questions about these Terms of Use, please contact us."
         }
     }
 }

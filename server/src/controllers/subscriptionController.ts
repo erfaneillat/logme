@@ -7,6 +7,7 @@ import { PurchaseVerificationService } from '../services/purchaseVerificationSer
 import { CafeBazaarApiService } from '../services/cafeBazaarApiService';
 import errorLogger from '../services/errorLoggerService';
 import { telegramService } from '../services/telegramService';
+import axios from 'axios';
 
 export class SubscriptionController {
     // Verify purchase from CafeBazaar
@@ -241,7 +242,7 @@ export class SubscriptionController {
                 const user = await User.findById(userId);
                 if (user) {
                     telegramService.sendSubscriptionNotification(
-                        user.phone,
+                        user.phone || user.email || 'N/A',
                         productKey,
                         undefined, // Amount not readily available in params, could extract from plan or validation
                         orderId
@@ -1170,5 +1171,100 @@ export class SubscriptionController {
             sortObj[sort] = 1;
         }
         return sortObj;
+    }
+
+    /**
+     * Verify with RevenueCat
+     */
+    async verifyRevenueCat(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'User not authenticated' });
+                return;
+            }
+
+            const { appUserId, platform } = req.body;
+            if (!appUserId) {
+                res.status(400).json({ success: false, message: 'Missing appUserId' });
+                return;
+            }
+
+            // Call RevenueCat API
+            const secret = process.env.REVENUECAT_SECRET_KEY || 'sk_PLACEHOLDER';
+            const rcResponse = await axios.get(`https://api.revenuecat.com/v1/subscribers/${appUserId}`, {
+                headers: {
+                    'Authorization': `Bearer ${secret}`,
+                    'Content-Type': 'application/json',
+                    'x-platform': platform || 'ios'
+                }
+            });
+
+            const subscriber = rcResponse.data?.subscriber;
+            if (!subscriber) {
+                res.status(400).json({ success: false, message: 'Subscriber not found in RevenueCat' });
+                return;
+            }
+
+            // Check entitlements
+            const entitlements = subscriber.entitlements;
+            const premium = entitlements.premium;
+
+            if (premium && premium.expires_date) {
+                const expiresDate = new Date(premium.expires_date);
+                if (expiresDate > new Date()) {
+                    // Valid subscription
+
+                    // Deactivate existing
+                    await Subscription.updateMany(
+                        { userId, isActive: true },
+                        { $set: { isActive: false } }
+                    );
+
+                    // Create new
+                    const subscription = new Subscription({
+                        userId,
+                        planType: premium.product_identifier.includes('year') ? 'yearly' : 'monthly', // simplistic inference
+                        productKey: premium.product_identifier,
+                        purchaseToken: appUserId, // Using appUserId or original_transaction_id as token reference
+                        orderId: subscriber.original_app_user_id,
+                        payload: 'RevenueCat',
+                        isActive: true,
+                        startDate: new Date(premium.purchase_date),
+                        expiryDate: expiresDate,
+                        autoRenew: !subscriber.subscriptions[premium.product_identifier]?.unsubscribe_detected_at,
+                    });
+
+                    await subscription.save();
+
+                    // Log purchase
+                    this.logPurchase(userId, premium.product_identifier, appUserId, 'revenuecat');
+
+                    res.json({
+                        success: true,
+                        message: 'Subscription activated',
+                        data: {
+                            subscription: {
+                                isActive: true,
+                                expiryDate: subscription.expiryDate
+                            }
+                        }
+                    });
+                    return;
+                }
+            }
+
+            res.json({
+                success: false,
+                message: 'No active premium entitlement found'
+            });
+
+        } catch (error) {
+            errorLogger.error('Verify RevenueCat error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error checking RevenueCat',
+            });
+        }
     }
 }

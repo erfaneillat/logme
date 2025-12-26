@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:global": "NEXT_PUBLIC_MARKET=global next dev",
     "prebuild": "node scripts/update-version.js",
     "build": "next build --webpack",
     "start": "next start",

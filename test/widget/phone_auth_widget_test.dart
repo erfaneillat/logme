@@ -80,6 +80,7 @@ final mockLoginProvider =
   return LoginNotifier(
     sendVerificationCodeUseCase: MockSendVerificationCodeUseCase(),
     verifyPhoneUseCase: MockVerifyPhoneUseCase(),
+    ref: ref,
   );
 });
 

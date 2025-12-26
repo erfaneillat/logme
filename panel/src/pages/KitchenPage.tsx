@@ -1,16 +1,34 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { kitchenService } from '../services/kitchen.service';
 import { KitchenCategory } from '../types/kitchen';
 import Sidebar from '../components/Sidebar';
 import KitchenCategoryModal from '../components/KitchenCategoryModal';
+import KitchenJsonModal from '../components/KitchenJsonModal';
+
+interface LanguageStats {
+    totalItems: number;
+    itemsWithEnglish: number;
+    itemsWithFarsi: number;
+    itemsWithBoth: number;
+    hasEnglishData: boolean;
+    hasFarsiData: boolean;
+}
 
 const KitchenPage = () => {
     const { token } = useAuth();
     const [categories, setCategories] = useState<KitchenCategory[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Language stats per category
+    const [languageStats, setLanguageStats] = useState<Record<string, LanguageStats>>({});
+
+    // Modals
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<KitchenCategory | null>(null);
 
     const fetchCategories = async () => {
@@ -20,6 +38,8 @@ const KitchenPage = () => {
             const response = await kitchenService.getAllCategories(token);
             if (response.success && response.data) {
                 setCategories(response.data);
+                // Fetch language stats for each category
+                fetchAllLanguageStats(response.data);
             } else {
                 setError(response.message || 'Failed to fetch categories');
             }
@@ -30,18 +50,40 @@ const KitchenPage = () => {
         }
     };
 
+    const fetchAllLanguageStats = async (cats: KitchenCategory[]) => {
+        if (!token) return;
+        const stats: Record<string, LanguageStats> = {};
+
+        await Promise.all(cats.map(async (cat) => {
+            const catId = cat._id || cat.id;
+            if (!catId) return;
+
+            const response = await kitchenService.getCategoryLanguageStats(token, catId);
+            if (response.success && response.stats) {
+                stats[catId] = response.stats;
+            }
+        }));
+
+        setLanguageStats(stats);
+    };
+
     useEffect(() => {
         fetchCategories();
     }, [token]);
 
     const handleAdd = () => {
         setSelectedCategory(null);
-        setIsModalOpen(true);
+        setIsCategoryModalOpen(true);
     };
 
     const handleEdit = (category: KitchenCategory) => {
         setSelectedCategory(category);
-        setIsModalOpen(true);
+        setIsCategoryModalOpen(true);
+    };
+
+    const handleJsonUpdate = (category: KitchenCategory) => {
+        setSelectedCategory(category);
+        setIsJsonModalOpen(true);
     };
 
     const handleDelete = async (id: string) => {
@@ -59,9 +101,26 @@ const KitchenPage = () => {
         }
     };
 
-    const handleSave = async () => {
+    const handleSaveCategory = async () => {
         await fetchCategories();
-        setIsModalOpen(false);
+        setIsCategoryModalOpen(false);
+    };
+
+    const handleSaveJson = async (jsonContent: string, language: 'en' | 'fa') => {
+        if (!token || !selectedCategory?._id) return;
+
+        try {
+            const response = await kitchenService.updateCategoryWithJson(token, selectedCategory._id, jsonContent, language);
+            if (response.success) {
+                await fetchCategories();
+                setIsJsonModalOpen(false);
+                alert(`Category updated successfully! Processed ${response.processedCount || '?'} items.`);
+            } else {
+                alert(`Error: ${response.message}`);
+            }
+        } catch (err: any) {
+            alert(`Error: ${err.message}`);
+        }
     };
 
     if (isLoading) {
@@ -107,6 +166,8 @@ const KitchenPage = () => {
                         {categories.map((category) => {
                             const subCount = category.subCategories?.length || 0;
                             const totalItems = category.subCategories?.reduce((sum, sub) => sum + (sub.items?.length || 0), 0) || 0;
+                            const catId = category._id || category.id || '';
+                            const stats = languageStats[catId];
 
                             return (
                                 <div key={category._id || category.id} className="group relative overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
@@ -123,6 +184,31 @@ const KitchenPage = () => {
                                             </div>
                                             <div className={`px-2 py-1 rounded-full text-[10px] font-bold ${category.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                                                 {category.isActive ? 'Active' : 'Inactive'}
+                                            </div>
+                                        </div>
+
+                                        {/* Language Stats */}
+                                        <div className="mb-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                            <div className="text-[10px] font-semibold text-gray-500 uppercase mb-2">Language Content</div>
+                                            <div className="flex gap-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={`w-2 h-2 rounded-full ${stats?.hasEnglishData ? 'bg-green-500' : 'bg-red-400'}`}></span>
+                                                    <span className="text-xs font-medium text-gray-700">
+                                                        EN: {stats ? `${stats.itemsWithEnglish}/${stats.totalItems}` : '...'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={`w-2 h-2 rounded-full ${stats?.hasFarsiData ? 'bg-green-500' : 'bg-red-400'}`}></span>
+                                                    <span className="text-xs font-medium text-gray-700">
+                                                        FA: {stats ? `${stats.itemsWithFarsi}/${stats.totalItems}` : '...'}
+                                                    </span>
+                                                </div>
+                                                {stats?.itemsWithBoth !== undefined && stats.itemsWithBoth > 0 && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                                        <span className="text-xs font-medium text-gray-700">Both: {stats.itemsWithBoth}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
@@ -150,6 +236,18 @@ const KitchenPage = () => {
                                             >
                                                 Edit
                                             </button>
+
+                                            <button
+                                                onClick={() => handleJsonUpdate(category)}
+                                                className="flex-1 rounded-lg bg-blue-50 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-100 transition-colors flex items-center justify-center gap-1"
+                                                title="Update items via JSON"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                                JSON
+                                            </button>
+
                                             <button
                                                 onClick={() => handleDelete(category._id!)}
                                                 className="flex-1 rounded-lg bg-red-50 py-2 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors"
@@ -165,12 +263,22 @@ const KitchenPage = () => {
                 </div>
             </div>
 
-            {isModalOpen && (
+            {isCategoryModalOpen && (
                 <KitchenCategoryModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSave={handleSave}
+                    isOpen={isCategoryModalOpen}
+                    onClose={() => setIsCategoryModalOpen(false)}
+                    onSave={handleSaveCategory}
                     initialData={selectedCategory}
+                />
+            )}
+
+            {isJsonModalOpen && selectedCategory && (
+                <KitchenJsonModal
+                    isOpen={isJsonModalOpen}
+                    onClose={() => setIsJsonModalOpen(false)}
+                    onSave={handleSaveJson}
+                    category={selectedCategory}
+                    languageStats={languageStats[selectedCategory._id || selectedCategory.id || '']}
                 />
             )}
         </div>

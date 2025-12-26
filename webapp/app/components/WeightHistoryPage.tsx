@@ -3,12 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService, WeightEntry } from '../services/apiService';
+import { useTranslation } from '../translations';
 
 interface WeightHistoryPageProps {
     onClose: () => void;
 }
 
 const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
+    const { t, isRTL, locale } = useTranslation();
+
+    // Helper to convert English numbers to Persian/Farsi numerals
+    const toPersianNumbers = (num: number | string): string => {
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+    };
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        if (typeof num === 'number' && !Number.isInteger(num)) {
+            num = num.toFixed(1);
+        }
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
     const [weights, setWeights] = useState<WeightEntry[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -36,7 +53,7 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
     };
 
     const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('fa-IR', {
+        return new Date(dateStr).toLocaleDateString(isRTL ? 'fa-IR' : 'en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -49,12 +66,12 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
         const diffTime = Math.abs(today.getTime() - date.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        if (diffDays <= 1) return 'امروز';
-        if (diffDays === 2) return 'دیروز';
-        if (diffDays < 7) return `${diffDays} روز پیش`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} هفته پیش`;
-        if (diffDays < 365) return `${Math.floor(diffDays / 30)} ماه پیش`;
-        return `${Math.floor(diffDays / 365)} سال پیش`;
+        if (diffDays <= 1) return t('weightHistory.relativeDates.today');
+        if (diffDays === 2) return t('weightHistory.relativeDates.yesterday');
+        if (diffDays < 7) return t('weightHistory.relativeDates.daysAgo').replace('{{count}}', formatNumber(diffDays));
+        if (diffDays < 30) return t('weightHistory.relativeDates.weeksAgo').replace('{{count}}', formatNumber(Math.floor(diffDays / 7)));
+        if (diffDays < 365) return t('weightHistory.relativeDates.monthsAgo').replace('{{count}}', formatNumber(Math.floor(diffDays / 30)));
+        return t('weightHistory.relativeDates.yearsAgo').replace('{{count}}', formatNumber(Math.floor(diffDays / 365)));
     };
 
     const latestWeight = weights.length > 0 ? weights[0].weightKg : 0;
@@ -69,6 +86,7 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center p-0 sm:p-4"
             onClick={onClose}
+            dir={isRTL ? 'rtl' : 'ltr'}
         >
             <motion.div
                 initial={{ y: "100%" }}
@@ -83,7 +101,7 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
                     <div className="w-8"></div>
                     <div className="flex flex-col items-center">
                         <div className="w-10 h-1 bg-gray-200 rounded-full mb-3 sm:hidden"></div>
-                        <h2 className="text-lg font-black text-gray-800">تاریخچه وزن</h2>
+                        <h2 className="text-lg font-black text-gray-800">{t('weightHistory.title')}</h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -104,7 +122,7 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
                     ) : weights.length === 0 ? (
                         <div className="text-center pt-20 text-gray-400">
                             <div className="text-4xl mb-4 opacity-50">⚖️</div>
-                            <p className="font-medium">هنوز وزنی ثبت نشده است</p>
+                            <p className="font-medium">{t('weightHistory.empty')}</p>
                         </div>
                     ) : (
                         <>
@@ -113,26 +131,26 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
 
                                 <div className="flex justify-between items-end relative z-10">
-                                    <div>
-                                        <p className="text-purple-200 text-xs font-bold tracking-wider mb-1">آخرین رکورد</p>
+                                    <div className="text-start">
+                                        <p className="text-purple-200 text-xs font-bold tracking-wider mb-1">{t('weightHistory.latestRecord')}</p>
                                         <div className="flex items-baseline gap-1">
-                                            <h3 className="text-4xl font-black">{latestWeight}</h3>
-                                            <span className="text-sm font-medium opacity-80">کیلوگرم</span>
+                                            <h3 className="text-4xl font-black">{formatNumber(latestWeight)}</h3>
+                                            <span className="text-sm font-medium opacity-80">{t('weightHistory.kgFull')}</span>
                                         </div>
                                     </div>
                                     <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex flex-col items-center min-w-[80px]">
                                         {totalChange !== 0 ? (
                                             <>
                                                 <span className="text-lg font-black flex items-center gap-1">
-                                                    {isGain ? '+' : ''}{totalChange.toFixed(1)}
+                                                    {isGain ? '+' : ''}{formatNumber(Math.abs(totalChange))}
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                         <path fillRule="evenodd" d={isGain ? "M12 7l-5 5h10l-5-5z" : "M12 13l5-5H7l5 5z"} clipRule="evenodd" />
                                                     </svg>
                                                 </span>
-                                                <span className="text-[10px] opacity-80 font-medium">تغییر کل</span>
+                                                <span className="text-[10px] opacity-80 font-medium">{t('weightHistory.totalChange')}</span>
                                             </>
                                         ) : (
-                                            <span className="text-xs font-bold">بدون تغییر</span>
+                                            <span className="text-xs font-bold">{t('weightHistory.noChange')}</span>
                                         )}
                                     </div>
                                 </div>
@@ -152,10 +170,10 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
                                                 <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center text-xl shrink-0 ${isNeutral ? 'bg-gray-100 text-gray-500' : (isPositive ? 'bg-orange-50 text-orange-500' : 'bg-green-50 text-green-500')}`}>
                                                     ⚖️
                                                 </div>
-                                                <div>
+                                                <div className="text-start">
                                                     <div className="flex items-center gap-2 mb-0.5">
-                                                        <span className="text-lg font-black text-gray-800">{entry.weightKg}</span>
-                                                        <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-md">kg</span>
+                                                        <span className="text-lg font-black text-gray-800">{formatNumber(entry.weightKg)}</span>
+                                                        <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-md">{t('weightHistory.kg')}</span>
                                                     </div>
                                                     <div className="flex flex-col">
                                                         <span className="text-xs font-bold text-gray-700">{getRelativeDate(entry.date)}</span>
@@ -166,12 +184,12 @@ const WeightHistoryPage: React.FC<WeightHistoryPageProps> = ({ onClose }) => {
 
                                             {!isNeutral && (
                                                 <div className={`px-2.5 py-1.5 rounded-[12px] text-xs font-black flex items-center gap-1 ${isPositive ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
-                                                    {isPositive ? '+' : ''}{change.toFixed(1)}
+                                                    {isPositive ? '+' : ''}{formatNumber(Math.abs(change))}
                                                 </div>
                                             )}
                                             {isNeutral && (
                                                 <div className="px-2.5 py-1.5 rounded-[12px] text-[10px] font-bold bg-gray-50 text-gray-400">
-                                                    ثابت
+                                                    {t('weightHistory.stable')}
                                                 </div>
                                             )}
                                         </div>

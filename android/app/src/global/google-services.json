@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "743552243419",
+    "project_id": "loqme-53f23",
+    "storage_bucket": "loqme-53f23.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743552243419:android:a7ce55a09b64158504defe",
+        "android_client_info": {
+          "package_name": "ir.loqmeapp.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743552243419-1r7uc65d4jhqa448uepjd7uses88mhvg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.loqmeapp.application",
+            "certificate_hash": "aa24156de03ab96e439dce5e6cb063f65a6a2347"
+          }
+        },
+        {
+          "client_id": "743552243419-5qnpv9uq1bt8fveriqec43v8tghiqemg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.loqmeapp.application",
+            "certificate_hash": "e60dc616e9eb44550f3b335d897add42e92b0003"
+          }
+        },
+        {
+          "client_id": "743552243419-h29hhb4cgq8a54oqgnnft6nejviml10a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPkr-4sM8BBpVtQqWlj-2_cJJpIbeHVy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743552243419-h29hhb4cgq8a54oqgnnft6nejviml10a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

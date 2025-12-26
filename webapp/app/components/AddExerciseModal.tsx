@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiService, ExerciseAnalysisResponse } from '../services/apiService';
+import { useTranslation } from '../translations';
 
 interface AddExerciseModalProps {
     isOpen: boolean;
@@ -18,6 +19,13 @@ const toPersianNumbers = (num: number | string): string => {
 type ModalView = 'form' | 'analyzing' | 'result';
 
 const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, onAddExercise }) => {
+    const { t, isRTL } = useTranslation();
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
+
     const [view, setView] = useState<ModalView>('form');
     const [exerciseInput, setExerciseInput] = useState('');
     const [durationInput, setDurationInput] = useState('');
@@ -49,12 +57,12 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
 
     const handleAnalyze = async () => {
         if (!exerciseInput.trim()) {
-            setError('نوع ورزش را وارد کنید');
+            setError(t('addExercise.errors.emptyType'));
             return;
         }
         const duration = parseInt(durationInput);
         if (!duration || duration <= 0) {
-            setError('مدت زمان معتبر وارد کنید');
+            setError(t('addExercise.errors.invalidDuration'));
             return;
         }
 
@@ -67,7 +75,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
             setCaloriesInput(result.caloriesBurned.toString());
             setView('result');
         } catch (err: any) {
-            setError(err.message || 'خطا در تحلیل ورزش');
+            setError(err.message || t('addExercise.errors.analysis'));
             setView('form');
         }
     };
@@ -75,7 +83,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
     const handleSave = async () => {
         const calories = parseInt(caloriesInput);
         if (!calories || calories <= 0) {
-            setError('کالری معتبر وارد کنید');
+            setError(t('addExercise.errors.invalidCalories'));
             return;
         }
 
@@ -91,7 +99,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
             onAddExercise(calories);
             resetAndClose();
         } catch (err: any) {
-            setError(err.message || 'خطا در ثبت ورزش');
+            setError(err.message || t('addExercise.errors.save'));
         } finally {
             setIsLoading(false);
         }
@@ -99,12 +107,12 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
 
     // Pre-defined exercise suggestions
     const exerciseSuggestions = [
-        { icon: '🏃', name: 'دویدن', nameEn: 'running' },
-        { icon: '🚶', name: 'پیاده‌روی', nameEn: 'walking' },
-        { icon: '🚴', name: 'دوچرخه‌سواری', nameEn: 'cycling' },
-        { icon: '🏊', name: 'شنا', nameEn: 'swimming' },
-        { icon: '🏋️', name: 'وزنه', nameEn: 'weight training' },
-        { icon: '🧘', name: 'یوگا', nameEn: 'yoga' },
+        { icon: '🏃', name: t('addExercise.suggestions.running'), nameEn: 'running' },
+        { icon: '🚶', name: t('addExercise.suggestions.walking'), nameEn: 'walking' },
+        { icon: '🚴', name: t('addExercise.suggestions.cycling'), nameEn: 'cycling' },
+        { icon: '🏊', name: t('addExercise.suggestions.swimming'), nameEn: 'swimming' },
+        { icon: '🏋️', name: t('addExercise.suggestions.weight'), nameEn: 'weight training' },
+        { icon: '🧘', name: t('addExercise.suggestions.yoga'), nameEn: 'yoga' },
     ];
 
     // Duration presets
@@ -119,23 +127,23 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                         <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                     </svg>
                 </div>
-                <h2 className="text-2xl font-black text-gray-800 mb-1">ثبت ورزش</h2>
-                <p className="text-gray-400 text-sm">کالری سوزانده شده را محاسبه و ثبت کنید</p>
+                <h2 className="text-2xl font-black text-gray-800 mb-1">{t('addExercise.title')}</h2>
+                <p className="text-gray-400 text-sm">{t('addExercise.subtitle')}</p>
             </div>
 
             {/* Exercise Input */}
             <div className="space-y-3">
-                <label className="text-sm font-bold text-gray-700 block">نوع ورزش یا فعالیت</label>
+                <label className={`text-sm font-bold text-gray-700 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('addExercise.typeLabel')}</label>
                 <div className="relative">
                     <input
                         type="text"
                         value={exerciseInput}
                         onChange={(e) => setExerciseInput(e.target.value)}
-                        placeholder="مثال: ۳۰ دقیقه دویدن..."
-                        className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 text-right text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-green-200 focus:border-green-400 transition-all outline-none text-lg"
-                        dir="rtl"
+                        placeholder={t('addExercise.typePlaceholder')}
+                        className={`w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 ${isRTL ? 'text-right' : 'text-left'} text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-green-200 focus:border-green-400 transition-all outline-none text-lg`}
+                        dir={isRTL ? "rtl" : "ltr"}
                     />
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl">🏃</div>
+                    <div className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-2xl`}>🏃</div>
                 </div>
 
                 {/* Quick Suggestions */}
@@ -158,19 +166,19 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
 
             {/* Duration Input */}
             <div className="space-y-3">
-                <label className="text-sm font-bold text-gray-700 block">مدت زمان (دقیقه)</label>
+                <label className={`text-sm font-bold text-gray-700 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('addExercise.durationLabel')}</label>
                 <div className="relative">
                     <input
                         type="number"
                         value={durationInput}
                         onChange={(e) => setDurationInput(e.target.value)}
-                        placeholder="مثال: ۳۰"
-                        className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 text-right text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-green-200 focus:border-green-400 transition-all outline-none text-lg"
+                        placeholder={t('addExercise.durationPlaceholder')}
+                        className={`w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 ${isRTL ? 'text-right' : 'text-left'} text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-green-200 focus:border-green-400 transition-all outline-none text-lg`}
                         dir="ltr"
                         min="1"
                         max="600"
                     />
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">دقیقه</div>
+                    <div className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium`}>{t('addExercise.minutes')}</div>
                 </div>
 
                 {/* Duration Presets */}
@@ -184,7 +192,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
-                            {toPersianNumbers(duration)}
+                            {formatNumber(duration)}
                         </button>
                     ))}
                 </div>
@@ -195,9 +203,9 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm shrink-0">
                     <span className="text-xl">✨</span>
                 </div>
-                <div className="text-right">
-                    <p className="text-sm font-bold text-purple-700 mb-1">محاسبه هوشمند</p>
-                    <p className="text-xs text-purple-500">هوش مصنوعی کالری سوزانده شما را بر اساس نوع و مدت فعالیت محاسبه می‌کند</p>
+                <div className={isRTL ? 'text-right' : 'text-left'}>
+                    <p className="text-sm font-bold text-purple-700 mb-1">{t('addExercise.smartCalculation.title')}</p>
+                    <p className="text-xs text-purple-500">{t('addExercise.smartCalculation.subtitle')}</p>
                 </div>
             </div>
 
@@ -217,7 +225,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                 </svg>
-                <span>محاسبه کالری</span>
+                <span>{t('addExercise.calculateButton')}</span>
             </button>
         </div>
     );
@@ -236,9 +244,9 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                     <span className="text-5xl animate-bounce-gentle">🏃</span>
                 </div>
             </div>
-            <h3 className="text-2xl font-black text-gray-800 mb-2">در حال محاسبه...</h3>
+            <h3 className="text-2xl font-black text-gray-800 mb-2">{t('addExercise.analyzing.title')}</h3>
             <p className="text-gray-400 text-base text-center max-w-[250px]">
-                هوش مصنوعی در حال تحلیل فعالیت و محاسبه کالری سوزانده شده است
+                {t('addExercise.analyzing.subtitle')}
             </p>
 
             {/* Progress dots */}
@@ -263,7 +271,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                         </div>
                         <h2 className="text-2xl font-black text-gray-800 mb-1">{analysisResult.activityName}</h2>
                         <p className="text-gray-400 text-sm mb-2">
-                            مدت: {toPersianNumbers(analysisResult.duration)} دقیقه • شدت: {analysisResult.intensity}
+                            {t('addExercise.result.duration')}: {formatNumber(analysisResult.duration)} {t('addExercise.minutes')} • {t('addExercise.result.intensity')}: {analysisResult.intensity}
                         </p>
                     </div>
 
@@ -272,12 +280,12 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                         <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-200/30 rounded-full blur-2xl"></div>
                         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-red-200/30 rounded-full blur-2xl"></div>
                         <div className="relative z-10">
-                            <div className="text-sm text-orange-600 font-bold mb-2">کالری سوزانده شده</div>
+                            <div className="text-sm text-orange-600 font-bold mb-2">{t('addExercise.result.caloriesLabel')}</div>
                             <div className="flex items-center justify-center gap-2">
                                 <span className="text-5xl">🔥</span>
-                                <span className="text-6xl font-black text-gray-900">{toPersianNumbers(analysisResult.caloriesBurned)}</span>
+                                <span className="text-6xl font-black text-gray-900">{formatNumber(analysisResult.caloriesBurned)}</span>
                             </div>
-                            <div className="text-gray-500 text-sm mt-2">کیلوکالری</div>
+                            <div className="text-gray-500 text-sm mt-2">{t('addExercise.result.unit')}</div>
                         </div>
                     </div>
 
@@ -286,11 +294,11 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                         <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="text-lg">💡</span>
-                                <span className="font-bold text-gray-700 text-sm">نکات ورزشی</span>
+                                <span className="font-bold text-gray-700 text-sm">{t('addExercise.result.tipsTitle')}</span>
                             </div>
                             <div className="space-y-2">
                                 {analysisResult.tips.map((tip, index) => (
-                                    <div key={index} className="flex items-start gap-2 text-right">
+                                    <div key={index} className={`flex items-start gap-2 ${isRTL ? 'text-right' : 'text-left'}`}>
                                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 shrink-0"></div>
                                         <p className="text-sm text-gray-600 leading-relaxed">{tip}</p>
                                     </div>
@@ -309,14 +317,14 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                 </svg>
-                                <span>استفاده از محاسبه هوش مصنوعی</span>
+                                <span>{t('addExercise.result.useAI')}</span>
                             </>
                         ) : (
                             <>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                <span>ویرایش دستی کالری</span>
+                                <span>{t('addExercise.result.manualEdit')}</span>
                             </>
                         )}
                     </button>
@@ -333,7 +341,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                                     dir="ltr"
                                     min="1"
                                 />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">کالری</div>
+                                <div className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium`}>{t('dashboard.calories')}</div>
                             </div>
                         </div>
                     )}
@@ -359,7 +367,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                     </svg>
-                                    <span>ثبت ورزش</span>
+                                    <span>{t('addExercise.result.saveButton')}</span>
                                 </>
                             )}
                         </button>
@@ -367,7 +375,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, on
                             onClick={() => setView('form')}
                             className="px-6 py-5 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-colors"
                         >
-                            برگشت
+                            {t('addExercise.result.backButton')}
                         </button>
                     </div>
                 </>

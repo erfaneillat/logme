@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-
+import { useTranslation } from '../translations';
 import { apiService } from '../services/apiService';
 
 interface LoginProps {
@@ -10,6 +10,7 @@ interface LoginProps {
 }
 
 export default function Login({ onPhoneSubmit }: LoginProps) {
+    const { t } = useTranslation();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -17,7 +18,7 @@ export default function Login({ onPhoneSubmit }: LoginProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!phoneNumber || phoneNumber.length < 10) {
-            setError('لطفا شماره تلفن معتبر وارد کنید');
+            setError(t('login.phoneError'));
             return;
         }
 
@@ -28,7 +29,7 @@ export default function Login({ onPhoneSubmit }: LoginProps) {
             await apiService.sendCode(phoneNumber);
             onPhoneSubmit(phoneNumber);
         } catch (err: any) {
-            setError(err.message || 'خطایی رخ داده است');
+            setError(err.message || t('common.error'));
         } finally {
             setIsLoading(false);
         }
@@ -43,10 +44,8 @@ export default function Login({ onPhoneSubmit }: LoginProps) {
         >
             <div className="flex-1 flex flex-col items-center max-w-sm mx-auto w-full">
                 {/* Title */}
-                <h1 className="text-3xl font-bold text-center mb-12 leading-tight text-[var(--color-primary)]">
-                    به لقمه
-                    <br />
-                    خوش آمدید
+                <h1 className="text-3xl font-bold text-center mb-12 leading-tight text-[var(--color-primary)] whitespace-pre-line">
+                    {t('login.welcome')}
                 </h1>
 
                 {/* Input Container */}
@@ -60,7 +59,7 @@ export default function Login({ onPhoneSubmit }: LoginProps) {
                             setPhoneNumber(val);
                             if (error) setError(null);
                         }}
-                        placeholder="0912 345 6789"
+                        placeholder={t('login.phonePlaceholder')}
                         className="w-full bg-transparent p-4 text-center text-xl font-medium outline-none placeholder:text-gray-400 tracking-wider text-gray-900"
                     />
                 </div>
@@ -85,15 +84,13 @@ export default function Login({ onPhoneSubmit }: LoginProps) {
                         {isLoading ? (
                             <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                            'ادامه'
+                            t('login.continue')
                         )}
                     </button>
 
                     {/* Terms Text */}
                     <p className="text-xs text-center text-gray-500 leading-relaxed max-w-xs mx-auto">
-                        با استفاده از این اپلیکیشن، شما با قوانین و مقررات
-                        <br />
-                        خدمات و سیاستهای حریم خصوصی ما موافق هستید
+                        {t('login.terms')}
                     </p>
                 </div>
             </div>

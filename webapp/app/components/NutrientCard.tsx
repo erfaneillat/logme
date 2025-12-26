@@ -16,10 +16,16 @@ interface NutrientCardProps {
     unit: string;
     color: string;
     icon: React.ReactNode;
+    isRTL?: boolean;
 }
 
-const NutrientCard: React.FC<NutrientCardProps> = ({ label, value, total, unit, color, icon }) => {
+const NutrientCard: React.FC<NutrientCardProps> = ({ label, value, total, unit, color, icon, isRTL = true }) => {
     const remaining = Math.max(0, total - value);
+
+    // Conditional number formatting based on locale
+    const formatNumber = (num: number | string): string => {
+        return isRTL ? toPersianNumbers(num) : String(num);
+    };
 
     return (
         <div className="bg-white rounded-[24px] p-3 shadow-sm border border-gray-100 flex flex-col items-center justify-between min-h-[150px] relative overflow-hidden group hover:shadow-md transition-all duration-300">
@@ -38,7 +44,7 @@ const NutrientCard: React.FC<NutrientCardProps> = ({ label, value, total, unit, 
 
             <div className="text-center w-full mb-1">
                 <div className="text-xl font-black text-gray-800 flex items-center justify-center gap-1">
-                    <span>{toPersianNumbers(remaining)}</span>
+                    <span>{formatNumber(remaining)}</span>
                     <span className="text-[10px] font-medium text-gray-400">{unit}</span>
                 </div>
                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -50,4 +56,3 @@ const NutrientCard: React.FC<NutrientCardProps> = ({ label, value, total, unit, 
 };
 
 export default NutrientCard;
-

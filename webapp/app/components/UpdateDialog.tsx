@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '../translations';
 
 interface AppVersionCheck {
     isForceUpdate: boolean;
@@ -19,10 +20,11 @@ interface UpdateDialogProps {
 }
 
 export const UpdateDialog: React.FC<UpdateDialogProps> = ({ versionCheck, onClose }) => {
+    const { t } = useTranslation();
     const {
         isForceUpdate,
-        updateTitle = 'بروزرسانی جدید موجود است',
-        updateMessage = 'لطفاً برای استفاده از آخرین امکانات، برنامه را بروزرسانی کنید.',
+        updateTitle = t('updateDialog.title'),
+        updateMessage = t('updateDialog.message'),
         storeUrl
     } = versionCheck;
 
@@ -88,7 +90,7 @@ export const UpdateDialog: React.FC<UpdateDialogProps> = ({ versionCheck, onClos
                                 onClick={handleUpdate}
                                 className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-shadow"
                             >
-                                بروزرسانی
+                                {t('updateDialog.updateButton')}
                             </motion.button>
 
                             {!isForceUpdate && onClose && (
@@ -98,7 +100,7 @@ export const UpdateDialog: React.FC<UpdateDialogProps> = ({ versionCheck, onClos
                                     onClick={onClose}
                                     className="w-full py-3.5 px-4 rounded-xl text-gray-500 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                 >
-                                    بعداً
+                                    {t('updateDialog.laterButton')}
                                 </motion.button>
                             )}
                         </div>
