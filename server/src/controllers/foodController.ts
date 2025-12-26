@@ -157,7 +157,11 @@ export class FoodController {
                 options.description = description;
             }
             // Extract locale from Accept-Language header
-            options.locale = req.headers['accept-language']?.includes('fa') ? 'fa' : req.headers['accept-language']?.split(',')[0] || 'en';
+            const acceptLanguage = req.headers['accept-language'];
+            const marketHeader = req.headers['x-market'] as string | undefined;
+            const isGlobal = marketHeader === 'global';
+            options.locale = acceptLanguage?.includes('fa') ? 'fa' : acceptLanguage?.split(',')[0] || 'en';
+            console.log(`[FoodController] Analyze Request - Accept-Language: ${acceptLanguage}, Detected Locale: ${options.locale}, Market Global: ${isGlobal}`);
 
             analysis = await this.service.analyze(base64, options);
         } catch (err: any) {

@@ -106,7 +106,7 @@ export class FoodAnalysisService {
 
     private getLanguageName(locale: string): string {
         const map: Record<string, string> = {
-            'fa': 'PERSIAN (fa-IR)',
+            'fa': 'FARSI',
             'en': 'ENGLISH',
             'ar': 'ARABIC',
             'tr': 'TURKISH',
@@ -143,6 +143,7 @@ If the image contains food, return the following JSON structure:
 Required JSON keys: isFood (true), title (string), calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, each: {name (string), calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)}).
 Rules:
 - Strings MUST be ${langName}. No emoji.
+- The 'title' field MUST be in ${langName} (Translated/Localized). Do not use English names.
 - All numbers MUST be numeric integers (no units, no text).
 - Ensure calorie consistency: calories ≈ proteinGrams*4 + carbsGrams*4 + fatGrams*9 (±20%). Prefer adjusting macros first; then adjust calories if still off.
 - Portions: default 1 if unclear.
@@ -211,6 +212,7 @@ Required JSON keys: title (string), calories (int), portions (int), proteinGrams
 
 Rules:
 - Strings MUST be ${langName}. No emoji.
+- The 'title' field MUST be in ${langName} (Translated/Localized). Do not use English names.
 - All numbers MUST be numeric integers (no units, no text).
 - Ensure calorie consistency: calories ≈ proteinGrams*4 + carbsGrams*4 + fatGrams*9 (±20%). Prefer adjusting macros first; then adjust calories if still off.
 - Portions: Infer from description, default 1 if unclear.
@@ -463,7 +465,8 @@ User feedback: "${userDescription}"
 Return the same JSON keys: title, calories (int), portions (int), proteinGrams (int), fatGrams (int), carbsGrams (int), healthScore (int 0..10), ingredients (array, up to 6, items with name, calories (int), proteinGrams (int), fatGrams (int), carbsGrams (int)).
 Rules:
 - IMPORTANT: If the current title is inaccurate or vague, REPLACE it with a correct and specific title in ${langName}.
-- Strings ${langName}. Numbers are integers.
+- Strings MUST be ${langName}. No emoji.
+- The 'title' field MUST be in ${langName} (Translated/Localized). Do not use English names.
 - Ensure calories ≈ protein*4 + carbs*4 + fat*9 (±20%). Prefer adjusting macros first; then calories if needed.
 - Portions default to 1 if unclear.
 - No explanations, no extra keys.`;

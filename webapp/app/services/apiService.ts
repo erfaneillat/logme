@@ -30,29 +30,51 @@ const getApiBaseUrl = (): string => {
 // BASE_URL is evaluated once at module load - may not have injected values yet
 export const getBaseUrl = getApiBaseUrl;
 
-// Get user's preferred locale for API requests (Accept-Language header)
-// Returns the locale code stored in localStorage, defaults based on market
-export const getApiLocale = (): string => {
+// Check if app is running in global mode (mirrors translations.ts logic)
+const isGlobalMarketMode = (): boolean => {
     if (typeof window === 'undefined') {
-        return process.env.NEXT_PUBLIC_MARKET === 'global' ? 'en' : 'fa';
+        return process.env.NEXT_PUBLIC_MARKET === 'global';
     }
 
-    // Check localStorage for user preference
-    const savedLocale = localStorage.getItem('app_locale');
-    if (savedLocale) {
-        return savedLocale;
-    }
-
-    // Check if global mode
     const searchParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const marketParam = searchParams.get('market') || hashParams.get('market');
 
-    if (marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global') {
-        return 'en';
+    return marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global';
+};
+
+// Get user's preferred locale for API requests (Accept-Language header)
+// Mirrors getLocale() from translations.ts for consistency
+// In Iran mode: ALWAYS returns 'fa'
+// In Global mode: checks localStorage > FlutterBridge > browser > defaults to 'en'
+export const getApiLocale = (): string => {
+    // In Iran mode, always use Farsi - this is the key fix
+    if (!isGlobalMarketMode()) {
+        return 'fa';
     }
 
-    return 'fa';
+    // For global mode, check for user preference
+    if (typeof window === 'undefined') {
+        return 'en'; // Default for global mode on server
+    }
+
+    // Check localStorage for user preference
+    const savedLocale = localStorage.getItem('app_locale');
+    if (savedLocale === 'en' || savedLocale === 'fa') {
+        return savedLocale;
+    }
+
+    // Check if FlutterBridge provides device locale (from mobile app)
+    // @ts-ignore
+    const flutterBridge = (window as any).FlutterBridge;
+    if (flutterBridge?.deviceLocale) {
+        const deviceLocale = flutterBridge.deviceLocale as string;
+        return (deviceLocale === 'fa' || deviceLocale === 'en') ? deviceLocale : 'en';
+    }
+
+    // Fallback: Check browser navigator language
+    const browserLang = navigator.language?.split('-')[0] || 'en';
+    return browserLang === 'fa' ? 'fa' : 'en';
 };
 
 // Get market identifier for API requests (X-Market header)
@@ -821,6 +843,7 @@ export const apiService = {
                 formData.append('description', description.trim());
             }
 
+            console.log(`[analyzeFoodImage] Using locale: ${getApiLocale()}, market: ${getApiMarket()}`);
             const response = await fetch(`${getBaseUrl()}/api/food/analyze`, {
                 method: 'POST',
                 headers: {
