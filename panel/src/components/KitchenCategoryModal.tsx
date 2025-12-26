@@ -72,10 +72,13 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
             let title = initialData.title;
             let title_fa = initialData.title_fa || '';
 
-            // If title is Persian but title_fa is empty, move it to title_fa
+            // If title is Persian but title_fa is empty, copy it to title_fa for proper display
+            // Keep title as-is for now (will be handled on save)
             if (titleIsPersian && !title_fa) {
                 title_fa = title;
-                title = ''; // Clear the English title since it's actually Persian
+                // Don't clear title here - show empty in English field for UX
+                // but we'll handle the required field on save
+                title = '';
             }
 
             // Also fix subcategories
@@ -139,10 +142,41 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
 
         setLoading(true);
         try {
+            // Prepare data for saving - ensure required fields have fallback values
+            const dataToSave = { ...formData };
+
+            // If title is empty but title_fa has content, use title_fa as fallback
+            if (!dataToSave.title && dataToSave.title_fa) {
+                dataToSave.title = dataToSave.title_fa;
+            }
+
+            // Fix subcategories - ensure title has fallback
+            if (dataToSave.subCategories) {
+                dataToSave.subCategories = dataToSave.subCategories.map(sub => {
+                    const fixedSub = { ...sub };
+                    if (!fixedSub.title && fixedSub.title_fa) {
+                        fixedSub.title = fixedSub.title_fa;
+                    }
+
+                    // Fix items - ensure name has fallback
+                    if (fixedSub.items) {
+                        fixedSub.items = fixedSub.items.map(item => {
+                            const fixedItem = { ...item };
+                            if (!fixedItem.name && fixedItem.name_fa) {
+                                fixedItem.name = fixedItem.name_fa;
+                            }
+                            return fixedItem;
+                        });
+                    }
+
+                    return fixedSub;
+                });
+            }
+
             if (initialData && initialData._id) {
-                await kitchenService.updateCategory(token, initialData._id, formData);
+                await kitchenService.updateCategory(token, initialData._id, dataToSave);
             } else {
-                await kitchenService.createCategory(token, formData as any);
+                await kitchenService.createCategory(token, dataToSave as any);
             }
             onSave();
         } catch (error) {
