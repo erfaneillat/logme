@@ -549,11 +549,20 @@ export class AuthController {
           }
         }
       });
-    } catch (error) {
+    } catch (error: any) {
+      // Detailed logging for debugging
+      console.error('=== OAuth Login Error ===');
+      console.error('Error:', error);
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
+      console.error('Request body:', JSON.stringify(req.body, null, 2));
+      console.error('=========================');
+
       errorLogger.error('OAuth login error', error as Error, req, { provider: req.body.provider, email: req.body.email });
       res.status(500).json({
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
+        debug: error?.message // Temporarily include error message for debugging
       });
     }
   }

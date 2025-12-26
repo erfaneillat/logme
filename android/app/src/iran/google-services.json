@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "743552243419-rvtc15p0f07v47edd59d7oghehfebsm1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.loqmeapp.application",
+            "certificate_hash": "bd47c9e843207b54130c1c1697c06703d89156f3"
+          }
+        },
+        {
           "client_id": "743552243419-h29hhb4cgq8a54oqgnnft6nejviml10a.apps.googleusercontent.com",
           "client_type": 3
         }
