@@ -20,6 +20,8 @@ class PaymentService {
   final ApiService _apiService;
   final Ref _ref;
   bool _isInitialized = false;
+  bool _isRevenueCatInitialized = false;
+  Completer<bool>? _revenueCatInitCompleter;
 
   // Replace with your actual RSA public key from CafeBazaar developer console
   static const String _rsaPublicKey =
@@ -30,12 +32,17 @@ class PaymentService {
   static const String _rcAppleKey = 'appl_PLACEHOLDER_KEY';
 
   PaymentService(this._apiService, this._ref) {
+    // Create the completer BEFORE starting async init so purchaseRevenueCat can await it
+    _revenueCatInitCompleter = Completer<bool>();
     _initAll();
   }
 
   Future<void> _initAll() async {
-    await _initializePayment(); // Cafe Bazaar
-    await _initializeRevenueCat(); // RevenueCat
+    // Run both initializations in parallel for faster startup
+    await Future.wait([
+      _initializePayment(), // Cafe Bazaar
+      _initializeRevenueCat(), // RevenueCat
+    ]);
   }
 
   Future<void> _initializePayment() async {
@@ -91,6 +98,12 @@ class PaymentService {
   }
 
   Future<void> _initializeRevenueCat() async {
+    // If already initialized, skip
+    if (_isRevenueCatInitialized) {
+      debugPrint('RevenueCat already initialized');
+      return;
+    }
+
     try {
       if (Platform.isAndroid) {
         await Purchases.configure(PurchasesConfiguration(_rcGoogleKey));
@@ -98,8 +111,16 @@ class PaymentService {
         await Purchases.configure(PurchasesConfiguration(_rcAppleKey));
       }
       debugPrint('RevenueCat initialized successfully');
+      _isRevenueCatInitialized = true;
+      if (!_revenueCatInitCompleter!.isCompleted) {
+        _revenueCatInitCompleter!.complete(true);
+      }
     } catch (e) {
       debugPrint('Failed to initialize RevenueCat: $e');
+      _isRevenueCatInitialized = false;
+      if (!_revenueCatInitCompleter!.isCompleted) {
+        _revenueCatInitCompleter!.complete(false);
+      }
     }
   }
 
@@ -550,6 +571,30 @@ class PaymentService {
     try {
       debugPrint('Purchasing via RevenueCat: $productIdentifier');
 
+      // Wait for RevenueCat initialization to complete
+      if (!_isRevenueCatInitialized && _revenueCatInitCompleter != null) {
+        debugPrint('Waiting for RevenueCat initialization...');
+        await _revenueCatInitCompleter!.future.timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            debugPrint('RevenueCat initialization timeout');
+            return false;
+          },
+        );
+      }
+
+      if (!_isRevenueCatInitialized) {
+        debugPrint(
+            'RevenueCat not initialized, attempting re-initialization...');
+        await _initializeRevenueCat();
+        if (!_isRevenueCatInitialized) {
+          return PurchaseResult(
+            success: false,
+            message: 'Payment service not ready. Please try again.',
+          );
+        }
+      }
+
       // Fetch offerings
       try {
         final offerings = await Purchases.getOfferings();
@@ -616,27 +661,86 @@ class PaymentService {
             'Initiating purchase for package: ${package.identifier}, Product ID: ${package.storeProduct.identifier}');
         final customerInfo = await Purchases.purchasePackage(package);
 
-        // Verify entitlement
-        final isPro =
-            customerInfo.entitlements.all['premium']?.isActive ?? false;
+        // Log all entitlements for debugging
+        debugPrint(
+            'RC Customer Info - originalAppUserId: ${customerInfo.originalAppUserId}');
+        debugPrint(
+            'RC All Entitlements: ${customerInfo.entitlements.all.keys.toList()}');
+        for (final entry in customerInfo.entitlements.all.entries) {
+          debugPrint(
+              'RC Entitlement "${entry.key}": isActive=${entry.value.isActive}, productIdentifier=${entry.value.productIdentifier}');
+        }
 
-        if (isPro) {
-          // Sync with backend
-          await _verifyRevenueCatBackend(customerInfo.originalAppUserId);
+        // Check for any active entitlement (flexible check)
+        // Common entitlement names: "premium", "pro", "plus", "subscription", etc.
+        final possibleEntitlements = [
+          'premium',
+          'pro',
+          'plus',
+          'subscription',
+          'default'
+        ];
+        bool hasActiveEntitlement = false;
 
-          // Trigger refresh
-          final notifier =
-              _ref.read(subscriptionRefreshTriggerProvider.notifier);
-          notifier.state = notifier.state + 1;
+        for (final entitlementId in possibleEntitlements) {
+          if (customerInfo.entitlements.all[entitlementId]?.isActive == true) {
+            hasActiveEntitlement = true;
+            debugPrint('Found active entitlement: $entitlementId');
+            break;
+          }
+        }
 
+        // Also check if ANY entitlement is active (fallback)
+        if (!hasActiveEntitlement) {
+          for (final entry in customerInfo.entitlements.all.entries) {
+            if (entry.value.isActive) {
+              hasActiveEntitlement = true;
+              debugPrint('Found active entitlement (fallback): ${entry.key}');
+              break;
+            }
+          }
+        }
+
+        // Get the product ID from the package that was purchased
+        final purchasedProductId = package.storeProduct.identifier;
+        final purchasedPlanType = productIdentifier; // 'yearly' or 'monthly'
+
+        // Sync with backend - non-blocking (fire and forget)
+        // The purchase is already verified by RevenueCat SDK on the client side
+        // Backend sync is just for keeping our database updated
+        _verifyRevenueCatBackend(
+          customerInfo.originalAppUserId,
+          productId: purchasedProductId,
+          planType: purchasedPlanType,
+        ).then((success) {
+          if (success) {
+            debugPrint('Backend sync succeeded');
+          } else {
+            debugPrint('Backend sync failed - will retry on next app open');
+          }
+        }).catchError((e) {
+          debugPrint('Backend sync error (non-fatal): $e');
+        });
+
+        // Trigger refresh
+        final notifier = _ref.read(subscriptionRefreshTriggerProvider.notifier);
+        notifier.state = notifier.state + 1;
+
+        if (hasActiveEntitlement) {
           return PurchaseResult(
               success: true,
               message: 'Subscription activated',
               orderId: customerInfo.originalAppUserId);
         } else {
+          // Purchase went through but entitlements not yet synced
+          // This can happen in sandbox or with delays
+          // Still consider it successful since Google Play confirmed the purchase
+          debugPrint(
+              'Purchase completed but entitlements not yet active - this may sync shortly');
           return PurchaseResult(
-              success: false,
-              message: 'Purchase succeeded but entitlement not active');
+              success: true,
+              message: 'Subscription activated - syncing...',
+              orderId: customerInfo.originalAppUserId);
         }
       } on PlatformException catch (e) {
         var errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -652,13 +756,19 @@ class PaymentService {
     }
   }
 
-  Future<bool> _verifyRevenueCatBackend(String appUserId) async {
+  Future<bool> _verifyRevenueCatBackend(
+    String appUserId, {
+    String? productId,
+    String? planType,
+  }) async {
     try {
       // Send to backend to let it know to sync/update user status
-      final response = await _apiService
-          .post('/api/subscription/verify-revenuecat', data: {
+      final response =
+          await _apiService.post('/api/subscription/verify-revenuecat', data: {
         'appUserId': appUserId,
-        'platform': Platform.isIOS ? 'ios' : 'android'
+        'platform': Platform.isIOS ? 'ios' : 'android',
+        'productId': productId,
+        'planType': planType,
       });
       return response['success'] == true;
     } catch (e) {

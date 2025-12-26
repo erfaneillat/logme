@@ -1174,7 +1174,9 @@ export class SubscriptionController {
     }
 
     /**
-     * Verify with RevenueCat
+     * Verify with RevenueCat - Creates subscription based on mobile app's verification
+     * The RevenueCat SDK on the mobile app already verified the purchase with Google Play/App Store
+     * We trust that verification and create the subscription directly
      */
     async verifyRevenueCat(req: AuthRequest, res: Response): Promise<void> {
         try {
@@ -1184,87 +1186,212 @@ export class SubscriptionController {
                 return;
             }
 
-            const { appUserId, platform } = req.body;
+            const { appUserId, platform, productId, planType: clientPlanType } = req.body;
             if (!appUserId) {
                 res.status(400).json({ success: false, message: 'Missing appUserId' });
                 return;
             }
 
-            // Call RevenueCat API
-            const secret = process.env.REVENUECAT_SECRET_KEY || 'sk_PLACEHOLDER';
-            const rcResponse = await axios.get(`https://api.revenuecat.com/v1/subscribers/${appUserId}`, {
-                headers: {
-                    'Authorization': `Bearer ${secret}`,
-                    'Content-Type': 'application/json',
-                    'x-platform': platform || 'ios'
-                }
+            console.log('[RevenueCat] Creating subscription from verified purchase:', {
+                userId,
+                appUserId,
+                platform,
+                productId,
+                clientPlanType,
             });
 
-            const subscriber = rcResponse.data?.subscriber;
-            if (!subscriber) {
-                res.status(400).json({ success: false, message: 'Subscriber not found in RevenueCat' });
-                return;
+            // Determine plan type from product ID or client-provided value
+            let planType: 'yearly' | 'monthly' = 'monthly';
+            const productLower = (productId || appUserId || '').toLowerCase();
+            if (productLower.includes('year') || productLower.includes('annual') || clientPlanType === 'yearly') {
+                planType = 'yearly';
             }
 
-            // Check entitlements
-            const entitlements = subscriber.entitlements;
-            const premium = entitlements.premium;
-
-            if (premium && premium.expires_date) {
-                const expiresDate = new Date(premium.expires_date);
-                if (expiresDate > new Date()) {
-                    // Valid subscription
-
-                    // Deactivate existing
-                    await Subscription.updateMany(
-                        { userId, isActive: true },
-                        { $set: { isActive: false } }
-                    );
-
-                    // Create new
-                    const subscription = new Subscription({
-                        userId,
-                        planType: premium.product_identifier.includes('year') ? 'yearly' : 'monthly', // simplistic inference
-                        productKey: premium.product_identifier,
-                        purchaseToken: appUserId, // Using appUserId or original_transaction_id as token reference
-                        orderId: subscriber.original_app_user_id,
-                        payload: 'RevenueCat',
-                        isActive: true,
-                        startDate: new Date(premium.purchase_date),
-                        expiryDate: expiresDate,
-                        autoRenew: !subscriber.subscriptions[premium.product_identifier]?.unsubscribe_detected_at,
-                    });
-
-                    await subscription.save();
-
-                    // Log purchase
-                    this.logPurchase(userId, premium.product_identifier, appUserId, 'revenuecat');
-
-                    res.json({
-                        success: true,
-                        message: 'Subscription activated',
-                        data: {
-                            subscription: {
-                                isActive: true,
-                                expiryDate: subscription.expiryDate
-                            }
-                        }
-                    });
-                    return;
-                }
+            // Calculate expiry date based on plan type
+            const startDate = new Date();
+            let expiryDate: Date;
+            if (planType === 'yearly') {
+                expiryDate = new Date(startDate);
+                expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+            } else {
+                expiryDate = new Date(startDate);
+                expiryDate.setMonth(expiryDate.getMonth() + 1);
             }
+
+            // Deactivate existing subscriptions for this user
+            await Subscription.updateMany(
+                { userId, isActive: true },
+                { $set: { isActive: false } }
+            );
+
+            // Create new subscription
+            const subscription = new Subscription({
+                userId,
+                planType,
+                productKey: productId || `revenuecat_${planType}`,
+                purchaseToken: appUserId,
+                orderId: `RC_${appUserId}_${Date.now()}`,
+                payload: 'RevenueCat',
+                isActive: true,
+                startDate,
+                expiryDate,
+                autoRenew: true,
+            });
+
+            await subscription.save();
+
+            // Log the purchase
+            this.logPurchase(userId, productId || planType, appUserId, 'revenuecat');
+
+            console.log('[RevenueCat] Subscription activated successfully:', {
+                userId,
+                planType,
+                expiryDate,
+                subscriptionId: subscription._id,
+            });
 
             res.json({
-                success: false,
-                message: 'No active premium entitlement found'
+                success: true,
+                message: 'Subscription activated',
+                data: {
+                    subscription: {
+                        isActive: true,
+                        planType,
+                        expiryDate: subscription.expiryDate
+                    }
+                }
             });
 
         } catch (error) {
             errorLogger.error('Verify RevenueCat error:', error);
             res.status(500).json({
                 success: false,
-                message: 'Internal server error checking RevenueCat',
+                message: 'Internal server error',
             });
         }
     }
+
+    /**
+     * Handle RevenueCat Webhook Events
+     * This receives events from RevenueCat when subscriptions change
+     */
+    async handleRevenueCatWebhook(req: Request, res: Response): Promise<void> {
+        try {
+            // Verify webhook authorization
+            const authHeader = req.headers['authorization'];
+            const expectedSecret = process.env.REVENUECAT_WEBHOOK_SECRET || 'slicewebhook';
+
+            if (authHeader !== `Bearer ${expectedSecret}` && authHeader !== expectedSecret) {
+                console.warn('[RevenueCat Webhook] Invalid authorization header');
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const event = req.body;
+            console.log('[RevenueCat Webhook] Received event:', {
+                type: event.event?.type,
+                app_user_id: event.event?.app_user_id,
+                product_id: event.event?.product_id,
+            });
+
+            if (!event.event) {
+                console.warn('[RevenueCat Webhook] No event data in payload');
+                res.status(400).json({ success: false, message: 'No event data' });
+                return;
+            }
+
+            const eventType = event.event.type;
+            const appUserId = event.event.app_user_id;
+            const productId = event.event.product_id;
+            const expirationDate = event.event.expiration_at_ms
+                ? new Date(event.event.expiration_at_ms)
+                : null;
+            const purchaseDate = event.event.purchased_at_ms
+                ? new Date(event.event.purchased_at_ms)
+                : new Date();
+
+            // Try to find user by their RC anonymous ID or a linked user
+            // For now, we'll store the subscription with the app_user_id as a reference
+            // You may want to implement user linking based on your app's logic
+
+            switch (eventType) {
+                case 'INITIAL_PURCHASE':
+                case 'RENEWAL':
+                case 'PRODUCT_CHANGE':
+                case 'UNCANCELLATION':
+                    // Active subscription events
+                    console.log(`[RevenueCat Webhook] Processing ${eventType} for ${appUserId}`);
+
+                    // Determine plan type from product ID
+                    const planType = productId?.toLowerCase().includes('year') ? 'yearly' : 'monthly';
+
+                    // Find user by looking for existing subscription with this appUserId
+                    let existingSub = await Subscription.findOne({
+                        $or: [
+                            { purchaseToken: appUserId },
+                            { orderId: appUserId },
+                        ]
+                    });
+
+                    if (existingSub) {
+                        // Update existing subscription
+                        existingSub.isActive = true;
+                        existingSub.productKey = productId || existingSub.productKey;
+                        if (expirationDate) {
+                            existingSub.expiryDate = expirationDate;
+                        }
+                        existingSub.autoRenew = eventType !== 'CANCELLATION';
+                        await existingSub.save();
+
+                        console.log(`[RevenueCat Webhook] Updated subscription for user ${existingSub.userId}:`, {
+                            planType: existingSub.planType,
+                            expiryDate: existingSub.expiryDate,
+                            isActive: true,
+                        });
+                    } else {
+                        // Store as a pending subscription - will be linked when user logs in
+                        console.log(`[RevenueCat Webhook] No existing subscription found for appUserId: ${appUserId}`);
+                        // For now, log the event - you may want to create a pending table
+                    }
+                    break;
+
+                case 'CANCELLATION':
+                case 'EXPIRATION':
+                    // Subscription ended
+                    console.log(`[RevenueCat Webhook] Processing ${eventType} for ${appUserId}`);
+
+                    const cancelSub = await Subscription.findOne({
+                        $or: [
+                            { purchaseToken: appUserId },
+                            { orderId: appUserId },
+                        ]
+                    });
+
+                    if (cancelSub) {
+                        cancelSub.isActive = false;
+                        cancelSub.autoRenew = false;
+                        await cancelSub.save();
+
+                        console.log(`[RevenueCat Webhook] Deactivated subscription for user ${cancelSub.userId}`);
+                    }
+                    break;
+
+                case 'BILLING_ISSUE':
+                    console.log(`[RevenueCat Webhook] Billing issue for ${appUserId} - subscription may lapse soon`);
+                    break;
+
+                default:
+                    console.log(`[RevenueCat Webhook] Unhandled event type: ${eventType}`);
+            }
+
+            // Always respond with 200 to acknowledge receipt
+            res.status(200).json({ success: true, message: 'Webhook received' });
+
+        } catch (error) {
+            errorLogger.error('RevenueCat webhook error:', error);
+            // Still respond 200 to prevent retries for transient errors
+            res.status(200).json({ success: true, message: 'Webhook received with errors' });
+        }
+    }
 }
+

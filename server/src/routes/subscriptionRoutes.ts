@@ -54,5 +54,11 @@ router.post('/admin/activate', authenticateAdmin, (req, res) =>
     subscriptionController.activateSubscriptionForUser(req, res)
 );
 
+// RevenueCat Webhook - No user auth, uses webhook secret instead
+router.post('/webhook/revenuecat', (req, res) =>
+    subscriptionController.handleRevenueCatWebhook(req, res)
+);
+
 export default router;
+
 

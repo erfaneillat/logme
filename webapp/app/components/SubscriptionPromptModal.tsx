@@ -4,28 +4,40 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../translations';
 
+interface SubscriptionDetails {
+    planType?: 'monthly' | 'yearly' | string;
+    expiryDate?: string | null;
+}
+
 interface SubscriptionPromptModalProps {
     isOpen: boolean;
     onClose: () => void;
     onPurchase: (plan: 'monthly' | 'yearly') => void;
+    isSubscribed?: boolean; // If true, skip directly to plan selection
+    subscriptionDetails?: SubscriptionDetails; // Current subscription info
+    isLoading?: boolean;
 }
 
 const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
     isOpen,
     onClose,
-    onPurchase
+    onPurchase,
+    isSubscribed = false,
+    subscriptionDetails,
+    isLoading = false
 }) => {
     const { t, isRTL, locale } = useTranslation();
-    const [step, setStep] = useState<1 | 2 | 3>(1);
+    // Start at step 3 if already subscribed, otherwise step 1
+    const [step, setStep] = useState<1 | 2 | 3>(isSubscribed ? 3 : 1);
     const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
 
-    // Reset step when modal closes
+    // Reset step when modal closes, or set to 3 if subscribed
     React.useEffect(() => {
         if (!isOpen) {
-            setStep(1);
+            setStep(isSubscribed ? 3 : 1);
             setSelectedPlan('yearly');
         }
-    }, [isOpen]);
+    }, [isOpen, isSubscribed]);
 
     if (!isOpen) return null;
 
@@ -42,6 +54,11 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
     };
 
     const handleBack = () => {
+        // If subscribed, don't allow going back to promotional steps
+        if (isSubscribed) {
+            onClose();
+            return;
+        }
         if (step === 2) setStep(1);
         if (step === 3) setStep(2);
     };
@@ -73,7 +90,8 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
                         {step > 1 ? (
                             <button
                                 onClick={handleBack}
-                                className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors rounded-full hover:bg-gray-100"
+                                disabled={isLoading}
+                                className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 disabled:text-gray-300 transition-colors rounded-full hover:bg-gray-100"
                                 aria-label="Back"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isRTL ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,7 +105,8 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
+                            disabled={isLoading}
+                            className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 disabled:text-gray-200 transition-colors rounded-full hover:bg-gray-100"
                             aria-label="Close"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,11 +128,11 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
                                 >
                                     {/* Phone Mockup Section */}
                                     <div className="flex-1 flex flex-col items-center justify-center w-full">
-                                        <h2 className="text-3xl font-black text-gray-900 text-center leading-tight mb-8">
+                                        <h2 className="text-3xl font-black text-gray-900 text-center leading-tight mb-4">
                                             {t('subscriptionPrompt.title')}
                                         </h2>
 
-                                        <div className="relative w-64 h-[500px] bg-gray-900 rounded-[3rem] p-3 shadow-2xl mb-8 transform scale-90 sm:scale-100 transition-transform">
+                                        <div className="relative w-64 h-[460px] bg-gray-900 rounded-[3rem] p-3 shadow-2xl mb-4 transform scale-90 sm:scale-100 transition-transform">
                                             <div className="w-full h-full bg-gray-800 rounded-[2.5rem] overflow-hidden relative" dir="ltr">
                                                 {/* Status Bar */}
                                                 <div className="absolute top-4 left-0 right-0 flex items-center justify-between px-6 text-white text-xs z-10">
@@ -162,7 +181,7 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
 
                                     {/* Bottom Action Area */}
                                     <div className="w-full mt-auto">
-                                        <div className="flex items-center justify-center gap-2 mb-6">
+                                        <div className="flex items-center justify-center gap-2 mb-3">
                                             <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -175,7 +194,8 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
 
                                         <button
                                             onClick={handleTryFreeClick}
-                                            className="w-full py-5 bg-gray-900 hover:bg-black text-white font-bold text-xl rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-xl shadow-gray-900/20 mb-4"
+                                            disabled={isLoading}
+                                            className="w-full py-5 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white font-bold text-xl rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-xl shadow-gray-900/20 mb-2"
                                         >
                                             {t('subscriptionPrompt.tryForFree')}
                                         </button>
@@ -237,7 +257,8 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
 
                                         <button
                                             onClick={handleContinueFree}
-                                            className="w-full py-5 bg-gray-900 hover:bg-black text-white font-bold text-xl rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-xl shadow-gray-900/20 mb-4"
+                                            disabled={isLoading}
+                                            className="w-full py-5 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white font-bold text-xl rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-xl shadow-gray-900/20 mb-4"
                                         >
                                             {t('subscriptionPrompt.continueForFree')}
                                         </button>
@@ -258,151 +279,214 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
                                     transition={{ duration: 0.3 }}
                                     className="px-6 pb-12 pt-2 flex flex-col items-center max-w-md mx-auto h-full"
                                 >
-                                    <h2 className="text-3xl font-black text-gray-900 text-center leading-tight mb-8">
-                                        {t('subscriptionPrompt.step3.title')}
-                                    </h2>
-
-                                    {/* Timeline */}
-                                    <div className={`w-full mb-10 relative ${isRTL ? 'pr-6' : 'pl-6'}`}>
-                                        {/* Vertical Line */}
-                                        <div className={`absolute top-6 bottom-6 w-1 bg-gray-100 rounded-full ${isRTL ? 'right-[46px]' : 'left-[46px]'}`} />
-
-                                        {/* Item 1 - Today */}
-                                        <div className="relative flex gap-6 mb-8 group">
-                                            <div className="relative z-10 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center border-4 border-white shadow-sm shrink-0">
-                                                <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    {isSubscribed ? (
+                                        <div className="flex flex-col items-center w-full h-full pt-10">
+                                            <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 animate-bounce-slow">
+                                                <svg className="w-12 h-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             </div>
-                                            <div className="pt-1">
-                                                <h3 className="font-bold text-gray-900 text-lg mb-1">{t('subscriptionPrompt.step3.timeline.today')}</h3>
-                                                <p className="text-gray-500 text-sm leading-relaxed">{t('subscriptionPrompt.step3.timeline.todayDesc')}</p>
+
+                                            <h2 className="text-2xl font-black text-gray-900 text-center mb-3">
+                                                {t('subscription.active.title')}
+                                            </h2>
+
+                                            <p className="text-gray-500 text-center mb-8 max-w-xs">
+                                                {t('subscription.active.description')}
+                                            </p>
+
+                                            <div className="w-full bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-auto">
+                                                <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
+                                                    <span className="text-gray-500 font-medium text-sm">{t('subscription.status')}</span>
+                                                    <span className="text-green-700 font-bold bg-green-100 px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+                                                        {t('settings.subscription.statusActive')}
+                                                    </span>
+                                                </div>
+
+                                                {subscriptionDetails?.planType && (
+                                                    <div className="flex justify-between items-center mb-3">
+                                                        <span className="text-gray-500 font-medium text-sm">{t('subscription.plan')}</span>
+                                                        <span className="text-gray-900 font-bold capitalize">
+                                                            {subscriptionDetails.planType}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {subscriptionDetails?.expiryDate && (
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-gray-500 font-medium text-sm">{t('subscription.expires')}</span>
+                                                        <span className="text-gray-900 font-bold text-sm">
+                                                            {new Date(subscriptionDetails.expiryDate).toLocaleDateString(locale)}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
+
+                                            <button
+                                                onClick={onClose}
+                                                className="w-full py-4 bg-gray-900 hover:bg-black text-white font-bold text-lg rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-lg shadow-gray-900/20"
+                                            >
+                                                {t('chat.closeButton')}
+                                            </button>
                                         </div>
+                                    ) : (
+                                        <>
+                                            <h2 className="text-3xl font-black text-gray-900 text-center leading-tight mb-8">
+                                                {t('subscriptionPrompt.step3.title')}
+                                            </h2>
 
-                                        {/* Item 2 - Reminder */}
-                                        <div className="relative flex gap-6 mb-8 group">
-                                            <div className="relative z-10 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center border-4 border-white shadow-sm shrink-0">
-                                                <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                                </svg>
-                                            </div>
-                                            <div className="pt-1">
-                                                <h3 className="font-bold text-gray-900 text-lg mb-1">{t('subscriptionPrompt.step3.timeline.reminder')}</h3>
-                                                <p className="text-gray-500 text-sm leading-relaxed">{t('subscriptionPrompt.step3.timeline.reminderDesc')}</p>
-                                            </div>
-                                        </div>
+                                            {/* Timeline */}
+                                            <div className={`w-full mb-10 relative ${isRTL ? 'pr-6' : 'pl-6'}`}>
+                                                {/* Vertical Line */}
+                                                <div className={`absolute top-6 bottom-6 w-1 bg-gray-100 rounded-full ${isRTL ? 'right-[46px]' : 'left-[46px]'}`} />
 
-                                        {/* Item 3 - Billing */}
-                                        <div className="relative flex gap-6 group">
-                                            <div className="relative z-10 w-12 h-12 rounded-full bg-black flex items-center justify-center border-4 border-white shadow-sm shrink-0">
-                                                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                                {/* Item 1 - Today */}
+                                                <div className="relative flex gap-6 mb-8 group">
+                                                    <div className="relative z-10 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+                                                        <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="pt-1">
+                                                        <h3 className="font-bold text-gray-900 text-lg mb-1">{t('subscriptionPrompt.step3.timeline.today')}</h3>
+                                                        <p className="text-gray-500 text-sm leading-relaxed">{t('subscriptionPrompt.step3.timeline.todayDesc')}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Item 2 - Reminder */}
+                                                <div className="relative flex gap-6 mb-8 group">
+                                                    <div className="relative z-10 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+                                                        <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="pt-1">
+                                                        <h3 className="font-bold text-gray-900 text-lg mb-1">{t('subscriptionPrompt.step3.timeline.reminder')}</h3>
+                                                        <p className="text-gray-500 text-sm leading-relaxed">{t('subscriptionPrompt.step3.timeline.reminderDesc')}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Item 3 - Billing */}
+                                                <div className="relative flex gap-6 group">
+                                                    <div className="relative z-10 w-12 h-12 rounded-full bg-black flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+                                                        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="pt-1">
+                                                        <h3 className="font-bold text-gray-900 text-lg mb-1">{t('subscriptionPrompt.step3.timeline.billing')}</h3>
+                                                        <p className="text-gray-500 text-sm leading-relaxed">
+                                                            {t('subscriptionPrompt.step3.timeline.billingDesc').replace('{{date}}', getBillingDate())}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="pt-1">
-                                                <h3 className="font-bold text-gray-900 text-lg mb-1">{t('subscriptionPrompt.step3.timeline.billing')}</h3>
-                                                <p className="text-gray-500 text-sm leading-relaxed">
-                                                    {t('subscriptionPrompt.step3.timeline.billingDesc').replace('{{date}}', getBillingDate())}
+
+                                            {/* Plans Selection */}
+                                            <div className="w-full grid grid-cols-2 gap-4 mb-8">
+                                                {/* Monthly Plan */}
+                                                <button
+                                                    onClick={() => setSelectedPlan('monthly')}
+                                                    disabled={isLoading}
+                                                    className={`relative p-4 rounded-2xl border-2 transition-all duration-200 h-24 flex flex-col justify-center ${selectedPlan === 'monthly'
+                                                        ? 'border-black bg-gray-50'
+                                                        : 'border-gray-200 bg-white hover:border-gray-300'
+                                                        } ${isRTL ? 'text-right' : 'text-left'} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    <div className="font-medium text-gray-900 text-sm mb-1">
+                                                        {t('subscriptionPrompt.step3.plans.monthly')}
+                                                    </div>
+                                                    <div className="font-bold text-xl text-gray-900">
+                                                        $9.99 <span className="text-sm font-normal text-gray-500">{t('subscriptionPrompt.step3.plans.mo')}</span>
+                                                    </div>
+
+                                                    {selectedPlan === 'monthly' && (
+                                                        <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-full flex items-center justify-center ${isRTL ? 'left-3' : 'right-3'}`}>
+                                                            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    {selectedPlan !== 'monthly' && (
+                                                        <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 border-2 border-gray-300 rounded-full ${isRTL ? 'left-3' : 'right-3'}`} />
+                                                    )}
+                                                </button>
+
+                                                {/* Yearly Plan */}
+                                                <button
+                                                    onClick={() => setSelectedPlan('yearly')}
+                                                    disabled={isLoading}
+                                                    className={`relative p-4 rounded-2xl border-2 transition-all duration-200 h-24 flex flex-col justify-center ${selectedPlan === 'yearly'
+                                                        ? 'border-black bg-gray-50'
+                                                        : 'border-gray-200 bg-white hover:border-gray-300'
+                                                        } ${isRTL ? 'text-right' : 'text-left'} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    <div className="font-medium text-gray-900 text-sm mb-1">
+                                                        {t('subscriptionPrompt.step3.plans.yearly')}
+                                                    </div>
+                                                    <div className="font-bold text-xl text-gray-900">
+                                                        $49.99 <span className="text-sm font-normal text-gray-500">{t('subscriptionPrompt.step3.plans.yr')}</span>
+                                                    </div>
+
+                                                    {/* Tag */}
+                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider whitespace-nowrap z-10">
+                                                        {t('subscriptionPrompt.step3.plans.threeDaysFree')}
+                                                    </div>
+
+                                                    {selectedPlan === 'yearly' && (
+                                                        <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-full flex items-center justify-center ${isRTL ? 'left-3' : 'right-3'}`}>
+                                                            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    {selectedPlan !== 'yearly' && (
+                                                        <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 border-2 border-gray-300 rounded-full ${isRTL ? 'left-3' : 'right-3'}`} />
+                                                    )}
+                                                </button>
+                                            </div>
+
+                                            {/* Action Area */}
+                                            <div className="w-full mt-auto">
+                                                <div className="flex items-center justify-center gap-2 mb-6">
+                                                    <div className="w-5 h-5 bg-black rounded-full flex items-center justify-center">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <span className="text-gray-900 font-bold text-sm">
+                                                        {t('subscriptionPrompt.noPaymentDue')}
+                                                    </span>
+                                                </div>
+
+                                                <button
+                                                    onClick={handleFinalAction}
+                                                    disabled={isLoading}
+                                                    className="w-full py-5 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white font-bold text-xl rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-xl shadow-gray-900/20 mb-4 flex items-center justify-center gap-3"
+                                                >
+                                                    {isLoading && (
+                                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                        </svg>
+                                                    )}
+                                                    {isLoading ? t('common.processing') || 'Processing...' : (selectedPlan === 'yearly'
+                                                        ? t('subscriptionPrompt.step3.button.trial')
+                                                        : t('subscriptionPrompt.step3.button.noTrial'))
+                                                    }
+                                                </button>
+
+                                                <p className="text-center text-gray-500 text-xs font-medium">
+                                                    {selectedPlan === 'yearly'
+                                                        ? t('subscriptionPrompt.step3.footer.trial')
+                                                            .replace('{{price}}', '$49.99')
+                                                            .replace('{{monthlyPrice}}', '$4.17')
+                                                        : t('subscriptionPrompt.step3.footer.noTrial').replace('{{price}}', '$9.99')
+                                                    }
                                                 </p>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Plans Selection */}
-                                    <div className="w-full grid grid-cols-2 gap-4 mb-8">
-                                        {/* Monthly Plan */}
-                                        <button
-                                            onClick={() => setSelectedPlan('monthly')}
-                                            className={`relative p-4 rounded-2xl border-2 transition-all duration-200 h-24 flex flex-col justify-center ${selectedPlan === 'monthly'
-                                                ? 'border-black bg-gray-50'
-                                                : 'border-gray-200 bg-white hover:border-gray-300'
-                                                } ${isRTL ? 'text-right' : 'text-left'}`}
-                                        >
-                                            <div className="font-medium text-gray-900 text-sm mb-1">
-                                                {t('subscriptionPrompt.step3.plans.monthly')}
-                                            </div>
-                                            <div className="font-bold text-xl text-gray-900">
-                                                $9.99 <span className="text-sm font-normal text-gray-500">{t('subscriptionPrompt.step3.plans.mo')}</span>
-                                            </div>
-
-                                            {selectedPlan === 'monthly' && (
-                                                <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-full flex items-center justify-center ${isRTL ? 'left-3' : 'right-3'}`}>
-                                                    <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                            {selectedPlan !== 'monthly' && (
-                                                <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 border-2 border-gray-300 rounded-full ${isRTL ? 'left-3' : 'right-3'}`} />
-                                            )}
-                                        </button>
-
-                                        {/* Yearly Plan */}
-                                        <button
-                                            onClick={() => setSelectedPlan('yearly')}
-                                            className={`relative p-4 rounded-2xl border-2 transition-all duration-200 h-24 flex flex-col justify-center ${selectedPlan === 'yearly'
-                                                ? 'border-black bg-gray-50'
-                                                : 'border-gray-200 bg-white hover:border-gray-300'
-                                                } ${isRTL ? 'text-right' : 'text-left'}`}
-                                        >
-                                            <div className="font-medium text-gray-900 text-sm mb-1">
-                                                {t('subscriptionPrompt.step3.plans.yearly')}
-                                            </div>
-                                            <div className="font-bold text-xl text-gray-900">
-                                                $49.99 <span className="text-sm font-normal text-gray-500">{t('subscriptionPrompt.step3.plans.yr')}</span>
-                                            </div>
-
-                                            {/* Tag */}
-                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider whitespace-nowrap z-10">
-                                                {t('subscriptionPrompt.step3.plans.threeDaysFree')}
-                                            </div>
-
-                                            {selectedPlan === 'yearly' && (
-                                                <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-full flex items-center justify-center ${isRTL ? 'left-3' : 'right-3'}`}>
-                                                    <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                            {selectedPlan !== 'yearly' && (
-                                                <div className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 border-2 border-gray-300 rounded-full ${isRTL ? 'left-3' : 'right-3'}`} />
-                                            )}
-                                        </button>
-                                    </div>
-
-                                    {/* Action Area */}
-                                    <div className="w-full mt-auto">
-                                        <div className="flex items-center justify-center gap-2 mb-6">
-                                            <div className="w-5 h-5 bg-black rounded-full flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            </div>
-                                            <span className="text-gray-900 font-bold text-sm">
-                                                {t('subscriptionPrompt.noPaymentDue')}
-                                            </span>
-                                        </div>
-
-                                        <button
-                                            onClick={handleFinalAction}
-                                            className="w-full py-5 bg-gray-900 hover:bg-black text-white font-bold text-xl rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-xl shadow-gray-900/20 mb-4"
-                                        >
-                                            {selectedPlan === 'yearly'
-                                                ? t('subscriptionPrompt.step3.button.trial')
-                                                : t('subscriptionPrompt.step3.button.noTrial')
-                                            }
-                                        </button>
-
-                                        <p className="text-center text-gray-500 text-xs font-medium">
-                                            {selectedPlan === 'yearly'
-                                                ? t('subscriptionPrompt.step3.footer.trial')
-                                                    .replace('{{price}}', '$49.99')
-                                                    .replace('{{monthlyPrice}}', '$4.17')
-                                                : t('subscriptionPrompt.step3.footer.noTrial').replace('{{price}}', '$9.99')
-                                            }
-                                        </p>
-                                    </div>
+                                        </>
+                                    )}
                                 </motion.div>
                             )}
                         </AnimatePresence>

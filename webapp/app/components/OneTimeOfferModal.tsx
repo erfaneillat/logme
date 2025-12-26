@@ -9,12 +9,14 @@ interface OneTimeOfferModalProps {
     isOpen: boolean;
     onClose: () => void;
     onPurchase: () => void;
+    isLoading?: boolean;
 }
 
 const OneTimeOfferModal: React.FC<OneTimeOfferModalProps> = ({
     isOpen,
     onClose,
-    onPurchase
+    onPurchase,
+    isLoading = false
 }) => {
     const { t, isRTL } = useTranslation();
     const [step, setStep] = useState<'dice' | 'offer'>('dice');
@@ -70,7 +72,7 @@ const OneTimeOfferModal: React.FC<OneTimeOfferModalProps> = ({
                         {step === 'dice' ? (
                             <DiceStep key="dice-step" onComplete={handleDiceComplete} onClose={onClose} />
                         ) : (
-                            <OfferStep key="offer-step" onClose={onClose} onPurchase={onPurchase} t={t} expiresAt={expiresAt} />
+                            <OfferStep key="offer-step" onClose={onClose} onPurchase={onPurchase} t={t} expiresAt={expiresAt} isLoading={isLoading} />
                         )}
                     </AnimatePresence>
                 </motion.div>
@@ -210,7 +212,7 @@ const DiceFace = ({ index, transform, dots }: { index: number, transform: string
     </div>
 );
 
-const OfferStep = ({ onClose, onPurchase, t, expiresAt }: { onClose: () => void, onPurchase: () => void, t: any, expiresAt: string | null }) => {
+const OfferStep = ({ onClose, onPurchase, t, expiresAt, isLoading }: { onClose: () => void, onPurchase: () => void, t: any, expiresAt: string | null, isLoading: boolean }) => {
     const [timeLeft, setTimeLeft] = useState<{ m: number, s: number } | null>(null);
 
     useEffect(() => {
@@ -489,9 +491,16 @@ const OfferStep = ({ onClose, onPurchase, t, expiresAt }: { onClose: () => void,
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={onPurchase}
-                        className="w-full py-5 bg-gray-900 hover:bg-black text-white font-bold text-xl rounded-2xl transition-all duration-200 shadow-xl shadow-gray-900/20 mb-4"
+                        disabled={isLoading}
+                        className="w-full py-5 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white font-bold text-xl rounded-2xl transition-all duration-200 shadow-xl shadow-gray-900/20 mb-4 flex items-center justify-center gap-3"
                     >
-                        {t('oneTimeOffer.continue')}
+                        {isLoading && (
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        )}
+                        {isLoading ? (t('common.processing') || 'Processing...') : t('oneTimeOffer.continue')}
                     </motion.button>
 
                     {/* Disclaimer */}

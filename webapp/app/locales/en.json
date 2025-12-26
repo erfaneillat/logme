@@ -110,7 +110,8 @@
     },
     "common": {
         "error": "An error occurred",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "processing": "Processing..."
     },
     "addFood": {
         "title": "Add Meal",
@@ -806,16 +807,14 @@
             }
         }
     },
-    "oneTimeOffer": {
-        "title": "One Time Offer",
-        "subtitle": "You will never see this again",
-        "year": "Year",
-        "lowestPrice": "Lowest price ever",
-        "pricePerYear": "US$49.99 Per Year, you can cancel subscription at anytime",
-        "continue": "Continue",
-        "disclaimer": "The subscription will be charged and automatically renewed 24 hours before expiration. You can cancel anytime in Google Play",
-        "termsOfUse": "Terms of Use",
-        "privacyPolicy": "Privacy policy"
+    "subscription": {
+        "active": {
+            "title": "Premium Active",
+            "description": "You currently have an active subscription. Enjoy all the features!"
+        },
+        "status": "Status",
+        "plan": "Plan",
+        "expires": "Expires"
     },
     "foodDetail": {
         "quickEdit": "Quick Edit",

@@ -45,6 +45,9 @@ export default function Home() {
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
   const [showOneTimeOffer, setShowOneTimeOffer] = useState(false);
   const [offerExpiresAt, setOfferExpiresAt] = useState<string | null>(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscriptionDetails, setSubscriptionDetails] = useState<any>(null);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
   // Move skip-splash logic to useEffect to avoid hydration mismatch
   useEffect(() => {
@@ -143,6 +146,7 @@ export default function Home() {
 
   const handleGlobalPurchase = (plan: 'monthly' | 'yearly') => {
     console.log('Global Purchase initiated for plan:', plan);
+    setIsPurchasing(true);
 
     if (typeof window !== 'undefined' && (window as any).FlutterBridge && (window as any).FlutterBridge.purchaseGlobal) {
       (window as any).FlutterBridge.purchaseGlobal(plan)
@@ -156,6 +160,8 @@ export default function Home() {
             // Close modals
             setShowSubscriptionPrompt(false);
             setShowOneTimeOffer(false);
+            setOfferExpiresAt(null); // Clear the widget
+            sessionStorage.setItem('one_time_offer_dismissed', 'true');
 
             if (currentView === 'subscription') {
               navigateToView('dashboard');
@@ -167,26 +173,26 @@ export default function Home() {
         .catch((err: any) => {
           console.error('Purchase error:', err);
           showNotification(err.message || 'Purchase failed', 'error');
+        })
+        .finally(() => {
+          setIsPurchasing(false);
         });
     } else {
       console.warn('FlutterBridge.purchaseGlobal not available - are you in the app?');
       showNotification('Purchase is only available in the mobile app', 'info');
+      setIsPurchasing(false);
     }
   };
 
   const handleOneTimeOfferPurchase = () => {
     console.log('One Time Offer purchase initiated');
-    // Mark as purchased/dismissed so it won't show again
-    sessionStorage.setItem('one_time_offer_dismissed', 'true');
-    setShowOneTimeOffer(false);
-    setOfferExpiresAt(null); // Clear the widget
     // Use the specific offering/product identifier for the one-time offer
     handleGlobalPurchase('yearlyoff' as any); // Cast to any to bypass literal type check if needed, or update type definition
   };
 
   const handleSubscriptionClose = () => {
-    // For global users, check if we should show the one-time offer
-    if (isGlobal) {
+    // For global users who are NOT subscribed, check if we should show the one-time offer
+    if (isGlobal && !isSubscribed) {
       const hasSeenOffer = sessionStorage.getItem('one_time_offer_dismissed');
       // Don't show if dismissed OR if currently active (widget is shown)
       if (!hasSeenOffer && !offerExpiresAt) {
@@ -252,15 +258,16 @@ export default function Home() {
       // Only check when user enters MAIN state in global mode
       if (appState !== 'MAIN' || !isGlobal) return;
 
-      // Check if we've already shown this prompt (persisted across sessions)
-      const hasShownPrompt = localStorage.getItem('global_subscription_prompt_shown');
-      if (hasShownPrompt) return;
-
       try {
         const subscriptionStatus = await apiService.getSubscriptionStatus();
+        const isActive = subscriptionStatus?.isActive || false;
+        setIsSubscribed(isActive);
+        setSubscriptionDetails(subscriptionStatus);
 
         // Show prompt if user doesn't have an active subscription
-        if (!subscriptionStatus?.isActive) {
+        // Only show once (persisted across sessions)
+        const hasShownPrompt = localStorage.getItem('global_subscription_prompt_shown');
+        if (!isActive && !hasShownPrompt) {
           setShowSubscriptionPrompt(true);
           // Mark as shown permanently (persists across sessions)
           localStorage.setItem('global_subscription_prompt_shown', 'true');
@@ -757,6 +764,8 @@ export default function Home() {
             isOpen={true}
             onClose={handleSubscriptionClose}
             onPurchase={handleGlobalPurchase}
+            isSubscribed={isSubscribed}
+            subscriptionDetails={subscriptionDetails}
           />
         ) : (
           <SubscriptionPage onBack={navigateBack} />
@@ -800,8 +809,8 @@ export default function Home() {
         isOpen={showSubscriptionPrompt}
         onClose={() => {
           setShowSubscriptionPrompt(false);
-          // Show one-time offer if user hasn't seen it and no active offer
-          if (isGlobal) {
+          // Show one-time offer only if user hasn't seen it, no active offer, and NOT subscribed
+          if (isGlobal && !isSubscribed) {
             const hasSeenOffer = sessionStorage.getItem('one_time_offer_dismissed');
             if (!hasSeenOffer && !offerExpiresAt) {
               setShowOneTimeOffer(true);
@@ -810,19 +819,24 @@ export default function Home() {
         }}
         onPurchase={(plan) => {
           handleGlobalPurchase(plan);
-          setShowSubscriptionPrompt(false);
         }}
+        isSubscribed={isSubscribed}
+        subscriptionDetails={subscriptionDetails}
+        isLoading={isPurchasing}
       />
 
+
       {/* One Time Offer Modal - Shows when global users close subscription without purchasing */}
+      {/* Only show if user is NOT already subscribed */}
       <OneTimeOfferModal
-        isOpen={showOneTimeOffer}
+        isOpen={showOneTimeOffer && !isSubscribed}
         onClose={() => {
           sessionStorage.setItem('one_time_offer_dismissed', 'true');
           setShowOneTimeOffer(false);
           navigateBack();
         }}
         onPurchase={handleOneTimeOfferPurchase}
+        isLoading={isPurchasing}
       />
 
 
