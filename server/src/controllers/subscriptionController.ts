@@ -1236,6 +1236,7 @@ export class SubscriptionController {
                 startDate,
                 expiryDate,
                 autoRenew: true,
+                rcAppUserId: appUserId, // Store for webhook matching
             });
 
             await subscription.save();
@@ -1326,8 +1327,10 @@ export class SubscriptionController {
                     const planType = productId?.toLowerCase().includes('year') ? 'yearly' : 'monthly';
 
                     // Find user by looking for existing subscription with this appUserId
+                    // Search by rcAppUserId first (new dedicated field), then fall back to purchaseToken/orderId
                     let existingSub = await Subscription.findOne({
                         $or: [
+                            { rcAppUserId: appUserId },
                             { purchaseToken: appUserId },
                             { orderId: appUserId },
                         ]
@@ -1341,6 +1344,10 @@ export class SubscriptionController {
                             existingSub.expiryDate = expirationDate;
                         }
                         existingSub.autoRenew = eventType !== 'CANCELLATION';
+                        // Ensure rcAppUserId is saved for future webhooks
+                        if (!existingSub.rcAppUserId) {
+                            existingSub.rcAppUserId = appUserId;
+                        }
                         await existingSub.save();
 
                         console.log(`[RevenueCat Webhook] Updated subscription for user ${existingSub.userId}:`, {
@@ -1349,9 +1356,17 @@ export class SubscriptionController {
                             isActive: true,
                         });
                     } else {
-                        // Store as a pending subscription - will be linked when user logs in
-                        console.log(`[RevenueCat Webhook] No existing subscription found for appUserId: ${appUserId}`);
-                        // For now, log the event - you may want to create a pending table
+                        // Subscription not found - this usually means the mobile app hasn't called verifyRevenueCat yet
+                        // This can happen due to race conditions or if the user didn't complete the app flow
+                        console.warn(`[RevenueCat Webhook] No subscription found for appUserId: ${appUserId}`, {
+                            searchedFields: ['rcAppUserId', 'purchaseToken', 'orderId'],
+                            eventType,
+                            productId,
+                            purchaseDate,
+                            expirationDate,
+                        });
+                        // The subscription will be created when the mobile app calls verifyRevenueCat
+                        // or the user can manually sync by refreshing their subscription status
                     }
                     break;
 
@@ -1362,6 +1377,7 @@ export class SubscriptionController {
 
                     const cancelSub = await Subscription.findOne({
                         $or: [
+                            { rcAppUserId: appUserId },
                             { purchaseToken: appUserId },
                             { orderId: appUserId },
                         ]
@@ -1373,6 +1389,8 @@ export class SubscriptionController {
                         await cancelSub.save();
 
                         console.log(`[RevenueCat Webhook] Deactivated subscription for user ${cancelSub.userId}`);
+                    } else {
+                        console.log(`[RevenueCat Webhook] No subscription found to deactivate for appUserId: ${appUserId}`);
                     }
                     break;
 

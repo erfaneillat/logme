@@ -11,6 +11,7 @@ export interface ISubscription extends Document {
     startDate: Date;
     expiryDate: Date;
     autoRenew: boolean;
+    rcAppUserId?: string; // RevenueCat's app_user_id for webhook matching
     createdAt: Date;
     updatedAt: Date;
 }
@@ -63,6 +64,11 @@ const subscriptionSchema = new Schema<ISubscription>(
             type: Boolean,
             default: true,
         },
+        rcAppUserId: {
+            type: String,
+            required: false,
+            index: true, // Index for fast webhook lookups
+        },
     },
     {
         timestamps: true,
@@ -73,6 +79,7 @@ const subscriptionSchema = new Schema<ISubscription>(
 subscriptionSchema.index({ userId: 1, isActive: 1 });
 subscriptionSchema.index({ expiryDate: 1 });
 subscriptionSchema.index({ purchaseToken: 1 });
+subscriptionSchema.index({ rcAppUserId: 1 });
 
 const Subscription = mongoose.model<ISubscription>('Subscription', subscriptionSchema);
 

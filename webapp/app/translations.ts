@@ -122,9 +122,26 @@ export function setLocale(locale: Locale): void {
 // Hook for easier usage in components
 import { useState, useEffect, useCallback } from 'react';
 
+// Get initial locale for SSR/first render
+function getInitialLocale(): Locale {
+    // During SSR or if global mode, default to 'en'
+    if (typeof window === 'undefined') {
+        return process.env.NEXT_PUBLIC_MARKET === 'global' ? 'en' : 'fa';
+    }
+
+    // On client, try to get from localStorage immediately
+    const savedLocale = localStorage.getItem('app_locale');
+    if (savedLocale === 'en' || savedLocale === 'fa') {
+        return savedLocale;
+    }
+
+    // In global mode, default to 'en', otherwise 'fa'
+    return isGlobalMode() ? 'en' : 'fa';
+}
+
 export function useTranslation() {
-    const [locale, setLocaleState] = useState<Locale>('fa'); // Default to fa until hydrated
-    const [isGlobal, setIsGlobal] = useState(false);
+    const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+    const [isGlobal, setIsGlobal] = useState(isGlobalMode);
 
     useEffect(() => {
         const currentLocale = getLocale();

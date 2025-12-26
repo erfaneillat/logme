@@ -705,28 +705,27 @@ class PaymentService {
         final purchasedProductId = package.storeProduct.identifier;
         final purchasedPlanType = productIdentifier; // 'yearly' or 'monthly'
 
-        // Sync with backend - non-blocking (fire and forget)
-        // The purchase is already verified by RevenueCat SDK on the client side
-        // Backend sync is just for keeping our database updated
-        _verifyRevenueCatBackend(
-          customerInfo.originalAppUserId,
-          productId: purchasedProductId,
-          planType: purchasedPlanType,
-        ).then((success) {
-          if (success) {
-            debugPrint('Backend sync succeeded');
-          } else {
-            debugPrint('Backend sync failed - will retry on next app open');
-          }
-        }).catchError((e) {
-          debugPrint('Backend sync error (non-fatal): $e');
-        });
+        // CRITICAL: Sync with backend and WAIT for it to complete
+        // This must happen BEFORE returning success so that the webhook can find the subscription
+        debugPrint('Syncing subscription with backend...');
+        bool backendSuccess = false;
+        try {
+          backendSuccess = await _verifyRevenueCatBackend(
+            customerInfo.originalAppUserId,
+            productId: purchasedProductId,
+            planType: purchasedPlanType,
+          ).timeout(const Duration(seconds: 10));
+          debugPrint('Backend sync result: $backendSuccess');
+        } catch (e) {
+          debugPrint('Backend sync error: $e');
+          // Continue anyway - webhook should eventually handle it
+        }
 
         // Trigger refresh
         final notifier = _ref.read(subscriptionRefreshTriggerProvider.notifier);
         notifier.state = notifier.state + 1;
 
-        if (hasActiveEntitlement) {
+        if (hasActiveEntitlement || backendSuccess) {
           return PurchaseResult(
               success: true,
               message: 'Subscription activated',

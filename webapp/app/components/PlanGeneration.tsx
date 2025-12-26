@@ -37,7 +37,7 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
 
     const [progress, setProgress] = useState(0);
     const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
-    const [currentMessage, setCurrentMessage] = useState(t('planGeneration.currentMessage'));
+    const [currentMessage, setCurrentMessage] = useState('');
     const [isGenerating, setIsGenerating] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -79,6 +79,11 @@ export default function PlanGeneration({ onComplete, onError }: PlanGenerationPr
 
     // Progress animation timer
     useEffect(() => {
+        // Set initial message with correct locale
+        if (!currentMessage) {
+            setCurrentMessage(t('planGeneration.currentMessage'));
+        }
+
         // Start API call
         if (!apiCalledRef.current) {
             apiCalledRef.current = true;
