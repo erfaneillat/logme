@@ -57,14 +57,70 @@ const KitchenCategoryModal: React.FC<KitchenCategoryModalProps> = ({ isOpen, onC
     const [generatingAllImages, setGeneratingAllImages] = useState(false);
     const [allImagesProgress, setAllImagesProgress] = useState<string>('');
 
+    // Helper function to detect if a string contains Persian/Arabic characters
+    const containsPersian = (text: string): boolean => {
+        if (!text) return false;
+        const persianRegex = /[\u0600-\u06FF\u0750-\u077F]/;
+        return persianRegex.test(text);
+    };
+
     useEffect(() => {
         if (initialData) {
+            // Check if title contains Persian text (legacy data issue)
+            const titleIsPersian = containsPersian(initialData.title);
+
+            let title = initialData.title;
+            let title_fa = initialData.title_fa || '';
+
+            // If title is Persian but title_fa is empty, move it to title_fa
+            if (titleIsPersian && !title_fa) {
+                title_fa = title;
+                title = ''; // Clear the English title since it's actually Persian
+            }
+
+            // Also fix subcategories
+            const fixedSubCategories = (initialData.subCategories || []).map(sub => {
+                const subTitleIsPersian = containsPersian(sub.title);
+                let subTitle = sub.title;
+                let subTitleFa = sub.title_fa || '';
+
+                if (subTitleIsPersian && !subTitleFa) {
+                    subTitleFa = subTitle;
+                    subTitle = '';
+                }
+
+                // Also fix items within subcategory
+                const fixedItems = (sub.items || []).map(item => {
+                    const itemNameIsPersian = containsPersian(item.name);
+                    let itemName = item.name;
+                    let itemNameFa = item.name_fa || '';
+
+                    if (itemNameIsPersian && !itemNameFa) {
+                        itemNameFa = itemName;
+                        itemName = '';
+                    }
+
+                    return {
+                        ...item,
+                        name: itemName,
+                        name_fa: itemNameFa
+                    };
+                });
+
+                return {
+                    ...sub,
+                    title: subTitle,
+                    title_fa: subTitleFa,
+                    items: fixedItems
+                };
+            });
+
             setFormData({
-                title: initialData.title,
-                title_fa: initialData.title_fa || '',
+                title,
+                title_fa,
                 isActive: initialData.isActive,
                 order: initialData.order,
-                subCategories: initialData.subCategories || []
+                subCategories: fixedSubCategories
             });
         } else {
             setFormData({
