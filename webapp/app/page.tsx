@@ -143,8 +143,35 @@ export default function Home() {
 
   const handleGlobalPurchase = (plan: 'monthly' | 'yearly') => {
     console.log('Global Purchase initiated for plan:', plan);
-    // TODO: Implement actual purchase logic for Global users (Stripe/RevenueCat)
-    // apiService.purchaseGlobal(plan)...
+
+    if (typeof window !== 'undefined' && (window as any).FlutterBridge && (window as any).FlutterBridge.purchaseGlobal) {
+      (window as any).FlutterBridge.purchaseGlobal(plan)
+        .then((result: any) => {
+          console.log('Purchase Result:', result);
+          if (result && result.success) {
+            showNotification('Subscription activated successfully!', 'success');
+            // Refresh dashboard to reflect new status
+            setDashboardRefreshTrigger(prev => prev + 1);
+
+            // Close modals
+            setShowSubscriptionPrompt(false);
+            setShowOneTimeOffer(false);
+
+            if (currentView === 'subscription') {
+              navigateToView('dashboard');
+            }
+          } else {
+            showNotification(result?.message || 'Purchase failed', 'error');
+          }
+        })
+        .catch((err: any) => {
+          console.error('Purchase error:', err);
+          showNotification(err.message || 'Purchase failed', 'error');
+        });
+    } else {
+      console.warn('FlutterBridge.purchaseGlobal not available - are you in the app?');
+      showNotification('Purchase is only available in the mobile app', 'info');
+    }
   };
 
   const handleOneTimeOfferPurchase = () => {
@@ -153,8 +180,8 @@ export default function Home() {
     sessionStorage.setItem('one_time_offer_dismissed', 'true');
     setShowOneTimeOffer(false);
     setOfferExpiresAt(null); // Clear the widget
-    // TODO: Implement actual purchase logic for the one-time offer
-    handleGlobalPurchase('yearly');
+    // Use the specific offering/product identifier for the one-time offer
+    handleGlobalPurchase('yearlyoff' as any); // Cast to any to bypass literal type check if needed, or update type definition
   };
 
   const handleSubscriptionClose = () => {

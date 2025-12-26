@@ -1,9 +1,7 @@
-import 'package:cal_ai/features/subscription/presentation/providers/subscription_provider.dart';
-import 'package:cal_ai/services/payment_service.dart';
-import 'package:cal_ai/services/api_service_provider.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:cal_ai/features/subscription/presentation/providers/subscription_provider.dart';
+import 'package:cal_ai/services/payment_service.dart';
 
 Future<void> handleSubscriptionPurchase(
   BuildContext context,
@@ -12,130 +10,57 @@ Future<void> handleSubscriptionPurchase(
   PaymentService paymentService,
   ValueNotifier<bool> isProcessing,
 ) async {
+  if (isProcessing.value) return;
+
+  isProcessing.value = true;
+
   try {
-    isProcessing.value = true;
+    String? productKey;
 
-    // Determine selected plan id and plan product key
-    final String? selectedPlanId;
-    final String? planProductKey;
-    if (state.selectedPlan == SubscriptionPlan.yearly) {
-      selectedPlanId = state.yearlyPlanId;
-      planProductKey = state.yearlyCafebazaarProductKey;
-    } else if (state.selectedPlan == SubscriptionPlan.threeMonth) {
-      selectedPlanId = state.threeMonthPlanId;
-      planProductKey = state.threeMonthCafebazaarProductKey;
-    } else {
-      selectedPlanId = state.monthlyPlanId;
-      planProductKey = state.monthlyCafebazaarProductKey;
+    switch (state.selectedPlan) {
+      case SubscriptionPlan.monthly:
+        productKey = state.monthlyCafebazaarProductKey;
+        break;
+      case SubscriptionPlan.threeMonth:
+        productKey = state.threeMonthCafebazaarProductKey;
+        break;
+      case SubscriptionPlan.yearly:
+        productKey = state.yearlyCafebazaarProductKey;
+        break;
     }
 
-    // Pick applicable offer for the selected plan (highest priority), if any
-    String? productKey = planProductKey;
-    if (selectedPlanId != null) {
-      final applicableOffers = state.offers
-          .where((o) => o.isCurrentlyValid && o.appliesToPlan(selectedPlanId!))
-          .toList();
-      if (applicableOffers.isNotEmpty) {
-        applicableOffers.sort((a, b) => b.priority.compareTo(a.priority));
-        final bestOffer = applicableOffers.first;
-        final offerKey = bestOffer.cafebazaarProductKey;
-        if (offerKey != null && offerKey.isNotEmpty) {
-          productKey = offerKey;
-        }
-      }
-    }
-
-    if (productKey == null || productKey.isEmpty) {
+    if (productKey == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text('subscription.payment.product_not_found'.tr()),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-        ),
+        const SnackBar(
+            content: Text('Product key not found for selected plan')),
       );
+      isProcessing.value = false;
       return;
-    }
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('subscription.payment.processing'.tr()),
-          duration: const Duration(seconds: 2),
-        ),
-      );
     }
 
     final result = await paymentService.purchaseSubscription(productKey);
 
-    if (!context.mounted) return;
-
-    if (result.success) {
-      final secureStorage = ref.read(secureStorageProvider);
-      await secureStorage.setSubscriptionActive(true);
-      // Refresh plans and offers so UI updates immediately
-      await ref.read(subscriptionNotifierProvider.notifier).refresh();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text('subscription.payment.subscription_activated'.tr()),
-              ),
-            ],
+    if (context.mounted) {
+      if (result.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result.message)),
+        );
+        // Additional success logic (e.g., closing the screen) can be added here
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.message),
+            backgroundColor: Colors.red,
           ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(result.message),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        );
+      }
     }
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text('${'subscription.payment.error'.tr()}: $e'),
-              ),
-            ],
-          ),
+          content: Text('Error: $e'),
           backgroundColor: Colors.red,
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
         ),
       );
     }

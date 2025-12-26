@@ -8,9 +8,7 @@ export interface ISubscriptionPlan extends Document {
     originalPrice?: number; // Original price before discount (optional)
     discountPercentage?: number; // e.g., 60 for 60% off
     pricePerMonth?: number; // Monthly equivalent price (manually set, not auto-calculated)
-    cafebazaarProductKey?: string; // Cafebazaar product key for in-app purchases (Iran)
-    revenueCatProductId?: string; // RevenueCat product identifier (Global - App Store/Play Store)
-    priceUsd?: number; // Price in USD for global users
+    cafebazaarProductKey?: string; // Cafebazaar product key for in-app purchases
     imageUrl?: string; // URL to the plan's image
     isActive: boolean; // Whether this plan is currently available
     features: string[]; // List of features included in the plan
@@ -61,16 +59,6 @@ const subscriptionPlanSchema = new Schema<ISubscriptionPlan>(
             type: String,
             required: false,
             trim: true,
-        },
-        revenueCatProductId: {
-            type: String,
-            required: false,
-            trim: true,
-        },
-        priceUsd: {
-            type: Number,
-            required: false,
-            min: [0, 'USD price cannot be negative'],
         },
         imageUrl: {
             type: String,

@@ -330,8 +330,6 @@ export interface SubscriptionPlan {
     discountPercentage?: number;
     pricePerMonth?: number;
     cafebazaarProductKey?: string;
-    revenueCatProductId?: string;
-    priceUsd?: number;
     imageUrl?: string;
     isActive: boolean;
     features: string[];
@@ -2258,109 +2256,6 @@ export const apiService = {
         } catch (error) {
             console.error('recordKitchenItemClick error:', error);
             return false;
-        }
-    },
-
-    // RevenueCat Payment APIs (for global users)
-    verifyRevenueCatPurchase: async (purchaseData: {
-        appUserId?: string;
-        productId: string;
-        transactionId?: string;
-        purchaseToken?: string;
-        store: 'app_store' | 'play_store';
-        entitlementId?: string;
-    }): Promise<{
-        success: boolean;
-        message?: string;
-        subscription?: {
-            planType: string;
-            isActive: boolean;
-            startDate: string;
-            expiryDate: string;
-        };
-    }> => {
-        try {
-            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-            if (!token) throw new Error('No auth token found');
-
-            const response = await fetch(`${getBaseUrl()}/api/subscription/verify-revenuecat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(purchaseData),
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                return {
-                    success: false,
-                    message: data.message || 'Failed to verify purchase',
-                };
-            }
-
-            return {
-                success: true,
-                subscription: data.data?.subscription,
-            };
-        } catch (error: any) {
-            console.error('verifyRevenueCatPurchase error:', error);
-            return {
-                success: false,
-                message: error.message || 'Network error',
-            };
-        }
-    },
-
-    syncRevenueCatSubscription: async (syncData?: {
-        appUserId?: string;
-        entitlementId?: string;
-    }): Promise<{
-        success: boolean;
-        isActive: boolean;
-        planType?: string;
-        expiryDate?: string;
-        source?: 'revenuecat' | 'local';
-        synced?: boolean;
-    }> => {
-        try {
-            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-            if (!token) throw new Error('No auth token found');
-
-            const response = await fetch(`${getBaseUrl()}/api/subscription/sync-revenuecat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(syncData || {}),
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                return {
-                    success: false,
-                    isActive: false,
-                };
-            }
-
-            return {
-                success: true,
-                isActive: data.data?.isActive || false,
-                planType: data.data?.planType,
-                expiryDate: data.data?.expiryDate,
-                source: data.data?.source,
-                synced: data.data?.synced,
-            };
-        } catch (error: any) {
-            console.error('syncRevenueCatSubscription error:', error);
-            return {
-                success: false,
-                isActive: false,
-            };
         }
     },
 };

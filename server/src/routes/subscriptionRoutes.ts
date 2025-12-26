@@ -27,6 +27,11 @@ router.post('/validate-cafebazaar', authenticate, (req, res) =>
     subscriptionController.validateCafeBazaarPurchase(req, res)
 );
 
+// Verify with RevenueCat
+router.post('/verify-revenuecat', authenticate, (req, res) =>
+    subscriptionController.verifyRevenueCat(req, res)
+);
+
 // Check subscription status with Cafe Bazaar API
 router.post('/check-subscription-status', authenticate, (req, res) =>
     subscriptionController.checkCafeBazaarSubscriptionStatus(req, res)
@@ -47,19 +52,6 @@ router.post('/admin/:subscriptionId/extend', authenticateAdmin, (req, res) =>
 
 router.post('/admin/activate', authenticateAdmin, (req, res) =>
     subscriptionController.activateSubscriptionForUser(req, res)
-);
-
-// RevenueCat routes (for global users)
-router.post('/verify-revenuecat', authenticate, (req, res) =>
-    subscriptionController.verifyRevenueCatPurchase(req, res)
-);
-
-router.get('/revenuecat-status', authenticate, (req, res) =>
-    subscriptionController.getRevenueCatSubscriptionStatus(req, res)
-);
-
-router.post('/sync-revenuecat', authenticate, (req, res) =>
-    subscriptionController.syncRevenueCatSubscription(req, res)
 );
 
 export default router;
