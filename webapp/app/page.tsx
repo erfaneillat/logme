@@ -12,6 +12,7 @@ import SettingPage from './components/SettingPage';
 import SubscriptionPage from './components/SubscriptionPage';
 import SubscriptionPromptModal from './components/SubscriptionPromptModal';
 import OneTimeOfferModal from './components/OneTimeOfferModal';
+import OneTimeOfferWidget from './components/OneTimeOfferWidget';
 import Splash from './components/Splash';
 import Onboarding from './components/Onboarding';
 import Login from './components/Login';
@@ -24,6 +25,7 @@ import PaymentResultModal from './components/PaymentResultModal';
 import { FoodItem } from './types';
 import { apiService, User, FoodAnalysisResponse, UserProfile } from './services/apiService';
 import { useTranslation } from './translations';
+import { isSubscriptionError } from './constants/errorCodes';
 
 type ViewState = 'dashboard' | 'analysis' | 'chat' | 'settings' | 'subscription' | 'kitchen';
 type AppState = 'SPLASH' | 'ONBOARDING' | 'LOGIN' | 'VERIFICATION' | 'ADDITIONAL_INFO' | 'PLAN_GENERATION' | 'PLAN_SUMMARY' | 'MAIN';
@@ -42,6 +44,7 @@ export default function Home() {
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
   const [showOneTimeOffer, setShowOneTimeOffer] = useState(false);
+  const [offerExpiresAt, setOfferExpiresAt] = useState<string | null>(null);
 
   // Move skip-splash logic to useEffect to avoid hydration mismatch
   useEffect(() => {
@@ -149,6 +152,7 @@ export default function Home() {
     // Mark as purchased/dismissed so it won't show again
     sessionStorage.setItem('one_time_offer_dismissed', 'true');
     setShowOneTimeOffer(false);
+    setOfferExpiresAt(null); // Clear the widget
     // TODO: Implement actual purchase logic for the one-time offer
     handleGlobalPurchase('yearly');
   };
@@ -157,7 +161,8 @@ export default function Home() {
     // For global users, check if we should show the one-time offer
     if (isGlobal) {
       const hasSeenOffer = sessionStorage.getItem('one_time_offer_dismissed');
-      if (!hasSeenOffer) {
+      // Don't show if dismissed OR if currently active (widget is shown)
+      if (!hasSeenOffer && !offerExpiresAt) {
         // Show the one-time offer modal instead of just closing
         setShowOneTimeOffer(true);
         return;
@@ -214,13 +219,14 @@ export default function Home() {
   }, [appState, currentView, navigateToView]);
 
   // Check subscription status for global users and show prompt if needed
+  // Only shows ONCE - after first signup, not on every app open
   useEffect(() => {
     const checkSubscriptionForGlobalUsers = async () => {
       // Only check when user enters MAIN state in global mode
       if (appState !== 'MAIN' || !isGlobal) return;
 
-      // Check if we've already shown this prompt in this session
-      const hasShownPrompt = sessionStorage.getItem('subscription_prompt_shown');
+      // Check if we've already shown this prompt (persisted across sessions)
+      const hasShownPrompt = localStorage.getItem('global_subscription_prompt_shown');
       if (hasShownPrompt) return;
 
       try {
@@ -229,8 +235,8 @@ export default function Home() {
         // Show prompt if user doesn't have an active subscription
         if (!subscriptionStatus?.isActive) {
           setShowSubscriptionPrompt(true);
-          // Mark as shown in this session
-          sessionStorage.setItem('subscription_prompt_shown', 'true');
+          // Mark as shown permanently (persists across sessions)
+          localStorage.setItem('global_subscription_prompt_shown', 'true');
         }
       } catch (error) {
         console.error('Error checking subscription status:', error);
@@ -239,6 +245,27 @@ export default function Home() {
 
     checkSubscriptionForGlobalUsers();
   }, [appState, isGlobal]);
+
+  // Check for active one-time offer
+  useEffect(() => {
+    const checkOffer = async () => {
+      if (appState !== 'MAIN') return;
+      try {
+        const profile = await apiService.getUserProfile();
+        if (profile?.oneTimeOfferExpiresAt) {
+          const expires = new Date(profile.oneTimeOfferExpiresAt);
+          if (expires > new Date()) {
+            setOfferExpiresAt(profile.oneTimeOfferExpiresAt);
+          } else {
+            setOfferExpiresAt(null);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to check offer status", e);
+      }
+    };
+    checkOffer();
+  }, [appState, dashboardRefreshTrigger]); // Re-check on dashboard refresh logic
 
   const openFoodDetail = useCallback((food: any) => {
     // Push new state with modal identifier
@@ -542,14 +569,16 @@ export default function Home() {
     } catch (error: any) {
       console.error("Background analysis failed:", error);
 
-      const errorMessage = error.message || "متاسفانه تحلیل غذا با خطا مواجه شد.";
+      const errorMessage = error.message || t('errors.analysisGeneric');
+      const errorCode = error.code;
 
-      // Show notification for all errors
-      showNotification(errorMessage, 'error');
-
-      // Check if error is related to subscription limits - navigate to subscription page
-      if (errorMessage.includes('محدودیت') || errorMessage.includes('limit') || errorMessage.includes('اشتراک') || errorMessage.includes('رایگان')) {
+      // Check if error is subscription-related using error code
+      if (isSubscriptionError(errorCode)) {
+        // For subscription errors, just navigate to subscription page without showing notification
         navigateToView('subscription');
+      } else {
+        // Show notification only for non-subscription errors
+        showNotification(errorMessage, 'error');
       }
 
       setPendingAnalyses(prev => prev.filter(p => p.id !== tempId));
@@ -563,8 +592,19 @@ export default function Home() {
   };
 
   const handleLogout = () => {
+    // Clear all auth-related localStorage items
     localStorage.removeItem('isLoggedIn');
-    // localStorage.removeItem('hasOnboarded'); // Keep onboarding status
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('hasCompletedAdditionalInfo');
+    // Keep onboarding status: localStorage.removeItem('hasOnboarded');
+
+    // Notify Flutter to clear the native stored token
+    if ((window as any).FlutterPayment) {
+      (window as any).FlutterPayment.postMessage(JSON.stringify({
+        action: 'logout'
+      }));
+    }
+
     setAppState('LOGIN');
     navigateToView('dashboard');
   };
@@ -634,6 +674,8 @@ export default function Home() {
           refreshTrigger={dashboardRefreshTrigger}
           pendingAnalyses={pendingAnalyses}
           onSubscriptionClick={() => navigateToView('subscription')}
+          offerExpiresAt={offerExpiresAt}
+          onOfferClick={() => setShowOneTimeOffer(true)}
         />
       )}
 
@@ -731,10 +773,10 @@ export default function Home() {
         isOpen={showSubscriptionPrompt}
         onClose={() => {
           setShowSubscriptionPrompt(false);
-          // Show one-time offer if user hasn't seen it
+          // Show one-time offer if user hasn't seen it and no active offer
           if (isGlobal) {
             const hasSeenOffer = sessionStorage.getItem('one_time_offer_dismissed');
-            if (!hasSeenOffer) {
+            if (!hasSeenOffer && !offerExpiresAt) {
               setShowOneTimeOffer(true);
             }
           }
@@ -755,6 +797,8 @@ export default function Home() {
         }}
         onPurchase={handleOneTimeOfferPurchase}
       />
+
+
 
       {/* Modern Floating Navigation - Hidden when in Chat or Subscription view */}
       {/* Floating Action Button (FAB) - Only on Dashboard */}

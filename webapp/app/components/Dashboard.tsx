@@ -58,6 +58,8 @@ interface DashboardProps {
         startTime: number;
     }[];
     onSubscriptionClick: () => void;
+    offerExpiresAt?: string | null;
+    onOfferClick?: () => void;
 }
 
 const PendingFoodItem = ({ item, t }: { item: NonNullable<DashboardProps['pendingAnalyses']>[number], t: (key: string) => any }) => (
@@ -184,7 +186,7 @@ const DateStripSkeleton = () => (
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [], onSubscriptionClick }) => {
+const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModalOpen, onFoodClick, refreshTrigger = 0, pendingAnalyses = [], onSubscriptionClick, offerExpiresAt, onOfferClick }) => {
     const { t, isRTL } = useTranslation();
 
     // Conditional number formatting based on locale
@@ -491,6 +493,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
                     isLoading={isLoading}
                     onSubscriptionClick={onSubscriptionClick}
                     onStreakClick={handleStreakClick}
+                    offerExpiresAt={offerExpiresAt}
+                    onOfferClick={onOfferClick}
                 />
 
                 {/* Date Strip */}

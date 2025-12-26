@@ -26,6 +26,7 @@ export interface IUser extends Document {
   lastActivity?: Date; // timestamp of last user activity
   lastPlatform?: 'web' | 'ios' | 'android' | 'unknown'; // Platform of last activity
   appVersion?: string;
+  oneTimeOfferExpiresAt?: Date;
   // User preferences
   addBurnedCalories?: boolean; // whether to add burned calories to daily goal
   rolloverCalories?: boolean; // whether to rollover remaining calories
@@ -175,6 +176,10 @@ const userSchema = new Schema<IUser>(
     },
     appVersion: {
       type: String,
+      required: false,
+    },
+    oneTimeOfferExpiresAt: {
+      type: Date,
       required: false,
     },
   },

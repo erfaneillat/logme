@@ -350,7 +350,7 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
                                                 {t('subscriptionPrompt.step3.plans.yearly')}
                                             </div>
                                             <div className="font-bold text-xl text-gray-900">
-                                                $29.99 <span className="text-sm font-normal text-gray-500">{t('subscriptionPrompt.step3.plans.yr')}</span>
+                                                $49.99 <span className="text-sm font-normal text-gray-500">{t('subscriptionPrompt.step3.plans.yr')}</span>
                                             </div>
 
                                             {/* Tag */}
@@ -397,8 +397,8 @@ const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = ({
                                         <p className="text-center text-gray-500 text-xs font-medium">
                                             {selectedPlan === 'yearly'
                                                 ? t('subscriptionPrompt.step3.footer.trial')
-                                                    .replace('{{price}}', '$29.99')
-                                                    .replace('{{monthlyPrice}}', '$2.49')
+                                                    .replace('{{price}}', '$49.99')
+                                                    .replace('{{monthlyPrice}}', '$4.17')
                                                 : t('subscriptionPrompt.step3.footer.noTrial').replace('{{price}}', '$9.99')
                                             }
                                         </p>

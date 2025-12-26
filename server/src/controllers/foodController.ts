@@ -47,11 +47,30 @@ export class FoodController {
 
         // Check daily analysis limit for free users
         if (userId) {
-            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate);
+            // Detect if this is a global market request via X-Market header
+            const marketHeader = req.headers['x-market'] as string | undefined;
+            const isGlobal = marketHeader === 'global';
+
+            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate, isGlobal);
 
             if (!limitCheck.canAnalyze) {
                 const tomorrowDate = ImageAnalysisLimitService.getTomorrowDateFormatted();
-                // Detect language from Accept-Language header or default to English
+
+                // For global users, return subscription required message
+                if (isGlobal || limitCheck.requiresSubscription) {
+                    const message = ImageAnalysisLimitService.getGlobalSubscriptionRequiredMessage('en');
+                    res.status(429).json({
+                        success: false,
+                        error: 'subscription_required',
+                        code: 'SUBSCRIPTION_REQUIRED',
+                        message: message,
+                        needsSubscription: true,
+                        timestamp: new Date()
+                    });
+                    return;
+                }
+
+                // For non-global users (Iran), return daily limit message
                 const lang = req.headers['accept-language']?.includes('fa') ? 'fa' : 'en';
                 const message = lang === 'fa'
                     ? ImageAnalysisLimitService.getPersianErrorMessage()
@@ -329,11 +348,30 @@ export class FoodController {
 
         // Check daily analysis limit for free users
         if (userId) {
-            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate);
+            // Detect if this is a global market request via X-Market header
+            const marketHeader = req.headers['x-market'] as string | undefined;
+            const isGlobal = marketHeader === 'global';
+
+            const limitCheck = await ImageAnalysisLimitService.checkAndTrackAnalysis(userId, targetDate, isGlobal);
 
             if (!limitCheck.canAnalyze) {
                 const tomorrowDate = ImageAnalysisLimitService.getTomorrowDateFormatted();
-                // Detect language from Accept-Language header or default to English
+
+                // For global users, return subscription required message
+                if (isGlobal || limitCheck.requiresSubscription) {
+                    const message = ImageAnalysisLimitService.getGlobalSubscriptionRequiredMessage('en');
+                    res.status(429).json({
+                        success: false,
+                        error: 'subscription_required',
+                        code: 'SUBSCRIPTION_REQUIRED',
+                        message: message,
+                        needsSubscription: true,
+                        timestamp: new Date()
+                    });
+                    return;
+                }
+
+                // For non-global users (Iran), return daily limit message
                 const lang = req.headers['accept-language']?.includes('fa') ? 'fa' : 'en';
                 const message = lang === 'fa'
                     ? ImageAnalysisLimitService.getPersianErrorMessage()

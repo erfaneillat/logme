@@ -55,6 +55,25 @@ export const getApiLocale = (): string => {
     return 'fa';
 };
 
+// Get market identifier for API requests (X-Market header)
+// Returns 'global' for global market, 'ir' for Iran market
+export const getApiMarket = (): string => {
+    if (typeof window === 'undefined') {
+        return process.env.NEXT_PUBLIC_MARKET === 'global' ? 'global' : 'ir';
+    }
+
+    // Check if global mode via URL params
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const marketParam = searchParams.get('market') || hashParams.get('market');
+
+    if (marketParam === 'global' || process.env.NEXT_PUBLIC_MARKET === 'global') {
+        return 'global';
+    }
+
+    return 'ir';
+};
+
 // Helper to fix image URLs (handle localhost vs production, development vs Android Emulator)
 export const fixImageUrl = (url?: string): string | undefined => {
     if (!url) return undefined;
@@ -123,6 +142,7 @@ export interface User {
     name?: string;
     hasCompletedAdditionalInfo?: boolean;
     token?: string;
+    oneTimeOfferExpiresAt?: string;
     [key: string]: any;
 }
 
@@ -174,6 +194,7 @@ export interface UserProfile {
     name?: string;
     streakCount: number;
     hasCompletedAdditionalInfo?: boolean;
+    oneTimeOfferExpiresAt?: string;
     createdAt?: string;
 }
 
@@ -552,6 +573,7 @@ export const apiService = {
                 streakCount: user.streakCount || 0,
                 hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
                 createdAt: user.createdAt,
+                oneTimeOfferExpiresAt: user.oneTimeOfferExpiresAt,
             };
         } catch (error: any) {
             console.error('getUserProfile error:', error);
@@ -758,6 +780,32 @@ export const apiService = {
         }
     },
 
+    activateOneTimeOffer: async (): Promise<{ expiresAt: string } | null> => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+            if (!token) throw new Error('No auth token found');
+
+            const response = await fetch(`${getBaseUrl()}/api/auth/activate-offer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to activate offer');
+            }
+
+            return data.data; // { expiresAt: "..." }
+        } catch (error) {
+            console.error('activateOneTimeOffer error:', error);
+            return null;
+        }
+    },
+
     // Food Analysis APIs (matching Flutter implementation)
     analyzeFoodImage: async (imageFile: File, date?: string, description?: string): Promise<FoodAnalysisResponse> => {
         try {
@@ -779,6 +827,7 @@ export const apiService = {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
                     'Accept-Language': getApiLocale(),
+                    'X-Market': getApiMarket(),
                 },
                 body: formData,
             });
@@ -786,11 +835,25 @@ export const apiService = {
             const data = await response.json();
 
             if (!response.ok) {
-                // Handle free tier limit
-                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
-                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                // Handle subscription required for global users
+                if (response.status === 429 && data.error === 'subscription_required') {
+                    const error = new Error(data.message || 'Subscription required') as Error & { code?: string };
+                    error.code = 'SUBSCRIPTION_REQUIRED';
+                    throw error;
                 }
-                throw new Error(data.error || data.message || 'خطا در تحلیل تصویر');
+                // Handle free tier limit - use error code
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    const error = new Error(data.messageFa || data.message || 'Daily limit reached') as Error & { code?: string };
+                    error.code = 'DAILY_ANALYSIS_LIMIT_REACHED';
+                    throw error;
+                }
+                // Check for code in response
+                if (data.code) {
+                    const error = new Error(data.message || data.error || 'Analysis error') as Error & { code?: string };
+                    error.code = data.code;
+                    throw error;
+                }
+                throw new Error(data.error || data.message || 'Error analyzing image');
             }
 
             return data.data;
@@ -817,6 +880,7 @@ export const apiService = {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
                     'Accept-Language': getApiLocale(),
+                    'X-Market': getApiMarket(),
                 },
                 body: JSON.stringify(body),
             });
@@ -824,11 +888,25 @@ export const apiService = {
             const data = await response.json();
 
             if (!response.ok) {
-                // Handle free tier limit
-                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
-                    throw new Error(data.messageFa || data.message || 'محدودیت روزانه به پایان رسید');
+                // Handle subscription required for global users
+                if (response.status === 429 && data.error === 'subscription_required') {
+                    const error = new Error(data.message || 'Subscription required') as Error & { code?: string };
+                    error.code = 'SUBSCRIPTION_REQUIRED';
+                    throw error;
                 }
-                throw new Error(data.error || data.message || 'خطا در تحلیل متن');
+                // Handle free tier limit - use error code
+                if (response.status === 429 && data.error === 'free_tier_limit_reached') {
+                    const error = new Error(data.messageFa || data.message || 'Daily limit reached') as Error & { code?: string };
+                    error.code = 'DAILY_ANALYSIS_LIMIT_REACHED';
+                    throw error;
+                }
+                // Check for code in response
+                if (data.code) {
+                    const error = new Error(data.message || data.error || 'Analysis error') as Error & { code?: string };
+                    error.code = data.code;
+                    throw error;
+                }
+                throw new Error(data.error || data.message || 'Error analyzing text');
             }
 
             return data.data;

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useTranslation } from '../translations';
+import OneTimeOfferWidget from './OneTimeOfferWidget';
 
 interface HeaderProps {
     streakCount?: number;
@@ -10,6 +11,8 @@ interface HeaderProps {
     isLoading?: boolean;
     onSubscriptionClick?: () => void;
     onStreakClick?: () => void;
+    offerExpiresAt?: string | null;
+    onOfferClick?: () => void;
 }
 
 // Crown SVG Icon
@@ -37,7 +40,9 @@ const Header: React.FC<HeaderProps> = ({
     isSubscribed = false,
     isLoading = false,
     onSubscriptionClick,
-    onStreakClick
+    onStreakClick,
+    offerExpiresAt,
+    onOfferClick
 }) => {
     const { t, isRTL } = useTranslation();
 
@@ -86,13 +91,19 @@ const Header: React.FC<HeaderProps> = ({
                     </h1>
                 </div>
 
-                {/* Left side - Crown and Streak */}
+                {/* Left side - Crown/Offer and Streak */}
                 <div className="flex items-center gap-3">
-                    {/* Crown Icon for non-subscribed users */}
+                    {/* Offer Widget OR Crown Icon */}
                     {!isSubscribed && !isLoading && (
-                        <button
-                            onClick={onSubscriptionClick}
-                            className={`
+                        offerExpiresAt && onOfferClick ? (
+                            <OneTimeOfferWidget
+                                expiresAt={offerExpiresAt}
+                                onClick={onOfferClick}
+                            />
+                        ) : (
+                            <button
+                                onClick={onSubscriptionClick}
+                                className={`
                 relative group p-2.5 rounded-2xl
                 bg-gradient-to-br from-amber-400 via-yellow-400 to-orange-400
                 shadow-[0_4px_20px_-4px_rgba(245,158,11,0.5)]
@@ -101,21 +112,22 @@ const Header: React.FC<HeaderProps> = ({
                 transition-all duration-300 ease-out
                 ${crownAnimating ? 'animate-crown-pulse' : ''}
               `}
-                        >
-                            {/* Shine effect */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            >
+                                {/* Shine effect */}
+                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                            {/* Icon */}
-                            <div className="relative text-white drop-shadow-sm">
-                                <CrownIcon />
-                            </div>
+                                {/* Icon */}
+                                <div className="relative text-white drop-shadow-sm">
+                                    <CrownIcon />
+                                </div>
 
-                            {/* Glow ring on hover */}
-                            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 opacity-0 group-hover:opacity-30 blur-md transition-opacity duration-300 -z-10" />
+                                {/* Glow ring on hover */}
+                                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 opacity-0 group-hover:opacity-30 blur-md transition-opacity duration-300 -z-10" />
 
-                            {/* Animated particles */}
-                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full animate-ping opacity-75" />
-                        </button>
+                                {/* Animated particles */}
+                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full animate-ping opacity-75" />
+                            </button>
+                        )
                     )}
 
                     {/* Streak Counter */}

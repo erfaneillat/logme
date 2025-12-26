@@ -11,9 +11,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
 import 'dart:convert';
 import 'dart:ui' as ui;
+import 'dart:math';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:cal_ai/services/fcm_service.dart';
 import 'package:cal_ai/services/api_service_provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:crypto/crypto.dart';
 
 /// A page that displays the webapp in a WebView
 /// Supports: File uploads, Camera access, Payment redirects, External links, CafeBazaar payments
@@ -561,6 +565,15 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
           // Initialize FCM now that we have a token
           await _initFCM();
         }
+      } else if (action == 'googleSignIn') {
+        // Handle native Google Sign-In
+        await _handleGoogleSignIn();
+      } else if (action == 'appleSignIn') {
+        // Handle native Apple Sign-In
+        await _handleAppleSignIn();
+      } else if (action == 'logout') {
+        // Handle logout - clear stored token and sign out of Google
+        await _handleLogout();
       } else {
         if (kDebugMode) {
           print(
@@ -618,6 +631,197 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
     } catch (e) {
       if (kDebugMode) {
         print('Error sending payment result: $e');
+      }
+    }
+  }
+
+  /// Handles native Google Sign-In and sends result back to webapp
+  Future<void> _handleGoogleSignIn() async {
+    if (kDebugMode) {
+      print('Starting native Google Sign-In');
+    }
+
+    try {
+      // Initialize Google Sign-In
+      // serverClientId is the Web client ID from Google Cloud Console
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        serverClientId:
+            '743552243419-h29hhb4cgq8a54oqgnnft6nejviml10a.apps.googleusercontent.com',
+      );
+
+      // Try to sign in silently first, then interactively if needed
+      GoogleSignInAccount? account = await googleSignIn.signInSilently();
+      account ??= await googleSignIn.signIn();
+
+      if (account == null) {
+        // User cancelled
+        await _sendOAuthResult('google', false, 'Sign in cancelled', null);
+        return;
+      }
+
+      if (kDebugMode) {
+        print('Google Sign-In success: ${account.email}');
+      }
+
+      // Send result back to webapp
+      await _sendOAuthResult('google', true, null, {
+        'email': account.email,
+        'name': account.displayName ?? account.email.split('@')[0],
+        'sub': account.id,
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Google Sign-In error: $e');
+      }
+      await _sendOAuthResult('google', false, e.toString(), null);
+    }
+  }
+
+  /// Handles native Apple Sign-In and sends result back to webapp
+  Future<void> _handleAppleSignIn() async {
+    if (kDebugMode) {
+      print('Starting native Apple Sign-In');
+    }
+
+    try {
+      // Generate a nonce for security
+      final rawNonce = _generateNonce();
+      final nonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      // Extract email - might be null if user has signed in before
+      final email = credential.email;
+      final fullName = credential.givenName != null
+          ? '${credential.givenName} ${credential.familyName ?? ''}'.trim()
+          : null;
+
+      if (kDebugMode) {
+        print('Apple Sign-In success: $email');
+      }
+
+      // The userIdentifier is Apple's unique user ID (sub)
+      await _sendOAuthResult('apple', true, null, {
+        'email': email ?? '',
+        'name': fullName ?? '',
+        'sub': credential.userIdentifier ?? '',
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Apple Sign-In error: $e');
+      }
+
+      // Check if user cancelled
+      if (e.toString().contains('canceled') ||
+          e.toString().contains('cancelled')) {
+        await _sendOAuthResult('apple', false, 'Sign in cancelled', null);
+      } else {
+        await _sendOAuthResult('apple', false, e.toString(), null);
+      }
+    }
+  }
+
+  /// Handles logout - clears stored token and signs out of Google
+  Future<void> _handleLogout() async {
+    if (kDebugMode) {
+      print('Handling logout from webapp');
+    }
+
+    try {
+      // Clear auth token from secure storage
+      const storage = FlutterSecureStorage();
+      await storage.delete(key: 'auth_token');
+
+      // Sign out of Google to prevent auto-login next time
+      try {
+        final googleSignIn = GoogleSignIn();
+        if (await googleSignIn.isSignedIn()) {
+          await googleSignIn.signOut();
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error signing out of Google: $e');
+        }
+      }
+
+      // Unregister FCM token
+      try {
+        final apiService = ref.read(apiServiceProvider);
+        await FCMService().unregisterToken(apiService);
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error unregistering FCM token: $e');
+        }
+      }
+
+      if (kDebugMode) {
+        print('Logout completed successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error during logout: $e');
+      }
+    }
+  }
+
+  /// Generates a random nonce for Apple Sign-In
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
+
+  /// Sends OAuth result back to the webapp
+  Future<void> _sendOAuthResult(String provider, bool success, String? error,
+      Map<String, String>? userData) async {
+    if (kDebugMode) {
+      print('Sending OAuth result: provider=$provider, success=$success');
+    }
+
+    try {
+      final callbackName = provider == 'google'
+          ? '_googleSignInCallback'
+          : '_appleSignInCallback';
+
+      if (success && userData != null) {
+        final userDataJson = jsonEncode(userData);
+        await _controller.runJavaScript('''
+          (function() {
+            console.log('OAuth result received for $provider');
+            if (window.$callbackName) {
+              window.$callbackName.resolve($userDataJson);
+              delete window.$callbackName;
+            } else {
+              console.log('No $callbackName found!');
+            }
+          })();
+        ''');
+      } else {
+        final errorMessage = error ?? 'Unknown error';
+        await _controller.runJavaScript('''
+          (function() {
+            console.log('OAuth error for $provider:', '$errorMessage');
+            if (window.$callbackName) {
+              window.$callbackName.reject(new Error('$errorMessage'));
+              delete window.$callbackName;
+            } else {
+              console.log('No $callbackName found!');
+            }
+          })();
+        ''');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error sending OAuth result: $e');
       }
     }
   }

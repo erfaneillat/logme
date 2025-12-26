@@ -14,15 +14,50 @@ export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
     const [isLoading, setIsLoading] = useState<'google' | 'apple' | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    // Check if running inside Flutter WebView
+    const isFlutterWebView = typeof window !== 'undefined' && (window as any).FlutterBridge?.isFlutterWebView;
+
     const handleGoogleLogin = async () => {
         setIsLoading('google');
         setError(null);
 
         try {
-            // For now, we'll use a simple Google Sign-In popup approach
-            // In production, you'd integrate with @react-oauth/google or similar
+            // If in Flutter WebView, use native Google Sign-In
+            if (isFlutterWebView) {
+                console.log('Detected Flutter WebView, requesting native Google Sign-In');
 
-            // Dynamically load Google Identity Services
+                // Request native Google Sign-In from Flutter
+                const result = await new Promise<any>((resolve, reject) => {
+                    // Store callback for Flutter to call back
+                    (window as any)._googleSignInCallback = { resolve, reject };
+
+                    // Request Google Sign-In from Flutter via the payment channel
+                    (window as any).FlutterPayment?.postMessage(JSON.stringify({
+                        action: 'googleSignIn'
+                    }));
+
+                    // Timeout after 2 minutes
+                    setTimeout(() => {
+                        if ((window as any)._googleSignInCallback) {
+                            reject(new Error('Google Sign-In timed out'));
+                            delete (window as any)._googleSignInCallback;
+                        }
+                    }, 120000);
+                });
+
+                // Send to our backend
+                const loginResult = await apiService.oauthLogin(
+                    'google',
+                    result.email,
+                    result.name,
+                    result.sub
+                );
+
+                onLoginSuccess(loginResult);
+                return;
+            }
+
+            // Web-based Google Sign-In for browser
             const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
             if (!googleClientId) {
@@ -114,9 +149,42 @@ export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
         setError(null);
 
         try {
-            // Apple Sign In requires Apple JS SDK
-            // For web, we use Sign in with Apple JS
+            // If in Flutter WebView, use native Apple Sign-In
+            if (isFlutterWebView) {
+                console.log('Detected Flutter WebView, requesting native Apple Sign-In');
 
+                // Request native Apple Sign-In from Flutter
+                const result = await new Promise<any>((resolve, reject) => {
+                    // Store callback for Flutter to call back
+                    (window as any)._appleSignInCallback = { resolve, reject };
+
+                    // Request Apple Sign-In from Flutter via the payment channel
+                    (window as any).FlutterPayment?.postMessage(JSON.stringify({
+                        action: 'appleSignIn'
+                    }));
+
+                    // Timeout after 2 minutes
+                    setTimeout(() => {
+                        if ((window as any)._appleSignInCallback) {
+                            reject(new Error('Apple Sign-In timed out'));
+                            delete (window as any)._appleSignInCallback;
+                        }
+                    }, 120000);
+                });
+
+                // Send to our backend
+                const loginResult = await apiService.oauthLogin(
+                    'apple',
+                    result.email,
+                    result.name,
+                    result.sub
+                );
+
+                onLoginSuccess(loginResult);
+                return;
+            }
+
+            // Web-based Apple Sign-In for browser
             if (!(window as any).AppleID) {
                 // Load Apple Sign In JS
                 await new Promise<void>((resolve, reject) => {

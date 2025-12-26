@@ -5,6 +5,7 @@ import { ChatMessage } from '../types';
 import { apiService, BASE_URL, fixImageUrl } from '../services/apiService';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from '../translations';
+import { ERROR_CODES, isSubscriptionError } from '../constants/errorCodes';
 
 interface ChatPageProps {
     onBack: () => void;
@@ -28,6 +29,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
     const [attachedImagePreview, setAttachedImagePreview] = useState<string | null>(null);
     const [streamingText, setStreamingText] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [errorCode, setErrorCode] = useState<string | null>(null);
 
     const bottomRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -228,7 +230,10 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                 // onError
                 (err) => {
                     console.error('Stream error:', err);
-                    if (err === 'DAILY_MESSAGE_LIMIT_REACHED') {
+                    // Store the error code for logic decisions
+                    setErrorCode(err);
+
+                    if (err === ERROR_CODES.DAILY_MESSAGE_LIMIT_REACHED) {
                         setError(t('chat.errors.dailyLimit'));
                         // Remove the user message
                         setMessages(prev => prev.filter(m => m.id !== userMsg.id));
@@ -307,7 +312,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                 <div className="bg-red-50 border-b border-red-100 px-4 py-3 text-center transition-all animate-fade-in">
                     <p className="text-red-600 text-sm font-medium mb-1">{error}</p>
                     <div className="flex justify-center gap-4 mt-1">
-                        {error.includes('اشتراک') && onSubscriptionClick && (
+                        {/* Show subscription button for subscription-related error codes */}
+                        {isSubscriptionError(errorCode || undefined) && onSubscriptionClick && (
                             <button
                                 onClick={onSubscriptionClick}
                                 className="text-red-700 text-xs font-bold underline bg-red-100/50 px-3 py-1 rounded-full hover:bg-red-100 transition-colors"
@@ -316,7 +322,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ onBack, onSubscriptionClick }) => {
                             </button>
                         )}
                         <button
-                            onClick={() => setError(null)}
+                            onClick={() => { setError(null); setErrorCode(null); }}
                             className="text-red-500 text-xs underline px-2 py-1 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
                         >
                             {t('chat.closeButton')}

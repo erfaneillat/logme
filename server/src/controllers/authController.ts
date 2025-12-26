@@ -26,6 +26,7 @@ export class AuthController {
     this.refreshToken = this.refreshToken.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
     this.trackAppOpen = this.trackAppOpen.bind(this);
+    this.activateOneTimeOffer = this.activateOneTimeOffer.bind(this);
     // OAuth methods
     this.oauthLogin = this.oauthLogin.bind(this);
   }
@@ -554,6 +555,38 @@ export class AuthController {
         success: false,
         message: 'Internal server error'
       });
+    }
+  }
+  // Activate one-time offer (1 hour timer)
+  async activateOneTimeOffer(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+        return;
+      }
+
+      // If already active and valid (future), return existing
+      if (user.oneTimeOfferExpiresAt && new Date(user.oneTimeOfferExpiresAt) > new Date()) {
+        res.json({
+          success: true,
+          data: { expiresAt: user.oneTimeOfferExpiresAt }
+        });
+        return;
+      }
+
+      // Set to 1 hour from now
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+      user.oneTimeOfferExpiresAt = expiresAt;
+      await user.save();
+
+      res.json({
+        success: true,
+        data: { expiresAt }
+      });
+    } catch (error) {
+      errorLogger.error('Activate offer error', error as Error, req, { userId: req.user?.userId });
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
 }

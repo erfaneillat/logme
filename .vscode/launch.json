@@ -1,35 +1,83 @@
 {
     "version": "0.2.0",
     "configurations": [
+        // ========== IRAN FLAVOR ==========
         {
-            "name": "Flutter",
+            "name": "Iran (Debug)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
             "args": [
+                "--flavor",
+                "iran",
+                "--dart-define=FLAVOR=iran",
                 "--no-enable-impeller"
             ]
         },
         {
-            "name": "Flutter (profile mode)",
+            "name": "Iran (Profile)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
             "args": [
+                "--flavor",
+                "iran",
+                "--dart-define=FLAVOR=iran",
                 "--no-enable-impeller"
             ]
         },
         {
-            "name": "Flutter (release mode)",
+            "name": "Iran (Release)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
             "args": [
+                "--flavor",
+                "iran",
+                "--dart-define=FLAVOR=iran",
+                "--no-enable-impeller"
+            ]
+        },
+        // ========== GLOBAL FLAVOR ==========
+        {
+            "name": "Global (Debug)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor",
+                "global",
+                "--dart-define=FLAVOR=global",
                 "--no-enable-impeller"
             ]
         },
         {
-            "name": "Flutter (web)",
+            "name": "Global (Profile)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "global",
+                "--dart-define=FLAVOR=global",
+                "--no-enable-impeller"
+            ]
+        },
+        {
+            "name": "Global (Release)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "global",
+                "--dart-define=FLAVOR=global",
+                "--no-enable-impeller"
+            ]
+        },
+        // ========== WEB & ALL DEVICES ==========
+        {
+            "name": "Flutter (Web)",
             "request": "launch",
             "type": "dart",
             "deviceId": "chrome",
@@ -38,11 +86,26 @@
             ]
         },
         {
-            "name": "Flutter (mobile)",
+            "name": "Iran (All Devices)",
             "request": "launch",
             "type": "dart",
             "deviceId": "all",
             "args": [
+                "--flavor",
+                "iran",
+                "--dart-define=FLAVOR=iran",
+                "--no-enable-impeller"
+            ]
+        },
+        {
+            "name": "Global (All Devices)",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "all",
+            "args": [
+                "--flavor",
+                "global",
+                "--dart-define=FLAVOR=global",
                 "--no-enable-impeller"
             ]
         }

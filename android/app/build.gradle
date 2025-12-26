@@ -60,8 +60,7 @@ android {
         }
         global {
             dimension "market"
-            // TODO: Update this to your desired global package name
-            applicationId "com.loqmeapp.global"
+            applicationId "ir.loqmeapp.application"
             resValue "string", "app_name", "Loqme"
         }
     }
