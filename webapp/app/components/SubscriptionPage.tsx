@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService, SubscriptionPlan, Offer, UserProfile, BASE_URL, fixImageUrl } from '../services/apiService';
 import { useToast } from '../context/ToastContext';
+import { useTranslation, isGlobalMode } from '../translations';
 
 // --- Utility Functions ---
 
@@ -319,68 +320,150 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
             const selectedPlan = plans.find(p => p._id === selectedPlanId);
             if (!selectedPlan) {
                 setIsPurchasing(false);
-                showToast('پلن انتخاب نشده است', 'error');
+                showToast(isGlobalMode() ? 'Please select a plan' : 'پلن انتخاب نشده است', 'error');
                 return;
             }
 
-            // Check if we're in Flutter WebView - use CafeBazaar
+            // Check if we're in Flutter WebView
             const isFlutterWebView = typeof window !== 'undefined' &&
                 (window as any).FlutterBridge?.isFlutterWebView === true;
 
+            // Check if we're in global mode
+            const isGlobal = isGlobalMode();
+
             if (isFlutterWebView) {
-                // Use CafeBazaar payment via Flutter bridge
-                console.log('Using CafeBazaar payment via FlutterBridge');
+                if (isGlobal) {
+                    // Use RevenueCat payment via Flutter bridge for global users
+                    console.log('Using RevenueCat payment via FlutterBridge');
 
-                // Determine the product key to use
-                let productKey: string | undefined;
-
-                // Check if there's an active offer with a CafeBazaar product key
-                if (activeOffer) {
-                    const planIdStr = String(selectedPlan._id);
-                    const applicablePlanIds = activeOffer.applicablePlans.map(p =>
-                        typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
-                    );
-                    const offerApplies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
-
-                    if (offerApplies && activeOffer.cafebazaarProductKey) {
-                        productKey = activeOffer.cafebazaarProductKey;
+                    // Get the RevenueCat product ID from plan or use default based on duration
+                    let productId: string;
+                    if (selectedPlan.revenueCatProductId) {
+                        productId = selectedPlan.revenueCatProductId;
+                    } else {
+                        // Fallback to default product IDs based on duration
+                        switch (selectedPlan.duration) {
+                            case 'yearly':
+                                productId = 'slice_yearly';
+                                break;
+                            case '3month':
+                                productId = 'slice_3month';
+                                break;
+                            case 'monthly':
+                            default:
+                                productId = 'slice_monthly';
+                                break;
+                        }
                     }
-                }
 
-                // Fall back to plan's CafeBazaar product key
-                if (!productKey) {
-                    productKey = selectedPlan.cafebazaarProductKey;
-                }
+                    console.log('Calling FlutterBridge.purchaseRevenueCat with productId:', productId);
 
-                if (!productKey) {
+                    try {
+                        // Check if purchaseRevenueCat exists on FlutterBridge
+                        if (!(window as any).FlutterBridge?.purchaseRevenueCat) {
+                            console.error('FlutterBridge.purchaseRevenueCat not available');
+                            showToast('Payment method not available', 'error');
+                            setIsPurchasing(false);
+                            return;
+                        }
+
+                        const result = await (window as any).FlutterBridge.purchaseRevenueCat(productId);
+                        console.log('RevenueCat purchase result:', result);
+
+                        if (result.success) {
+                            // Verify with backend
+                            console.log('Verifying RevenueCat purchase with backend...');
+                            const verifyResult = await apiService.verifyRevenueCatPurchase({
+                                productId: result.productId || productId,
+                                transactionId: result.transactionId,
+                                purchaseToken: result.purchaseToken,
+                                store: result.store || 'play_store',
+                                entitlementId: result.entitlementId || 'premium',
+                            });
+
+                            if (verifyResult.success) {
+                                showToast('Subscription activated successfully!', 'success');
+                                onBack();
+                            } else {
+                                // Purchase went through but backend verification failed
+                                // Still show success since user was charged
+                                console.warn('Backend verification failed but purchase successful:', verifyResult.message);
+                                showToast('Subscription activated! Please refresh if not reflected.', 'success');
+                                onBack();
+                            }
+                        } else {
+                            showToast(result.message || 'Payment failed', 'error');
+                        }
+                    } catch (purchaseError: any) {
+                        console.error('RevenueCat purchase error:', purchaseError);
+                        showToast(purchaseError.message || 'Payment error', 'error');
+                    }
+
                     setIsPurchasing(false);
-                    showToast('این پلن برای خرید از کافه‌بازار پیکربندی نشده است', 'error');
+                    return;
+                } else {
+                    // Use CafeBazaar payment via Flutter bridge for Iran users
+                    console.log('Using CafeBazaar payment via FlutterBridge');
+
+                    // Determine the product key to use
+                    let productKey: string | undefined;
+
+                    // Check if there's an active offer with a CafeBazaar product key
+                    if (activeOffer) {
+                        const planIdStr = String(selectedPlan._id);
+                        const applicablePlanIds = activeOffer.applicablePlans.map(p =>
+                            typeof p === 'object' && p !== null ? String((p as any)._id || p) : String(p)
+                        );
+                        const offerApplies = activeOffer.applyToAllPlans || applicablePlanIds.includes(planIdStr);
+
+                        if (offerApplies && activeOffer.cafebazaarProductKey) {
+                            productKey = activeOffer.cafebazaarProductKey;
+                        }
+                    }
+
+                    // Fall back to plan's CafeBazaar product key
+                    if (!productKey) {
+                        productKey = selectedPlan.cafebazaarProductKey;
+                    }
+
+                    if (!productKey) {
+                        setIsPurchasing(false);
+                        showToast('این پلن برای خرید از کافه‌بازار پیکربندی نشده است', 'error');
+                        return;
+                    }
+
+                    console.log('Calling FlutterBridge.purchaseCafeBazaar with productKey:', productKey);
+
+                    try {
+                        const result = await (window as any).FlutterBridge.purchaseCafeBazaar(productKey);
+                        console.log('CafeBazaar purchase result:', result);
+
+                        if (result.success) {
+                            // Payment successful - show success message and go back
+                            showToast('اشتراک شما با موفقیت فعال شد!', 'success');
+                            onBack();
+                        } else {
+                            showToast(result.message || 'خطا در پرداخت', 'error');
+                        }
+                    } catch (purchaseError: any) {
+                        console.error('CafeBazaar purchase error:', purchaseError);
+                        showToast(purchaseError.message || 'خطا در پرداخت از کافه‌بازار', 'error');
+                    }
+
+                    setIsPurchasing(false);
                     return;
                 }
+            }
 
-                console.log('Calling FlutterBridge.purchaseCafeBazaar with productKey:', productKey);
-
-                try {
-                    const result = await (window as any).FlutterBridge.purchaseCafeBazaar(productKey);
-                    console.log('CafeBazaar purchase result:', result);
-
-                    if (result.success) {
-                        // Payment successful - show success message and go back
-                        showToast('اشتراک شما با موفقیت فعال شد!', 'success');
-                        onBack();
-                    } else {
-                        showToast(result.message || 'خطا در پرداخت', 'error');
-                    }
-                } catch (purchaseError: any) {
-                    console.error('CafeBazaar purchase error:', purchaseError);
-                    showToast(purchaseError.message || 'خطا در پرداخت از کافه‌بازار', 'error');
-                }
-
+            // Regular web payment
+            if (isGlobal) {
+                // For global users on web without Flutter, show message to use app
+                showToast('Please use the mobile app to subscribe', 'info');
                 setIsPurchasing(false);
                 return;
             }
 
-            // Regular web payment via Zarinpal
+            // Iran web payment via Zarinpal
             console.log('Creating Zarinpal payment for plan:', selectedPlan._id);
 
             // Get offer ID if applicable
@@ -415,7 +498,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onBack }) => {
         } catch (error: any) {
             console.error('Payment error:', error);
             setIsPurchasing(false);
-            showToast('خطا در برقراری ارتباط با درگاه پرداخت', 'error');
+            showToast(isGlobalMode() ? 'Payment connection error' : 'خطا در برقراری ارتباط با درگاه پرداخت', 'error');
         }
     };
 

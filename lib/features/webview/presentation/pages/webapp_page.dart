@@ -15,6 +15,7 @@ import 'dart:math';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:cal_ai/services/fcm_service.dart';
 import 'package:cal_ai/services/api_service_provider.dart';
+import 'package:cal_ai/services/revenuecat_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
@@ -450,6 +451,22 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
               });
             },
             
+            // Called when webapp needs to purchase via RevenueCat (global users)
+            // productId: the RevenueCat product ID for the plan
+            // Returns a Promise that resolves with the result
+            purchaseRevenueCat: function(productId) {
+              console.log('FlutterBridge.purchaseRevenueCat called:', productId);
+              return new Promise((resolve, reject) => {
+                // Store callback in window for Flutter to call back
+                window._revenuecatCallback = { resolve, reject };
+                // Send message to Flutter
+                FlutterPayment.postMessage(JSON.stringify({
+                  action: 'purchaseRevenueCat',
+                  productId: productId
+                }));
+              });
+            },
+            
             // Called when user logs in successfully in WebApp
             setAuthToken: function(token) {
               console.log('FlutterBridge.setAuthToken called');
@@ -474,7 +491,7 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             console.log('[Flutter] Locale already saved in webapp:', savedLocale);
           }
           
-          console.log('FlutterBridge initialized with CafeBazaar payment support. Version: $version+$buildNumber, Market: $market, DeviceLocale: $deviceLanguageCode');
+          console.log('FlutterBridge initialized with CafeBazaar and RevenueCat payment support. Version: $version+$buildNumber, Market: $market, DeviceLocale: $deviceLanguageCode');
         })();
       ''');
     } catch (e) {
@@ -494,12 +511,15 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       final data = jsonDecode(message);
       final action = data['action'] as String?;
       final productKey = data['productKey'] as String?;
+      final productId = data['productId'] as String?;
 
       if (kDebugMode) {
-        print('Parsed action: $action, productKey: $productKey');
+        print(
+            'Parsed action: $action, productKey: $productKey, productId: $productId');
       }
 
       if (action == 'purchaseSubscription' && productKey != null) {
+        // CafeBazaar purchase (Iran)
         // Get the payment service from Riverpod
         final paymentService = ref.read(paymentServiceProvider);
 
@@ -550,6 +570,60 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
 
           await _sendPaymentResult(false, errorMessage, null);
         }
+      } else if (action == 'purchaseRevenueCat' && productId != null) {
+        // RevenueCat purchase (Global - App Store / Play Store)
+        if (kDebugMode) {
+          print('Starting RevenueCat purchase for: $productId');
+        }
+
+        try {
+          final revenueCatService = ref.read(revenueCatServiceProvider);
+
+          // Initialize if not already done
+          if (!revenueCatService.isInitialized) {
+            await revenueCatService.initialize();
+          }
+
+          // Perform the RevenueCat purchase with a timeout
+          final result =
+              await revenueCatService.purchaseProduct(productId).timeout(
+            const Duration(seconds: 120), // 2 minutes timeout
+            onTimeout: () {
+              if (kDebugMode) {
+                print('RevenueCat purchase timed out');
+              }
+              return RevenueCatPurchaseResult(
+                success: false,
+                store: revenueCatService.store,
+                message: 'Purchase timed out. Please try again.',
+              );
+            },
+          );
+
+          if (kDebugMode) {
+            print(
+                'RevenueCat purchase result: success=${result.success}, message=${result.message}');
+          }
+
+          // Send result back to webapp
+          await _sendRevenueCatPaymentResult(result);
+        } catch (purchaseError) {
+          if (kDebugMode) {
+            print('RevenueCat purchase error: $purchaseError');
+          }
+
+          String errorMessage = 'Payment failed';
+          if (purchaseError.toString().contains('cancelled') ||
+              purchaseError.toString().contains('canceled')) {
+            errorMessage = 'Payment cancelled';
+          }
+
+          await _sendRevenueCatPaymentResult(RevenueCatPurchaseResult(
+            success: false,
+            store: Platform.isIOS ? 'app_store' : 'play_store',
+            message: errorMessage,
+          ));
+        }
       } else if (action == 'setAuthToken') {
         final token = data['token'] as String?;
         if (token != null) {
@@ -577,15 +651,16 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       } else {
         if (kDebugMode) {
           print(
-              'Invalid payment message: action=$action, productKey=$productKey');
+              'Invalid payment message: action=$action, productKey=$productKey, productId=$productId');
         }
-        await _sendPaymentResult(false, 'درخواست نامعتبر', null);
+        await _sendPaymentResult(false, 'Invalid request', null);
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error handling payment message: $e');
       }
-      await _sendPaymentResult(false, 'خطا در پردازش درخواست پرداخت: $e', null);
+      await _sendPaymentResult(
+          false, 'Error processing payment request: $e', null);
     }
   }
 
@@ -631,6 +706,47 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
     } catch (e) {
       if (kDebugMode) {
         print('Error sending payment result: $e');
+      }
+    }
+  }
+
+  /// Sends RevenueCat payment result back to the webapp (for global users)
+  Future<void> _sendRevenueCatPaymentResult(
+      RevenueCatPurchaseResult result) async {
+    if (kDebugMode) {
+      print(
+          'Sending RevenueCat payment result to webapp: success=${result.success}, message=${result.message}');
+    }
+
+    try {
+      final resultJson = jsonEncode(result.toJson());
+
+      if (kDebugMode) {
+        print('RevenueCat result JSON: $resultJson');
+      }
+
+      await _controller.runJavaScript('''
+        (function() {
+          console.log('RevenueCat payment result received in webapp:', $resultJson);
+          if (window._revenuecatCallback) {
+            var result = $resultJson;
+            if (result.success) {
+              window._revenuecatCallback.resolve(result);
+            } else {
+              // Pass the message as an Error object
+              var error = new Error(result.message);
+              error.productId = result.productId;
+              window._revenuecatCallback.reject(error);
+            }
+            delete window._revenuecatCallback;
+          } else {
+            console.log('No _revenuecatCallback found!');
+          }
+        })();
+      ''');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error sending RevenueCat payment result: $e');
       }
     }
   }

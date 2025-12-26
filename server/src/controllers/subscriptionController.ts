@@ -5,6 +5,7 @@ import ReferralLog from '../models/ReferralLog';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { PurchaseVerificationService } from '../services/purchaseVerificationService';
 import { CafeBazaarApiService } from '../services/cafeBazaarApiService';
+import { RevenueCatService } from '../services/revenueCatService';
 import errorLogger from '../services/errorLoggerService';
 import { telegramService } from '../services/telegramService';
 
@@ -1170,5 +1171,426 @@ export class SubscriptionController {
             sortObj[sort] = 1;
         }
         return sortObj;
+    }
+
+    /**
+     * Verify purchase from RevenueCat (for global users)
+     * Called after successful purchase in Flutter app via RevenueCat SDK
+     */
+    async verifyRevenueCatPurchase(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: 'User not authenticated',
+                });
+                return;
+            }
+
+            const {
+                appUserId,        // RevenueCat app user ID (usually matches our userId)
+                productId,        // e.g., 'slice_monthly', 'slice_yearly'
+                transactionId,    // Store transaction ID
+                purchaseToken,    // Android: purchase token, iOS: receipt
+                store,            // 'app_store' or 'play_store'
+                entitlementId     // e.g., 'premium'
+            } = req.body;
+
+            console.log('🔍 Verify RevenueCat purchase request:', {
+                userId,
+                appUserId,
+                productId,
+                store,
+                entitlementId,
+                transactionIdPreview: transactionId?.substring(0, 10) + '...',
+            });
+
+            // Validate required fields
+            if (!productId || !store) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Missing required fields: productId and store',
+                });
+                return;
+            }
+
+            // Validate store value
+            if (store !== 'app_store' && store !== 'play_store') {
+                res.status(400).json({
+                    success: false,
+                    message: 'Invalid store value. Must be "app_store" or "play_store"',
+                });
+                return;
+            }
+
+            // Initialize RevenueCat service
+            let revenueCatService: RevenueCatService;
+            try {
+                revenueCatService = RevenueCatService.fromEnvironment();
+            } catch (error) {
+                errorLogger.error('Failed to initialize RevenueCat service:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error',
+                });
+                return;
+            }
+
+            // Use provided appUserId or fall back to our userId
+            const rcAppUserId = appUserId || userId;
+
+            // Verify subscription status with RevenueCat
+            const verificationResult = await revenueCatService.verifySubscription(
+                rcAppUserId,
+                entitlementId || 'premium'
+            );
+
+            if (!verificationResult.isActive) {
+                console.warn('⚠️ RevenueCat subscription not active:', {
+                    userId,
+                    appUserId: rcAppUserId,
+                    error: verificationResult.error,
+                });
+                res.status(400).json({
+                    success: false,
+                    message: verificationResult.message || 'Subscription not active',
+                    error: verificationResult.error,
+                });
+                return;
+            }
+
+            // Determine plan type from product ID
+            const pk = productId.toLowerCase();
+            let planType: 'monthly' | 'yearly' | 'threeMonth';
+            if (pk.includes('year') || pk.includes('yearly') || pk.includes('annual')) {
+                planType = 'yearly';
+            } else if (
+                pk.includes('3month') ||
+                (pk.includes('3') && pk.includes('month')) ||
+                pk.includes('three') ||
+                pk.includes('quarter')
+            ) {
+                planType = 'threeMonth';
+            } else {
+                planType = 'monthly';
+            }
+
+            // Calculate dates
+            const startDate = new Date();
+            let expiryDate: Date;
+
+            if (verificationResult.expiresDate) {
+                expiryDate = new Date(verificationResult.expiresDate);
+            } else {
+                // Fallback: Calculate based on plan type
+                expiryDate = PurchaseVerificationService.calculateExpiryDate(planType, startDate);
+            }
+
+            // Check for existing active subscription to stack time
+            const previousActive = await Subscription.findOne({
+                userId,
+                isActive: true,
+                expiryDate: { $gt: startDate },
+            }).sort({ expiryDate: -1 });
+
+            if (previousActive) {
+                const remainingMs = previousActive.expiryDate.getTime() - startDate.getTime();
+                if (remainingMs > 0) {
+                    expiryDate = new Date(expiryDate.getTime() + remainingMs);
+                }
+            }
+
+            // Deactivate any existing active subscriptions for this user
+            await Subscription.updateMany(
+                { userId, isActive: true },
+                { $set: { isActive: false } }
+            );
+
+            // Create new subscription record
+            const subscription = new Subscription({
+                userId,
+                planType,
+                productKey: productId,
+                purchaseToken: purchaseToken || transactionId || `rc_${Date.now()}`,
+                orderId: transactionId || `RC_${Date.now()}`,
+                payload: JSON.stringify({
+                    store,
+                    appUserId: rcAppUserId,
+                    entitlementId: entitlementId || 'premium',
+                }),
+                isActive: true,
+                startDate,
+                expiryDate,
+                autoRenew: verificationResult.willRenew ?? true,
+            });
+
+            await subscription.save();
+
+            console.log('✅ RevenueCat subscription verified and saved:', {
+                subscriptionId: subscription._id,
+                userId,
+                planType,
+                store,
+                expiryDate,
+            });
+
+            // Send Telegram notification
+            try {
+                const user = await User.findById(userId);
+                if (user) {
+                    telegramService.sendSubscriptionNotification(
+                        user.phone || user.email || 'N/A',
+                        productId,
+                        undefined,
+                        transactionId || 'N/A'
+                    ).catch((err: any) => {
+                        errorLogger.error('Failed to send subscription telegram notification', err);
+                    });
+                }
+            } catch (notifyErr) {
+                console.error('Failed to prepare subscription notification:', notifyErr);
+            }
+
+            // Handle referral reward if applicable
+            try {
+                const purchasingUser = await User.findById(userId);
+                if (purchasingUser && purchasingUser.referredBy) {
+                    const referrer = await User.findOne({ referralCode: purchasingUser.referredBy });
+                    if (referrer) {
+                        const reward = parseInt(process.env.REFERRAL_REWARD_TOMAN || '25000', 10);
+                        const isFirstPurchase = !purchasingUser.referralRewardCredited;
+
+                        referrer.referralSuccessCount = (referrer.referralSuccessCount || 0) + 1;
+                        referrer.referralEarnings = (referrer.referralEarnings || 0) + reward;
+                        await referrer.save();
+
+                        if (isFirstPurchase) {
+                            purchasingUser.referralRewardCredited = true;
+                            await purchasingUser.save();
+                        }
+
+                        try {
+                            const referralLog = new ReferralLog({
+                                referrerId: referrer._id,
+                                referredUserId: purchasingUser._id,
+                                referralCode: purchasingUser.referredBy,
+                                eventType: isFirstPurchase ? 'first_purchase' : 'subscription_purchase',
+                                reward,
+                                subscriptionPlanType: planType,
+                            });
+                            await referralLog.save();
+                        } catch (logErr) {
+                            errorLogger.error('Failed to save referral reward log:', logErr);
+                        }
+
+                        console.log('💰 Referral reward credited (RevenueCat):', {
+                            referrerId: referrer._id,
+                            newCount: referrer.referralSuccessCount,
+                            totalEarnings: referrer.referralEarnings,
+                            reward,
+                            purchasingUserId: userId,
+                        });
+                    }
+                }
+            } catch (referralErr) {
+                errorLogger.error('Post-purchase referral reward error:', referralErr);
+            }
+
+            res.json({
+                success: true,
+                message: 'Subscription activated successfully',
+                data: {
+                    subscription: {
+                        planType: subscription.planType,
+                        isActive: subscription.isActive,
+                        startDate: subscription.startDate,
+                        expiryDate: subscription.expiryDate,
+                    },
+                },
+            });
+        } catch (error) {
+            errorLogger.error('Verify RevenueCat purchase error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+
+    /**
+     * Get RevenueCat subscription status for a user
+     * Called to check if user has active entitlement
+     */
+    async getRevenueCatSubscriptionStatus(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: 'User not authenticated',
+                });
+                return;
+            }
+
+            const { appUserId, entitlementId } = req.query;
+
+            // Initialize RevenueCat service
+            let revenueCatService: RevenueCatService;
+            try {
+                revenueCatService = RevenueCatService.fromEnvironment();
+            } catch (error) {
+                errorLogger.error('Failed to initialize RevenueCat service:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Server configuration error',
+                });
+                return;
+            }
+
+            const rcAppUserId = (appUserId as string) || userId;
+            const entitlement = (entitlementId as string) || 'premium';
+
+            const verificationResult = await revenueCatService.verifySubscription(
+                rcAppUserId,
+                entitlement
+            );
+
+            res.json({
+                success: true,
+                data: verificationResult,
+            });
+        } catch (error) {
+            errorLogger.error('Get RevenueCat subscription status error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
+    }
+
+    /**
+     * Sync RevenueCat subscription status with local database
+     * This can be called periodically or on app launch to ensure sync
+     */
+    async syncRevenueCatSubscription(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: 'User not authenticated',
+                });
+                return;
+            }
+
+            const { appUserId, entitlementId } = req.body;
+
+            // Initialize RevenueCat service
+            let revenueCatService: RevenueCatService;
+            try {
+                revenueCatService = RevenueCatService.fromEnvironment();
+            } catch (error) {
+                // RevenueCat not configured - silently return local status
+                const localSub = await Subscription.findOne({
+                    userId,
+                    isActive: true,
+                    expiryDate: { $gt: new Date() },
+                }).sort({ expiryDate: -1 });
+
+                res.json({
+                    success: true,
+                    data: {
+                        isActive: !!localSub,
+                        planType: localSub?.planType || null,
+                        expiryDate: localSub?.expiryDate || null,
+                        source: 'local',
+                    },
+                });
+                return;
+            }
+
+            const rcAppUserId = appUserId || userId;
+            const entitlement = entitlementId || 'premium';
+
+            const verificationResult = await revenueCatService.verifySubscription(
+                rcAppUserId,
+                entitlement
+            );
+
+            // If RevenueCat shows active but local doesn't, or expiry dates differ, update local
+            const localSub = await Subscription.findOne({
+                userId,
+                isActive: true,
+                expiryDate: { $gt: new Date() },
+            }).sort({ expiryDate: -1 });
+
+            let needsSync = false;
+
+            if (verificationResult.isActive && !localSub) {
+                needsSync = true;
+            } else if (verificationResult.isActive && localSub && verificationResult.expiresDate) {
+                const rcExpiry = new Date(verificationResult.expiresDate);
+                const localExpiry = localSub.expiryDate;
+                // If RevenueCat expiry is later, update local
+                if (rcExpiry > localExpiry) {
+                    needsSync = true;
+                }
+            }
+
+            if (needsSync && verificationResult.expiresDate) {
+                // Deactivate existing and create new synced subscription
+                await Subscription.updateMany(
+                    { userId, isActive: true },
+                    { $set: { isActive: false } }
+                );
+
+                const pk = verificationResult.productIdentifier?.toLowerCase() || '';
+                let planType: 'monthly' | 'yearly' | 'threeMonth' = 'monthly';
+                if (pk.includes('year') || pk.includes('annual')) {
+                    planType = 'yearly';
+                } else if (pk.includes('3') || pk.includes('three') || pk.includes('quarter')) {
+                    planType = 'threeMonth';
+                }
+
+                const syncedSub = new Subscription({
+                    userId,
+                    planType,
+                    productKey: verificationResult.productIdentifier || 'synced_from_revenuecat',
+                    purchaseToken: `sync_${Date.now()}_${userId}`,
+                    orderId: `SYNC_${Date.now()}`,
+                    payload: JSON.stringify({ source: 'revenuecat_sync', appUserId: rcAppUserId }),
+                    isActive: true,
+                    startDate: new Date(),
+                    expiryDate: new Date(verificationResult.expiresDate),
+                    autoRenew: verificationResult.willRenew ?? false,
+                });
+
+                await syncedSub.save();
+
+                console.log('🔄 Synced subscription from RevenueCat:', {
+                    userId,
+                    planType,
+                    expiryDate: verificationResult.expiresDate,
+                });
+            }
+
+            res.json({
+                success: true,
+                data: {
+                    isActive: verificationResult.isActive,
+                    planType: verificationResult.productIdentifier,
+                    expiryDate: verificationResult.expiresDate,
+                    source: 'revenuecat',
+                    synced: needsSync,
+                },
+            });
+        } catch (error) {
+            errorLogger.error('Sync RevenueCat subscription error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error',
+            });
+        }
     }
 }
