@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 const PrivacyPolicy: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.pathname.endsWith('/en')) {
+            i18n.changeLanguage('en');
+            document.dir = 'ltr';
+        } else {
+            i18n.changeLanguage('fa');
+            document.dir = 'rtl';
+        }
+    }, [location, i18n]);
+
+    const isFarsi = i18n.language === 'fa';
+    const fontClass = isFarsi ? 'font-farsi' : '';
+    const dir = isFarsi ? 'rtl' : 'ltr';
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4">
+        <div className={`min-h-screen bg-gray-50 py-12 px-4 ${fontClass}`} dir={dir}>
             <div className="max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -14,11 +30,11 @@ const PrivacyPolicy: React.FC = () => {
                     transition={{ duration: 0.6 }}
                     className="bg-white rounded-lg shadow-lg p-8"
                 >
-                    <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center font-farsi">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">
                         {t('privacyPolicy.title')}
                     </h1>
 
-                    <div className="prose prose-lg max-w-none font-farsi text-gray-700 leading-relaxed">
+                    <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
                         <p className="text-lg mb-6 text-gray-600">
                             {t('privacyPolicy.lastUpdated')}
                         </p>
@@ -43,7 +59,7 @@ const PrivacyPolicy: React.FC = () => {
                             <h3 className="text-xl font-semibold text-gray-800 mb-3">
                                 {t('privacyPolicy.dataCollection.personalInfo.title')}
                             </h3>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataCollection.personalInfo.phone')}</li>
                                 <li>{t('privacyPolicy.dataCollection.personalInfo.email')}</li>
                                 <li>{t('privacyPolicy.dataCollection.personalInfo.name')}</li>
@@ -53,7 +69,7 @@ const PrivacyPolicy: React.FC = () => {
                             <h3 className="text-xl font-semibold text-gray-800 mb-3">
                                 {t('privacyPolicy.dataCollection.healthInfo.title')}
                             </h3>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataCollection.healthInfo.gender')}</li>
                                 <li>{t('privacyPolicy.dataCollection.healthInfo.age')}</li>
                                 <li>{t('privacyPolicy.dataCollection.healthInfo.weight')}</li>
@@ -66,7 +82,7 @@ const PrivacyPolicy: React.FC = () => {
                             <h3 className="text-xl font-semibold text-gray-800 mb-3">
                                 {t('privacyPolicy.dataCollection.nutritionData.title')}
                             </h3>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataCollection.nutritionData.foodPhotos')}</li>
                                 <li>{t('privacyPolicy.dataCollection.nutritionData.mealLogs')}</li>
                                 <li>{t('privacyPolicy.dataCollection.nutritionData.calorieData')}</li>
@@ -77,7 +93,7 @@ const PrivacyPolicy: React.FC = () => {
                             <h3 className="text-xl font-semibold text-gray-800 mb-3">
                                 {t('privacyPolicy.dataCollection.usageData.title')}
                             </h3>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataCollection.usageData.appUsage')}</li>
                                 <li>{t('privacyPolicy.dataCollection.usageData.features')}</li>
                                 <li>{t('privacyPolicy.dataCollection.usageData.deviceInfo')}</li>
@@ -92,7 +108,7 @@ const PrivacyPolicy: React.FC = () => {
                             <p className="mb-4">
                                 {t('privacyPolicy.dataUsage.content')}
                             </p>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataUsage.provideService')}</li>
                                 <li>{t('privacyPolicy.dataUsage.personalizeExperience')}</li>
                                 <li>{t('privacyPolicy.dataUsage.improveAccuracy')}</li>
@@ -109,7 +125,7 @@ const PrivacyPolicy: React.FC = () => {
                             <p className="mb-4">
                                 {t('privacyPolicy.dataSharing.content')}
                             </p>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataSharing.serviceProviders')}</li>
                                 <li>{t('privacyPolicy.dataSharing.legalRequirements')}</li>
                                 <li>{t('privacyPolicy.dataSharing.userConsent')}</li>
@@ -124,7 +140,7 @@ const PrivacyPolicy: React.FC = () => {
                             <p className="mb-4">
                                 {t('privacyPolicy.dataSecurity.content')}
                             </p>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.dataSecurity.encryption')}</li>
                                 <li>{t('privacyPolicy.dataSecurity.accessControl')}</li>
                                 <li>{t('privacyPolicy.dataSecurity.secureStorage')}</li>
@@ -139,7 +155,7 @@ const PrivacyPolicy: React.FC = () => {
                             <p className="mb-4">
                                 {t('privacyPolicy.userRights.content')}
                             </p>
-                            <ul className="list-disc pl-6 mb-4">
+                            <ul className={`list-disc mb-4 ${isFarsi ? 'pr-6' : 'pl-6'}`}>
                                 <li>{t('privacyPolicy.userRights.access')}</li>
                                 <li>{t('privacyPolicy.userRights.correction')}</li>
                                 <li>{t('privacyPolicy.userRights.deletion')}</li>
@@ -183,9 +199,7 @@ const PrivacyPolicy: React.FC = () => {
                                 {t('privacyPolicy.contact.content')}
                             </p>
                             <div className="bg-gray-100 p-4 rounded-lg">
-                                <p><strong>{t('privacyPolicy.contact.email')}:</strong> erfaneillat@gmail.com</p>
-                                <p><strong>{t('privacyPolicy.contact.phone')}:</strong> ۰۹۱۴۹۶۶۸۰۰۶</p>
-                                <p><strong>{t('privacyPolicy.contact.address')}:</strong> آذربایجان غربی، ارومیه، محله آزادی، کوچه شهیدرضا اسماعیل پور، پلاک ۸</p>
+                                <p><strong>{t('privacyPolicy.contact.email')}:</strong> {t('contact.info.email')}</p>
                             </div>
                         </section>
                     </div>

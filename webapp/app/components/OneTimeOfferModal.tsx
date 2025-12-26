@@ -512,14 +512,14 @@ const OfferStep = ({ onClose, onPurchase, t, expiresAt }: { onClose: () => void,
                         className="flex items-center justify-center gap-6"
                     >
                         <a
-                            href="/terms"
+                            href="https://loqmeapp.ir/terms-of-use/en"
                             target="_blank"
                             className="text-gray-400 text-sm hover:text-gray-600 transition-colors"
                         >
                             {t('oneTimeOffer.termsOfUse')}
                         </a>
                         <a
-                            href="/privacy"
+                            href="https://loqmeapp.ir/privacy-policy/en"
                             target="_blank"
                             className="text-gray-400 text-sm hover:text-gray-600 transition-colors"
                         >

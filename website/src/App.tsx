@@ -10,6 +10,8 @@ import Footer from './components/Footer';
 import { Contact } from './pages';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
+import TermsOfUse from './pages/TermsOfUse';
+
 function App() {
   return (
     <Router>
@@ -28,6 +30,9 @@ function App() {
         } />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/privacy-policy/en" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-use" element={<TermsOfUse />} />
+        <Route path="/terms-of-use/en" element={<TermsOfUse />} />
       </Routes>
     </Router>
   );

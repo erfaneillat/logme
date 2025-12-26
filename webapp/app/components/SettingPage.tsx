@@ -564,11 +564,11 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
 
                     <div className="space-y-1">
                         {[
-                            { id: 'privacy', label: t('settings.support.privacy'), icon: '🛡️', color: 'bg-purple-50 text-purple-500', link: 'https://loqmeapp.ir/privacy-policy' },
+                            { id: 'privacy', label: t('settings.support.privacy'), icon: '🛡️', color: 'bg-purple-50 text-purple-500', link: isGlobal ? 'https://loqmeapp.ir/privacy-policy/en' : 'https://loqmeapp.ir/privacy-policy' },
                             { id: 'tickets', label: t('settings.support.tickets'), icon: '🎧', color: 'bg-blue-50 text-blue-500', isAction: true },
                             { id: 'contact', label: t('settings.support.contact'), icon: '✉️', color: 'bg-green-50 text-green-500', link: 'https://loqmeapp.ir/contact' },
                             { id: 'delete', label: t('settings.support.deleteAccount'), icon: '⚠️', color: 'bg-red-50 text-red-500', isAction: true },
-                        ].map((item, i) => (
+                        ].filter(item => !isGlobal || item.id !== 'contact').map((item, i) => (
                             <button
                                 key={i}
                                 onClick={() => {
