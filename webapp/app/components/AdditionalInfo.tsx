@@ -240,10 +240,12 @@ const ScrollWheel = ({ items, value, onChange }: { items: (string | number)[]; v
 // 2. Birth Date (iOS Style Picker)
 // 2. Birth Date (iOS Style Picker)
 const BirthDateSelection = ({ value, onChange }: any) => {
-    const { t, isRTL } = useTranslation();
+    const { t, isRTL, isGlobal } = useTranslation();
 
-    // Determine calendar system based on direction/locale
-    const isJalali = isRTL;
+    // Determine calendar system based on market mode (not RTL direction)
+    // Iran mode (!isGlobal) = Jalali calendar
+    // Global mode (isGlobal) = Gregorian calendar
+    const isJalali = !isGlobal;
 
     // Generate years range
     // Jalali: 1313 to 1403 (approx 90 years)
@@ -259,7 +261,7 @@ const BirthDateSelection = ({ value, onChange }: any) => {
     // Jalali default: 1380/2/26
     // Gregorian default: 2000/1/1
     const defaultVal = isJalali
-        ? { day: 26, month: 2, year: 1380 }
+        ? { day: 1, month: 1, year: 1378 }
         : { day: 1, month: 1, year: 2000 };
 
     const val = value || defaultVal;
@@ -272,9 +274,15 @@ const BirthDateSelection = ({ value, onChange }: any) => {
     const currentYearVal = val.year;
     const isYearJalali = currentYearVal < 1500;
 
-    const effectiveVal = (isJalali && !isYearJalali) || (!isJalali && isYearJalali)
-        ? defaultVal
-        : val;
+    const needsReset = (isJalali && !isYearJalali) || (!isJalali && isYearJalali);
+    const effectiveVal = needsReset ? defaultVal : val;
+
+    // Sync effectiveVal to parent if it differs from value (e.g., due to calendar system mismatch)
+    useEffect(() => {
+        if (needsReset || !value) {
+            onChange(effectiveVal);
+        }
+    }, [isGlobal]);
 
     const currentMonthName = months[effectiveVal.month - 1] || months[0];
 
@@ -1458,27 +1466,33 @@ const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
     const isGain = goal === 'gain_weight';
     const isLose = goal === 'lose_weight';
 
-    // Config based on goal
+    // Config based on goal - using smooth cubic bezier curves
     const config = isGain ? {
         color: '#3B82F6', // Blue
+        colorLight: '#93C5FD',
         bgColor: 'bg-blue-50',
         textColor: 'text-blue-700',
-        chartPath: "M10 90 Q 150 70, 290 30",
-        points: [{ x: 10, y: 90 }, { x: 150, y: 60 }, { x: 290, y: 30 }],
+        // Smooth upward cubic bezier curve
+        chartPath: "M20 80 C 80 75, 120 50, 150 45 S 220 25, 280 20",
+        points: [{ x: 20, y: 80 }, { x: 150, y: 45 }, { x: 280, y: 20 }],
         message: t('additionalInfo.transition.gainMsg')
     } : isLose ? {
         color: '#22C55E', // Green
+        colorLight: '#86EFAC',
         bgColor: 'bg-green-50',
         textColor: 'text-green-700',
-        chartPath: "M10 10 Q 150 50, 290 90",
-        points: [{ x: 10, y: 10 }, { x: 150, y: 50 }, { x: 290, y: 90 }],
+        // Smooth downward cubic bezier curve (weight loss - line goes down)
+        chartPath: "M20 20 C 80 25, 120 45, 150 55 S 220 75, 280 80",
+        points: [{ x: 20, y: 20 }, { x: 150, y: 55 }, { x: 280, y: 80 }],
         message: t('additionalInfo.transition.loseMsg')
     } : {
         color: '#F59E0B', // Amber
+        colorLight: '#FCD34D',
         bgColor: 'bg-amber-50',
         textColor: 'text-amber-700',
-        chartPath: "M10 50 L 290 50",
-        points: [{ x: 10, y: 50 }, { x: 150, y: 50 }, { x: 290, y: 50 }],
+        // Gentle wave for maintain
+        chartPath: "M20 50 C 100 45, 200 55, 280 50",
+        points: [{ x: 20, y: 50 }, { x: 150, y: 52 }, { x: 280, y: 50 }],
         message: t('additionalInfo.transition.maintainMsg')
     };
 
@@ -1494,62 +1508,157 @@ const GoalTransitionChart = ({ goal }: { goal: WeightGoal }) => {
             {/* Chart Card */}
             <div className="w-full bg-white rounded-[32px] p-6 shadow-xl shadow-gray-200/50 border border-gray-100">
                 <div className="flex justify-between items-center mb-6">
-                    <div className={`w-1 h-6 rounded-full ${isGain ? 'bg-blue-500' : isLose ? 'bg-green-500' : 'bg-amber-500'}`}></div>
+                    <motion.div
+                        className={`w-1.5 h-7 rounded-full ${isGain ? 'bg-blue-500' : isLose ? 'bg-green-500' : 'bg-amber-500'}`}
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ duration: 0.4 }}
+                    />
                     <h2 className="text-xl font-bold text-gray-800 flex-1 px-3 text-right">{t('additionalInfo.transition.chartTitle')}</h2>
                 </div>
 
                 {/* Chart Area */}
-                <div className="relative w-full h-40 bg-gray-50 rounded-2xl mb-6 overflow-hidden border border-gray-100">
-                    {/* Grid Lines */}
-                    <div className="absolute inset-0 flex flex-col justify-between py-6 px-0">
-                        <div className="w-full h-px bg-gray-100"></div>
-                        <div className="w-full h-px bg-gray-100"></div>
-                        <div className="w-full h-px bg-gray-100"></div>
+                <div className="relative w-full h-44 bg-gradient-to-b from-gray-50 to-white rounded-3xl mb-6 overflow-hidden border border-gray-100">
+                    {/* Subtle Grid Lines */}
+                    <div className="absolute inset-0 flex flex-col justify-between py-8 px-0">
+                        {[0, 1, 2, 3].map((i) => (
+                            <div key={i} className="w-full h-px bg-gray-100/80" />
+                        ))}
                     </div>
 
                     {/* SVG Chart */}
-                    <svg viewBox="0 0 300 100" className="absolute inset-0 w-full h-full p-4" preserveAspectRatio="none">
+                    <svg viewBox="0 0 300 100" className="absolute inset-0 w-full h-full p-5" preserveAspectRatio="none">
+                        {/* Glow filter for line */}
+                        <defs>
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                            <linearGradient id={`lineGradient-${goal}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor={config.color} stopOpacity="0.6" />
+                                <stop offset="50%" stopColor={config.color} stopOpacity="1" />
+                                <stop offset="100%" stopColor={config.color} stopOpacity="0.8" />
+                            </linearGradient>
+                        </defs>
+
+                        {/* Shadow line underneath */}
                         <motion.path
                             d={config.chartPath}
                             fill="none"
-                            stroke={config.color}
-                            strokeWidth="4"
+                            stroke={config.colorLight}
+                            strokeWidth="8"
                             strokeLinecap="round"
+                            strokeLinejoin="round"
+                            opacity="0.3"
                             initial={{ pathLength: 0 }}
                             animate={{ pathLength: 1 }}
-                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                            transition={{ duration: 1.8, ease: "easeOut" }}
                         />
-                        {/* Points */}
+
+                        {/* Main line with gradient */}
+                        <motion.path
+                            d={config.chartPath}
+                            fill="none"
+                            stroke={`url(#lineGradient-${goal})`}
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            filter="url(#glow)"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            transition={{ duration: 1.8, ease: "easeOut" }}
+                        />
+
+                        {/* Data Points with enhanced styling */}
                         {config.points.map((p, i) => (
-                            <motion.circle
-                                key={i}
-                                cx={p.x}
-                                cy={p.y}
-                                r="5"
-                                fill="white"
-                                stroke={config.color}
-                                strokeWidth="3"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 1.5 + (i * 0.3) }}
-                            />
+                            <g key={i}>
+                                {/* Outer pulsing ring */}
+                                <motion.circle
+                                    cx={p.x}
+                                    cy={p.y}
+                                    r="12"
+                                    fill={config.color}
+                                    opacity="0.15"
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{
+                                        scale: [1, 1.3, 1],
+                                        opacity: [0.15, 0.05, 0.15]
+                                    }}
+                                    transition={{
+                                        delay: 1.8 + (i * 0.25),
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                                {/* Middle ring */}
+                                <motion.circle
+                                    cx={p.x}
+                                    cy={p.y}
+                                    r="9"
+                                    fill="white"
+                                    stroke={config.color}
+                                    strokeWidth="2.5"
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{
+                                        delay: 1.6 + (i * 0.25),
+                                        duration: 0.4,
+                                        ease: [0.34, 1.56, 0.64, 1] // spring-like bounce
+                                    }}
+                                />
+                                {/* Inner filled circle */}
+                                <motion.circle
+                                    cx={p.x}
+                                    cy={p.y}
+                                    r="5"
+                                    fill={config.color}
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{
+                                        delay: 1.7 + (i * 0.25),
+                                        duration: 0.3,
+                                        ease: [0.34, 1.56, 0.64, 1]
+                                    }}
+                                />
+                            </g>
                         ))}
                     </svg>
                 </div>
 
-                {/* X-Axis Labels */}
-                <div className="flex justify-between text-xs text-gray-400 font-bold px-2 mb-6">
-                    <span>{t('additionalInfo.transition.days.3')}</span>
-                    <span>{t('additionalInfo.transition.days.7')}</span>
-                    <span>{t('additionalInfo.transition.days.30')}</span>
+                {/* X-Axis Labels with staggered animation */}
+                <div className="flex justify-between text-xs text-gray-400 font-bold px-4 mb-6">
+                    {[
+                        t('additionalInfo.transition.days.3'),
+                        t('additionalInfo.transition.days.7'),
+                        t('additionalInfo.transition.days.30')
+                    ].map((label, i) => (
+                        <motion.span
+                            key={i}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 2 + (i * 0.15), duration: 0.4 }}
+                        >
+                            {label}
+                        </motion.span>
+                    ))}
                 </div>
 
-                {/* Info Box */}
-                <div className={`w-full ${config.bgColor} rounded-2xl p-4 text-right`}>
-                    <p className={`text-sm font-bold ${config.textColor} leading-relaxed`}>
+                {/* Info Box with fade-in */}
+                <motion.div
+                    className={`w-full ${config.bgColor} rounded-2xl p-4 border border-opacity-20`}
+                    style={{ borderColor: config.color }}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 2.2, duration: 0.5 }}
+                >
+                    <p className={`text-sm font-bold ${config.textColor} leading-relaxed ltr:text-left rtl:text-right`}>
                         {config.message}
                     </p>
-                </div>
+                </motion.div>
             </div>
         </div>
     );
@@ -1614,27 +1723,48 @@ const SimpleStep = ({ title, subtitle, icon, value, onChange, options }: any) =>
     </div>
 );
 
-
 export default function AdditionalInfo({ onFinish }: { onFinish: () => void }) {
-    const { t, isRTL } = useTranslation();
+    const { t, isRTL, isGlobal } = useTranslation();
     const [step, setStep] = useState(0);
     const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
+
+    // Determine calendar system based on market mode
+    // Iran mode (!isGlobal) = Jalali calendar
+    // Global mode (isGlobal) = Gregorian calendar
+    const isJalali = !isGlobal;
+
+    // Default birth date based on market mode - approx 25 years old
+    const getDefaultBirthDate = () => {
+        if (isJalali) {
+            // Jalali calendar - approx 25 years old (current year ~1403)
+            return { day: 1, month: 1, year: 1378 };
+        } else {
+            // Gregorian calendar - approx 25 years old (current year ~2025)
+            return { day: 1, month: 1, year: 2000 };
+        }
+    };
+
     const [formData, setFormData] = useState<AdditionalInfoData>({
-        dietType: 'standard', // Default
-        val: { day: 26, month: 2, year: 1380 }, // birthDate Default
-        weight: 70, // Default
-        height: 170, // Default
+        dietType: 'standard',
+        birthDate: getDefaultBirthDate(),
+        weight: 70,
+        height: 170,
     } as any);
 
-    // Fix: properly structure the initial state
+    // Update birthDate if market mode changes and birthDate year doesn't match the calendar system
     useEffect(() => {
-        setFormData(prev => ({
-            ...prev,
-            birthDate: prev.birthDate || { day: 26, month: 2, year: 1380 },
-            weight: prev.weight || 70,
-            height: prev.height || 170,
-        }));
-    }, []);
+        const currentBirthDate = formData.birthDate;
+        if (currentBirthDate) {
+            const isJalaliYear = currentBirthDate.year < 1500;
+            // If Iran mode but year is Gregorian, or Global mode but year is Jalali
+            if ((isJalali && !isJalaliYear) || (!isJalali && isJalaliYear)) {
+                setFormData(prev => ({
+                    ...prev,
+                    birthDate: getDefaultBirthDate(),
+                }));
+            }
+        }
+    }, [isGlobal]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
