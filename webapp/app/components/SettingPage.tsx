@@ -540,7 +540,6 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                                         className="appearance-none bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm px-4 py-2.5 pe-10 rounded-xl cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                     >
                                         <option value="en">{t('settings.preferences.english')}</option>
-                                        <option value="fa">{t('settings.preferences.persian')}</option>
                                     </select>
                                     <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
                                         <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
