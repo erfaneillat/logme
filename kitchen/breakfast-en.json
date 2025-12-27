@@ -1,0 +1,3162 @@
+[
+    {
+        "id": 1,
+        "name": "Apple and Cinnamon Oatmeal",
+        "category": "Oatmeal & Cereals",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 6,
+            "carbs": 45,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "40g (4 tablespoons)"
+            },
+            {
+                "name": "Low-fat Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Apple",
+                "amount": "1 small"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "1/2 teaspoon"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 jam spoon (teaspoon)"
+            }
+        ],
+        "instructions": "Cook oats and milk until soft, then add chopped apple and cinnamon.",
+        "image_prompt": "A close-up of a ceramic bowl with oatmeal, topped with diced red apples and cinnamon powder, soft morning light, 8k."
+    },
+    {
+        "id": 2,
+        "name": "Egg White and Spinach Omelet",
+        "category": "Eggs & Omelets",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 20,
+            "carbs": 3,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Egg Whites",
+                "amount": "3"
+            },
+            {
+                "name": "Fresh Spinach",
+                "amount": "1 large handful"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "3 sliced"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Sauté spinach and mushrooms, then add egg whites and cook until set.",
+        "image_prompt": "Fluffy white egg omelet with spinach and mushrooms on a white plate, bright kitchen lighting."
+    },
+    {
+        "id": 3,
+        "name": "Avocado and Egg Toast",
+        "category": "Bread & Toast",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 25,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Barley Toast Bread",
+                "amount": "1 slice"
+            },
+            {
+                "name": "Avocado",
+                "amount": "1/2"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Aleppo Pepper/Chili Flakes",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Spread mashed avocado on toast and top with a boiled or poached egg.",
+        "image_prompt": "Toast topped with mashed avocado and a poached egg with runny yolk, sprinkled with red pepper flakes."
+    },
+    {
+        "id": 4,
+        "name": "Chia Seed Pudding",
+        "category": "Dessert & Pudding",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Chia Seeds",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Almond Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Strawberries",
+                "amount": "4"
+            },
+            {
+                "name": "Vanilla",
+                "amount": "A pinch"
+            }
+        ],
+        "instructions": "Mix ingredients and refrigerate overnight to thicken.",
+        "image_prompt": "Glass jar of chia pudding layered with fresh strawberries on a marble counter."
+    },
+    {
+        "id": 5,
+        "name": "Banana Protein Pancakes",
+        "category": "Pancakes & Waffles",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 25,
+            "carbs": 30,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Ripe Banana",
+                "amount": "1"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Protein Powder (Whey)",
+                "amount": "1 scoop"
+            },
+            {
+                "name": "Baking Powder",
+                "amount": "1/2 teaspoon"
+            }
+        ],
+        "instructions": "Blend ingredients until smooth and fry in a non-stick pan.",
+        "image_prompt": "Stack of golden brown pancakes with banana slices and maple syrup drizzle, white background."
+    },
+    {
+        "id": 6,
+        "name": "Greek Yogurt and Granola",
+        "category": "Quick & Instant",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 18,
+            "carbs": 22,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Low-fat Greek Yogurt",
+                "amount": "150g"
+            },
+            {
+                "name": "Diet Granola",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Blueberries or Berries",
+                "amount": "1 handful"
+            }
+        ],
+        "instructions": "Pour yogurt into a bowl and garnish with granola and fruit.",
+        "image_prompt": "Bowl of thick Greek yogurt topped with granola and blueberries, clean composition."
+    },
+    {
+        "id": 7,
+        "name": "Peanut Butter Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 10,
+            "carbs": 35,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Whole Wheat Toast",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Peanut Butter",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Banana",
+                "amount": "1 small"
+            }
+        ],
+        "instructions": "Spread butter on toast and arrange banana slices on top.",
+        "image_prompt": "Whole wheat toast with peanut butter and banana slices, wooden table background."
+    },
+    {
+        "id": 8,
+        "name": "Mediterranean Frittata",
+        "category": "Eggs & Omelets",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 16,
+            "carbs": 6,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Feta Cheese",
+                "amount": "30g"
+            },
+            {
+                "name": "Cherry Tomatoes",
+                "amount": "5"
+            },
+            {
+                "name": "Black Olives",
+                "amount": "4"
+            }
+        ],
+        "instructions": "Mix eggs with vegetables and cook in a pan until set.",
+        "image_prompt": "Slice of vegetable frittata with tomatoes and olives, melted feta cheese on top."
+    },
+    {
+        "id": 9,
+        "name": "Green Detox Smoothie",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 4,
+            "carbs": 30,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Spinach",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Green Apple",
+                "amount": "1"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1/2"
+            },
+            {
+                "name": "Fresh Lemon Juice",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Blend all ingredients with a little water.",
+        "image_prompt": "Tall glass of green smoothie with cucumber slice, condensation on glass, fresh vibe."
+    },
+    {
+        "id": 10,
+        "name": "Cottage Cheese Bowl",
+        "category": "High Protein",
+        "prep_time": "3 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 22,
+            "carbs": 12,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Cottage Cheese",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Peach or Pineapple",
+                "amount": "1/2 cup chopped"
+            }
+        ],
+        "instructions": "Pour cheese into a bowl and add fruit pieces.",
+        "image_prompt": "Bowl of cottage cheese with fresh peach chunks, macro shot, bright white aesthetic."
+    },
+    {
+        "id": 11,
+        "name": "Ricotta and Honey Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 10,
+            "carbs": 28,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Ricotta Cheese",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 teaspoon"
+            },
+            {
+                "name": "Almond Flakes",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Spread cheese on toast and drizzle with honey and almonds.",
+        "image_prompt": "Toast spread with white ricotta cheese, drizzled with honey and almond flakes."
+    },
+    {
+        "id": 12,
+        "name": "Shakshuka (Tomato Omelet)",
+        "category": "International",
+        "prep_time": "25 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 14,
+            "carbs": 15,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Tomatoes",
+                "amount": "3"
+            },
+            {
+                "name": "Bell Pepper",
+                "amount": "1/2"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 small"
+            }
+        ],
+        "instructions": "Make a thick tomato sauce and crack the eggs into it to cook.",
+        "image_prompt": "Red tomato sauce in a cast iron skillet with eggs poached inside, garnished with parsley."
+    },
+    {
+        "id": 13,
+        "name": "Quinoa Porridge",
+        "category": "Oatmeal & Cereals",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Raw Quinoa",
+                "amount": "40g"
+            },
+            {
+                "name": "Almond Milk",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "1/2 teaspoon"
+            },
+            {
+                "name": "Maple Syrup",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Cook quinoa with milk until thick and soft.",
+        "image_prompt": "Bowl of cooked quinoa porridge with cinnamon stick and milk splash."
+    },
+    {
+        "id": 14,
+        "name": "Boiled Eggs and Hummus",
+        "category": "Eggs & Omelets",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 14,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Hummus",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Whole Wheat Bread",
+                "amount": "1 palm size"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1"
+            }
+        ],
+        "instructions": "Boil the eggs and serve alongside hummus and bread.",
+        "image_prompt": "Plate with hummus swirl, halved hard-boiled eggs, and cucumber sticks."
+    },
+    {
+        "id": 15,
+        "name": "Egg White and Turkey Wrap",
+        "category": "Quick & Instant",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 30,
+            "carbs": 25,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Tortilla Bread",
+                "amount": "1"
+            },
+            {
+                "name": "Egg Whites",
+                "amount": "3 (cooked)"
+            },
+            {
+                "name": "Turkey Ham",
+                "amount": "2 slices"
+            }
+        ],
+        "instructions": "Wrap cooked egg whites and turkey inside the bread.",
+        "image_prompt": "Breakfast wrap cut in half showing layers of egg white and turkey breast."
+    },
+    {
+        "id": 16,
+        "name": "Fruit and Flaxseed Salad",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 3,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Apple",
+                "amount": "1/2"
+            },
+            {
+                "name": "Banana",
+                "amount": "1/2"
+            },
+            {
+                "name": "Kiwi",
+                "amount": "1"
+            },
+            {
+                "name": "Ground Flaxseed",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Chop fruits and sprinkle flaxseeds over them.",
+        "image_prompt": "Colorful bowl of mixed fruit salad sprinkled with ground flaxseeds."
+    },
+    {
+        "id": 17,
+        "name": "Pumpkin Pancakes",
+        "category": "Pancakes & Waffles",
+        "prep_time": "25 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Pumpkin Puree",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Barley Flour",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Prepare pancake batter and fry in a pan.",
+        "image_prompt": "Orange pumpkin pancakes stacked with pecans and syrup."
+    },
+    {
+        "id": 18,
+        "name": "Egg Muffins",
+        "category": "High Protein",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 12,
+            "carbs": 2,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Chopped Spinach",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Bell Pepper",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Mozzarella Cheese",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Mix ingredients, pour into a muffin tin, and bake in the oven.",
+        "image_prompt": "Egg muffin cups with visible vegetables baked in a muffin tin."
+    },
+    {
+        "id": 19,
+        "name": "Chocolate Protein Smoothie",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 30,
+            "carbs": 20,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Chocolate Whey Powder",
+                "amount": "1 scoop"
+            },
+            {
+                "name": "Frozen Banana",
+                "amount": "1/2"
+            },
+            {
+                "name": "Low-fat Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Peanut Butter",
+                "amount": "1/2 tablespoon"
+            }
+        ],
+        "instructions": "Blend all ingredients in a shaker or blender.",
+        "image_prompt": "Chocolate smoothie in a shaker bottle with banana slices nearby."
+    },
+    {
+        "id": 20,
+        "name": "Diet Lentil Soup (Adasi)",
+        "category": "Traditional Iranian",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 18,
+            "carbs": 40,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Green Lentils",
+                "amount": "1/2 cup (raw)"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 small"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Angelica Powder & Spices",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Cook lentils with onion and spices until thick and fully cooked.",
+        "image_prompt": "Bowl of Persian lentil soup (Adasi) garnished with angelica powder and lemon."
+    },
+    {
+        "id": 21,
+        "name": "Bean and Mushroom Stew",
+        "category": "Traditional Iranian",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 270,
+            "protein": 15,
+            "carbs": 45,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Pinto Beans",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "100g"
+            },
+            {
+                "name": "Low-oil Sautéed Onion",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Sauté mushrooms and add to the cooked pinto beans.",
+        "image_prompt": "Bowl of pinto bean stew with sliced mushrooms, steaming hot."
+    },
+    {
+        "id": 22,
+        "name": "Tuna and Cucumber Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 25,
+            "carbs": 20,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Tuna (in water/oil-free)",
+                "amount": "1/2 can"
+            },
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1"
+            },
+            {
+                "name": "Mustard Sauce",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Spread tuna on toast and arrange cucumber slices on top.",
+        "image_prompt": "Toast topped with tuna chunks and fresh cucumber slices."
+    },
+    {
+        "id": 23,
+        "name": "Smoothie Bowl",
+        "category": "Drinks & Smoothies",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 8,
+            "carbs": 50,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Frozen Banana",
+                "amount": "2"
+            },
+            {
+                "name": "Strawberries",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Low-fat Milk",
+                "amount": "1/4 cup"
+            },
+            {
+                "name": "Nuts (Walnut/Almond)",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Blend frozen fruit with a little milk until thick and garnish with nuts.",
+        "image_prompt": "Thick smoothie bowl decorated neatly with rows of seeds, nuts, and fruit."
+    },
+    {
+        "id": 24,
+        "name": "Egg Sandwich",
+        "category": "Bread & Toast",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 18,
+            "carbs": 28,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Boiled Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Whole Wheat Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Lettuce",
+                "amount": "2 leaves"
+            },
+            {
+                "name": "Tomato",
+                "amount": "1"
+            }
+        ],
+        "instructions": "Chop eggs and place inside bread with vegetables.",
+        "image_prompt": "Egg salad sandwich with lettuce on whole grain bread, cross-section view."
+    },
+    {
+        "id": 25,
+        "name": "Asparagus Omelet",
+        "category": "Low Carb (Keto)",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 15,
+            "carbs": 5,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Asparagus",
+                "amount": "5 spears"
+            },
+            {
+                "name": "Parmesan Cheese",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Butter",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Sauté asparagus and pour beaten eggs over it.",
+        "image_prompt": "Omelet filled with green asparagus spears and sprinkled with parmesan."
+    },
+    {
+        "id": 26,
+        "name": "Diet Almond Waffle",
+        "category": "Pancakes & Waffles",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 10,
+            "carbs": 12,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Almond Flour",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Milk",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Vanilla",
+                "amount": "A pinch"
+            }
+        ],
+        "instructions": "Mix ingredients and cook in a waffle maker.",
+        "image_prompt": "Single almond flour waffle topped with berries, keto friendly."
+    },
+    {
+        "id": 27,
+        "name": "Chocolate Chia Pudding",
+        "category": "Dessert & Pudding",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 9,
+            "carbs": 22,
+            "fat": 13
+        },
+        "ingredients": [
+            {
+                "name": "Chia Seeds",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Cocoa Powder",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Mix all ingredients and refrigerate for a few hours.",
+        "image_prompt": "Chocolate chia seed pudding in a glass with mint garnish."
+    },
+    {
+        "id": 28,
+        "name": "Tofu Scramble (Vegan)",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 190,
+            "protein": 15,
+            "carbs": 8,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Firm Tofu",
+                "amount": "150g"
+            },
+            {
+                "name": "Turmeric",
+                "amount": "1/2 teaspoon"
+            },
+            {
+                "name": "Green Onion",
+                "amount": "2 stalks"
+            },
+            {
+                "name": "Black Pepper",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Mash tofu and sauté in a pan with spices.",
+        "image_prompt": "Scrambled tofu resembling eggs with green onions and turmeric yellow color."
+    },
+    {
+        "id": 29,
+        "name": "Pear and Almond Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 8,
+            "carbs": 35,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Almond Butter",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Pear",
+                "amount": "1/2 (sliced)"
+            }
+        ],
+        "instructions": "Spread almond butter on toast and arrange pear slices on top.",
+        "image_prompt": "Toast with almond butter and thin pear slices, cozy autumn vibe."
+    },
+    {
+        "id": 30,
+        "name": "Brown Rice and Egg",
+        "category": "International",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 14,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Brown Rice",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Soy Sauce",
+                "amount": "1 teaspoon"
+            },
+            {
+                "name": "Sesame Seeds",
+                "amount": "1/2 teaspoon"
+            }
+        ],
+        "instructions": "Place a fried egg on top of warm rice.",
+        "image_prompt": "Bowl of brown rice topped with a fried egg and sesame seeds."
+    },
+    {
+        "id": 31,
+        "name": "Bread, Cheese, and Cucumber",
+        "category": "Traditional Iranian",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 30,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Sangak or Barley Bread",
+                "amount": "2 palm sizes"
+            },
+            {
+                "name": "Low-fat Cheese",
+                "amount": "30g"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "2"
+            },
+            {
+                "name": "Walnut",
+                "amount": "2"
+            }
+        ],
+        "instructions": "Prepare and serve as traditional bite-sized wraps.",
+        "image_prompt": "Traditional Persian breakfast platter with flatbread, feta cheese, walnuts, and herbs."
+    },
+    {
+        "id": 32,
+        "name": "Homemade Granola Bar",
+        "category": "Quick & Instant",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 6,
+            "carbs": 30,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Chopped Almonds",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Raisins",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Mix ingredients, press into a mold, bake in oven, then slice.",
+        "image_prompt": "Homemade rectangular granola bar with visible oats and nuts."
+    },
+    {
+        "id": 33,
+        "name": "Baked Apple with Walnuts",
+        "category": "Dessert & Pudding",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 4,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Medium Apple",
+                "amount": "1"
+            },
+            {
+                "name": "Chopped Walnuts",
+                "amount": "2"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "1/4 teaspoon"
+            }
+        ],
+        "instructions": "Hollow out the apple, fill with walnuts, and bake.",
+        "image_prompt": "Baked apple with wrinkled skin stuffed with walnuts and cinnamon."
+    },
+    {
+        "id": 34,
+        "name": "Strawberry Banana Smoothie",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 190,
+            "protein": 5,
+            "carbs": 40,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Strawberries",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Banana",
+                "amount": "1"
+            },
+            {
+                "name": "Low-fat Yogurt",
+                "amount": "1/2 cup"
+            }
+        ],
+        "instructions": "Blend all ingredients in a blender.",
+        "image_prompt": "Pink strawberry banana smoothie in a glass jar."
+    },
+    {
+        "id": 35,
+        "name": "Cold Chicken Wrap",
+        "category": "Quick & Instant",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 35,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Whole Wheat Lavash Bread",
+                "amount": "1"
+            },
+            {
+                "name": "Cooked Chicken Breast",
+                "amount": "100g (shredded)"
+            },
+            {
+                "name": "Lettuce",
+                "amount": "2 leaves"
+            },
+            {
+                "name": "Diet Mayonnaise",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Wrap shredded chicken and vegetables inside the bread.",
+        "image_prompt": "Chicken wrap with fresh greens, cut open on a wooden board."
+    },
+    {
+        "id": 36,
+        "name": "Savory Oatmeal",
+        "category": "Oatmeal & Cereals",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 12,
+            "carbs": 35,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "40g"
+            },
+            {
+                "name": "Chicken Broth",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Green Onion",
+                "amount": "1 stalk"
+            }
+        ],
+        "instructions": "Cook oats in chicken broth and top with a soft-boiled egg.",
+        "image_prompt": "Savory oatmeal bowl topped with a soft boiled egg and green onions."
+    },
+    {
+        "id": 37,
+        "name": "Spinach Pancakes",
+        "category": "Pancakes & Waffles",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 10,
+            "carbs": 35,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Fresh Spinach",
+                "amount": "1 handful"
+            },
+            {
+                "name": "Banana",
+                "amount": "1"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Barley Flour",
+                "amount": "2 tablespoons"
+            }
+        ],
+        "instructions": "Blend all ingredients until the batter is green, then fry.",
+        "image_prompt": "Bright green spinach pancakes stacked, healthy and vibrant."
+    },
+    {
+        "id": 38,
+        "name": "Fruity Frozen Yogurt",
+        "category": "Dessert & Pudding",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "Greek Yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Frozen Raspberries",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Mix in a food processor until ice cream texture is achieved, then serve.",
+        "image_prompt": "Scoops of berry frozen yogurt in a bowl, melting slightly."
+    },
+    {
+        "id": 39,
+        "name": "Grilled Chicken Breast",
+        "category": "High Protein",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 40,
+            "carbs": 0,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 teaspoon"
+            },
+            {
+                "name": "Salt and Pepper",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Season the chicken breast and grill it.",
+        "image_prompt": "Grilled chicken breast with grill marks served with a lemon wedge."
+    },
+    {
+        "id": 40,
+        "name": "Oat Crepe",
+        "category": "Pancakes & Waffles",
+        "prep_time": "15 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 8,
+            "carbs": 30,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Oat Flour",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Milk",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Egg",
+                "amount": "1 small"
+            }
+        ],
+        "instructions": "Make a thin batter and spread a thin layer in a pan.",
+        "image_prompt": "Thin folded crepe made of oat flour, served plain or with berries."
+    },
+    {
+        "id": 41,
+        "name": "Diet Olivier Salad",
+        "category": "Traditional Iranian",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 18,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Boiled Potato",
+                "amount": "1 medium"
+            },
+            {
+                "name": "Cooked Chicken Breast",
+                "amount": "50g"
+            },
+            {
+                "name": "Boiled Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Greek Yogurt",
+                "amount": "2 tablespoons"
+            }
+        ],
+        "instructions": "Mix diced cooked ingredients with yogurt and spices.",
+        "image_prompt": "Bowl of Olivier salad with creamy yogurt dressing instead of mayo."
+    },
+    {
+        "id": 42,
+        "name": "Egg in a Hole",
+        "category": "Bread & Toast",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 12,
+            "carbs": 20,
+            "fat": 11
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "1 thick slice"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Oil",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Make a hole in the center of the bread and cook the egg inside the hole.",
+        "image_prompt": "Toast with a hole in the center containing a fried egg."
+    },
+    {
+        "id": 43,
+        "name": "Steamed Pumpkin",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 2,
+            "carbs": 28,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Pumpkin",
+                "amount": "200g"
+            },
+            {
+                "name": "Grape Molasses or Honey",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Steam the pumpkin and serve with molasses.",
+        "image_prompt": "Steamed pumpkin cubes drizzled with syrup, soft texture."
+    },
+    {
+        "id": 44,
+        "name": "Diet Rice Pudding",
+        "category": "Traditional Iranian",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 8,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Broken Rice",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Low-fat Milk",
+                "amount": "1.5 glasses"
+            },
+            {
+                "name": "Stevia/Honey",
+                "amount": "As desired"
+            },
+            {
+                "name": "Rose Water",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Cook rice with milk until thick and mix with sweetener.",
+        "image_prompt": "Creamy rice pudding in a bowl with rose petals on top."
+    },
+    {
+        "id": 45,
+        "name": "Breakfast Bean Salad",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Black Beans",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Corn",
+                "amount": "1/4 cup"
+            },
+            {
+                "name": "Chopped Tomato",
+                "amount": "1"
+            },
+            {
+                "name": "Cilantro and Lemon Juice",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Mix all ingredients and season with lemon.",
+        "image_prompt": "Bowl of black bean and corn salad with fresh cilantro and lime."
+    },
+    {
+        "id": 46,
+        "name": "Smoked Salmon Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 20,
+            "carbs": 25,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Light Cream Cheese",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Smoked Salmon",
+                "amount": "50g"
+            },
+            {
+                "name": "Dill",
+                "amount": "For garnish"
+            }
+        ],
+        "instructions": "Spread cheese on toast and place salmon on top.",
+        "image_prompt": "Toast with cream cheese and smoked salmon slices, garnished with dill."
+    },
+    {
+        "id": 47,
+        "name": "Coffee Banana Smoothie",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 5,
+            "carbs": 30,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "Cold Brew Coffee",
+                "amount": "1/2 glass"
+            },
+            {
+                "name": "Banana",
+                "amount": "1"
+            },
+            {
+                "name": "Milk",
+                "amount": "1/2 glass"
+            },
+            {
+                "name": "Ice",
+                "amount": "3-4 cubes"
+            }
+        ],
+        "instructions": "Blend all ingredients in a blender.",
+        "image_prompt": "Coffee colored smoothie in a tall glass with coffee beans nearby."
+    },
+    {
+        "id": 48,
+        "name": "Oat and Banana Cookies",
+        "category": "Quick & Instant",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 18,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Mashed Banana",
+                "amount": "1"
+            },
+            {
+                "name": "Rolled Oats",
+                "amount": "1/2 cup"
+            }
+        ],
+        "instructions": "Mix banana and oats and bake in the oven as cookies.",
+        "image_prompt": "Rustic oatmeal cookies on a baking sheet, simple and textured."
+    },
+    {
+        "id": 49,
+        "name": "Tomato and Basil Omelet",
+        "category": "International",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 190,
+            "protein": 14,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Cherry Tomatoes",
+                "amount": "5"
+            },
+            {
+                "name": "Fresh Basil",
+                "amount": "A few leaves"
+            },
+            {
+                "name": "Low-fat Mozzarella Cheese",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Prepare omelet and fill with tomato and basil.",
+        "image_prompt": "Omelet folded with cherry tomatoes and fresh basil leaves sticking out."
+    },
+    {
+        "id": 50,
+        "name": "Breakfast Burrito Bowl",
+        "category": "International",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 16
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Pinto Beans",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Avocado",
+                "amount": "1/4"
+            },
+            {
+                "name": "Salsa",
+                "amount": "2 tablespoons"
+            }
+        ],
+        "instructions": "Cook all ingredients and arrange them neatly in a bowl.",
+        "image_prompt": "Burrito bowl ingredients (beans, eggs, salsa, avocado) arranged neatly without tortilla."
+    },
+    {
+        "id": 51,
+        "name": "Baked Zucchini Fritters (Kuku)",
+        "category": "Traditional Iranian",
+        "prep_time": "25 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 10,
+            "carbs": 8,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "Grated Zucchini",
+                "amount": "2 medium"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Dill and Garlic",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Mix ingredients and cook in oven or a low-oil pan.",
+        "image_prompt": "Golden zucchini fritters served with a side of yogurt dip."
+    },
+    {
+        "id": 52,
+        "name": "Protein Mug Cake",
+        "category": "Dessert & Pudding",
+        "prep_time": "3 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Protein Powder",
+                "amount": "1 scoop"
+            },
+            {
+                "name": "Baking Powder",
+                "amount": "1/4 teaspoon"
+            },
+            {
+                "name": "Milk",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Berries",
+                "amount": "For garnish"
+            }
+        ],
+        "instructions": "Mix everything in a mug and microwave for 1 minute.",
+        "image_prompt": "Mug cake cooked in a coffee mug topped with a few berries."
+    },
+    {
+        "id": 53,
+        "name": "Watermelon and Cheese",
+        "category": "Quick & Instant",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 6,
+            "carbs": 20,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Watermelon",
+                "amount": "2 triangular slices"
+            },
+            {
+                "name": "Feta Cheese",
+                "amount": "30g"
+            },
+            {
+                "name": "Mint",
+                "amount": "A few leaves"
+            }
+        ],
+        "instructions": "Cube the watermelon and serve with cheese and mint.",
+        "image_prompt": "Cube of watermelon topped with feta cheese crumble and a mint leaf."
+    },
+    {
+        "id": 54,
+        "name": "Mushroom Toast",
+        "category": "Bread & Toast",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Chopped Mushrooms",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Chopped Parsley",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Sauté mushrooms with garlic and pour over toast.",
+        "image_prompt": "Sautéed mushrooms piled high on a slice of toasted bread."
+    },
+    {
+        "id": 55,
+        "name": "Egg in Pepper Ring",
+        "category": "Eggs & Omelets",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 12,
+            "carbs": 5,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Bell Pepper",
+                "amount": "2 thick rings"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Oil",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Crack the egg into the pepper ring in a pan until cooked.",
+        "image_prompt": "Fried egg cooked perfectly inside a ring of red bell pepper."
+    },
+    {
+        "id": 56,
+        "name": "Simple Overnight Oats",
+        "category": "Oatmeal & Cereals",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Milk",
+                "amount": "3/4 cup"
+            },
+            {
+                "name": "Chia Seeds",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Mix and refrigerate overnight.",
+        "image_prompt": "Mason jar with overnight oats, creamy texture, simple background."
+    },
+    {
+        "id": 57,
+        "name": "Bulletproof Coffee (Keto)",
+        "category": "Low Carb (Keto)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 1,
+            "carbs": 0,
+            "fat": 28
+        },
+        "ingredients": [
+            {
+                "name": "Brewed Coffee",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Grass-fed Butter",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Coconut/MCT Oil",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Blend coffee and oils vigorously until frothy.",
+        "image_prompt": "Creamy frothy coffee in a glass mug, keto bulletproof style."
+    },
+    {
+        "id": 58,
+        "name": "Sweet Potato Toast",
+        "category": "Low Carb (Keto)",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Sweet Potato",
+                "amount": "2 lengthwise slices"
+            },
+            {
+                "name": "Avocado",
+                "amount": "1/4"
+            },
+            {
+                "name": "Pumpkin Seeds",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Cook sweet potato slices in toaster (instead of bread) and add toppings.",
+        "image_prompt": "Slices of sweet potato used as toast, topped with avocado and seeds."
+    },
+    {
+        "id": 59,
+        "name": "Labneh and Za'atar",
+        "category": "International",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Labneh Cheese",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Za'atar Spice",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Pita Bread",
+                "amount": "1/2"
+            }
+        ],
+        "instructions": "Spread labneh on a plate and drizzle with olive oil and za'atar.",
+        "image_prompt": "Plate of creamy labneh cheese with olive oil pool and za'atar spices."
+    },
+    {
+        "id": 60,
+        "name": "Protein French Toast",
+        "category": "Bread & Toast",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 22,
+            "carbs": 30,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Egg Whites",
+                "amount": "3"
+            },
+            {
+                "name": "Protein Powder",
+                "amount": "1/2 scoop"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Dip bread in egg white and protein mixture and fry in pan.",
+        "image_prompt": "French toast slices dusted with cinnamon, high protein version."
+    },
+    {
+        "id": 61,
+        "name": "Turkey Haleem (Porridge)",
+        "category": "Traditional Iranian",
+        "prep_time": "180 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 40,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Peeled Wheat",
+                "amount": "100g"
+            },
+            {
+                "name": "Turkey Meat",
+                "amount": "100g"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "For garnish"
+            },
+            {
+                "name": "Oil/Butter",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Cook wheat and meat separately, then mash together until stretchy.",
+        "image_prompt": "Bowl of traditional Persian Haleem garnished with cinnamon and oil patterns."
+    },
+    {
+        "id": 62,
+        "name": "Menemen (Turkish Omelet)",
+        "category": "International",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 14,
+            "carbs": 12,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Sweet Green Pepper",
+                "amount": "2"
+            },
+            {
+                "name": "Tomatoes",
+                "amount": "2"
+            },
+            {
+                "name": "Onion",
+                "amount": "1/2"
+            }
+        ],
+        "instructions": "Sauté vegetables and add beaten eggs, cooking until soft set.",
+        "image_prompt": "Turkish Menemen in a copper pan, scrambled eggs with peppers and tomatoes."
+    },
+    {
+        "id": 63,
+        "name": "Butter, Honey, and Walnut",
+        "category": "Traditional Iranian",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 4,
+            "carbs": 35,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Animal Butter",
+                "amount": "15g"
+            },
+            {
+                "name": "Natural Honey",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Walnut Kernels",
+                "amount": "3"
+            },
+            {
+                "name": "Sangak Bread",
+                "amount": "1 palm size"
+            }
+        ],
+        "instructions": "Spread butter and honey on warm bread and top with walnuts.",
+        "image_prompt": "Fresh flatbread with a pat of butter, honey drizzle, and walnut halves."
+    },
+    {
+        "id": 64,
+        "name": "Green Celery Smoothie",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Celery Stalks",
+                "amount": "3"
+            },
+            {
+                "name": "Green Apple",
+                "amount": "1"
+            },
+            {
+                "name": "Sour Lemon",
+                "amount": "1/2"
+            },
+            {
+                "name": "Ginger",
+                "amount": "1 small piece"
+            }
+        ],
+        "instructions": "Juice celery and apple and mix with lemon.",
+        "image_prompt": "Glass of bright green celery juice with a celery stick garnish."
+    },
+    {
+        "id": 65,
+        "name": "Avocado Boat (Keto)",
+        "category": "Low Carb (Keto)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 14,
+            "carbs": 8,
+            "fat": 28
+        },
+        "ingredients": [
+            {
+                "name": "Avocado",
+                "amount": "1 halved"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Chopped Bacon",
+                "amount": "1 slice"
+            }
+        ],
+        "instructions": "Remove avocado pit, pour egg inside, and bake in oven.",
+        "image_prompt": "Baked avocado half filled with an egg, topped with crispy bacon bits."
+    },
+    {
+        "id": 66,
+        "name": "Berry Yogurt Parfait",
+        "category": "Dessert & Pudding",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 12,
+            "carbs": 30,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Low-fat Yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Raspberry/Berry Puree",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Rolled Oats (Toasted)",
+                "amount": "2 tablespoons"
+            }
+        ],
+        "instructions": "Layer yogurt and fruit puree in a glass.",
+        "image_prompt": "Glass layered dessert with yogurt, red berry sauce, and granola layers."
+    },
+    {
+        "id": 67,
+        "name": "Sausage and Eggs",
+        "category": "High Protein",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 32
+        },
+        "ingredients": [
+            {
+                "name": "Sausage (High meat content)",
+                "amount": "2"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Frying Oil",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Slice and fry sausage, then crack eggs over it.",
+        "image_prompt": "Frying pan with sliced sausages and sunny side up eggs sizzling."
+    },
+    {
+        "id": 68,
+        "name": "Buckwheat Porridge (Vegan)",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 6,
+            "carbs": 45,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "Buckwheat",
+                "amount": "1/3 cup raw"
+            },
+            {
+                "name": "Plant Milk (Soy/Almond)",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Banana",
+                "amount": "1/2"
+            }
+        ],
+        "instructions": "Cook buckwheat until soft and mix with plant milk.",
+        "image_prompt": "Bowl of buckwheat porridge with sliced banana and seeds."
+    },
+    {
+        "id": 69,
+        "name": "Croissant Sandwich",
+        "category": "International",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 30,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Croissant",
+                "amount": "1"
+            },
+            {
+                "name": "Chicken Ham",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Gouda Cheese",
+                "amount": "1 slice"
+            },
+            {
+                "name": "Lettuce",
+                "amount": "1 leaf"
+            }
+        ],
+        "instructions": "Slice croissant and fill with ham and cheese.",
+        "image_prompt": "Buttery croissant sandwich filled with ham and cheese slices."
+    },
+    {
+        "id": 70,
+        "name": "Cucumber and Tomato Salad (Cheese)",
+        "category": "Quick & Instant",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Cucumber",
+                "amount": "2"
+            },
+            {
+                "name": "Tomato",
+                "amount": "2"
+            },
+            {
+                "name": "White Cheese (Lighvan/Feta)",
+                "amount": "50g"
+            },
+            {
+                "name": "Green Onion",
+                "amount": "1 stalk"
+            }
+        ],
+        "instructions": "Dice all ingredients and mix together.",
+        "image_prompt": "Fresh salad bowl with diced cucumber, tomato, and white cheese cubes."
+    },
+    {
+        "id": 71,
+        "name": "Banana and Tahini Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 310,
+            "protein": 10,
+            "carbs": 35,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Sesame Tahini",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Banana",
+                "amount": "1"
+            },
+            {
+                "name": "Date Syrup",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Spread tahini on toast, arrange banana, and drizzle syrup.",
+        "image_prompt": "Toast topped with tahini paste, banana slices, and date syrup drizzle."
+    },
+    {
+        "id": 72,
+        "name": "Date Omelet",
+        "category": "Traditional Iranian",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Dates (pitted)",
+                "amount": "6"
+            },
+            {
+                "name": "Chopped Walnuts",
+                "amount": "2"
+            },
+            {
+                "name": "Butter",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Sauté dates in butter and add eggs.",
+        "image_prompt": "Persian date omelet with walnuts cooked in a traditional pan."
+    },
+    {
+        "id": 73,
+        "name": "Golden Milk (Turmeric)",
+        "category": "Drinks & Smoothies",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 12,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Turmeric",
+                "amount": "1/2 teaspoon"
+            },
+            {
+                "name": "Ginger",
+                "amount": "1/4 teaspoon"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Warm milk with spices until golden and fragrant.",
+        "image_prompt": "Mug of golden milk latte dusted with turmeric powder."
+    },
+    {
+        "id": 74,
+        "name": "Spinach Borani and Bread",
+        "category": "Traditional Iranian",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Strained Yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Cooked Spinach",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Grated Garlic",
+                "amount": "1 clove"
+            },
+            {
+                "name": "Dry Lavash Bread",
+                "amount": "1"
+            }
+        ],
+        "instructions": "Mix spinach and garlic with yogurt and serve with bread.",
+        "image_prompt": "Bowl of spinach yogurt dip (Borani) served with flatbread pieces."
+    },
+    {
+        "id": 75,
+        "name": "Cheese and Herb Pancakes",
+        "category": "Pancakes & Waffles",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 230,
+            "protein": 12,
+            "carbs": 25,
+            "fat": 9
+        },
+        "ingredients": [
+            {
+                "name": "Wheat Flour",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Crumbled Feta Cheese",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Fresh Dill",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            }
+        ],
+        "instructions": "Add cheese and herbs to pancake batter and fry.",
+        "image_prompt": "Savory pancakes with visible herbs and white cheese chunks."
+    },
+    {
+        "id": 76,
+        "name": "Pesto and Mozzarella Sandwich",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 16
+        },
+        "ingredients": [
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Pesto Sauce",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Mozzarella Cheese",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Tomato",
+                "amount": "2 slices"
+            }
+        ],
+        "instructions": "Spread pesto on bread and add cheese and tomato (grilling optional).",
+        "image_prompt": "Caprese style sandwich with pesto, mozzarella, and tomato."
+    },
+    {
+        "id": 77,
+        "name": "Scotch Egg (Simple)",
+        "category": "High Protein",
+        "prep_time": "40 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 22
+        },
+        "ingredients": [
+            {
+                "name": "Hard Boiled Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Minced Meat",
+                "amount": "100g"
+            },
+            {
+                "name": "Breadcrumbs",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Oil",
+                "amount": "For frying"
+            }
+        ],
+        "instructions": "Wrap meat around the egg, bread it, and fry.",
+        "image_prompt": "Scotch egg cut in half revealing the boiled egg inside the meat layer."
+    },
+    {
+        "id": 78,
+        "name": "Swiss Muesli",
+        "category": "Oatmeal & Cereals",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 8,
+            "carbs": 45,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats (Raw)",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Grated Apple",
+                "amount": "1"
+            },
+            {
+                "name": "Yogurt",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Chopped Nuts",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Mix all ingredients and serve cold (no cooking).",
+        "image_prompt": "Bowl of Bircher muesli with grated apple and chopped nuts."
+    },
+    {
+        "id": 79,
+        "name": "Chia Jam and Toast",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 6,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Strawberries",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Chia Seeds",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            }
+        ],
+        "instructions": "Cook strawberries, add chia until jelly-like, and spread on toast.",
+        "image_prompt": "Toast topped with homemade thick chia seed strawberry jam."
+    },
+    {
+        "id": 80,
+        "name": "Mushroom and Truffle Omelet",
+        "category": "Eggs & Omelets",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 14,
+            "carbs": 4,
+            "fat": 16
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Oyster Mushrooms",
+                "amount": "100g"
+            },
+            {
+                "name": "Truffle Oil (or Butter)",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Sauté mushrooms on high heat and mix with omelet.",
+        "image_prompt": "Elegant omelet with sautéed gourmet mushrooms and truffle oil drizzle."
+    },
+    {
+        "id": 81,
+        "name": "Date and Almond Shake",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 10,
+            "carbs": 40,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Almond Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Dates",
+                "amount": "4"
+            },
+            {
+                "name": "Almond Butter",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Ice",
+                "amount": "1 cup"
+            }
+        ],
+        "instructions": "Blend all ingredients in a powerful blender until smooth.",
+        "image_prompt": "Creamy beige almond date shake in a tall glass."
+    },
+    {
+        "id": 82,
+        "name": "Breakfast Pizza",
+        "category": "International",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 18,
+            "carbs": 35,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Pita Bread (Base)",
+                "amount": "1"
+            },
+            {
+                "name": "Pizza Cheese",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Bacon or Ham",
+                "amount": "1 slice"
+            }
+        ],
+        "instructions": "Add toppings to bread and bake in oven until egg is cooked.",
+        "image_prompt": "Small pita pizza topped with an egg sunny side up and cheese."
+    },
+    {
+        "id": 83,
+        "name": "Fried Egg with Sesame",
+        "category": "Quick & Instant",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 12,
+            "carbs": 1,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Sesame Seeds",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Sesame Oil",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Fry the egg in sesame oil and sprinkle sesame seeds on top.",
+        "image_prompt": "Fried egg with crispy edges sprinkled generously with sesame seeds."
+    },
+    {
+        "id": 84,
+        "name": "Beet Hummus Toast",
+        "category": "Vegetarian & Vegan",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 8,
+            "carbs": 35,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Hummus (Mixed with Beet)",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Mung Bean Sprouts",
+                "amount": "For garnish"
+            }
+        ],
+        "instructions": "Spread beet hummus (pink colored) on toast.",
+        "image_prompt": "Toast spread with vibrant pink beet hummus and microgreens."
+    },
+    {
+        "id": 85,
+        "name": "Kale Pache (Tongue)",
+        "category": "Traditional Iranian",
+        "prep_time": "100 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 35,
+            "carbs": 5,
+            "fat": 28
+        },
+        "ingredients": [
+            {
+                "name": "Beef/Lamb Tongue",
+                "amount": "150g"
+            },
+            {
+                "name": "Bone Broth",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Sangak Bread",
+                "amount": "1 palm size"
+            },
+            {
+                "name": "Lemon Juice",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Fully cook the tongue and serve with lemon juice and bread.",
+        "image_prompt": "Plate of cooked tongue meat (Kale Pache) with lime and bread."
+    },
+    {
+        "id": 86,
+        "name": "Mexican Quinoa Bowl",
+        "category": "International",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Quinoa",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Black Beans",
+                "amount": "1/3 cup"
+            },
+            {
+                "name": "Corn",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Avocado",
+                "amount": "1/4"
+            }
+        ],
+        "instructions": "Warm quinoa and mix with Mexican sides.",
+        "image_prompt": "Quinoa bowl with black beans, corn, and avocado slices."
+    },
+    {
+        "id": 87,
+        "name": "Potato Waffle",
+        "category": "Pancakes & Waffles",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 6,
+            "carbs": 35,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Mashed Potato",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Flour",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            },
+            {
+                "name": "Green Onion",
+                "amount": "1 tablespoon"
+            }
+        ],
+        "instructions": "Mix mashed potato with ingredients and cook in a waffle maker (savory).",
+        "image_prompt": "Savory potato waffle topped with sour cream and chives."
+    },
+    {
+        "id": 88,
+        "name": "Eggplant Omelet",
+        "category": "Eggs & Omelets",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 210,
+            "protein": 12,
+            "carbs": 8,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Grilled Eggplant",
+                "amount": "1 large"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Grated Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Sauté mashed eggplant and add eggs.",
+        "image_prompt": "Persian eggplant omelet (Mirza Ghasemi style without tomato) in a pan."
+    },
+    {
+        "id": 89,
+        "name": "Diet Apple Donuts",
+        "category": "Dessert & Pudding",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Apple",
+                "amount": "1"
+            },
+            {
+                "name": "Peanut Butter",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Colored Sprinkles/Granola",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Slice apple into rings (remove core), spread butter (looks like a donut).",
+        "image_prompt": "Apple slices cut like donuts topped with peanut butter and sprinkles."
+    },
+    {
+        "id": 90,
+        "name": "Cucumber Cheese Rolls",
+        "category": "Low Carb (Keto)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 6,
+            "carbs": 4,
+            "fat": 7
+        },
+        "ingredients": [
+            {
+                "name": "Cucumber (Thin slices)",
+                "amount": "4 slices"
+            },
+            {
+                "name": "Cream Cheese",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Dill",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Spread cheese on cucumber slice and roll up.",
+        "image_prompt": "Cucumber strips rolled up filled with cream cheese and herbs."
+    },
+    {
+        "id": 91,
+        "name": "Tuna Olivier Salad",
+        "category": "High Protein",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 28,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Tuna (Oil-free)",
+                "amount": "1 can"
+            },
+            {
+                "name": "Small Potato",
+                "amount": "1"
+            },
+            {
+                "name": "Pickles",
+                "amount": "2"
+            },
+            {
+                "name": "Egg",
+                "amount": "1"
+            }
+        ],
+        "instructions": "Prepare like Olivier salad but using tuna and low-fat dressing.",
+        "image_prompt": "Tuna salad bowl with potato cubes and pickles."
+    },
+    {
+        "id": 92,
+        "name": "Brie and Berry Toast",
+        "category": "Bread & Toast",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 10,
+            "carbs": 30,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Brie Cheese",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Strawberries",
+                "amount": "2"
+            }
+        ],
+        "instructions": "Place Brie on bread, melt slightly, and top with fruit.",
+        "image_prompt": "Toast with melted brie cheese and fresh strawberry slices."
+    },
+    {
+        "id": 93,
+        "name": "Dark Chocolate Oatmeal",
+        "category": "Oatmeal & Cereals",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 270,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Dark Cocoa Powder",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Dark Chocolate (80%)",
+                "amount": "10g"
+            },
+            {
+                "name": "Milk",
+                "amount": "1 cup"
+            }
+        ],
+        "instructions": "Cook oats with cocoa and top with dark chocolate shavings.",
+        "image_prompt": "Dark chocolate oatmeal bowl with chocolate shavings on top."
+    },
+    {
+        "id": 94,
+        "name": "Green Pea Omelet",
+        "category": "Eggs & Omelets",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 14,
+            "carbs": 12,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Cooked Green Peas",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Dried Mint",
+                "amount": "1 teaspoon"
+            },
+            {
+                "name": "Butter",
+                "amount": "1 jam spoon (teaspoon)"
+            }
+        ],
+        "instructions": "Sauté peas in butter and add eggs.",
+        "image_prompt": "Green pea omelet with fresh mint leaves."
+    },
+    {
+        "id": 95,
+        "name": "Orange and Carrot Juice",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 110,
+            "protein": 2,
+            "carbs": 26,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Fresh Oranges",
+                "amount": "2"
+            },
+            {
+                "name": "Carrots",
+                "amount": "2"
+            }
+        ],
+        "instructions": "Freshly juice both and mix.",
+        "image_prompt": "Glass of bright orange carrot and orange juice mix."
+    },
+    {
+        "id": 96,
+        "name": "Pumpkin and Cheese Toast",
+        "category": "Bread & Toast",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 260,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Pumpkin Puree",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Cream Cheese",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Toast Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Pumpkin Seeds",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Mix pumpkin puree and cheese, spread on toast.",
+        "image_prompt": "Toast spread with pumpkin cream cheese mixture and pumpkin seeds."
+    },
+    {
+        "id": 97,
+        "name": "Coconut Pancakes (Keto)",
+        "category": "Low Carb (Keto)",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 8,
+            "carbs": 6,
+            "fat": 24
+        },
+        "ingredients": [
+            {
+                "name": "Coconut Flour",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Coconut Milk",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Stevia",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Make pancake batter using coconut flour and fry.",
+        "image_prompt": "Coconut flour pancakes topped with shredded coconut."
+    },
+    {
+        "id": 98,
+        "name": "Breakfast Caesar Salad",
+        "category": "Quick & Instant",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 290,
+            "protein": 18,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Romaine Lettuce",
+                "amount": "2 cups chopped"
+            },
+            {
+                "name": "Hard Boiled Eggs",
+                "amount": "2"
+            },
+            {
+                "name": "Parmesan Cheese",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Croutons",
+                "amount": "5"
+            }
+        ],
+        "instructions": "Serve classic Caesar salad with hard-boiled eggs.",
+        "image_prompt": "Breakfast Caesar salad bowl with hard boiled eggs."
+    },
+    {
+        "id": 99,
+        "name": "Pistachio Milk",
+        "category": "Drinks & Smoothies",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 240,
+            "protein": 8,
+            "carbs": 15,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Raw Pistachio Kernels",
+                "amount": "30g"
+            },
+            {
+                "name": "Milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Honey",
+                "amount": "1 jam spoon (teaspoon)"
+            },
+            {
+                "name": "Cardamom",
+                "amount": "1 seed"
+            }
+        ],
+        "instructions": "Blend pistachios and milk with a little cardamom and honey.",
+        "image_prompt": "Green tinted pistachio milk in a glass with crushed pistachios."
+    },
+    {
+        "id": 100,
+        "name": "Simit and Cheese (Turkish)",
+        "category": "International",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 10,
+            "carbs": 55,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Simit Bread",
+                "amount": "1"
+            },
+            {
+                "name": "Cream Cheese",
+                "amount": "2 tablespoons"
+            },
+            {
+                "name": "Olives",
+                "amount": "5"
+            }
+        ],
+        "instructions": "Serve Simit bread with cheese and olives.",
+        "image_prompt": "Turkish Simit bread ring served with cream cheese and olives."
+    }
+]

@@ -145,7 +145,7 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
 
     // API Data States
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-    const [preferences, setPreferences] = useState({ addBurnedCalories: true, rolloverCalories: true });
+    const [preferences, setPreferences] = useState({ addBurnedCalories: true, rolloverCalories: true, preferredLanguage: 'en' as 'en' | 'fa' });
     const [subscriptionStatus, setSubscriptionStatus] = useState<{ isActive: boolean; expiryDate?: string | null; startDate?: string | null } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -208,6 +208,20 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
             // Revert on error
             setPreferences(prev => ({ ...prev, [key]: !newValue }));
         }
+    };
+
+    // Handle language change - updates both UI and server
+    const handleLanguageChange = async (newLocale: 'en' | 'fa') => {
+        // Update server preference for notifications
+        try {
+            await apiService.updatePreferences({ preferredLanguage: newLocale });
+            setPreferences(prev => ({ ...prev, preferredLanguage: newLocale }));
+        } catch (error) {
+            console.error('Failed to sync language preference:', error);
+            // Still update the UI even if server sync fails
+        }
+        // Update UI locale (this will reload the page)
+        setLocale(newLocale);
     };
 
     const handleUpdateName = async () => {
@@ -536,7 +550,7 @@ const SettingPage: React.FC<SettingPageProps> = ({ onLogout, onSubscriptionClick
                                 <div className="relative">
                                     <select
                                         value={locale}
-                                        onChange={(e) => setLocale(e.target.value as 'en' | 'fa')}
+                                        onChange={(e) => handleLanguageChange(e.target.value as 'en' | 'fa')}
                                         className="appearance-none bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm px-4 py-2.5 pe-10 rounded-xl cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                     >
                                         <option value="en">{t('settings.preferences.english')}</option>

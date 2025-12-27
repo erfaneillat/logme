@@ -3,17 +3,24 @@ import mongoose from 'mongoose';
 import User from '../models/User';
 import firebaseService from './firebaseService';
 import { logServiceError } from '../utils/errorLogger';
+import {
+  NotificationLocale,
+  translateStatus,
+  getTicketReplyMessage,
+  getTicketStatusChangeMessage,
+} from '../locales/notificationTranslations';
 
 class NotificationService {
-  private translateStatus(status: string): string {
-    const map: Record<string, string> = {
-      OPEN: 'باز',
-      IN_PROGRESS: 'در حال رسیدگی',
-      RESOLVED: 'حل شد',
-      CLOSED: 'بسته شد',
-      PENDING: 'در انتظار',
-    };
-    return map[status] ?? status.replace('_', ' ').toLowerCase();
+  /**
+   * Get user's preferred language for notifications
+   */
+  private async getUserLanguage(userId: mongoose.Types.ObjectId | string): Promise<NotificationLocale> {
+    try {
+      const user = await User.findById(userId).select('preferredLanguage');
+      return (user?.preferredLanguage as NotificationLocale) || 'en';
+    } catch {
+      return 'en';
+    }
   }
 
   /**
@@ -63,11 +70,14 @@ class NotificationService {
     ticketSubject: string,
     replierName: string
   ): Promise<INotification> {
+    const locale = await this.getUserLanguage(userId);
+    const { title, body } = getTicketReplyMessage(ticketSubject, locale);
+
     return this.createNotification(
       userId,
       NotificationType.TICKET_REPLY,
-      'پاسخ جدید به تیکت شما',
-      `پشتیبانی به تیکت شما پاسخ داد: «${ticketSubject}»`,
+      title,
+      body,
       {
         ticketId,
         ticketSubject,
@@ -85,12 +95,14 @@ class NotificationService {
     ticketSubject: string,
     newStatus: string
   ): Promise<INotification> {
-    const statusText = this.translateStatus(newStatus);
+    const locale = await this.getUserLanguage(userId);
+    const { title, body } = getTicketStatusChangeMessage(ticketSubject, newStatus, locale);
+
     return this.createNotification(
       userId,
       NotificationType.TICKET_STATUS_CHANGE,
-      'وضعیت تیکت به‌روزرسانی شد',
-      `وضعیت تیکت «${ticketSubject}» به ${statusText} تغییر کرد`,
+      title,
+      body,
       {
         ticketId,
         ticketSubject,

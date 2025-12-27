@@ -1,0 +1,3182 @@
+[
+    {
+        "id": 1,
+        "name": "Grilled Chicken Breast with Vegetables",
+        "category": "Diet and Keto",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 35,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Zucchini",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Broccoli",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Season the chicken and grill it; steam or sauté the vegetables.",
+        "image_prompt": "Grilled chicken breast with grill marks served with steamed broccoli and zucchini slices."
+    },
+    {
+        "id": 2,
+        "name": "Tuna and Bean Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 25,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Tuna (in water)",
+                "amount": "1 can"
+            },
+            {
+                "name": "Cooked Pinto Beans",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Chopped Lettuce",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Olives",
+                "amount": "5 pieces"
+            }
+        ],
+        "instructions": "Mix all ingredients and serve with lemon juice and black pepper.",
+        "image_prompt": "Fresh salad bowl mixed with tuna chunks, beans, lettuce, and olives."
+    },
+    {
+        "id": 3,
+        "name": "Zucchini and Mushroom Stir-fry",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 6,
+            "carbs": 15,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Sliced Zucchini",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Sliced Mushrooms",
+                "amount": "200g"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Tomatoes",
+                "amount": "2 pieces"
+            }
+        ],
+        "instructions": "Sauté the onion, add vegetables, and cover the pan to cook in their own juices.",
+        "image_prompt": "Pan filled with sautéed zucchini, mushrooms, and tomatoes."
+    },
+    {
+        "id": 4,
+        "name": "Oven-Baked Salmon",
+        "category": "Seafood",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 35,
+            "carbs": 0,
+            "fat": 25
+        },
+        "ingredients": [
+            {
+                "name": "Salmon Fillet",
+                "amount": "150g"
+            },
+            {
+                "name": "Lemon",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Dried Dill",
+                "amount": "1 tsp"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Season the fish and bake for 20 minutes at 180°C.",
+        "image_prompt": "Baked salmon fillet with lemon slices on top and dill garnish."
+    },
+    {
+        "id": 5,
+        "name": "Diet Caesar Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 28,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Lettuce",
+                "amount": "1 small head"
+            },
+            {
+                "name": "Boiled/Grilled Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Diet Toast (toasted)",
+                "amount": "1 slice"
+            },
+            {
+                "name": "Yogurt and Mustard Sauce",
+                "amount": "2 tbsp"
+            }
+        ],
+        "instructions": "Use a mix of yogurt, garlic, and mustard instead of mayonnaise.",
+        "image_prompt": "Diet Caesar salad with grilled chicken strips and yogurt dressing."
+    },
+    {
+        "id": 6,
+        "name": "Lentils with Angelica (Adasi)",
+        "category": "Soups and Stews",
+        "prep_time": "45 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 18,
+            "carbs": 45,
+            "fat": 3
+        },
+        "ingredients": [
+            {
+                "name": "Lentils",
+                "amount": "3/4 cup"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Small Potato",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Angelica Powder",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Cook lentils with onion and potato until thick.",
+        "image_prompt": "Bowl of thick lentil soup (Adasi) sprinkled with angelica powder."
+    },
+    {
+        "id": 7,
+        "name": "Oil-Free Pan Kebab",
+        "category": "Kebabs and Meat",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Lean Ground Beef",
+                "amount": "120g"
+            },
+            {
+                "name": "Grated Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Tomatoes",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Sumac",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Knead meat and onion, then cook in a non-stick pan without oil.",
+        "image_prompt": "Lean beef kebab strips cooked in a pan with roasted tomatoes."
+    },
+    {
+        "id": 8,
+        "name": "Vegetable Pasta (Low Carb)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 10,
+            "carbs": 40,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Whole Wheat Pasta",
+                "amount": "70g"
+            },
+            {
+                "name": "Broccoli",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Bell Pepper",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "5 pieces"
+            }
+        ],
+        "instructions": "Sauté the vegetables and mix with drained pasta.",
+        "image_prompt": "Whole wheat pasta mixed with colorful sautéed vegetables."
+    },
+    {
+        "id": 9,
+        "name": "Oven-Baked Chicken Schnitzel",
+        "category": "Chicken and Poultry",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 40,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Breadcrumbs",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Egg White",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Oil Spray",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Dip chicken in egg white and breadcrumbs, bake on parchment paper (do not fry).",
+        "image_prompt": "Oven baked chicken schnitzel, golden and crispy without deep frying."
+    },
+    {
+        "id": 10,
+        "name": "Grilled Shrimp",
+        "category": "Seafood",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Cleaned Shrimp",
+                "amount": "150g"
+            },
+            {
+                "name": "Lemon Juice",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Grated Garlic",
+                "amount": "1 clove"
+            },
+            {
+                "name": "Saffron",
+                "amount": "A pinch"
+            }
+        ],
+        "instructions": "Marinate shrimps, put on wooden skewers, and grill.",
+        "image_prompt": "Grilled shrimp skewers with char marks served with lime."
+    },
+    {
+        "id": 11,
+        "name": "Brown Rice Green Bean Pilaf (Lubia Polo)",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "50 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 380,
+            "protein": 18,
+            "carbs": 55,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Brown Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Green Beans",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Lean Ground Meat",
+                "amount": "60g"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Cook like traditional Lubia Polo but with very little oil and brown rice.",
+        "image_prompt": "Brown rice mixed with green beans and meat, healthy version of Lubia Polo."
+    },
+    {
+        "id": 12,
+        "name": "Red Lentil Soup (Dal Adas)",
+        "category": "Soups and Stews",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 15,
+            "carbs": 35,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Red Lentils",
+                "amount": "3/4 cup"
+            },
+            {
+                "name": "Garlic and Onion",
+                "amount": "1 piece each"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Red Pepper",
+                "amount": "To taste"
+            }
+        ],
+        "instructions": "Cook lentils with onion, garlic, and paste until thick and spicy.",
+        "image_prompt": "Spicy red lentil soup (Dal Adas) garnished with cilantro."
+    },
+    {
+        "id": 13,
+        "name": "Chicken Lettuce Wraps",
+        "category": "Diet and Keto",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Large Lettuce Leaves",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Shredded Cooked Chicken",
+                "amount": "100g"
+            },
+            {
+                "name": "Grated Carrots",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Hot Sauce",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Place ingredients inside lettuce leaves and wrap like a taco (no bread).",
+        "image_prompt": "Lettuce wraps filled with shredded chicken and veggies."
+    },
+    {
+        "id": 14,
+        "name": "Eggplant Stew (Diet Yatimeche)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Eggplant",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Tomatoes",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Garlic",
+                "amount": "2 cloves"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Dice eggplants and steam/sauté with tomatoes and garlic.",
+        "image_prompt": "Stew of eggplant and tomatoes cooked together without excess oil."
+    },
+    {
+        "id": 15,
+        "name": "Turkey Steak",
+        "category": "Kebabs and Meat",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 40,
+            "carbs": 0,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Turkey Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tsp"
+            },
+            {
+                "name": "Rosemary",
+                "amount": "1 sprig"
+            }
+        ],
+        "instructions": "Pound the turkey and grill in a cast-iron pan.",
+        "image_prompt": "Grilled turkey breast steak served with a side salad."
+    },
+    {
+        "id": 16,
+        "name": "Quinoa and Vegetable Bowl",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Quinoa",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Cooked Chickpeas",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Avocado",
+                "amount": "1/4 piece"
+            },
+            {
+                "name": "Cucumber and Tomato",
+                "amount": "1/2 cup"
+            }
+        ],
+        "instructions": "Arrange all ingredients in a bowl and enjoy with lemon juice.",
+        "image_prompt": "Buddha bowl with quinoa, chickpeas, avocado, and fresh veggies."
+    },
+    {
+        "id": 17,
+        "name": "Fat-Burning Vegetable Soup",
+        "category": "Soups and Stews",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 15,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Cabbage",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Celery",
+                "amount": "2 stalks"
+            },
+            {
+                "name": "Carrot",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Onion and Tomato",
+                "amount": "1 piece each"
+            }
+        ],
+        "instructions": "Chop all vegetables and boil in water until soft.",
+        "image_prompt": "Bowl of clear vegetable soup with cabbage, celery, and carrots."
+    },
+    {
+        "id": 18,
+        "name": "Chicken Kotlet (Oil-Free)",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Ground Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Grated Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Egg",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Oat Bran",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Mix ingredients and bake in a diet pan or oven.",
+        "image_prompt": "Chicken patties (Kotlet) baked to a golden brown color."
+    },
+    {
+        "id": 19,
+        "name": "Pan-Seared Saffron Chicken Cubes",
+        "category": "Kebabs and Meat",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 35,
+            "carbs": 2,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Chicken Breast Cubes",
+                "amount": "200g"
+            },
+            {
+                "name": "Onion and Bell Pepper",
+                "amount": "1 piece each"
+            },
+            {
+                "name": "Saffron and Lemon Juice",
+                "amount": "As needed"
+            },
+            {
+                "name": "Low Oil",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Marinate the chicken and sauté with vegetables in a pan.",
+        "image_prompt": "Pan seared saffron chicken cubes with bell peppers."
+    },
+    {
+        "id": 20,
+        "name": "Cauliflower Rice (Keto)",
+        "category": "Diet and Keto",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Grated Cauliflower",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Coconut Oil/Butter",
+                "amount": "1 tsp"
+            },
+            {
+                "name": "Saffron",
+                "amount": "A pinch"
+            },
+            {
+                "name": "Barberries (Optional)",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Grate the cauliflower (rice-like) and sauté until soft.",
+        "image_prompt": "Cauliflower rice cooked with saffron, looking like traditional rice."
+    },
+    {
+        "id": 21,
+        "name": "Low-Fat Celery Stew (Khoresht Karafs)",
+        "category": "Soups and Stews",
+        "prep_time": "90 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 20,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Celery",
+                "amount": "200g"
+            },
+            {
+                "name": "Lean Beef",
+                "amount": "100g"
+            },
+            {
+                "name": "Mint and Parsley",
+                "amount": "50g"
+            },
+            {
+                "name": "Unripe Grape Juice (Abghooreh)",
+                "amount": "2 tbsp"
+            }
+        ],
+        "instructions": "Sauté herbs with very little oil and simmer the stew.",
+        "image_prompt": "Lean Celery Stew (Khoresht Karafs) with fresh green herbs."
+    },
+    {
+        "id": 22,
+        "name": "Turkey Burger (No Bun)",
+        "category": "Diet and Keto",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 30,
+            "carbs": 5,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Ground Turkey",
+                "amount": "150g"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Lettuce (as bun)",
+                "amount": "2 large leaves"
+            },
+            {
+                "name": "Tomato",
+                "amount": "1 slice"
+            }
+        ],
+        "instructions": "Grill the patty and serve inside lettuce leaves with tomato.",
+        "image_prompt": "Turkey burger patty served inside a lettuce bun with tomato."
+    },
+    {
+        "id": 23,
+        "name": "Greek Salad with Chicken",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Cucumber and Tomato",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Feta Cheese",
+                "amount": "30g"
+            },
+            {
+                "name": "Olives",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Grilled Chicken Breast",
+                "amount": "100g"
+            }
+        ],
+        "instructions": "Mix chopped vegetables with chicken, cheese, and olive oil.",
+        "image_prompt": "Greek salad with feta cubes, olives, and grilled chicken slices."
+    },
+    {
+        "id": 24,
+        "name": "Zucchini Noodles (Zoodles)",
+        "category": "Diet and Keto",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 4,
+            "carbs": 12,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Spiralized Zucchini",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Parmesan Cheese",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Spiralize the zucchini and sauté for 1 minute with garlic.",
+        "image_prompt": "Spiralized zucchini noodles (Zoodles) sautéed with garlic."
+    },
+    {
+        "id": 25,
+        "name": "Pinto Bean Stew with Mushrooms",
+        "category": "Soups and Stews",
+        "prep_time": "60 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 15,
+            "carbs": 45,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Pinto Beans",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "100g"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Angelica Powder",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Make a thick bean stew and add sautéed mushrooms.",
+        "image_prompt": "Warm bowl of Pinto Bean Stew with mushrooms."
+    },
+    {
+        "id": 26,
+        "name": "Baked Herb Frittata (Kuku Sabzi)",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 8,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Mixed Herbs (Kuku)",
+                "amount": "150g"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Barberries",
+                "amount": "1 tsp"
+            },
+            {
+                "name": "Oil (for greasing)",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Pour the mixture into a greased mold and bake in the oven.",
+        "image_prompt": "Slice of baked Herb Frittata (Kuku Sabzi) showing fluffy texture."
+    },
+    {
+        "id": 27,
+        "name": "Lemon Tilapia Fillet",
+        "category": "Seafood",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 30,
+            "carbs": 0,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Tilapia Fillet",
+                "amount": "150g"
+            },
+            {
+                "name": "Lemon",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Butter",
+                "amount": "10g"
+            },
+            {
+                "name": "Parsley",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Sauté the fish in a pan with a little butter and lemon juice.",
+        "image_prompt": "Pan fried Tilapia fillet with lemon butter sauce."
+    },
+    {
+        "id": 28,
+        "name": "Spinach and Eggs (Nargesi)",
+        "category": "Diet and Keto",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 16,
+            "carbs": 5,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Fresh Spinach",
+                "amount": "200g"
+            },
+            {
+                "name": "Eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Low-Oil Sautéed Onions",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Sauté spinach until water evaporates, then crack eggs on top.",
+        "image_prompt": "Spinach and eggs dish (Nargesi) cooked in a skillet."
+    },
+    {
+        "id": 29,
+        "name": "Okra Stew with Chicken",
+        "category": "Soups and Stews",
+        "prep_time": "45 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Okra",
+                "amount": "150g"
+            },
+            {
+                "name": "Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Tomatoes",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Garlic",
+                "amount": "2 cloves"
+            }
+        ],
+        "instructions": "Use chicken instead of red meat and lightly sauté the okra.",
+        "image_prompt": "Okra stew made with chicken chunks and tomato sauce."
+    },
+    {
+        "id": 30,
+        "name": "Whole Wheat Pasta Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 12,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Whole Wheat Pasta",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Colorful Bell Peppers",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Corn",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Strained Yogurt",
+                "amount": "2 tbsp"
+            }
+        ],
+        "instructions": "Mix cold pasta with vegetables and yogurt sauce.",
+        "image_prompt": "Cold whole wheat pasta salad with colorful peppers and corn."
+    },
+    {
+        "id": 31,
+        "name": "Meatballs in Tomato Sauce",
+        "category": "Kebabs and Meat",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Lean Ground Beef",
+                "amount": "150g"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Tomato Puree",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Aromatic Herbs",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Form small meatballs and cook in tomato sauce (no deep frying).",
+        "image_prompt": "Small meatballs simmering in a rich red tomato sauce."
+    },
+    {
+        "id": 32,
+        "name": "Cauliflower Rice and Shrimp",
+        "category": "Diet and Keto",
+        "prep_time": "25 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 25,
+            "carbs": 8,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Grated Cauliflower",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Shrimp",
+                "amount": "100g"
+            },
+            {
+                "name": "Garlic and Cilantro",
+                "amount": "As needed"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Sauté shrimp and garlic, add grated cauliflower and stir-fry.",
+        "image_prompt": "Cauliflower rice stir-fry with shrimp and cilantro."
+    },
+    {
+        "id": 33,
+        "name": "Boiled Egg Sandwich",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 18,
+            "carbs": 25,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Hard Boiled Eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Barley Bread",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Lettuce and Tomato",
+                "amount": "As needed"
+            },
+            {
+                "name": "Mustard Sauce",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Slice the eggs and place inside barley bread.",
+        "image_prompt": "Open faced sandwich with hard boiled egg slices on rye bread."
+    },
+    {
+        "id": 34,
+        "name": "Ratatouille (Vegetable Stew)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "45 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Eggplant, Zucchini, Tomato",
+                "amount": "2 each"
+            },
+            {
+                "name": "Onion and Garlic",
+                "amount": "1 piece each"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Slice vegetables into rounds, arrange them in a dish, and cook with sauce.",
+        "image_prompt": "Traditional Ratatouille dish with spiraled vegetable slices."
+    },
+    {
+        "id": 35,
+        "name": "Orange Chicken (Diet)",
+        "category": "Chicken and Poultry",
+        "prep_time": "45 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 30,
+            "carbs": 20,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Chicken Thigh or Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Natural Orange Juice",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Saffron",
+                "amount": "A pinch"
+            },
+            {
+                "name": "Carrot",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Slow cook chicken with orange juice and saffron until sauce thickens.",
+        "image_prompt": "Orange glazed chicken served with cooked carrots."
+    },
+    {
+        "id": 36,
+        "name": "Chickpea and Quinoa Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 50,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Chickpeas",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Cooked Quinoa",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Chopped Parsley",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Lemon and Olive Oil",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Mix all ingredients for a complete healthy lunch.",
+        "image_prompt": "Fresh salad bowl with chickpeas, quinoa, and chopped parsley."
+    },
+    {
+        "id": 37,
+        "name": "Diet Eggplant Borani",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Grilled Eggplant",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Low-Fat Yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            },
+            {
+                "name": "Diet Crispbread",
+                "amount": "1 slice"
+            }
+        ],
+        "instructions": "Mash grilled eggplant and mix with yogurt and garlic.",
+        "image_prompt": "Bowl of eggplant dip (Borani) garnished with walnuts."
+    },
+    {
+        "id": 38,
+        "name": "Oat Soup with Chicken",
+        "category": "Soups and Stews",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Shredded Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Grated Carrot",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Parsley",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Cook oats, chicken, and carrots in chicken broth until thickened.",
+        "image_prompt": "Creamy style oat soup with chicken shreds and carrots."
+    },
+    {
+        "id": 39,
+        "name": "Hosseini Kebab (Wooden Skewers)",
+        "category": "Kebabs and Meat",
+        "prep_time": "60 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Meat Chunks",
+                "amount": "150g"
+            },
+            {
+                "name": "Bell Pepper and Onion",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Wooden Skewers",
+                "amount": "A few"
+            }
+        ],
+        "instructions": "Skewer meat and vegetables, then cook in a tomato and water sauce.",
+        "image_prompt": "Wooden skewers with meat and veggies cooked in a tomato sauce."
+    },
+    {
+        "id": 40,
+        "name": "Baghali Ghatogh (Lima Bean Stew)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Pach Baghla (Lima Beans)",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Dried Dill",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Egg",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Garlic",
+                "amount": "3 cloves"
+            }
+        ],
+        "instructions": "Sauté beans with garlic and dill, cook, then add an egg at the end.",
+        "image_prompt": "Traditional Northern Iranian dish (Baghali Ghatogh) with beans and dill."
+    },
+    {
+        "id": 41,
+        "name": "Herb Rice with Fish (Oven-Baked)",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "45 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 450,
+            "protein": 30,
+            "carbs": 55,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Mixed Herbs for Rice",
+                "amount": "3 tbsp"
+            },
+            {
+                "name": "White Fish/Trout",
+                "amount": "150g"
+            },
+            {
+                "name": "Bitter Orange (Narenj)",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Grill the fish in the oven and serve with low-oil herb rice.",
+        "image_prompt": "Plate of herbed rice (Sabzi Polo) served with oven baked fish."
+    },
+    {
+        "id": 42,
+        "name": "Mushroom and Beef Stir-fry",
+        "category": "Diet and Keto",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 25,
+            "carbs": 8,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Minced/Sliced Beef",
+                "amount": "100g"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "200g"
+            },
+            {
+                "name": "Bell Pepper",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Sauté beef and onion, then add mushrooms and bell pepper.",
+        "image_prompt": "Stir-fry of beef strips and mushrooms with bell peppers."
+    },
+    {
+        "id": 43,
+        "name": "Diet Macaroni Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Elbow Pasta",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Cooked Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Peas and Corn",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Low-Fat Yogurt",
+                "amount": "3 tbsp"
+            }
+        ],
+        "instructions": "Mix all ingredients and season with yogurt sauce and lemon juice.",
+        "image_prompt": "Pasta salad with veggies and chicken, dressed with creamy yogurt."
+    },
+    {
+        "id": 44,
+        "name": "Tomato Soup",
+        "category": "Soups and Stews",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 4,
+            "carbs": 25,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Tomatoes",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Onion and Garlic",
+                "amount": "1 piece each"
+            },
+            {
+                "name": "Chicken Broth",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Basil",
+                "amount": "For garnish"
+            }
+        ],
+        "instructions": "Cook tomatoes and vegetables, then blend into a puree.",
+        "image_prompt": "Bowl of rich red creamy tomato soup with basil leaf."
+    },
+    {
+        "id": 45,
+        "name": "Tas Kebab (Oil-Free)",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "90 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 30,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Lean Lamb",
+                "amount": "100g"
+            },
+            {
+                "name": "Quince, Carrot, Potato",
+                "amount": "1 cup mixed"
+            },
+            {
+                "name": "Prunes",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Sliced Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Layer the ingredients, add a little water and tomato paste, and simmer.",
+        "image_prompt": "Traditional Persian Tas Kabab with meat, quince, and carrots layered in pot."
+    },
+    {
+        "id": 46,
+        "name": "Spinach and Prune Stew (with Chicken)",
+        "category": "Soups and Stews",
+        "prep_time": "60 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 20,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Spinach",
+                "amount": "300g"
+            },
+            {
+                "name": "Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Bukhara Prunes",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Sauté spinach and add to cooked chicken and prunes.",
+        "image_prompt": "Green Spinach Stew (Aloo Esfenaj) with chicken and golden plums."
+    },
+    {
+        "id": 47,
+        "name": "Steamed Fish with Vegetables",
+        "category": "Seafood",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "White Fish/Trout",
+                "amount": "150g"
+            },
+            {
+                "name": "Broccoli and Carrots",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Ginger and Soy Sauce",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Steam fish and vegetables together for a healthy meal.",
+        "image_prompt": "Steamed white fish served with vibrant steamed vegetables."
+    },
+    {
+        "id": 48,
+        "name": "Savory Chicken Oatmeal (Lunch)",
+        "category": "Soups and Stews",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 20,
+            "carbs": 40,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Chicken Broth",
+                "amount": "1.5 cups"
+            },
+            {
+                "name": "Shredded Cooked Chicken",
+                "amount": "50g"
+            },
+            {
+                "name": "Aromatic Herbs",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Cook oats in chicken broth until it reaches a porridge consistency.",
+        "image_prompt": "Savory oatmeal bowl with shredded chicken and herbs."
+    },
+    {
+        "id": 49,
+        "name": "Eggplant Pizza (No Crust)",
+        "category": "Diet and Keto",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 15,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Thick Eggplant Slices",
+                "amount": "2 rounds"
+            },
+            {
+                "name": "Low-Fat Mozzarella",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Tomato Sauce",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Mushroom",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Top grilled eggplant slices with sauce and cheese, then melt in the oven.",
+        "image_prompt": "Eggplant rounds topped with marinara sauce and melted cheese like mini pizzas."
+    },
+    {
+        "id": 50,
+        "name": "Kashk Kadoo (Zucchini with Whey)",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 8,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Steamed/Sautéed Zucchini",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Kashk (Whey)",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Sautéed Onion and Mint",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Walnut",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Mash zucchini and mix with kashk and toppings (healthier than eggplant).",
+        "image_prompt": "Bowl of Zucchini dip (Kashk Kadoo) with mint oil garnish."
+    },
+    {
+        "id": 51,
+        "name": "Eggplant Walnut Rolls",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 6,
+            "carbs": 15,
+            "fat": 25
+        },
+        "ingredients": [
+            {
+                "name": "Grilled Eggplant Slices",
+                "amount": "3 slices"
+            },
+            {
+                "name": "Ground Walnuts",
+                "amount": "3 tbsp"
+            },
+            {
+                "name": "Pomegranate Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Local Herbs",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Wrap a mixture of walnuts and pomegranate paste inside eggplant slices.",
+        "image_prompt": "Eggplant rolls filled with walnut and pomegranate paste."
+    },
+    {
+        "id": 52,
+        "name": "Lentil Rice with Dates (Meatless)",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "45 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 12,
+            "carbs": 80,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Lentils",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Dates",
+                "amount": "4 pieces"
+            },
+            {
+                "name": "Raisins",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Cook lentil rice and serve with sautéed dates and raisins.",
+        "image_prompt": "Lentil rice (Adas Polo) garnished with dates and raisins."
+    },
+    {
+        "id": 53,
+        "name": "Green Bean Stew (Ragout)",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "45 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Chopped Green Beans",
+                "amount": "200g"
+            },
+            {
+                "name": "Minced Meat/Soy",
+                "amount": "50g"
+            },
+            {
+                "name": "Diced Carrot and Potato",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Sauté all ingredients with onion and paste, then simmer.",
+        "image_prompt": "Green bean stew (Ragout) with carrots and meat."
+    },
+    {
+        "id": 54,
+        "name": "Cold Chicken Sandwich",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 30,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Whole Wheat Baguette",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Pickles and Tomato",
+                "amount": "As needed"
+            },
+            {
+                "name": "Parsley",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Place shredded chicken and toppings inside the bread.",
+        "image_prompt": "Cold chicken sandwich with fresh vegetables in a baguette."
+    },
+    {
+        "id": 55,
+        "name": "Stuffed Zucchini Boats (Diet)",
+        "category": "Diet and Keto",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Large Zucchini",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Meat and Onion Mixture",
+                "amount": "100g"
+            },
+            {
+                "name": "Low-Fat Cheese",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Hollow out zucchinis, fill with the mixture, and bake in the oven.",
+        "image_prompt": "Zucchini boats stuffed with ground meat and topped with melted cheese."
+    },
+    {
+        "id": 56,
+        "name": "Broccoli and Cheddar Soup",
+        "category": "Soups and Stews",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 10,
+            "carbs": 15,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Broccoli",
+                "amount": "200g"
+            },
+            {
+                "name": "Low-Fat Milk",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Grated Cheddar",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Cook broccoli, blend it, and heat with milk and cheese.",
+        "image_prompt": "Creamy green broccoli soup with a swirl of cheese."
+    },
+    {
+        "id": 57,
+        "name": "Veggie Bean Burger",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Black/Red Beans",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Rolled Oats",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Onion and Spices",
+                "amount": "1 set"
+            },
+            {
+                "name": "Burger Bun",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Blend ingredients, shape into patties, and pan-fry.",
+        "image_prompt": "Veggie burger patty made of beans served on a bun."
+    },
+    {
+        "id": 58,
+        "name": "Air Fryer Crispy Shrimp",
+        "category": "Seafood",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Shrimp",
+                "amount": "150g"
+            },
+            {
+                "name": "Flour and Spices",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Egg White",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Oil Spray",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Coat shrimp and crisp them in an Air Fryer.",
+        "image_prompt": "Crispy breaded shrimp cooked in air fryer without deep frying."
+    },
+    {
+        "id": 59,
+        "name": "Sour Cherry Rice with Meatballs (Low Oil)",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "50 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 450,
+            "protein": 18,
+            "carbs": 70,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Sour Cherries (low sugar)",
+                "amount": "1/3 cup"
+            },
+            {
+                "name": "Meatballs",
+                "amount": "100g"
+            }
+        ],
+        "instructions": "Boil meatballs (don't fry) and layer them with rice and cherries.",
+        "image_prompt": "Sour cherry rice (Albaloo Polo) with small meatballs."
+    },
+    {
+        "id": 60,
+        "name": "Chicken and Mushroom (Diet White Sauce)",
+        "category": "Diet and Keto",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "200g"
+            },
+            {
+                "name": "Milk and Cornstarch",
+                "amount": "1/2 cup (sauce)"
+            }
+        ],
+        "instructions": "Sauté chicken and mushrooms, then add the low-fat milk sauce.",
+        "image_prompt": "Chicken and mushroom stew in a creamy white sauce."
+    },
+    {
+        "id": 61,
+        "name": "Spinach and Pomegranate Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Baby Spinach",
+                "amount": "3 cups"
+            },
+            {
+                "name": "Pomegranate Seeds",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Walnuts",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Pomegranate Paste",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Mix ingredients and serve with pomegranate paste dressing.",
+        "image_prompt": "Spinach salad bowl topped with pomegranate seeds and walnuts."
+    },
+    {
+        "id": 62,
+        "name": "Homemade Chicken Nuggets (Oven)",
+        "category": "Chicken and Poultry",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Ground Chicken",
+                "amount": "150g"
+            },
+            {
+                "name": "Onion and Garlic",
+                "amount": "1 set"
+            },
+            {
+                "name": "Breadcrumbs",
+                "amount": "2 tbsp"
+            }
+        ],
+        "instructions": "Season chicken, shape, coat in crumbs, and bake.",
+        "image_prompt": "Homemade chicken nuggets baked on a tray."
+    },
+    {
+        "id": 63,
+        "name": "Artichoke Stew (Khoresht Kangar - Diet)",
+        "category": "Soups and Stews",
+        "prep_time": "90 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 15,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Artichoke (Kangar)",
+                "amount": "200g"
+            },
+            {
+                "name": "Lean Beef",
+                "amount": "100g"
+            },
+            {
+                "name": "Mint and Parsley",
+                "amount": "50g"
+            },
+            {
+                "name": "Dried Lime",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Lightly sauté artichokes and cook with meat and herbs.",
+        "image_prompt": "Persian Artichoke stew (Khoresht Kangar) with meat."
+    },
+    {
+        "id": 64,
+        "name": "Mixed Vegetable Rice",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 8,
+            "carbs": 65,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Peas, Carrots, Corn",
+                "amount": "1 cup mixed"
+            },
+            {
+                "name": "Rice Spices",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Cook vegetables and rice together (Vegetable Estamboli).",
+        "image_prompt": "Rice mixed with peas, carrots, and corn."
+    },
+    {
+        "id": 65,
+        "name": "Mushroom and Spinach Omelet",
+        "category": "Diet and Keto",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 14,
+            "carbs": 5,
+            "fat": 14
+        },
+        "ingredients": [
+            {
+                "name": "Eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "100g"
+            },
+            {
+                "name": "Spinach",
+                "amount": "1 handful"
+            },
+            {
+                "name": "Low Oil",
+                "amount": "1 tsp"
+            }
+        ],
+        "instructions": "Sauté mushrooms and spinach, then add eggs.",
+        "image_prompt": "Omelet filled with sautéed mushrooms and spinach."
+    },
+    {
+        "id": 66,
+        "name": "Tuna Club Sandwich",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 30,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Tuna",
+                "amount": "1/2 can"
+            },
+            {
+                "name": "Whole Wheat Toast",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Lettuce and Tomato",
+                "amount": "As needed"
+            },
+            {
+                "name": "Diet Mayonnaise",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Mix tuna with sauce and make a sandwich.",
+        "image_prompt": "Club sandwich with tuna filling, lettuce, and tomato."
+    },
+    {
+        "id": 67,
+        "name": "Tomato Rice (Dami Gojeh)",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 6,
+            "carbs": 65,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Tomato Puree",
+                "amount": "4 pieces"
+            },
+            {
+                "name": "Sautéed Onion",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Cook rice in tomato puree for a simple diet meal.",
+        "image_prompt": "Red tomato rice (Dami Gojeh) cooked simply."
+    },
+    {
+        "id": 68,
+        "name": "Pumpkin and Lentil Stew",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Diced Pumpkin",
+                "amount": "200g"
+            },
+            {
+                "name": "Cooked Lentils",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Onion and Cinnamon",
+                "amount": "1 set"
+            }
+        ],
+        "instructions": "Cook pumpkin and lentils with water and cinnamon.",
+        "image_prompt": "Stew of pumpkin cubes and lentils."
+    },
+    {
+        "id": 69,
+        "name": "Pan Chicken Kebab",
+        "category": "Kebabs and Meat",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Ground Chicken Breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Grated Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Saffron",
+                "amount": "A pinch"
+            },
+            {
+                "name": "Butter",
+                "amount": "10g"
+            }
+        ],
+        "instructions": "Prepare like beef kebab but using chicken; cook in a pan.",
+        "image_prompt": "Chicken kebab strips cooked in a pan (Kabab Tabei Morgh)."
+    },
+    {
+        "id": 70,
+        "name": "Diet Yogurt Soup (Ash-e Mast)",
+        "category": "Soups and Stews",
+        "prep_time": "60 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 12,
+            "carbs": 45,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Broken Rice",
+                "amount": "1/4 cup"
+            },
+            {
+                "name": "Cooked Yellow Split Peas",
+                "amount": "1/4 cup"
+            },
+            {
+                "name": "Ash Herbs",
+                "amount": "150g"
+            },
+            {
+                "name": "Low-Fat Yogurt",
+                "amount": "1.5 cups"
+            }
+        ],
+        "instructions": "Cook the soup and add yogurt at the end (omit oily onions).",
+        "image_prompt": "White Yogurt Soup (Ash Mast) with green herbs."
+    },
+    {
+        "id": 71,
+        "name": "Roasted Potatoes with Herbs",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 5,
+            "carbs": 45,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Potatoes",
+                "amount": "2 medium"
+            },
+            {
+                "name": "Olive Oil",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Rosemary and Thyme",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Wedge the potatoes, season, and roast in the oven.",
+        "image_prompt": "Roasted potato wedges with herbs served on a tray."
+    },
+    {
+        "id": 72,
+        "name": "Smoked Turkey Sandwich",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Turkey Ham (over 90%)",
+                "amount": "3 slices"
+            },
+            {
+                "name": "Toast",
+                "amount": "2 slices"
+            },
+            {
+                "name": "Lettuce",
+                "amount": "2 leaves"
+            }
+        ],
+        "instructions": "Simple cold turkey sandwich.",
+        "image_prompt": "Turkey sandwich with fresh lettuce and whole wheat bread."
+    },
+    {
+        "id": 73,
+        "name": "Shrimp and Vegetable Stir-fry",
+        "category": "Seafood",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 20,
+            "carbs": 10,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Shrimp",
+                "amount": "100g"
+            },
+            {
+                "name": "Broccoli and Bell Peppers",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Soy Sauce",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Quickly stir-fry shrimp and vegetables.",
+        "image_prompt": "Shrimp and vegetable stir-fry in a wok."
+    },
+    {
+        "id": 74,
+        "name": "Pesto Pasta with Chicken",
+        "category": "Pasta and International",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 45,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Pasta",
+                "amount": "80g"
+            },
+            {
+                "name": "Pesto Sauce",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Grilled Chicken Breast",
+                "amount": "80g"
+            }
+        ],
+        "instructions": "Mix pasta with pesto and top with sliced chicken.",
+        "image_prompt": "Green pesto pasta topped with sliced chicken breast."
+    },
+    {
+        "id": 75,
+        "name": "Low-Fat Koofteh Tabrizi",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "90 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 35,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Ground Beef",
+                "amount": "100g"
+            },
+            {
+                "name": "Split Peas and Rice (parboiled)",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Aromatic Herbs",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Prunes and Walnuts",
+                "amount": "For filling"
+            }
+        ],
+        "instructions": "Form large meatballs and simmer in a thin sauce.",
+        "image_prompt": "Large Persian Koofteh Tabrizi served in a bowl with broth."
+    },
+    {
+        "id": 76,
+        "name": "Tabbouleh Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 6,
+            "carbs": 35,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Soaked Bulgur",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Lots of Chopped Parsley",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Finely Diced Tomato",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Olive Oil and Lemon",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Famous Lebanese salad with plenty of greens.",
+        "image_prompt": "Green Tabbouleh salad with bulgur, parsley, and tomatoes."
+    },
+    {
+        "id": 77,
+        "name": "Beef Tongue (No Creamy Sauce)",
+        "category": "Kebabs and Meat",
+        "prep_time": "120 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Beef Tongue",
+                "amount": "150g"
+            },
+            {
+                "name": "Sautéed Mushrooms",
+                "amount": "100g"
+            },
+            {
+                "name": "Steamed Vegetables",
+                "amount": "On the side"
+            }
+        ],
+        "instructions": "Boil tongue until tender, peel, and slice.",
+        "image_prompt": "Slices of cooked beef tongue served with steamed veggies."
+    },
+    {
+        "id": 78,
+        "name": "Pinto Beans with Angelica",
+        "category": "Soups and Stews",
+        "prep_time": "60 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 14,
+            "carbs": 45,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Pinto Beans",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Angelica Powder",
+                "amount": "Plenty"
+            }
+        ],
+        "instructions": "Thick bean stew, perfect for breakfast or a light lunch.",
+        "image_prompt": "Bowl of hot Pinto beans (Khorak Loobia) with lemon."
+    },
+    {
+        "id": 79,
+        "name": "Chicken and Vegetable Roulade",
+        "category": "Chicken and Poultry",
+        "prep_time": "50 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Flattened Chicken Breast",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Carrots and Bell Pepper",
+                "amount": "For filling"
+            },
+            {
+                "name": "Cooking Twine",
+                "amount": "To tie"
+            }
+        ],
+        "instructions": "Place vegetables inside chicken, roll, tie, and bake/steam.",
+        "image_prompt": "Chicken breast roulade stuffed with colorful vegetables, sliced."
+    },
+    {
+        "id": 80,
+        "name": "Cabbage and Pomegranate Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Chopped Red Cabbage",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Pomegranate Seeds",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Walnuts",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Yogurt Sauce",
+                "amount": "2 tbsp"
+            }
+        ],
+        "instructions": "Crispy and delicious winter salad.",
+        "image_prompt": "Red cabbage salad with pomegranate seeds and creamy dressing."
+    },
+    {
+        "id": 81,
+        "name": "Grilled Trout (Oil-Free)",
+        "category": "Seafood",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 0,
+            "fat": 25
+        },
+        "ingredients": [
+            {
+                "name": "Trout Fish",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Lemon and Saffron",
+                "amount": "For marination"
+            },
+            {
+                "name": "Grill Grate",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Grill the fish over charcoal or gas.",
+        "image_prompt": "Whole grilled trout fish with crispy skin."
+    },
+    {
+        "id": 82,
+        "name": "Vegetarian Okra Stew",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Okra",
+                "amount": "200g"
+            },
+            {
+                "name": "Mushrooms (instead of meat)",
+                "amount": "100g"
+            },
+            {
+                "name": "Tomato and Garlic",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Make okra stew with mushrooms and tomato sauce.",
+        "image_prompt": "Vegetarian Okra stew with mushrooms."
+    },
+    {
+        "id": 83,
+        "name": "White Barley Soup (Milk Soup)",
+        "category": "Soups and Stews",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 10,
+            "carbs": 30,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Rolled Oats/Barley",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Low-Fat Milk",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Carrot",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Cream",
+                "amount": "0 (Omitted)"
+            }
+        ],
+        "instructions": "Prepare milk soup without cream using low-fat milk.",
+        "image_prompt": "Bowl of white barley soup (Soup-e Jo) garnished with parsley."
+    },
+    {
+        "id": 84,
+        "name": "Mung Bean Rice (Mash Polo)",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "45 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 380,
+            "protein": 12,
+            "carbs": 70,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Cooked Mung Beans",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Dried Dill",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Steam mung beans and rice with dill.",
+        "image_prompt": "Mung bean rice (Mash Polo) served simply."
+    },
+    {
+        "id": 85,
+        "name": "Chicken and Mushroom Sandwich",
+        "category": "Fast Food and Sandwiches",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 30,
+            "carbs": 40,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Chopped Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Sautéed Mushrooms",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Baguette",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Low Mozzarella",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Sauté chicken and mushrooms, add cheese, and make a sandwich.",
+        "image_prompt": "Hot chicken and mushroom sandwich with melted cheese."
+    },
+    {
+        "id": 86,
+        "name": "Avocado and Chicken Salad",
+        "category": "Diet and Keto",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Diced Avocado",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Cooked Chicken Breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Lettuce and Red Onion",
+                "amount": "1 cup"
+            }
+        ],
+        "instructions": "Filling green salad with healthy fats.",
+        "image_prompt": "Bowl of salad featuring avocado slices and grilled chicken."
+    },
+    {
+        "id": 87,
+        "name": "Baked Rice Kibbeh",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "60 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 50,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Mashed Sticky Rice",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Meat Mixture",
+                "amount": "50g"
+            },
+            {
+                "name": "Egg",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Mash rice into a dough, fill with meat, and bake in the oven.",
+        "image_prompt": "Baked Rice Kibbeh, golden brown oval shapes."
+    },
+    {
+        "id": 88,
+        "name": "Chickpea Stir-fry (Deconstructed Falafel)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Chickpeas",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Onion and Garlic",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Falafel Spices",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Tomato",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Sauté chickpeas with onion and spices (falafel taste without frying).",
+        "image_prompt": "Spiced chickpeas stir-fried with onions and tomatoes."
+    },
+    {
+        "id": 89,
+        "name": "Zucchini Stuffed with Chicken",
+        "category": "Diet and Keto",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 25,
+            "carbs": 10,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Zucchini Boats",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Ground Chicken",
+                "amount": "100g"
+            },
+            {
+                "name": "Mozzarella Cheese",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Fill zucchinis with chicken and gratinate.",
+        "image_prompt": "Zucchini halves stuffed with chicken mince."
+    },
+    {
+        "id": 90,
+        "name": "Black-Eyed Pea Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 12,
+            "carbs": 40,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Cooked Black-Eyed Peas",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Fresh Dill",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Diced Cucumber",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Nutritious and cooling salad with lemon juice.",
+        "image_prompt": "Black-eyed pea salad with fresh dill and cucumber."
+    },
+    {
+        "id": 91,
+        "name": "Diet Macaroni with Soy",
+        "category": "Pasta and International",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 15,
+            "carbs": 60,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Pasta",
+                "amount": "80g"
+            },
+            {
+                "name": "Fine Soy Mince",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Tomato Paste",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Bell Pepper",
+                "amount": "1/2 piece"
+            }
+        ],
+        "instructions": "Cooked macaroni with soy mixture and very little oil.",
+        "image_prompt": "Spaghetti cooked with soy mince sauce."
+    },
+    {
+        "id": 92,
+        "name": "Quince Stew (Khoresht Beh)",
+        "category": "Traditional Dishes and Stews",
+        "prep_time": "60 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 20,
+            "carbs": 35,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Diced Quince",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Meat/Chicken",
+                "amount": "100g"
+            },
+            {
+                "name": "Prunes",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Sugar (Low)",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "Make quince stew with minimal sugar and oil.",
+        "image_prompt": "Persian Quince stew (Khoresht Beh) with meat chunks."
+    },
+    {
+        "id": 93,
+        "name": "Southern Baked Fish",
+        "category": "Seafood",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 350,
+            "protein": 30,
+            "carbs": 5,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Whole Fish (Snapper/Trout)",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Hashu (Cilantro, Garlic, Tamarind)",
+                "amount": "1/2 cup"
+            }
+        ],
+        "instructions": "Stuff the fish with Hashu and bake in the oven.",
+        "image_prompt": "Stuffed baked fish southern style with tamarind herb filling."
+    },
+    {
+        "id": 94,
+        "name": "Potato and Dill Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 5,
+            "carbs": 45,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Boiled Potatoes",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Fresh Dill",
+                "amount": "3 tbsp"
+            },
+            {
+                "name": "Green Onions",
+                "amount": "2 stalks"
+            },
+            {
+                "name": "Strained Yogurt",
+                "amount": "2 tbsp"
+            }
+        ],
+        "instructions": "Cube the potatoes and mix with yogurt and dill sauce.",
+        "image_prompt": "Potato salad with creamy dill dressing."
+    },
+    {
+        "id": 95,
+        "name": "Mushroom Stroganoff (Vegetarian)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Sliced Mushrooms",
+                "amount": "300g"
+            },
+            {
+                "name": "Vegan/Dairy Cream",
+                "amount": "2 tbsp"
+            },
+            {
+                "name": "Shoestring Potatoes (Baked)",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Serve creamy mushroom sauce with homemade baked potato sticks.",
+        "image_prompt": "Mushroom Stroganoff served with shoestring potatoes."
+    },
+    {
+        "id": 96,
+        "name": "Tomato Ash (Ash-e Gojeh)",
+        "category": "Soups and Stews",
+        "prep_time": "50 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 8,
+            "carbs": 40,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Plenty of Tomatoes",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Rice",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Yellow Split Peas",
+                "amount": "1/4 cup"
+            },
+            {
+                "name": "Sautéed Mint",
+                "amount": "1 tbsp"
+            }
+        ],
+        "instructions": "A tangy, colorful soup with a tomato base.",
+        "image_prompt": "Red Tomato Ash (Ash Goje) garnished with mint."
+    },
+    {
+        "id": 97,
+        "name": "Shami Kebab (with Split Peas)",
+        "category": "Finger Foods/Bread Dishes",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 320,
+            "protein": 20,
+            "carbs": 25,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Shredded Cooked Meat",
+                "amount": "100g"
+            },
+            {
+                "name": "Cooked Split Peas",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Egg",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Grind ingredients, shape into patties, and fry (lightly).",
+        "image_prompt": "Persian Shami Kabab patties made with split peas."
+    },
+    {
+        "id": 98,
+        "name": "Cumin Rice with Chicken",
+        "category": "Rice Dishes (Low Calorie)",
+        "prep_time": "45 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 400,
+            "protein": 25,
+            "carbs": 60,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Rice",
+                "amount": "6 tbsp"
+            },
+            {
+                "name": "Black Cumin",
+                "amount": "1 tbsp"
+            },
+            {
+                "name": "Cooked Chicken Breast",
+                "amount": "100g"
+            }
+        ],
+        "instructions": "Steam rice with cumin and serve with chicken on the side.",
+        "image_prompt": "Cumin Rice (Zireh Polo) served with chicken."
+    },
+    {
+        "id": 99,
+        "name": "Fattoush Salad",
+        "category": "Salads and Cold Dishes",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 4,
+            "carbs": 30,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Lettuce, Cucumber, Tomato, Radish",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Toasted Pita Bread (Pieces)",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Sumac and Olive Oil",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "Mediterranean salad with toasted bread chips.",
+        "image_prompt": "Fattoush salad with toasted pita bread chips and sumac."
+    },
+    {
+        "id": 100,
+        "name": "Chenjeh Kebab (Diet)",
+        "category": "Kebabs and Meat",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 35,
+            "carbs": 0,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Lamb Loin",
+                "amount": "150g"
+            },
+            {
+                "name": "Olive Oil and Kiwi (for tenderizing)",
+                "amount": "A little"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Marinate meat in kiwi and onion, then grill (very tender).",
+        "image_prompt": "Juicy lamb Chenjeh kebab skewers."
+    }
+]

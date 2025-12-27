@@ -15,7 +15,7 @@ export class PreferencesController {
                 return;
             }
 
-            const user = await User.findById(userId).select('addBurnedCalories rolloverCalories');
+            const user = await User.findById(userId).select('addBurnedCalories rolloverCalories preferredLanguage');
             if (!user) {
                 res.status(404).json({ success: false, message: 'User not found' });
                 return;
@@ -26,6 +26,7 @@ export class PreferencesController {
                 data: {
                     addBurnedCalories: user.addBurnedCalories ?? true,
                     rolloverCalories: user.rolloverCalories ?? true,
+                    preferredLanguage: user.preferredLanguage ?? 'en',
                 }
             });
         } catch (error) {
@@ -48,7 +49,7 @@ export class PreferencesController {
                 return;
             }
 
-            const { addBurnedCalories, rolloverCalories } = req.body || {};
+            const { addBurnedCalories, rolloverCalories, preferredLanguage } = req.body || {};
 
             const updateData: any = {};
             if (typeof addBurnedCalories === 'boolean') {
@@ -56,6 +57,10 @@ export class PreferencesController {
             }
             if (typeof rolloverCalories === 'boolean') {
                 updateData.rolloverCalories = rolloverCalories;
+            }
+            // Validate preferredLanguage is either 'en' or 'fa'
+            if (preferredLanguage && (preferredLanguage === 'en' || preferredLanguage === 'fa')) {
+                updateData.preferredLanguage = preferredLanguage;
             }
 
             if (Object.keys(updateData).length === 0) {
@@ -66,7 +71,7 @@ export class PreferencesController {
             const user = await User.findByIdAndUpdate(
                 userId,
                 updateData,
-                { new: true, select: 'addBurnedCalories rolloverCalories' }
+                { new: true, select: 'addBurnedCalories rolloverCalories preferredLanguage' }
             );
 
             if (!user) {
@@ -82,6 +87,7 @@ export class PreferencesController {
                 data: {
                     addBurnedCalories: user.addBurnedCalories ?? true,
                     rolloverCalories: user.rolloverCalories ?? true,
+                    preferredLanguage: user.preferredLanguage ?? 'en',
                 }
             });
         } catch (error) {

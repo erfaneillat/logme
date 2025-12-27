@@ -212,7 +212,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsModalOpen, setIsExerciseModa
     const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
 
     // Preferences State
-    const [preferences, setPreferences] = useState({ addBurnedCalories: true, rolloverCalories: true });
+    const [preferences, setPreferences] = useState({ addBurnedCalories: true, rolloverCalories: true, preferredLanguage: 'en' as 'en' | 'fa' });
     const [rolloverCaloriesAmount, setRolloverCaloriesAmount] = useState(0);
 
     // Streak Modal State

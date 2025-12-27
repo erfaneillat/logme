@@ -30,6 +30,8 @@ export interface IUser extends Document {
   // User preferences
   addBurnedCalories?: boolean; // whether to add burned calories to daily goal
   rolloverCalories?: boolean; // whether to rollover remaining calories
+  // Preferred language for notifications
+  preferredLanguage?: 'en' | 'fa';
   // FCM tokens for push notifications
   fcmTokens?: string[]; // Array of Firebase Cloud Messaging tokens
   verificationCode?: string;
@@ -156,6 +158,11 @@ const userSchema = new Schema<IUser>(
     rolloverCalories: {
       type: Boolean,
       default: true,
+    },
+    preferredLanguage: {
+      type: String,
+      enum: ['en', 'fa'],
+      default: 'en',
     },
     fcmTokens: {
       type: [String],

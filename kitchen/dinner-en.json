@@ -1,0 +1,2886 @@
+[
+    {
+        "id": 1,
+        "name": "Chicken Breast and Lettuce Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 28,
+            "carbs": 5,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Chopped lettuce",
+                "amount": "3 cups"
+            },
+            {
+                "name": "Cooked/Grilled chicken breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Lime",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Mix all ingredients and serve with lime and a little olive oil (light dinner).",
+        "image_prompt": "Bowl of fresh green salad topped with sliced grilled chicken breast."
+    },
+    {
+        "id": 2,
+        "name": "Diet Vegetable Soup",
+        "category": "Light Soup and Ash",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 20,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Zucchini",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Carrot",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Celery",
+                "amount": "1 stalk"
+            },
+            {
+                "name": "Diluted chicken broth",
+                "amount": "2 glasses"
+            }
+        ],
+        "instructions": "Dice the vegetables finely and cook in chicken broth.",
+        "image_prompt": "Clear vegetable soup bowl with diced carrots, celery, and zucchini."
+    },
+    {
+        "id": 3,
+        "name": "Grilled Zucchini with Yogurt",
+        "category": "Vegetable Dish",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 8,
+            "carbs": 12,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Sliced zucchini",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Low-fat yogurt",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Grated garlic",
+                "amount": "1 clove"
+            },
+            {
+                "name": "Dried dill",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Grill the zucchini in a diet pan and serve with garlic yogurt sauce.",
+        "image_prompt": "Grilled zucchini slices served with a side of garlic yogurt dip."
+    },
+    {
+        "id": 4,
+        "name": "Boiled Eggs and Cucumber",
+        "category": "Eggs and Omelet",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 12,
+            "carbs": 4,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Hard-boiled eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Persian cucumber",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Salt and pepper",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "A very light and protein-rich dinner; serve eggs with cucumber.",
+        "image_prompt": "Plate with halved hard-boiled eggs and fresh cucumber sticks."
+    },
+    {
+        "id": 5,
+        "name": "Abdoogh Khiar (No Cream)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 10,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Low-fat yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Grated cucumber",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Chopped walnuts",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Aromatic herbs and dried bread",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Mix all ingredients with cold water (great summer dinner).",
+        "image_prompt": "Traditional Persian cold yogurt soup (Abdoogh Khiar) with rose petals."
+    },
+    {
+        "id": 6,
+        "name": "Tuna in Brine",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 30,
+            "carbs": 0,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Canned tuna (in water)",
+                "amount": "1 can"
+            },
+            {
+                "name": "Lime",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Black pepper",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Drain the oil completely or use the brine variety.",
+        "image_prompt": "Tuna chunks from a can served simply with lemon wedges."
+    },
+    {
+        "id": 7,
+        "name": "Diet Mushroom Dish",
+        "category": "Vegetable Dish",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Mushrooms",
+                "amount": "300g"
+            },
+            {
+                "name": "Small onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Bell pepper",
+                "amount": "1/4 piece"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Sauté mushrooms with onion and lemon juice (to prevent darkening) in a pan.",
+        "image_prompt": "Sautéed mushrooms with steam rising, garnished with parsley."
+    },
+    {
+        "id": 8,
+        "name": "Lettuce and Turkey Wrap",
+        "category": "Sandwich and Wrap (Lettuce/Barley Bread)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 20,
+            "carbs": 4,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Official lettuce leaf",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Turkey ham (90%)",
+                "amount": "3 slices"
+            },
+            {
+                "name": "Cherry tomato",
+                "amount": "5 pieces"
+            }
+        ],
+        "instructions": "Wrap the turkey inside the lettuce (bread substitute).",
+        "image_prompt": "Lettuce wraps filled with turkey slices and cherry tomatoes."
+    },
+    {
+        "id": 9,
+        "name": "Cold Tomato Soup (Gazpacho)",
+        "category": "Light Soup and Ash",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 4,
+            "carbs": 20,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Tomato",
+                "amount": "4 pieces"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Bell pepper",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Garlic and olive oil",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Puree all raw ingredients in a blender and serve cold.",
+        "image_prompt": "Bowl of red Gazpacho soup served cold with cucumber garnish."
+    },
+    {
+        "id": 10,
+        "name": "Spinach Omelet (Egg Whites Only)",
+        "category": "Eggs and Omelet",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 20,
+            "carbs": 3,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Egg whites",
+                "amount": "4 pieces"
+            },
+            {
+                "name": "Chopped spinach",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Salt and pepper",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Sauté the spinach and add the beaten egg whites.",
+        "image_prompt": "White egg omelet with green spinach patches."
+    },
+    {
+        "id": 11,
+        "name": "Shirazi Salad (with Verjuice)",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Cucumber",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Tomato",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Verjuice (Ab-ghooreh) and dried mint",
+                "amount": "Plenty"
+            }
+        ],
+        "instructions": "As an extremely light and fat-burning dinner.",
+        "image_prompt": "Bowl of Persian Shirazi Salad with diced cucumbers, tomatoes, and onions."
+    },
+    {
+        "id": 12,
+        "name": "Steamed Cauliflower with Spices",
+        "category": "Vegetable Dish",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 4,
+            "carbs": 12,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Cauliflower",
+                "amount": "200g"
+            },
+            {
+                "name": "Turmeric and Paprika",
+                "amount": "1 teaspoon"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Steam the cauliflower and season with spices and lemon.",
+        "image_prompt": "Steamed cauliflower florets sprinkled with red paprika powder."
+    },
+    {
+        "id": 13,
+        "name": "Boiled Chicken Fillet (Cold)",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 35,
+            "carbs": 0,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Chicken fillet",
+                "amount": "150g"
+            },
+            {
+                "name": "Onion and bay leaf",
+                "amount": "For cooking"
+            },
+            {
+                "name": "Diet mustard sauce",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Cook the chicken simply and serve cold with mustard.",
+        "image_prompt": "Boiled chicken tenderloins served simply on a white plate."
+    },
+    {
+        "id": 14,
+        "name": "Cheese and Walnuts (Light Dinner)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 10,
+            "fat": 18
+        },
+        "ingredients": [
+            {
+                "name": "Low-salt Feta cheese",
+                "amount": "40g"
+            },
+            {
+                "name": "Walnut",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Cucumber and Tomato",
+                "amount": "For side"
+            }
+        ],
+        "instructions": "Traditional Iranian dinner, without bread or with 1 palm-sized piece of barley bread.",
+        "image_prompt": "Plate with a block of feta cheese, walnuts, and sliced cucumbers."
+    },
+    {
+        "id": 15,
+        "name": "Broccoli and Parmesan Cheese",
+        "category": "Vegetable Dish",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Broccoli",
+                "amount": "200g"
+            },
+            {
+                "name": "Parmesan cheese",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Sauté or steam the broccoli and sprinkle cheese on top.",
+        "image_prompt": "Green broccoli florets topped with melted parmesan cheese."
+    },
+    {
+        "id": 16,
+        "name": "Spinach Soup",
+        "category": "Light Soup and Ash",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 130,
+            "protein": 5,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Spinach",
+                "amount": "200g"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Chicken broth",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Yogurt (for serving)",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Blend the cooked spinach to make a smooth green soup.",
+        "image_prompt": "Bowl of creamy green spinach soup."
+    },
+    {
+        "id": 17,
+        "name": "Red Cabbage Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Chopped red cabbage",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Fresh lemon juice",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "Olive oil",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Massage the cabbage with salt and lemon juice until softened.",
+        "image_prompt": "Vibrant red cabbage salad bowl."
+    },
+    {
+        "id": 18,
+        "name": "Steamed Shrimp (Cold)",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Shrimp",
+                "amount": "150g"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "Plenty"
+            },
+            {
+                "name": "Parsley",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Cook shrimp for 5 minutes and eat with lemon juice as a light dinner.",
+        "image_prompt": "Cocktail shrimp served on ice with lemon."
+    },
+    {
+        "id": 19,
+        "name": "Spinach Nargesi (Diet)",
+        "category": "Eggs and Omelet",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 15,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Spinach",
+                "amount": "200g"
+            },
+            {
+                "name": "Egg",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Fried onion (oil-free)",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Sauté spinach and crack the eggs on top.",
+        "image_prompt": "Spinach topped with fried eggs in a pan."
+    },
+    {
+        "id": 20,
+        "name": "Yogurt and Cucumber (Diet)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 10,
+            "carbs": 12,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Low-fat yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Chopped cucumber",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Dried mint",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "An incredibly light and probiotic dinner.",
+        "image_prompt": "Bowl of yogurt mixed with cucumber and mint powder."
+    },
+    {
+        "id": 21,
+        "name": "Steamed Green Beans",
+        "category": "Vegetable Dish",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Green beans",
+                "amount": "200g"
+            },
+            {
+                "name": "Tomato",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Steam beans and tomatoes with a bit of garlic and water.",
+        "image_prompt": "Steamed green beans with tomato chunks."
+    },
+    {
+        "id": 22,
+        "name": "Tuna and Celery Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 28,
+            "carbs": 5,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Tuna (no oil)",
+                "amount": "1 can"
+            },
+            {
+                "name": "Chopped celery",
+                "amount": "2 stalks"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "A crunchy and protein-rich combination for dinner.",
+        "image_prompt": "Salad mix of tuna flakes and chopped celery."
+    },
+    {
+        "id": 23,
+        "name": "Tomato Omelet (No Oil)",
+        "category": "Eggs and Omelet",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 12,
+            "carbs": 8,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Tomato",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Egg",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Bell pepper",
+                "amount": "1/4 piece"
+            }
+        ],
+        "instructions": "Cook tomatoes until water evaporates, then add eggs.",
+        "image_prompt": "Tomato omelet cooked in a pan without visible oil."
+    },
+    {
+        "id": 24,
+        "name": "Grilled Turkey Breast",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 40,
+            "carbs": 0,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Turkey breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Curry powder",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Slice turkey thinly, season, and grill.",
+        "image_prompt": "Grilled turkey breast slice with grill marks."
+    },
+    {
+        "id": 25,
+        "name": "Spinach Borani",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 10,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Cooked spinach",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Low-fat yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Cook spinach and mix with yogurt and garlic.",
+        "image_prompt": "Bowl of spinach yogurt dip (Borani) garnished with garlic."
+    },
+    {
+        "id": 26,
+        "name": "Green Bean Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 6,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Cooked green beans",
+                "amount": "200g"
+            },
+            {
+                "name": "Cherry tomatoes",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Feta cheese",
+                "amount": "20g"
+            },
+            {
+                "name": "Balsamic vinegar",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Mix cooled beans with tomatoes and cheese.",
+        "image_prompt": "Green bean salad with cherry tomatoes and cheese crumbles."
+    },
+    {
+        "id": 27,
+        "name": "Pumpkin Soup (No Cream)",
+        "category": "Light Soup and Ash",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 3,
+            "carbs": 30,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Pumpkin",
+                "amount": "300g"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Ginger",
+                "amount": "A little"
+            },
+            {
+                "name": "Low-fat milk (optional)",
+                "amount": "1/4 cup"
+            }
+        ],
+        "instructions": "Cook pumpkin and puree.",
+        "image_prompt": "Smooth orange pumpkin soup in a bowl."
+    },
+    {
+        "id": 28,
+        "name": "Grilled Tofu",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "15 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 18,
+            "carbs": 5,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Firm tofu",
+                "amount": "150g"
+            },
+            {
+                "name": "Soy sauce",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Sesame seeds",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Slice tofu and grill in a pan.",
+        "image_prompt": "Grilled tofu cubes with sesame seeds."
+    },
+    {
+        "id": 29,
+        "name": "Greek Salad (No Bread)",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 15
+        },
+        "ingredients": [
+            {
+                "name": "Cucumber and Tomato",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Feta cheese",
+                "amount": "40g"
+            },
+            {
+                "name": "Black olives",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Red onion",
+                "amount": "1/4 piece"
+            }
+        ],
+        "instructions": "Chop ingredients coarsely and mix with oregano.",
+        "image_prompt": "Greek salad bowl with block of feta cheese."
+    },
+    {
+        "id": 30,
+        "name": "Hummus and Vegetables",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 8,
+            "carbs": 25,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Hummus",
+                "amount": "3 tablespoons"
+            },
+            {
+                "name": "Carrot, cucumber, and celery",
+                "amount": "Long slices"
+            }
+        ],
+        "instructions": "Dip raw vegetables in hummus for a light dinner.",
+        "image_prompt": "Plate of hummus dip surrounded by colorful veggie sticks."
+    },
+    {
+        "id": 31,
+        "name": "Mushroom Omelet (Whites Only)",
+        "category": "Eggs and Omelet",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 130,
+            "protein": 18,
+            "carbs": 4,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Egg whites",
+                "amount": "4 pieces"
+            },
+            {
+                "name": "Mushrooms",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Parsley",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Sauté mushrooms and add egg whites.",
+        "image_prompt": "Fluffy white mushroom omelet on a plate."
+    },
+    {
+        "id": 32,
+        "name": "Stuffed Bell Pepper (Vegetable)",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "45 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 5,
+            "carbs": 30,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Bell pepper",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Cooked brown rice/quinoa",
+                "amount": "4 spoons"
+            },
+            {
+                "name": "Aromatic herbs",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Tomato paste",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Stuff the pepper and steam (meatless for light dinner).",
+        "image_prompt": "Stuffed bell pepper with rice and veggies."
+    },
+    {
+        "id": 33,
+        "name": "Pinto Bean Dish (Small Portion)",
+        "category": "Vegetable Dish",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 12,
+            "carbs": 35,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Canned beans (or homemade)",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Golpar and lemon juice",
+                "amount": "As needed"
+            }
+        ],
+        "instructions": "A small amount of bean dish (low oil) for dinner.",
+        "image_prompt": "Small bowl of pinto beans with lemon slice."
+    },
+    {
+        "id": 34,
+        "name": "Cucumber, Cheese, and Dill Rolls",
+        "category": "Sandwich and Wrap (Lettuce/Barley Bread)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 6,
+            "carbs": 4,
+            "fat": 7
+        },
+        "ingredients": [
+            {
+                "name": "Thin cucumber slices",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Diet cream cheese",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "Dill",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Spread cheese on cucumber strips and roll up.",
+        "image_prompt": "Cucumber rolls filled with cream cheese and herbs."
+    },
+    {
+        "id": 35,
+        "name": "Oat Soup (Thin)",
+        "category": "Light Soup and Ash",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 5,
+            "carbs": 25,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Quick oats",
+                "amount": "3 spoons"
+            },
+            {
+                "name": "Chicken broth",
+                "amount": "2 glasses"
+            },
+            {
+                "name": "Grated carrot",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Parsley",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Very light and thin soup for easy nightly digestion.",
+        "image_prompt": "Thin oat soup with parsley garnish."
+    },
+    {
+        "id": 36,
+        "name": "Avocado and Egg Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 300,
+            "protein": 14,
+            "carbs": 10,
+            "fat": 20
+        },
+        "ingredients": [
+            {
+                "name": "Avocado",
+                "amount": "1/2 piece"
+            },
+            {
+                "name": "Hard-boiled eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Lettuce",
+                "amount": "1 cup"
+            }
+        ],
+        "instructions": "A filling combination of healthy fats and protein.",
+        "image_prompt": "Salad bowl with avocado slices and hard boiled eggs."
+    },
+    {
+        "id": 37,
+        "name": "Steamed Lemon Chicken",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 35,
+            "carbs": 2,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Chicken breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Sliced lemon",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Rosemary",
+                "amount": "1 sprig"
+            }
+        ],
+        "instructions": "Cook chicken with lemon in foil or a steamer.",
+        "image_prompt": "Steamed chicken breast topped with lemon slices."
+    },
+    {
+        "id": 38,
+        "name": "Grilled Kashk Bademjan (Diet)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Grilled eggplant",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Kashk (whey)",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Mash grilled eggplant and mix with kashk (no oil or fried onions).",
+        "image_prompt": "Diet Kashk Bademjan made with grilled eggplant."
+    },
+    {
+        "id": 39,
+        "name": "Zucchini Noodles (Zoodles)",
+        "category": "Vegetable Dish",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 3,
+            "carbs": 10,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Zucchini (spiralized)",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Olive oil",
+                "amount": "1 teaspoon"
+            },
+            {
+                "name": "Parmesan cheese",
+                "amount": "1 teaspoon"
+            }
+        ],
+        "instructions": "Spiralize the zucchini and sauté for 1 minute.",
+        "image_prompt": "Zucchini noodles served like spaghetti."
+    },
+    {
+        "id": 40,
+        "name": "Lentil and Spinach Dish",
+        "category": "Vegetable Dish",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 15,
+            "carbs": 30,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Cooked lentils",
+                "amount": "3/4 cup"
+            },
+            {
+                "name": "Sautéed spinach",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Mix lentils and spinach and heat together.",
+        "image_prompt": "Bowl of lentils mixed with wilted spinach."
+    },
+    {
+        "id": 41,
+        "name": "Broccoli and Raisin Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 6,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Raw/Blanched broccoli",
+                "amount": "2 cups"
+            },
+            {
+                "name": "Raisins",
+                "amount": "1 tablespoon"
+            },
+            {
+                "name": "Almonds",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Yogurt",
+                "amount": "2 spoons"
+            }
+        ],
+        "instructions": "Mix finely chopped broccoli with toppings.",
+        "image_prompt": "Broccoli salad with raisins and almonds."
+    },
+    {
+        "id": 42,
+        "name": "Egg Wrap (White Crepe)",
+        "category": "Sandwich and Wrap (Lettuce/Barley Bread)",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 20,
+            "carbs": 2,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Egg whites",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Spinach and mushrooms",
+                "amount": "For filling"
+            }
+        ],
+        "instructions": "Cook whites like a thin bread and wrap vegetables inside.",
+        "image_prompt": "Egg white wrap filled with veggies."
+    },
+    {
+        "id": 43,
+        "name": "Warm Milk and Cinnamon (Dinner Substitute)",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 8,
+            "carbs": 12,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Low-fat milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "1 stick"
+            },
+            {
+                "name": "Honey (very little)",
+                "amount": "1/2 teaspoon"
+            }
+        ],
+        "instructions": "For nights when you have no appetite.",
+        "image_prompt": "Mug of warm milk with a cinnamon stick."
+    },
+    {
+        "id": 44,
+        "name": "Beetroot and Pomegranate Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 2,
+            "carbs": 30,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Cooked beetroot",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Pomegranate",
+                "amount": "1/4 cup"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Dice beetroot and mix with pomegranate (blood-building and light).",
+        "image_prompt": "Red beetroot salad with pomegranate seeds."
+    },
+    {
+        "id": 45,
+        "name": "Stuffed Mushrooms (No Cheese)",
+        "category": "Vegetable Dish",
+        "prep_time": "20 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Large mushrooms",
+                "amount": "4 pieces"
+            },
+            {
+                "name": "Spinach and garlic",
+                "amount": "For filling"
+            }
+        ],
+        "instructions": "Remove stems, fill with spinach, and bake.",
+        "image_prompt": "Stuffed mushrooms with spinach filling."
+    },
+    {
+        "id": 46,
+        "name": "Eggplant Yogurt",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 8,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Steamed/Grilled eggplant",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Dice eggplant and add to yogurt (chunky, not mashed).",
+        "image_prompt": "Bowl of yogurt with chunks of eggplant."
+    },
+    {
+        "id": 47,
+        "name": "Smoked Salmon and Cucumber",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 20,
+            "carbs": 2,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Smoked salmon",
+                "amount": "3 slices"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Capers (optional)",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Luxurious cold dinner; place salmon on cucumber slices.",
+        "image_prompt": "Smoked salmon slices served on cucumber rounds."
+    },
+    {
+        "id": 48,
+        "name": "Onion Soup (No Cheese or Bread)",
+        "category": "Light Soup and Ash",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Sliced onions",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Meat/Chicken broth",
+                "amount": "2 glasses"
+            },
+            {
+                "name": "Olive oil (low)",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Caramelize onions and cook with broth.",
+        "image_prompt": "Brown onion soup in a bowl."
+    },
+    {
+        "id": 49,
+        "name": "Chickpea Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 12,
+            "carbs": 35,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Cooked chickpeas",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Diced cucumber and tomato",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Parsley",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Filing plant-based protein salad.",
+        "image_prompt": "Chickpea salad with diced fresh vegetables."
+    },
+    {
+        "id": 50,
+        "name": "Boiled Chicken Meatballs",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 25,
+            "carbs": 5,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Ground chicken",
+                "amount": "150g"
+            },
+            {
+                "name": "Grated onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Aromatic herbs",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Make small meatballs and cook in water or thin tomato sauce.",
+        "image_prompt": "Boiled chicken meatballs served with greens."
+    },
+    {
+        "id": 51,
+        "name": "Cooked Artichoke",
+        "category": "Vegetable Dish",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 4,
+            "carbs": 13,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Artichoke",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Cook artichoke in water and lemon and eat the leaves.",
+        "image_prompt": "Whole cooked artichoke served with dipping sauce."
+    },
+    {
+        "id": 52,
+        "name": "Diet Olivier Salad (No Bread)",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Cooked chicken breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Small potato",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Peas",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "Greek yogurt (instead of mayo)",
+                "amount": "2 spoons"
+            }
+        ],
+        "instructions": "Make Olivier with yogurt and eat plain (no bread).",
+        "image_prompt": "Diet Olivier salad made with yogurt."
+    },
+    {
+        "id": 53,
+        "name": "Sashimi (Raw Fish)",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "10 minutes",
+        "difficulty": "Hard",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 25,
+            "carbs": 0,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Fresh salmon (sushi grade)",
+                "amount": "100g"
+            },
+            {
+                "name": "Soy sauce",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Wasabi",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "The lightest dinner if you enjoy raw fish.",
+        "image_prompt": "Fresh salmon sashimi slices with soy sauce."
+    },
+    {
+        "id": 54,
+        "name": "Green Bean and Carrot Dish",
+        "category": "Vegetable Dish",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 3,
+            "carbs": 20,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Green beans",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Sliced carrots",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Sauté vegetables together and cook slightly.",
+        "image_prompt": "Green beans and carrots sautéed together."
+    },
+    {
+        "id": 55,
+        "name": "Egg in Bell Pepper",
+        "category": "Eggs and Omelet",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 12,
+            "carbs": 6,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Bell pepper rings",
+                "amount": "2 rings"
+            },
+            {
+                "name": "Egg",
+                "amount": "2 pieces"
+            }
+        ],
+        "instructions": "Crack the egg into the center of the pepper ring in a pan.",
+        "image_prompt": "Egg fried inside a bell pepper ring."
+    },
+    {
+        "id": 56,
+        "name": "Celery and Apple Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 2,
+            "carbs": 25,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Celery stalk",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Green apple",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Walnut",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Yogurt",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "A crunchy and fresh combination for dinner.",
+        "image_prompt": "Celery and green apple salad with walnuts."
+    },
+    {
+        "id": 57,
+        "name": "Cottage Cheese and Cucumber",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "2 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 25,
+            "carbs": 8,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Cottage cheese",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Black pepper",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "A bowl of pure, slow-digesting protein for the night.",
+        "image_prompt": "Bowl of cottage cheese with sliced cucumbers."
+    },
+    {
+        "id": 58,
+        "name": "Miso Soup (Japanese)",
+        "category": "Light Soup and Ash",
+        "prep_time": "10 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 4,
+            "carbs": 8,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Miso paste",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Boiling water",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Diced tofu",
+                "amount": "A few pieces"
+            },
+            {
+                "name": "Green onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Dissolve paste in water and add tofu and green onion.",
+        "image_prompt": "Bowl of Miso soup with tofu cubes and green onions."
+    },
+    {
+        "id": 59,
+        "name": "Chicken Breast Stuffed with Spinach",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "40 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 280,
+            "protein": 35,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Chicken breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Cooked spinach",
+                "amount": "50g"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Butterfly the chicken breast, stuff with spinach, and cook.",
+        "image_prompt": "Chicken breast stuffed with spinach filling."
+    },
+    {
+        "id": 60,
+        "name": "Napa Cabbage Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 3,
+            "carbs": 15,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Napa cabbage",
+                "amount": "3 cups"
+            },
+            {
+                "name": "Grated carrot",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Soy sauce and vinegar",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Crunchy and light Asian salad.",
+        "image_prompt": "Napa cabbage salad with shredded carrots."
+    },
+    {
+        "id": 61,
+        "name": "Baked Sweet Potato",
+        "category": "Vegetable Dish",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 2,
+            "carbs": 40,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Sweet potato",
+                "amount": "1 medium"
+            },
+            {
+                "name": "Cinnamon",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Bake in the oven and eat as a complex carb dinner.",
+        "image_prompt": "Baked sweet potato cut open with steam rising."
+    },
+    {
+        "id": 62,
+        "name": "Mirza Ghasemi (No Oil)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 8,
+            "carbs": 15,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Grilled eggplant",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Tomato",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Egg",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Garlic",
+                "amount": "2 cloves"
+            }
+        ],
+        "instructions": "Mix eggplant and tomato and add egg (sauté without oil).",
+        "image_prompt": "Mirza Ghasemi dish served in a clay pot."
+    },
+    {
+        "id": 63,
+        "name": "Mung Bean Sprout Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 8,
+            "carbs": 20,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Mung bean sprouts",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Cucumber and tomato",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Highly nutritious and easy to digest salad.",
+        "image_prompt": "Salad with mung bean sprouts and fresh veggies."
+    },
+    {
+        "id": 64,
+        "name": "Boiled Eggs on Lettuce",
+        "category": "Sandwich and Wrap (Lettuce/Barley Bread)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 12,
+            "carbs": 2,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Lettuce leaf",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Hard-boiled eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Green onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Lettuce wraps with eggs.",
+        "image_prompt": "Hard boiled eggs served on lettuce leaves."
+    },
+    {
+        "id": 65,
+        "name": "Red Lentil Soup (Thin Dal)",
+        "category": "Light Soup and Ash",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 10,
+            "carbs": 30,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Red lentils",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Water and turmeric",
+                "amount": "As needed"
+            },
+            {
+                "name": "Cilantro",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Thin lentil soup for cold nights.",
+        "image_prompt": "Red lentil soup bowl with cilantro."
+    },
+    {
+        "id": 66,
+        "name": "Raw Bell Pepper (Snack)",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "2 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 40,
+            "protein": 1,
+            "carbs": 8,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Colored bell peppers",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Eat pepper slices plain (stomach filler).",
+        "image_prompt": "Sliced colorful bell peppers on a plate."
+    },
+    {
+        "id": 67,
+        "name": "Spinach and Strawberry Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 3,
+            "carbs": 20,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Baby spinach",
+                "amount": "3 cups"
+            },
+            {
+                "name": "Strawberries",
+                "amount": "5 pieces"
+            },
+            {
+                "name": "Slivered almonds",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Balsamic vinegar",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Elegant and light salad.",
+        "image_prompt": "Spinach salad with fresh strawberries and almonds."
+    },
+    {
+        "id": 68,
+        "name": "Raw Zucchini (Spiralized)",
+        "category": "Vegetable Dish",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 40,
+            "protein": 2,
+            "carbs": 8,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Zucchini",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Lemon juice and salt",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Spiralize zucchini and eat like a salad.",
+        "image_prompt": "Raw zucchini noodles in a bowl."
+    },
+    {
+        "id": 69,
+        "name": "Zucchini Yogurt (Zucchini Borani)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 10,
+            "carbs": 12,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Grated zucchini (raw or steamed)",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Low-fat yogurt",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Dill and garlic",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Mix zucchini into yogurt and eat (very slimming).",
+        "image_prompt": "Yogurt dip with grated zucchini."
+    },
+    {
+        "id": 70,
+        "name": "Grilled Shrimp (Skewered)",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 20,
+            "carbs": 2,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Shrimp",
+                "amount": "100g"
+            },
+            {
+                "name": "Pepper and lemon",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Grill a few shrimp and eat plain.",
+        "image_prompt": "Grilled shrimp on skewers."
+    },
+    {
+        "id": 71,
+        "name": "Mushroom Soup (No Cream)",
+        "category": "Light Soup and Ash",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Mushrooms",
+                "amount": "200g"
+            },
+            {
+                "name": "Low-fat milk",
+                "amount": "1 glass"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Thicken soup with milk (no cream).",
+        "image_prompt": "Bowl of mushroom soup garnished with thyme."
+    },
+    {
+        "id": 72,
+        "name": "Boiled Eggs and Spinach",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 15,
+            "carbs": 5,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Hard-boiled eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Raw spinach",
+                "amount": "2 cups"
+            }
+        ],
+        "instructions": "Simple spinach and egg salad.",
+        "image_prompt": "Hard boiled eggs on a bed of fresh spinach."
+    },
+    {
+        "id": 73,
+        "name": "Thin Lentils (Dinner)",
+        "category": "Light Soup and Ash",
+        "prep_time": "40 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 12,
+            "carbs": 30,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Lentils",
+                "amount": "1/2 cup"
+            },
+            {
+                "name": "Plenty of water",
+                "amount": "2 glasses"
+            },
+            {
+                "name": "Lemon",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "A small bowl of thin lentils.",
+        "image_prompt": "Small bowl of lentil soup."
+    },
+    {
+        "id": 74,
+        "name": "Cheese and Cucumber Sandwich (Barley Bread)",
+        "category": "Bread and Yogurt Based",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 8,
+            "carbs": 25,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Barley bread (toast)",
+                "amount": "1 slice"
+            },
+            {
+                "name": "Feta cheese",
+                "amount": "30g"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Classic light dinner.",
+        "image_prompt": "Slice of rye bread topped with cheese and cucumber."
+    },
+    {
+        "id": 75,
+        "name": "Steamed Eggplant with Garlic",
+        "category": "Vegetable Dish",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 15,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Eggplant",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Grated garlic",
+                "amount": "2 cloves"
+            },
+            {
+                "name": "Vinegar (optional)",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Steam eggplant and eat with garlic.",
+        "image_prompt": "Steamed eggplants served whole with garlic."
+    },
+    {
+        "id": 76,
+        "name": "Lettuce and Cucumber Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 2,
+            "carbs": 10,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Lettuce",
+                "amount": "3 cups"
+            },
+            {
+                "name": "Cucumber",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Lemon juice and yogurt dressing",
+                "amount": "2 spoons"
+            }
+        ],
+        "instructions": "Large green salad bowl.",
+        "image_prompt": "Simple green salad with lettuce and cucumber."
+    },
+    {
+        "id": 77,
+        "name": "Ground Chicken Pan-Fry (No Oil)",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Ground chicken breast",
+                "amount": "120g"
+            },
+            {
+                "name": "Onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Dry diet pan-fry chicken kebab.",
+        "image_prompt": "Chicken kebab patty cooked without oil."
+    },
+    {
+        "id": 78,
+        "name": "Diet Jelly (Sugar-Free)",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 20,
+            "protein": 2,
+            "carbs": 0,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Diet jelly powder",
+                "amount": "1 pack"
+            },
+            {
+                "name": "Water",
+                "amount": "2 glasses"
+            }
+        ],
+        "instructions": "To satisfy sweet cravings after dinner.",
+        "image_prompt": "Bowl of sugar-free red jelly."
+    },
+    {
+        "id": 79,
+        "name": "Steamed Okra with Tomato",
+        "category": "Vegetable Dish",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 90,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Small okra",
+                "amount": "200g"
+            },
+            {
+                "name": "Tomato",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Garlic",
+                "amount": "1 clove"
+            }
+        ],
+        "instructions": "Cook okra and tomato together (avoid sliminess).",
+        "image_prompt": "Steamed okra with tomato sauce."
+    },
+    {
+        "id": 80,
+        "name": "Egg and Green Onion Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 200,
+            "protein": 14,
+            "carbs": 5,
+            "fat": 12
+        },
+        "ingredients": [
+            {
+                "name": "Hard-boiled eggs",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Chopped green onions",
+                "amount": "3 stalks"
+            },
+            {
+                "name": "Yogurt and mustard",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Chop eggs and make a salad.",
+        "image_prompt": "Egg salad bowl with green onions."
+    },
+    {
+        "id": 81,
+        "name": "Vermicelli Soup (Thin)",
+        "category": "Light Soup and Ash",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 20,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Vermicelli noodles",
+                "amount": "20g"
+            },
+            {
+                "name": "Chicken broth",
+                "amount": "2 glasses"
+            },
+            {
+                "name": "Carrot",
+                "amount": "1/2 piece"
+            }
+        ],
+        "instructions": "Simple and light noodle soup.",
+        "image_prompt": "Clear vermicelli soup with carrots."
+    },
+    {
+        "id": 82,
+        "name": "Raw Broccoli with Yogurt Dip",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 8,
+            "carbs": 10,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Broccoli pieces",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Low-fat shallot yogurt",
+                "amount": "3 spoons"
+            }
+        ],
+        "instructions": "Dip raw broccoli in yogurt and eat.",
+        "image_prompt": "Raw broccoli florets with yogurt dip."
+    },
+    {
+        "id": 83,
+        "name": "Tuna and Lettuce Wrap",
+        "category": "Sandwich and Wrap (Lettuce/Barley Bread)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 160,
+            "protein": 25,
+            "carbs": 2,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Lettuce leaf",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Tuna without oil",
+                "amount": "1/2 can"
+            },
+            {
+                "name": "Onion",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Wrap tuna in lettuce.",
+        "image_prompt": "Lettuce wraps filled with tuna salad."
+    },
+    {
+        "id": 84,
+        "name": "Cooked Pumpkin (Plain)",
+        "category": "Vegetable Dish",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 18,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Pumpkin",
+                "amount": "200g"
+            },
+            {
+                "name": "Water",
+                "amount": "1 small cup"
+            }
+        ],
+        "instructions": "Cook pumpkin without sugar or sweeteners.",
+        "image_prompt": "Steamed pumpkin cubes."
+    },
+    {
+        "id": 85,
+        "name": "Scrambled Eggs with Mushrooms",
+        "category": "Eggs and Omelet",
+        "prep_time": "10 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 14,
+            "carbs": 5,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Egg",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Chopped mushrooms",
+                "amount": "1 cup"
+            }
+        ],
+        "instructions": "Stir mushrooms and eggs together in a pan.",
+        "image_prompt": "Scrambled eggs mixed with mushrooms."
+    },
+    {
+        "id": 86,
+        "name": "Tomato and Onion Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 12,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Tomato",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Sliced red onion",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Balsamic vinegar",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Simple and light salad.",
+        "image_prompt": "Tomato and red onion salad."
+    },
+    {
+        "id": 87,
+        "name": "Green Smoothie (Liquid Dinner)",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 25,
+            "fat": 1
+        },
+        "ingredients": [
+            {
+                "name": "Spinach",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Green apple",
+                "amount": "1 piece"
+            },
+            {
+                "name": "Celery",
+                "amount": "1 stalk"
+            },
+            {
+                "name": "Water",
+                "amount": "1 glass"
+            }
+        ],
+        "instructions": "For nightly detox and lightness.",
+        "image_prompt": "Green detox smoothie in a glass."
+    },
+    {
+        "id": 88,
+        "name": "Chicken and Broccoli Stir-Fry",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 250,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 8
+        },
+        "ingredients": [
+            {
+                "name": "Chopped chicken breast",
+                "amount": "100g"
+            },
+            {
+                "name": "Broccoli",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Garlic and soy sauce",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Quickly stir-fry chicken and broccoli in a pan.",
+        "image_prompt": "Stir-fry of chicken and broccoli."
+    },
+    {
+        "id": 89,
+        "name": "Zucchini Chips (Oven)",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "30 minutes",
+        "difficulty": "Medium",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 4,
+            "carbs": 15,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Thinly sliced zucchini",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Salt and paprika",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Dry the slices in the oven until they become chips.",
+        "image_prompt": "Crispy zucchini chips on a baking sheet."
+    },
+    {
+        "id": 90,
+        "name": "Wedge Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 120,
+            "protein": 4,
+            "carbs": 10,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Iceberg lettuce",
+                "amount": "1/4 head (one wedge)"
+            },
+            {
+                "name": "Thin yogurt dressing",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "Cherry tomatoes",
+                "amount": "5 pieces"
+            }
+        ],
+        "instructions": "Cut lettuce into wedges and pour dressing over it.",
+        "image_prompt": "Wedge salad with yogurt dressing."
+    },
+    {
+        "id": 91,
+        "name": "Garlic and Chicken Soup (Thin)",
+        "category": "Light Soup and Ash",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 15,
+            "carbs": 10,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Plenty of garlic",
+                "amount": "5 cloves"
+            },
+            {
+                "name": "Chicken broth",
+                "amount": "2 glasses"
+            },
+            {
+                "name": "Shredded chicken",
+                "amount": "50g"
+            }
+        ],
+        "instructions": "Thin soup with strong garlic flavor for immunity.",
+        "image_prompt": "Garlic chicken soup bowl."
+    },
+    {
+        "id": 92,
+        "name": "Bell Pepper Stuffed with Cheese",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 180,
+            "protein": 10,
+            "carbs": 12,
+            "fat": 10
+        },
+        "ingredients": [
+            {
+                "name": "Small bell peppers",
+                "amount": "2 pieces"
+            },
+            {
+                "name": "Feta cheese and herbs",
+                "amount": "For filling"
+            }
+        ],
+        "instructions": "Fill pepper with cheese and heat (or eat cold).",
+        "image_prompt": "Bell peppers stuffed with white cheese and herbs."
+    },
+    {
+        "id": 93,
+        "name": "Fruit Dinner (Apple)",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "2 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 90,
+            "protein": 0,
+            "carbs": 22,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Large apple",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Sometimes a single fruit is the best dinner.",
+        "image_prompt": "Fresh red apple on a plate."
+    },
+    {
+        "id": 94,
+        "name": "Grilled Mushrooms",
+        "category": "Vegetable Dish",
+        "prep_time": "15 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 6,
+            "carbs": 8,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Large mushrooms",
+                "amount": "6 pieces"
+            },
+            {
+                "name": "Lemon juice",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Skewer mushrooms and grill over the flame.",
+        "image_prompt": "Skewered grilled mushrooms."
+    },
+    {
+        "id": 95,
+        "name": "Raw Tofu and Soy Sauce",
+        "category": "Vegetarian and Vegan",
+        "prep_time": "2 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 100,
+            "protein": 10,
+            "carbs": 3,
+            "fat": 5
+        },
+        "ingredients": [
+            {
+                "name": "Soft tofu",
+                "amount": "100g"
+            },
+            {
+                "name": "Soy sauce",
+                "amount": "1 spoon"
+            },
+            {
+                "name": "Green onion",
+                "amount": "1 piece"
+            }
+        ],
+        "instructions": "Japanese style light dinner (Hiyayakko).",
+        "image_prompt": "Cold silken tofu topped with soy sauce and green onions."
+    },
+    {
+        "id": 96,
+        "name": "Cucumber and Dill Salad",
+        "category": "Complete Salad (Main Course)",
+        "prep_time": "5 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 60,
+            "protein": 2,
+            "carbs": 10,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Sliced cucumber",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Fresh dill",
+                "amount": "2 spoons"
+            },
+            {
+                "name": "White vinegar",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Crunchy and low-calorie salad.",
+        "image_prompt": "Cucumber salad with dill."
+    },
+    {
+        "id": 97,
+        "name": "Mustard Chicken Breast",
+        "category": "Chicken and Fish (Grilled/Steamed)",
+        "prep_time": "25 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 220,
+            "protein": 35,
+            "carbs": 2,
+            "fat": 6
+        },
+        "ingredients": [
+            {
+                "name": "Chicken breast",
+                "amount": "150g"
+            },
+            {
+                "name": "Mustard sauce",
+                "amount": "1 spoon"
+            }
+        ],
+        "instructions": "Season chicken with mustard and grill.",
+        "image_prompt": "Mustard glazed chicken breast."
+    },
+    {
+        "id": 98,
+        "name": "Cilantro Soup (Thin)",
+        "category": "Light Soup and Ash",
+        "prep_time": "30 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 150,
+            "protein": 6,
+            "carbs": 20,
+            "fat": 4
+        },
+        "ingredients": [
+            {
+                "name": "Fresh cilantro",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Chicken broth",
+                "amount": "2 glasses"
+            },
+            {
+                "name": "Yogurt",
+                "amount": "2 spoons"
+            }
+        ],
+        "instructions": "Light soup suitable for colds and dinner.",
+        "image_prompt": "Cilantro soup bowl."
+    },
+    {
+        "id": 99,
+        "name": "Eggplant Roll (Simple)",
+        "category": "Vegetable Dish",
+        "prep_time": "20 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 80,
+            "protein": 2,
+            "carbs": 10,
+            "fat": 2
+        },
+        "ingredients": [
+            {
+                "name": "Grilled eggplant slices",
+                "amount": "3 pieces"
+            },
+            {
+                "name": "Sun-dried tomatoes",
+                "amount": "A little"
+            }
+        ],
+        "instructions": "Grill eggplant and roll up.",
+        "image_prompt": "Grilled eggplant rolls."
+    },
+    {
+        "id": 100,
+        "name": "Icelandic Yogurt and Berries",
+        "category": "Dessert and Dinner Snack",
+        "prep_time": "2 minutes",
+        "difficulty": "Easy",
+        "nutritional_info": {
+            "calories": 140,
+            "protein": 15,
+            "carbs": 12,
+            "fat": 0
+        },
+        "ingredients": [
+            {
+                "name": "Icelandic yogurt (high protein)",
+                "amount": "1 cup"
+            },
+            {
+                "name": "Strawberries/Blueberries",
+                "amount": "A few pieces"
+            }
+        ],
+        "instructions": "High protein for before sleep.",
+        "image_prompt": "Bowl of Icelandic yogurt topped with berries."
+    }
+]

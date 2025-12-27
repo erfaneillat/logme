@@ -1590,7 +1590,7 @@ export const apiService = {
     },
 
     // User Preferences APIs
-    getPreferences: async (): Promise<{ addBurnedCalories: boolean; rolloverCalories: boolean }> => {
+    getPreferences: async (): Promise<{ addBurnedCalories: boolean; rolloverCalories: boolean; preferredLanguage: 'en' | 'fa' }> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
@@ -1612,10 +1612,11 @@ export const apiService = {
             return {
                 addBurnedCalories: data.data?.addBurnedCalories ?? true,
                 rolloverCalories: data.data?.rolloverCalories ?? true,
+                preferredLanguage: data.data?.preferredLanguage ?? 'en',
             };
         } catch (error: any) {
             console.error('getPreferences error:', error);
-            return { addBurnedCalories: true, rolloverCalories: true };
+            return { addBurnedCalories: true, rolloverCalories: true, preferredLanguage: 'en' };
         }
     },
 
@@ -1645,7 +1646,7 @@ export const apiService = {
         }
     },
 
-    updatePreferences: async (preferences: { addBurnedCalories?: boolean; rolloverCalories?: boolean }): Promise<{ addBurnedCalories: boolean; rolloverCalories: boolean }> => {
+    updatePreferences: async (preferences: { addBurnedCalories?: boolean; rolloverCalories?: boolean; preferredLanguage?: 'en' | 'fa' }): Promise<{ addBurnedCalories: boolean; rolloverCalories: boolean; preferredLanguage: 'en' | 'fa' }> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
             if (!token) throw new Error('No auth token found');
@@ -1668,6 +1669,7 @@ export const apiService = {
             return {
                 addBurnedCalories: data.data?.addBurnedCalories ?? true,
                 rolloverCalories: data.data?.rolloverCalories ?? true,
+                preferredLanguage: data.data?.preferredLanguage ?? 'en',
             };
         } catch (error: any) {
             console.error('updatePreferences error:', error);
