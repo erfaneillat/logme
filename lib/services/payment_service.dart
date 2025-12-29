@@ -11,6 +11,11 @@ import 'api_service_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cal_ai/features/subscription/presentation/providers/subscription_status_provider.dart';
 
+// Detect flavor at compile time
+const String _appFlavor =
+    String.fromEnvironment('FLUTTER_APP_FLAVOR', defaultValue: 'global');
+bool get _isIranFlavor => _appFlavor == 'iran';
+
 final paymentServiceProvider = Provider<PaymentService>((ref) {
   final apiService = ref.watch(apiServiceProvider);
   return PaymentService(apiService, ref);
@@ -38,14 +43,26 @@ class PaymentService {
   }
 
   Future<void> _initAll() async {
-    // Run both initializations in parallel for faster startup
-    await Future.wait([
-      _initializePayment(), // Cafe Bazaar
-      _initializeRevenueCat(), // RevenueCat
-    ]);
+    // Run initializations based on flavor
+    if (_isIranFlavor) {
+      // Iran flavor uses both Cafe Bazaar and RevenueCat (fallback)
+      await Future.wait([
+        _initializePayment(), // Cafe Bazaar (Poolakey)
+        _initializeRevenueCat(), // RevenueCat
+      ]);
+    } else {
+      // Global flavor only uses RevenueCat
+      await _initializeRevenueCat();
+    }
   }
 
   Future<void> _initializePayment() async {
+    // Skip Poolakey initialization for non-Iran flavors
+    if (!_isIranFlavor) {
+      debugPrint('Skipping Poolakey initialization (not Iran flavor)');
+      return;
+    }
+
     if (_isInitialized) return;
 
     final completer = Completer<bool>();
@@ -133,8 +150,17 @@ class PaymentService {
     return _isInitialized;
   }
 
-  /// Purchase a subscription with the given product key
+  /// Purchase a subscription with the given product key (CafeBazaar/Poolakey)
+  /// Only available for Iran flavor
   Future<PurchaseResult> purchaseSubscription(String productKey) async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      return PurchaseResult(
+        success: false,
+        message: 'CafeBazaar payments not available in this region',
+      );
+    }
+
     try {
       if (!_isInitialized) {
         debugPrint('Payment service not initialized, initializing...');
@@ -234,8 +260,17 @@ class PaymentService {
     }
   }
 
-  /// Purchase a regular product (not subscription)
+  /// Purchase a regular product (not subscription) via CafeBazaar/Poolakey
+  /// Only available for Iran flavor
   Future<PurchaseResult> purchaseProduct(String productKey) async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      return PurchaseResult(
+        success: false,
+        message: 'CafeBazaar payments not available in this region',
+      );
+    }
+
     try {
       if (!_isInitialized) {
         await _initializePayment();
@@ -432,9 +467,16 @@ class PaymentService {
     }
   }
 
-  /// Get details for subscription products
+  /// Get details for subscription products (CafeBazaar/Poolakey)
+  /// Only available for Iran flavor
   Future<List<ProductInfo>> getSubscriptionDetails(
       List<String> productKeys) async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      debugPrint('Skipping getSubscriptionDetails (not Iran flavor)');
+      return [];
+    }
+
     try {
       if (!_isInitialized) {
         await _initializePayment();
@@ -460,8 +502,15 @@ class PaymentService {
     }
   }
 
-  /// Get details for in-app products
+  /// Get details for in-app products (CafeBazaar/Poolakey)
+  /// Only available for Iran flavor
   Future<List<ProductInfo>> getProductDetails(List<String> productKeys) async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      debugPrint('Skipping getProductDetails (not Iran flavor)');
+      return [];
+    }
+
     try {
       if (!_isInitialized) {
         await _initializePayment();
@@ -487,8 +536,15 @@ class PaymentService {
     }
   }
 
-  /// Get all purchased products
+  /// Get all purchased products (CafeBazaar/Poolakey)
+  /// Only available for Iran flavor
   Future<List<PurchaseInfo>> getAllPurchasedProducts() async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      debugPrint('Skipping getAllPurchasedProducts (not Iran flavor)');
+      return [];
+    }
+
     try {
       if (!_isInitialized) {
         await _initializePayment();
@@ -504,8 +560,15 @@ class PaymentService {
     }
   }
 
-  /// Get all subscribed products
+  /// Get all subscribed products (CafeBazaar/Poolakey)
+  /// Only available for Iran flavor
   Future<List<PurchaseInfo>> getAllSubscribedProducts() async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      debugPrint('Skipping getAllSubscribedProducts (not Iran flavor)');
+      return [];
+    }
+
     try {
       if (!_isInitialized) {
         await _initializePayment();
@@ -522,7 +585,14 @@ class PaymentService {
   }
 
   /// Consume a purchase (only for non-subscription products)
+  /// Only available for Iran flavor (CafeBazaar/Poolakey)
   Future<bool> consumePurchase(String purchaseToken) async {
+    // Poolakey is only available in Iran flavor
+    if (!_isIranFlavor) {
+      debugPrint('Skipping consumePurchase (not Iran flavor)');
+      return false;
+    }
+
     try {
       if (!_isInitialized) {
         await _initializePayment();

@@ -81,10 +81,17 @@ android {
             signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
             minifyEnabled false
             shrinkResources false
-        }
+        }1
     }
 }
 
 flutter {
     source = "../.."
+}
+
+// Exclude poolakey (CafeBazaar billing) for global flavor to prevent duplicate class conflicts with RevenueCat
+configurations.all { config ->
+    if (config.name.toLowerCase().contains("global")) {
+        config.exclude group: 'com.github.cafebazaar.Poolakey', module: 'poolakey'
+    }
 }
