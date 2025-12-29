@@ -1,6 +1,3 @@
-#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+#include? "../Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
-#include? "${FLAVOR}.xcconfig"
-
-// Default app name if no flavor is specified
-APP_DISPLAY_NAME=لقمه
+#include "global.xcconfig"

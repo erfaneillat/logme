@@ -1,6 +1,6 @@
 export interface User {
   _id: string;
-  phone: string;
+  phone?: string;
   email?: string;
   name?: string;
   isPhoneVerified: boolean;
@@ -29,7 +29,7 @@ export interface User {
 export interface DeletedUser {
   _id: string;
   originalUserId: string;
-  phone: string;
+  phone?: string;
   email?: string;
   name?: string;
   isPhoneVerified: boolean;

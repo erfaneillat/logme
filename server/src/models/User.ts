@@ -46,8 +46,6 @@ const userSchema = new Schema<IUser>(
     email: {
       type: String,
       required: false,
-      unique: true,
-      sparse: true,
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
@@ -55,8 +53,6 @@ const userSchema = new Schema<IUser>(
     phone: {
       type: String,
       required: false, // Optional for OAuth users
-      unique: true,
-      sparse: true, // Allow null/undefined for OAuth users
       trim: true,
     },
     name: {
@@ -213,10 +209,10 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Indexes for better query performance
-userSchema.index({ phone: 1 });
-userSchema.index({ email: 1 });
-userSchema.index({ referralCode: 1 });
+// Index definitions
+userSchema.index({ phone: 1 }, { unique: true, sparse: true });
+userSchema.index({ email: 1 }, { unique: true, sparse: true });
+userSchema.index({ referralCode: 1 }, { unique: true, sparse: true });
 userSchema.index({ referredBy: 1 });
 
 // Hash password before saving (only if password exists)
@@ -242,7 +238,10 @@ userSchema.methods.comparePassword = async function (candidatePassword: string):
 userSchema.post('save', function (error: any, doc: any, next: any) {
   if (error.name === 'MongoServerError' && error.code === 11000) {
     const field = Object.keys(error.keyValue)[0];
-    error.message = `${field} already exists`;
+    if (field) {
+      console.error(`[Mongoose Unique Error] field: ${field}, value:`, error.keyValue[field]);
+      error.message = `${field} already exists`;
+    }
     error.statusCode = 409;
   }
   next(error);

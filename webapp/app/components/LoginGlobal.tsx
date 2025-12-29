@@ -17,9 +17,12 @@ export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
     // Check if running inside Flutter WebView
     const isFlutterWebView = typeof window !== 'undefined' && (window as any).FlutterBridge?.isFlutterWebView;
 
-    // Platform detection
-    const isIOS = typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(window.navigator.userAgent);
+    // Platform detection - use Flutter bridge if available, otherwise fallback to user agent
+    const platform = typeof window !== 'undefined' && (window as any).FlutterBridge?.platform;
+    const isIOS = platform === 'ios' || (typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(window.navigator.userAgent));
 
+    // In Flutter WebView: show only Apple on iOS, only Google on Android
+    // In browser: show both
     const showGoogle = !isFlutterWebView || !isIOS;
     const showApple = !isFlutterWebView || isIOS;
 

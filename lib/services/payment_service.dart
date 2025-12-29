@@ -29,7 +29,7 @@ class PaymentService {
 
   // RevenueCat API Keys - REPLACE WITH REAL KEYS
   static const String _rcGoogleKey = 'goog_rOqdbpqAOHrTOuAxMHWqyEBbkHX';
-  static const String _rcAppleKey = 'appl_PLACEHOLDER_KEY';
+  static const String _rcAppleKey = 'appl_HJESLNPPqXUQizzkOuXtkdNirOy';
 
   PaymentService(this._apiService, this._ref) {
     // Create the completer BEFORE starting async init so purchaseRevenueCat can await it
@@ -108,8 +108,10 @@ class PaymentService {
       if (Platform.isAndroid) {
         await Purchases.configure(PurchasesConfiguration(_rcGoogleKey));
       } else if (Platform.isIOS) {
-        await Purchases.configure(PurchasesConfiguration(_rcAppleKey));
+        final configuration = PurchasesConfiguration(_rcAppleKey);
+        await Purchases.configure(configuration);
       }
+      await Purchases.setLogLevel(LogLevel.debug);
       debugPrint('RevenueCat initialized successfully');
       _isRevenueCatInitialized = true;
       if (!_revenueCatInitCompleter!.isCompleted) {
@@ -659,7 +661,10 @@ class PaymentService {
 
         debugPrint(
             'Initiating purchase for package: ${package.identifier}, Product ID: ${package.storeProduct.identifier}');
-        final customerInfo = await Purchases.purchasePackage(package);
+        // Use the new purchase API (v9.x) which returns a result containing customerInfo
+        final purchaseResult =
+            await Purchases.purchase(PurchaseParams.package(package));
+        final customerInfo = purchaseResult.customerInfo;
 
         // Log all entitlements for debugging
         debugPrint(
@@ -729,7 +734,8 @@ class PaymentService {
           return PurchaseResult(
               success: true,
               message: 'Subscription activated',
-              orderId: customerInfo.originalAppUserId);
+              orderId: customerInfo.originalAppUserId,
+              originalAppUserId: customerInfo.originalAppUserId);
         } else {
           // Purchase went through but entitlements not yet synced
           // This can happen in sandbox or with delays
@@ -739,13 +745,19 @@ class PaymentService {
           return PurchaseResult(
               success: true,
               message: 'Subscription activated - syncing...',
-              orderId: customerInfo.originalAppUserId);
+              orderId: customerInfo.originalAppUserId,
+              originalAppUserId: customerInfo.originalAppUserId);
         }
       } on PlatformException catch (e) {
+        debugPrint(
+            'RevenueCat Purchase Error: ${e.code} - ${e.message} - ${e.details}');
         var errorCode = PurchasesErrorHelper.getErrorCode(e);
         if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+          // It's helpful to know if there's extra detailed info even for cancellations
+          final details = e.details ?? e.message ?? '';
           return PurchaseResult(
-              success: false, message: 'User cancelled purchase');
+              success: false,
+              message: 'User cancelled purchase. Details: $details');
         }
         return PurchaseResult(
             success: false, message: e.message ?? 'Unknown error');
@@ -782,12 +794,14 @@ class PurchaseResult {
   final String message;
   final String? purchaseToken;
   final String? orderId;
+  final String? originalAppUserId;
 
   PurchaseResult({
     required this.success,
     required this.message,
     this.purchaseToken,
     this.orderId,
+    this.originalAppUserId,
   });
 }
 

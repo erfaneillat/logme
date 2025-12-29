@@ -267,7 +267,7 @@ const UsersPage = () => {
                               ? 'bg-gradient-to-br from-purple-500 to-purple-600'
                               : 'bg-gradient-to-br from-gray-400 to-gray-500'
                             }`}>
-                            {u.name ? u.name.charAt(0).toUpperCase() : u.phone.charAt(0)}
+                            {u.name ? u.name.charAt(0).toUpperCase() : (u.phone ? u.phone.charAt(0) : (u.email ? u.email.charAt(0).toUpperCase() : '?'))}
                           </div>
                           <div>
                             <div className="flex items-center space-x-2">
@@ -498,7 +498,7 @@ const UsersPage = () => {
                     ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300'
                     : 'bg-gradient-to-br from-gray-400 to-gray-500'
                     }`}>
-                    {deleteModalUser.name ? deleteModalUser.name.charAt(0).toUpperCase() : deleteModalUser.phone.charAt(0)}
+                    {deleteModalUser.name ? deleteModalUser.name.charAt(0).toUpperCase() : (deleteModalUser.phone ? deleteModalUser.phone.charAt(0) : (deleteModalUser.email ? deleteModalUser.email.charAt(0).toUpperCase() : '?'))}
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">

@@ -27,7 +27,8 @@ const deleteAccountValidation = [
 
 const oauthValidation = [
   body('provider').isIn(['google', 'apple']).withMessage('Provider must be google or apple'),
-  body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+  body('email').if(body('provider').equals('google')).isEmail().normalizeEmail().withMessage('Valid email is required'),
+  body('email').if(body('provider').equals('apple')).optional({ checkFalsy: true }).isEmail().normalizeEmail().withMessage('Valid email is required'),
   body('providerId').notEmpty().withMessage('Provider ID is required'),
   body('name').optional().trim()
 ];

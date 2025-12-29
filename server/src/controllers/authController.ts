@@ -482,13 +482,16 @@ export class AuthController {
         return;
       }
 
-      // Check if user exists by email or providerId
+      // Check if user exists by providerId first (most reliable for OAuth)
       let user = await User.findOne({
-        $or: [
-          { email: email.toLowerCase() },
-          { providerId: providerId, authProvider: provider }
-        ]
+        providerId: providerId,
+        authProvider: provider
       });
+
+      // If not found by providerId, try email
+      if (!user && email) {
+        user = await User.findOne({ email: email.toLowerCase() });
+      }
 
       const isNewUser = !user;
 
@@ -504,14 +507,22 @@ export class AuthController {
         }
         await user.save();
       } else {
-        // Create new user
+        // Create new user - must have email
+        if (!email) {
+          res.status(400).json({
+            success: false,
+            message: 'Email is required to create a new account'
+          });
+          return;
+        }
+
         user = new User({
           email: email.toLowerCase(),
           name: name || undefined,
           authProvider: provider,
           providerId: providerId,
           isEmailVerified: true,
-          isPhoneVerified: false, // No phone for OAuth users
+          isPhoneVerified: false,
         });
         await user.save();
       }

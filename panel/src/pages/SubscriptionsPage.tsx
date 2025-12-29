@@ -250,7 +250,7 @@ const SubscriptionsPage = () => {
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 font-bold text-white">
-                              {user?.name ? user.name.charAt(0).toUpperCase() : user?.phone.charAt(0) || '?'}
+                              {user?.name ? user.name.charAt(0).toUpperCase() : (user?.phone ? user.phone.charAt(0) : (user?.email ? user.email.charAt(0).toUpperCase() : '?'))}
                             </div>
                             <div>
                               <p className="text-sm font-bold text-black">{user?.name || 'Unnamed User'}</p>

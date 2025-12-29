@@ -33,7 +33,9 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
   late final WebViewController _controller;
   bool _isLoading = true;
   bool _isControllerReady = false;
+
   String? _errorMessage;
+  final Key _webViewKey = UniqueKey();
 
   // Animation controller for splash screen
   late AnimationController _animationController;
@@ -45,11 +47,14 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
   // In development (debug mode), it uses localhost
   static String get _webappBaseUrl {
     if (kDebugMode) {
-      // For development - update the IP if testing on a physical device
-      // Use your computer's local IP address when testing on a real device
-      return 'http://10.0.2.2:3000/app/'; // Android emulator
-      // return 'http://localhost:3000/app/'; // iOS simulator
-      // return 'http://192.168.1.X:3000/app/'; // Physical device (replace with your IP)
+      // For development - use platform-specific localhost addresses
+      if (Platform.isIOS) {
+        return 'http://localhost:3000/app/'; // iOS simulator
+      } else if (Platform.isAndroid) {
+        return 'http://10.0.2.2:3000/app/'; // Android emulator
+      }
+      // Fallback for other platforms or physical devices
+      // return 'http://192.168.1.X:3000/app/'; // Replace with your IP for physical device
     }
     return 'https://loqmeapp.ir/app/';
   }
@@ -68,7 +73,12 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
     super.initState();
     _initAnimations();
     // _loadPackageInfo(); // Moved to _initWebView to ensure it completes before injection
-    _initWebView();
+    // Delay initialization to prevent "recreating_view" error on hot restart
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _initWebView();
+      }
+    });
   }
 
   Future<void> _loadPackageInfo() async {
@@ -129,12 +139,18 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       await _loadPackageInfo();
 
       // Determine market flavor
-      String market = const String.fromEnvironment('FLUTTER_APP_FLAVOR');
-      if (market.isEmpty) {
-        if (_packageInfo?.packageName.contains('global') ?? false) {
-          market = 'global';
-        } else {
-          market = 'iran';
+      // iOS always uses global market
+      String market;
+      if (Platform.isIOS) {
+        market = 'global';
+      } else {
+        market = const String.fromEnvironment('FLUTTER_APP_FLAVOR');
+        if (market.isEmpty) {
+          if (_packageInfo?.packageName.contains('global') ?? false) {
+            market = 'global';
+          } else {
+            market = 'iran';
+          }
         }
       }
 
@@ -224,7 +240,8 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
             },
           ),
         )
-        ..setUserAgent('Loqme Flutter WebView')
+        ..setUserAgent(
+            'Loqme Flutter WebView ${Platform.isIOS ? 'iPhone' : 'Android'}')
         ..addJavaScriptChannel(
           'FlutterPayment',
           onMessageReceived: (JavaScriptMessage message) async {
@@ -724,7 +741,32 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
       );
 
       // Extract email - might be null if user has signed in before
-      final email = credential.email;
+      String? email = credential.email;
+
+      // If email is null, try to extract it from identityToken (JWT)
+      if (email == null && credential.identityToken != null) {
+        try {
+          final parts = credential.identityToken!.split('.');
+          if (parts.length > 1) {
+            String payloadPart = parts[1];
+            // Normalize base64 string
+            while (payloadPart.length % 4 != 0) {
+              payloadPart += '=';
+            }
+            final String decoded = utf8.decode(base64Url.decode(payloadPart));
+            final Map<String, dynamic> payload = jsonDecode(decoded);
+            email = payload['email'] as String?;
+            if (kDebugMode) {
+              print('Extracted email from ID Token: $email');
+            }
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error decoding ID Token: $e');
+          }
+        }
+      }
+
       final fullName = credential.givenName != null
           ? '${credential.givenName} ${credential.familyName ?? ''}'.trim()
           : null;
@@ -1009,7 +1051,10 @@ class _WebAppPageState extends ConsumerState<WebAppPage>
                           displayWithHybridComposition: true,
                         ),
                       )
-                    : WebViewWidget(controller: _controller),
+                    : WebViewWidget(
+                        key: _webViewKey,
+                        controller: _controller,
+                      ),
               ),
 
             // Splash screen overlay while loading

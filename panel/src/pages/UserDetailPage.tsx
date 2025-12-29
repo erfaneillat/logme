@@ -169,7 +169,7 @@ const UserDetailPage = () => {
                   ? 'bg-gradient-to-br from-purple-500 to-purple-600'
                   : 'bg-gradient-to-br from-gray-400 to-gray-500'
                 }`} style={{ fontSize: '32px' }}>
-                {user.name ? user.name.charAt(0).toUpperCase() : user.phone.charAt(0)}
+                {user.name ? user.name.charAt(0).toUpperCase() : (user.phone ? user.phone.charAt(0) : (user.email ? user.email.charAt(0).toUpperCase() : '?'))}
               </div>
               <div>
                 <div className="flex items-center space-x-3">
@@ -489,7 +489,7 @@ const UserDetailPage = () => {
                             <p className="text-sm font-semibold text-gray-900">
                               {log.referredUserId.name || 'Unnamed User'}
                             </p>
-                            <p className="text-xs font-mono text-gray-600">{log.referredUserId.phone}</p>
+                            <p className="text-xs font-mono text-gray-600">{log.referredUserId.phone || log.referredUserId.email || 'No contact'}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4">

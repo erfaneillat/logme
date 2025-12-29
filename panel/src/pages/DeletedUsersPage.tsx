@@ -225,7 +225,7 @@ const DeletedUsersPage = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-3">
                                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-red-400 to-red-600 font-bold text-white">
-                                                        {u.name ? u.name.charAt(0).toUpperCase() : u.phone.charAt(0)}
+                                                        {u.name ? u.name.charAt(0).toUpperCase() : (u.phone ? u.phone.charAt(0) : (u.email ? u.email.charAt(0).toUpperCase() : '?'))}
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-bold text-black">{u.name || 'Unnamed User'}</p>
