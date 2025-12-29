@@ -466,10 +466,18 @@ export class AuthController {
 
       const { provider, email, name, providerId } = req.body;
 
-      if (!provider || !email || !providerId) {
+      if (!provider || !providerId) {
         res.status(400).json({
           success: false,
-          message: 'Missing required fields: provider, email, providerId'
+          message: 'Missing required fields: provider, providerId'
+        });
+        return;
+      }
+
+      if (provider !== 'apple' && !email) {
+        res.status(400).json({
+          success: false,
+          message: 'Email is required for this provider'
         });
         return;
       }
