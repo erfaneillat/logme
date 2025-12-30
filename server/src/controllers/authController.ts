@@ -29,6 +29,9 @@ export class AuthController {
     this.activateOneTimeOffer = this.activateOneTimeOffer.bind(this);
     // OAuth methods
     this.oauthLogin = this.oauthLogin.bind(this);
+    // Email auth methods
+    this.emailLogin = this.emailLogin.bind(this);
+    this.emailSignup = this.emailSignup.bind(this);
   }
 
   // Track app open
@@ -585,6 +588,184 @@ export class AuthController {
       });
     }
   }
+
+  // Email Login (with password)
+  async emailLogin(req: Request, res: Response): Promise<void> {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+        return;
+      }
+
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        res.status(400).json({
+          success: false,
+          message: 'Email and password are required'
+        });
+        return;
+      }
+
+      // Find user by email and include password field
+      const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+      if (!user) {
+        res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
+        return;
+      }
+
+      // Check if user has a password (might have signed up via OAuth)
+      if (!user.password) {
+        res.status(401).json({
+          success: false,
+          message: 'This account was created with Google or Apple. Please use that method to sign in.'
+        });
+        return;
+      }
+
+      // Verify password
+      const isPasswordValid = await user.comparePassword(password);
+      if (!isPasswordValid) {
+        res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
+        return;
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        process.env.JWT_SECRET || 'your-secret-key'
+      );
+
+      errorLogger.info('Email login successful', req, { email: user.email });
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          token,
+          user: {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            isEmailVerified: user.isEmailVerified,
+            hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
+            hasGeneratedPlan: user.hasGeneratedPlan
+          }
+        }
+      });
+    } catch (error: any) {
+      errorLogger.error('Email login error', error as Error, req, { email: req.body.email });
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Email Signup (with password)
+  async emailSignup(req: Request, res: Response): Promise<void> {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+        return;
+      }
+
+      const { email, password, name } = req.body;
+
+      if (!email || !password) {
+        res.status(400).json({
+          success: false,
+          message: 'Email and password are required'
+        });
+        return;
+      }
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
+        res.status(409).json({
+          success: false,
+          message: 'An account with this email already exists'
+        });
+        return;
+      }
+
+      // Create new user with email auth
+      const user = new User({
+        email: email.toLowerCase(),
+        password: password, // Will be hashed by pre-save hook
+        name: name || undefined,
+        authProvider: 'email',
+        isEmailVerified: false, // Could add email verification later
+        isPhoneVerified: false,
+      });
+      await user.save();
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        process.env.JWT_SECRET || 'your-secret-key'
+      );
+
+      // Send Telegram notification for new signups
+      telegramService.sendSignupNotification(
+        user.email || 'Email User',
+        (user as any)._id.toString()
+      ).catch((err: any) => {
+        errorLogger.error('Failed to send email signup telegram notification', err);
+      });
+
+      errorLogger.info('Email signup successful', req, { email: user.email });
+
+      res.status(201).json({
+        success: true,
+        message: 'Account created successfully',
+        data: {
+          token,
+          user: {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            isEmailVerified: user.isEmailVerified,
+            hasCompletedAdditionalInfo: user.hasCompletedAdditionalInfo,
+            hasGeneratedPlan: user.hasGeneratedPlan
+          }
+        }
+      });
+    } catch (error: any) {
+      // Check for duplicate key error
+      if (error.code === 11000) {
+        res.status(409).json({
+          success: false,
+          message: 'An account with this email already exists'
+        });
+        return;
+      }
+
+      errorLogger.error('Email signup error', error as Error, req, { email: req.body.email });
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // Activate one-time offer (1 hour timer)
   async activateOneTimeOffer(req: AuthRequest, res: Response): Promise<void> {
     try {

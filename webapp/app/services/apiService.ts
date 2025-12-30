@@ -730,6 +730,70 @@ export const apiService = {
         }
     },
 
+    // Email Login (with password)
+    emailLogin: async (email: string, password: string): Promise<User> => {
+        try {
+            const response = await fetch(`${getBaseUrl()}/api/auth/email/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Login failed');
+            }
+
+            const userData = data.data.user;
+            const token = data.data.token;
+
+            // Save token
+            if (typeof window !== 'undefined' && token) {
+                localStorage.setItem('auth_token', token);
+            }
+
+            return { ...userData, token };
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
+    // Email Signup (with password)
+    emailSignup: async (email: string, password: string, name?: string): Promise<User> => {
+        try {
+            const response = await fetch(`${getBaseUrl()}/api/auth/email/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ email, password, name }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Signup failed');
+            }
+
+            const userData = data.data.user;
+            const token = data.data.token;
+
+            // Save token
+            if (typeof window !== 'undefined' && token) {
+                localStorage.setItem('auth_token', token);
+            }
+
+            return { ...userData, token };
+        } catch (error: any) {
+            throw new Error(error.message || 'Network error');
+        }
+    },
+
     saveAdditionalInfo: async (data: any): Promise<ApiResponse> => {
         try {
             const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;

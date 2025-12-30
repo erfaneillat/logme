@@ -1,18 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { apiService } from '../services/apiService';
 import { useTranslation } from '../translations';
+import EmailLogin from './EmailLogin';
 
 interface LoginGlobalProps {
     onLoginSuccess: (user: any) => void;
 }
 
+type LoginView = 'main' | 'email';
+
 export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState<'google' | 'apple' | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [currentView, setCurrentView] = useState<LoginView>('main');
 
     // Check if running inside Flutter WebView
     const isFlutterWebView = typeof window !== 'undefined' && (window as any).FlutterBridge?.isFlutterWebView;
@@ -20,11 +24,14 @@ export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
     // Platform detection - use Flutter bridge if available, otherwise fallback to user agent
     const platform = typeof window !== 'undefined' && (window as any).FlutterBridge?.platform;
     const isIOS = platform === 'ios' || (typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(window.navigator.userAgent));
+    const isAndroid = platform === 'android' || (typeof window !== 'undefined' && /Android/i.test(window.navigator.userAgent));
 
     // In Flutter WebView: show only Apple on iOS, only Google on Android
     // In browser: show both
     const showGoogle = !isFlutterWebView || !isIOS;
     const showApple = !isFlutterWebView || isIOS;
+    // Show email login only on Android in Flutter WebView
+    const showEmailLogin = isFlutterWebView && isAndroid;
 
     const handleGoogleLogin = async () => {
         setIsLoading('google');
@@ -243,6 +250,18 @@ export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
         }
     };
 
+    // If showing email login view, render EmailLogin component
+    if (currentView === 'email') {
+        return (
+            <AnimatePresence mode="wait">
+                <EmailLogin
+                    onLoginSuccess={onLoginSuccess}
+                    onBack={() => setCurrentView('main')}
+                />
+            </AnimatePresence>
+        );
+    }
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -305,6 +324,20 @@ export default function LoginGlobal({ onLoginSuccess }: LoginGlobalProps) {
                                     {t('loginGlobal.google')}
                                 </>
                             )}
+                        </button>
+                    )}
+
+                    {/* Continue with Email - Only on Android */}
+                    {showEmailLogin && (
+                        <button
+                            onClick={() => setCurrentView('email')}
+                            disabled={isLoading !== null}
+                            className="w-full bg-white border-2 border-gray-200 text-gray-700 h-14 rounded-2xl font-semibold text-base shadow-sm hover:shadow-md hover:border-gray-300 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            {t('loginGlobal.email')}
                         </button>
                     )}
 

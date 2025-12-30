@@ -33,11 +33,24 @@ const oauthValidation = [
   body('name').optional().trim()
 ];
 
+const emailLoginValidation = [
+  body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+];
+
+const emailSignupValidation = [
+  body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('name').optional().trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters')
+];
+
 // Routes
 router.post('/send-code', phoneValidation, authController.sendVerificationCode);
 router.post('/verify-phone', verificationCodeValidation, authController.verifyPhone);
 router.post('/admin/verify-phone', verificationCodeValidation, authController.verifyAdminPhone);
 router.post('/oauth', oauthValidation, authController.oauthLogin);
+router.post('/email/login', emailLoginValidation, authController.emailLogin);
+router.post('/email/signup', emailSignupValidation, authController.emailSignup);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, profileUpdateValidation, authController.updateProfile);
 router.post('/refresh-token', authenticateTokenAllowExpired, authController.refreshToken);
