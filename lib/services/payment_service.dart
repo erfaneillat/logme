@@ -45,11 +45,13 @@ class PaymentService {
   Future<void> _initAll() async {
     // Run initializations based on flavor
     if (_isIranFlavor) {
-      // Iran flavor uses both Cafe Bazaar and RevenueCat (fallback)
-      await Future.wait([
-        _initializePayment(), // Cafe Bazaar (Poolakey)
-        _initializeRevenueCat(), // RevenueCat
-      ]);
+      // Iran flavor only uses Cafe Bazaar (Poolakey)
+      // RevenueCat native module is excluded from iran Gradle build
+      await _initializePayment();
+      // Complete the RevenueCat completer immediately since it won't be used
+      if (!_revenueCatInitCompleter!.isCompleted) {
+        _revenueCatInitCompleter!.complete(false);
+      }
     } else {
       // Global flavor only uses RevenueCat
       await _initializeRevenueCat();
@@ -115,6 +117,12 @@ class PaymentService {
   }
 
   Future<void> _initializeRevenueCat() async {
+    // RevenueCat native module is excluded from iran Gradle build
+    if (_isIranFlavor) {
+      debugPrint('Skipping RevenueCat initialization (Iran flavor)');
+      return;
+    }
+
     // If already initialized, skip
     if (_isRevenueCatInitialized) {
       debugPrint('RevenueCat already initialized');
@@ -640,6 +648,14 @@ class PaymentService {
 
   /// Purchase via RevenueCat
   Future<PurchaseResult> purchaseRevenueCat(String productIdentifier) async {
+    // RevenueCat native module is excluded from iran Gradle build
+    if (_isIranFlavor) {
+      return PurchaseResult(
+        success: false,
+        message: 'RevenueCat payments not available in Iran flavor',
+      );
+    }
+
     try {
       debugPrint('Purchasing via RevenueCat: $productIdentifier');
 
