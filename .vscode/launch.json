@@ -68,6 +68,16 @@
                 "--no-enable-impeller"
             ]
         },
+        {
+            "name": "Iran (Release - iOS)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define=FLAVOR=iran",
+                "--no-enable-impeller"
+            ]
+        },
         // ========== RELEASE / PROFILE (Android) ==========
         {
             "name": "Global (Release - Android)",
@@ -78,6 +88,18 @@
                 "--flavor",
                 "global",
                 "--dart-define=FLAVOR=global",
+                "--no-enable-impeller"
+            ]
+        },
+        {
+            "name": "Iran (Release - Android)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "iran",
+                "--dart-define=FLAVOR=iran",
                 "--no-enable-impeller"
             ]
         }
