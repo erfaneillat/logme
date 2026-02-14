@@ -45,6 +45,9 @@ const upload = multer({
 router.get('/admin/nutrition/user/:userId/history', authenticateToken, authenticateAdmin, (req, res) =>
     controller.adminUserHistory(req, res)
 );
+router.delete('/admin/nutrition/user/:userId/reset', authenticateToken, authenticateAdmin, (req, res) =>
+    controller.resetUserChat(req, res)
+);
 router.post('/nutrition', authenticateToken, (req, res) => controller.chat(req, res));
 router.get('/nutrition/history', authenticateToken, (req, res) => controller.history(req, res));
 router.post('/nutrition/image', authenticateToken, upload.single('image'), (req, res) =>

@@ -535,4 +535,24 @@ export class NutritionChatController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
+    public async resetUserChat(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req.params as any)?.userId;
+            if (!userId) {
+                res.status(400).json({ success: false, message: 'userId is required' });
+                return;
+            }
+
+            const result = await NutritionChatMessage.deleteMany({ userId });
+
+            res.status(200).json({
+                success: true,
+                data: { deletedCount: result.deletedCount },
+            });
+        } catch (error: any) {
+            errorLogger.error('Admin reset user chat error:', error, req as any);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
 }

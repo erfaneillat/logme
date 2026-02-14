@@ -85,6 +85,34 @@ class NutritionChatService {
             throw error;
         }
     }
+
+    async resetUserChat(
+        token: string,
+        userId: string,
+    ): Promise<{ deletedCount: number }> {
+        try {
+            const response = await this.fetchWithTimeout(
+                `${API_BASE_URL}/api/chat/admin/nutrition/user/${userId}/reset`,
+                {
+                    method: 'DELETE',
+                    headers: this.getAuthHeaders(token),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Failed to reset user chat: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.data as { deletedCount: number };
+        } catch (error) {
+            errorLogger.error('Error resetting user chat:', error, {
+                component: 'NutritionChatService',
+                action: 'resetUserChat',
+            });
+            throw error;
+        }
+    }
 }
 
 export const nutritionChatService = new NutritionChatService();
