@@ -6,8 +6,16 @@ export interface IKitchenSettings {
     allowedUserIds: string[];
 }
 
+export interface IAiChatSettings {
+    provider: 'openai' | 'deepseek';
+    openaiModel: string;
+    deepseekModel: string;
+    enableFallback: boolean;
+}
+
 export interface ISettings extends Document {
     kitchen: IKitchenSettings;
+    aiChat: IAiChatSettings;
 }
 
 const settingsSchema = new Schema<ISettings>(
@@ -16,6 +24,12 @@ const settingsSchema = new Schema<ISettings>(
             isEnabled: { type: Boolean, default: true },
             accessMode: { type: String, enum: ['all', 'selected'], default: 'all' },
             allowedUserIds: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        },
+        aiChat: {
+            provider: { type: String, enum: ['openai', 'deepseek'], default: 'openai' },
+            openaiModel: { type: String, default: 'gpt-5-mini' },
+            deepseekModel: { type: String, default: 'deepseek-chat' },
+            enableFallback: { type: Boolean, default: true },
         },
     },
     { timestamps: true }

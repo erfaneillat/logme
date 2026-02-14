@@ -18,9 +18,6 @@ export class NutritionChatController {
 
     private getService(): NutritionChatService {
         if (!this.service) {
-            if (!process.env.OPENAI_API_KEY) {
-                throw new Error('OpenAI API key is not configured');
-            }
             this.service = new NutritionChatService();
         }
         return this.service;
@@ -84,8 +81,8 @@ export class NutritionChatController {
                 }
             }
 
-            const service = this.getService() as any;
-            const stream = await service.chatStream(chatInput);
+            const service = this.getService();
+            const { stream } = await service.chatStream(chatInput);
 
             res.setHeader('Content-Type', 'text/event-stream');
             res.setHeader('Cache-Control', 'no-cache');

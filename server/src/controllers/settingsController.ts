@@ -30,6 +30,13 @@ export const updateSettings = async (req: Request, res: Response): Promise<void>
                 if (updates.kitchen.accessMode) settings.kitchen.accessMode = updates.kitchen.accessMode;
                 if (updates.kitchen.allowedUserIds) settings.kitchen.allowedUserIds = updates.kitchen.allowedUserIds;
             }
+
+            if (updates.aiChat) {
+                if (updates.aiChat.provider) settings.aiChat.provider = updates.aiChat.provider;
+                if (updates.aiChat.openaiModel) settings.aiChat.openaiModel = updates.aiChat.openaiModel;
+                if (updates.aiChat.deepseekModel) settings.aiChat.deepseekModel = updates.aiChat.deepseekModel;
+                if (updates.aiChat.enableFallback !== undefined) settings.aiChat.enableFallback = updates.aiChat.enableFallback;
+            }
         }
 
         await settings.save();

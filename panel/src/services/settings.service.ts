@@ -7,9 +7,17 @@ export interface KitchenSettings {
     allowedUserIds: { _id: string; name?: string; phone: string }[];
 }
 
+export interface AiChatSettings {
+    provider: 'openai' | 'deepseek';
+    openaiModel: string;
+    deepseekModel: string;
+    enableFallback: boolean;
+}
+
 export interface Settings {
     _id: string;
     kitchen: KitchenSettings;
+    aiChat: AiChatSettings;
 }
 
 export const settingsService = {

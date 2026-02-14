@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { settingsService, Settings, KitchenSettings } from '../services/settings.service';
+import { settingsService, Settings, KitchenSettings, AiChatSettings } from '../services/settings.service';
 import { userService } from '../services/user.service';
 import { User } from '../types/user';
 
@@ -47,7 +47,8 @@ const SettingsPage = () => {
                 kitchen: {
                     ...settings.kitchen,
                     allowedUserIds: settings.kitchen.allowedUserIds.map(u => u._id)
-                }
+                },
+                aiChat: settings.aiChat,
             };
 
             const updated = await settingsService.updateSettings(payload);
@@ -73,6 +74,17 @@ const SettingsPage = () => {
             ...settings,
             kitchen: {
                 ...settings.kitchen,
+                [key]: value
+            }
+        });
+    };
+
+    const updateAiChatSetting = (key: keyof AiChatSettings, value: any) => {
+        if (!settings) return;
+        setSettings({
+            ...settings,
+            aiChat: {
+                ...settings.aiChat,
                 [key]: value
             }
         });
@@ -256,6 +268,93 @@ const SettingsPage = () => {
                                     )}
                                 </div>
                             )}
+                        </div>
+                    </div>
+
+                    {/* AI Chat Provider Card */}
+                    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                        <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                            <h2 className="text-lg font-bold text-black">AI Chat Provider</h2>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                            {/* Provider Selection */}
+                            <div>
+                                <h3 className="mb-3 text-sm font-semibold text-gray-900">Primary Provider</h3>
+                                <div className="flex space-x-4">
+                                    <label className="flex items-center space-x-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="aiProvider"
+                                            value="openai"
+                                            checked={settings.aiChat?.provider === 'openai'}
+                                            onChange={() => updateAiChatSetting('provider', 'openai')}
+                                            className="h-4 w-4 border-gray-300 text-black focus:ring-black"
+                                        />
+                                        <span className="text-sm text-gray-700">OpenAI</span>
+                                    </label>
+                                    <label className="flex items-center space-x-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="aiProvider"
+                                            value="deepseek"
+                                            checked={settings.aiChat?.provider === 'deepseek'}
+                                            onChange={() => updateAiChatSetting('provider', 'deepseek')}
+                                            className="h-4 w-4 border-gray-300 text-black focus:ring-black"
+                                        />
+                                        <span className="text-sm text-gray-700">DeepSeek</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Model Names */}
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-gray-700">OpenAI Model</label>
+                                    <input
+                                        type="text"
+                                        value={settings.aiChat?.openaiModel || ''}
+                                        onChange={(e) => updateAiChatSetting('openaiModel', e.target.value)}
+                                        placeholder="gpt-5-mini"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-gray-700">DeepSeek Model</label>
+                                    <input
+                                        type="text"
+                                        value={settings.aiChat?.deepseekModel || ''}
+                                        onChange={(e) => updateAiChatSetting('deepseekModel', e.target.value)}
+                                        placeholder="deepseek-chat"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Fallback Toggle */}
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-sm font-semibold text-gray-900">Enable Fallback</h3>
+                                    <p className="text-xs text-gray-500">If primary provider fails, automatically try the other one</p>
+                                </div>
+                                <label className="relative inline-flex cursor-pointer items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={settings.aiChat?.enableFallback ?? true}
+                                        onChange={(e) => updateAiChatSetting('enableFallback', e.target.checked)}
+                                        className="peer sr-only"
+                                    />
+                                    <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-black/20"></div>
+                                </label>
+                            </div>
+
+                            {/* Info Note */}
+                            <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                                <p className="text-xs text-amber-800">
+                                    <strong>Note:</strong> Make sure the corresponding API key is set in your server environment variables
+                                    (<code className="bg-amber-100 px-1 rounded">OPENAI_API_KEY</code> or <code className="bg-amber-100 px-1 rounded">DEEPSEEK_API_KEY</code>).
+                                </p>
+                            </div>
                         </div>
                     </div>
 

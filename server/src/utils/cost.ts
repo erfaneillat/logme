@@ -4,11 +4,13 @@ export interface ModelPricing {
 }
 
 const defaultPricingMap: Record<string, ModelPricing> = {
-    // Source: OpenAI pricing docs (values represent USD per 1K tokens)
-    // Keep this map minimal; prefer overriding via env JSON below
+    // OpenAI models
     'gpt-4o-mini-2024-07-18': { inputPer1K: 0.00015, outputPer1K: 0.0006 },
     'gpt-5-mini-2025-08-07': { inputPer1K: 0.00025, outputPer1K: 0.002 },
     'gpt-5-2025-08-07': { inputPer1K: 0.00025, outputPer1K: 0.002 },
+    // DeepSeek models
+    'deepseek-chat': { inputPer1K: 0.00014, outputPer1K: 0.00028 },
+    'deepseek-reasoner': { inputPer1K: 0.00055, outputPer1K: 0.00219 },
 };
 
 /**
@@ -51,7 +53,7 @@ export function getPricingForModel(model: string): ModelPricing | null {
     return def ?? null;
 }
 
-export function calculateOpenAICostUSD(
+export function calculateAICostUSD(
     model: string,
     promptTokens: number,
     completionTokens: number
@@ -62,6 +64,9 @@ export function calculateOpenAICostUSD(
     const outputCost = (completionTokens / 1000) * pricing.outputPer1K;
     return inputCost + outputCost;
 }
+
+// Backward-compatible alias
+export const calculateOpenAICostUSD = calculateAICostUSD;
 
 export function formatUSD(amount: number): string {
     return `$${amount.toFixed(6)}`;
